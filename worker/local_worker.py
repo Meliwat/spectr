@@ -260,6 +260,7 @@ def process_project(project_id: str):
                     prompt,
                     system=PROMPT_2_SYSTEM,
                     tools=["WebSearch"],
+                    timeout=600,
                 )
                 update_project(project_id, {"backend_spec": backend_spec})
                 print(f"        Backend spec written")
