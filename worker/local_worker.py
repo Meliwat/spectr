@@ -54,7 +54,7 @@ POLL_INTERVAL = 5  # seconds between Supabase polls
 
 # Model overrides — defaults use claude CLI (subscription, no API key needed)
 # Set STITCH_MODEL=claude-haiku-4-5-20251022 to use Haiku (3-6x cheaper/faster)
-STITCH_MODEL = os.getenv("STITCH_MODEL", "claude-haiku-4-5-20251022")
+STITCH_MODEL = os.getenv("STITCH_MODEL", "claude-haiku-4-5")
 
 
 # ──────────────────────────────────────────────
