@@ -28,7 +28,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from supabase import create_client
 from dotenv import load_dotenv
-from services.ffmpeg import extract_frames
+from services.ffmpeg import extract_frames, compress_video
 from services.dedup import deduplicate_frames
 from prompts import (
     PROMPT_1_SYSTEM, PROMPT_1_USER,
@@ -208,9 +208,17 @@ def process_project(project_id: str):
                 with open(mp4_path, "wb") as f:
                     f.write(mp4_bytes)
 
+                # Compress large videos before extraction to stay within
+                # Supabase storage limits and speed up frame analysis
+                process_path, was_compressed = compress_video(mp4_path)
+
                 print(f"        Extracting frames...")
                 frames_dir = f"{tmpdir}/frames"
-                all_frames = extract_frames(mp4_path, frames_dir)
+                try:
+                    all_frames = extract_frames(process_path, frames_dir)
+                finally:
+                    if was_compressed:
+                        os.unlink(process_path)
                 unique = deduplicate_frames(all_frames)
 
                 if len(unique) > MAX_FRAMES:

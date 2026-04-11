@@ -1,18 +1,31 @@
 'use client'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
+
+const MAX_MB = 500
 
 interface Props { file: File | null; onFile: (f: File) => void }
 
 export default function UploadZone({ file, onFile }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
+  const [sizeError, setSizeError] = useState('')
+
+  function accept(f: File) {
+    if (f.size > MAX_MB * 1024 * 1024) {
+      setSizeError(`File is ${(f.size / 1024 / 1024).toFixed(0)} MB — max is ${MAX_MB} MB. Try trimming or exporting at lower resolution.`)
+      return
+    }
+    setSizeError('')
+    onFile(f)
+  }
 
   function handleDrop(e: React.DragEvent) {
     e.preventDefault()
     const f = e.dataTransfer.files[0]
-    if (f && (f.type === 'video/mp4' || f.type === 'video/quicktime')) onFile(f)
+    if (f && (f.type === 'video/mp4' || f.type === 'video/quicktime')) accept(f)
   }
 
   return (
+    <>
     <div
       onClick={() => inputRef.current?.click()}
       onDragOver={e => e.preventDefault()}
@@ -25,7 +38,7 @@ export default function UploadZone({ file, onFile }: Props) {
       }}
     >
       <input ref={inputRef} type="file" accept="video/mp4,video/quicktime" className="hidden"
-        onChange={e => { const f = e.target.files?.[0]; if (f) onFile(f) }} />
+        onChange={e => { const f = e.target.files?.[0]; if (f) accept(f) }} />
       {file ? (
         <div>
           <p className="text-sm" style={{ color: 'var(--violet)', fontWeight: 510 }}>{file.name}</p>
@@ -36,9 +49,13 @@ export default function UploadZone({ file, onFile }: Props) {
       ) : (
         <div>
           <p className="text-sm" style={{ color: 'var(--text-2)' }}>Drop your MP4 here or click to browse</p>
-          <p className="text-xs mt-2" style={{ color: 'var(--subdued)' }}>Max 500 MB</p>
+          <p className="text-xs mt-2" style={{ color: 'var(--subdued)' }}>Max {MAX_MB} MB</p>
         </div>
       )}
     </div>
+    {sizeError && (
+      <p className="mt-2 text-xs" style={{ color: 'var(--error)' }}>{sizeError}</p>
+    )}
+    </>
   )
 }

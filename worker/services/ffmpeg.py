@@ -1,5 +1,6 @@
 import os
 import subprocess
+import tempfile
 from pathlib import Path
 
 # Scene-change threshold (0.0–1.0).
@@ -10,6 +11,45 @@ SCENE_THRESHOLD = float(os.getenv("SCENE_THRESHOLD", "0.15"))
 # Fall back to fps-based extraction when scene detection yields fewer
 # than this many frames (e.g. very short or mostly-static recordings).
 MIN_SCENE_FRAMES = int(os.getenv("MIN_SCENE_FRAMES", "3"))
+
+# Videos larger than this (MB) are compressed before frame extraction.
+# Keeps processing fast and avoids Supabase storage limits on upload.
+COMPRESS_THRESHOLD_MB = float(os.getenv("COMPRESS_THRESHOLD_MB", "50"))
+
+
+def compress_video(input_path: str) -> tuple[str, bool]:
+    """Compress a video to a temp file if it exceeds COMPRESS_THRESHOLD_MB.
+
+    Downscales to max 1280px wide, H.264 CRF 28, 30fps cap — sufficient
+    quality for frame extraction. Returns (path_to_use, was_compressed).
+    Caller is responsible for deleting the temp file if was_compressed=True.
+    """
+    size_mb = os.path.getsize(input_path) / (1024 * 1024)
+    if size_mb <= COMPRESS_THRESHOLD_MB:
+        return input_path, False
+
+    print(f"[ffmpeg] video is {size_mb:.1f} MB — compressing before extraction")
+    tmp = tempfile.NamedTemporaryFile(suffix=".mp4", delete=False)
+    tmp.close()
+
+    cmd = [
+        "ffmpeg", "-i", input_path,
+        "-vf", "scale='min(1280,iw)':-2",
+        "-c:v", "libx264", "-crf", "28", "-preset", "fast",
+        "-r", "30",
+        "-an",           # strip audio — not needed for frame extraction
+        "-y", tmp.name,
+        "-loglevel", "error",
+    ]
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        os.unlink(tmp.name)
+        print(f"[warn] compression failed, using original: {result.stderr.strip()}")
+        return input_path, False
+
+    compressed_mb = os.path.getsize(tmp.name) / (1024 * 1024)
+    print(f"[ffmpeg] compressed {size_mb:.1f} MB → {compressed_mb:.1f} MB")
+    return tmp.name, True
 
 
 def extract_frames(input_path: str, output_dir: str, fps: int = 1) -> list[str]:
