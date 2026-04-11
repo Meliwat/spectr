@@ -21,6 +21,7 @@ import shutil
 import tempfile
 import argparse
 import subprocess
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -48,8 +49,12 @@ load_dotenv(Path(__file__).parent.parent / ".env")
 
 BUCKET = "spectr-uploads"
 MAX_FRAMES = int(os.getenv("MAX_FRAMES", 80))
-BATCH_SIZE = int(os.getenv("FRAME_BATCH_SIZE", 15))
+BATCH_SIZE = int(os.getenv("FRAME_BATCH_SIZE", 25))  # increased from 15 → 25
 POLL_INTERVAL = 5  # seconds between Supabase polls
+
+# Model overrides — defaults use claude CLI (subscription, no API key needed)
+# Set STITCH_MODEL=claude-haiku-4-5 to use Haiku (3-6x cheaper/faster)
+STITCH_MODEL = os.getenv("STITCH_MODEL", "claude-haiku-4-5")
 
 
 # ──────────────────────────────────────────────
@@ -89,13 +94,16 @@ def _run_claude(cmd: list[str], stdin_data: str = None, timeout: int = 300) -> s
     return result.stdout.strip()
 
 
-def claude_text(prompt: str, system: str = None, tools: list[str] = None, timeout: int = 300) -> str:
+def claude_text(prompt: str, system: str = None, tools: list[str] = None,
+                timeout: int = 300, model: str = None) -> str:
     """Run a text-only prompt non-interactively, returns plain text."""
     cmd = [
         "claude", "--print",
         "--output-format", "text",
         "--dangerously-skip-permissions",
     ]
+    if model:
+        cmd.extend(["--model", model])
     if system:
         cmd.extend(["--system-prompt", system])
     if tools:
@@ -216,16 +224,23 @@ def process_project(project_id: str):
                 print(f"  [2/4] Analyzing UI with Claude vision...")
 
                 batches = [unique[i:i + BATCH_SIZE] for i in range(0, len(unique), BATCH_SIZE)]
-                screen_specs = []
-                for i, batch in enumerate(batches):
-                    print(f"        Batch {i + 1}/{len(batches)} ({len(batch)} frames)...")
+                print(f"        {len(batches)} batch(es) × {BATCH_SIZE} frames — running in parallel...")
+
+                # Run all vision batches concurrently (order preserved by pool.map)
+                def _analyze_batch(args):
+                    idx, batch = args
                     prompt = PROMPT_1_USER.format(n=len(batch), reference_app=reference_app)
-                    spec = claude_vision(batch, prompt, system=PROMPT_1_SYSTEM)
-                    screen_specs.append(spec)
+                    print(f"        → Batch {idx + 1}/{len(batches)} started ({len(batch)} frames)")
+                    result = claude_vision(batch, prompt, system=PROMPT_1_SYSTEM)
+                    print(f"        ✓ Batch {idx + 1}/{len(batches)} done")
+                    return result
+
+                with ThreadPoolExecutor(max_workers=min(len(batches), 4)) as pool:
+                    screen_specs = list(pool.map(_analyze_batch, enumerate(batches)))
 
                 frontend_spec = "\n\n---\n\n".join(screen_specs)
                 update_project(project_id, {"frontend_spec": frontend_spec})
-                print(f"        {len(screen_specs)} batch(es) analyzed")
+                print(f"        {len(screen_specs)} batch(es) analyzed (parallel)")
 
             # ── Stage 3: Research backend ────────────────────────
             if stored_backend_spec:
@@ -243,6 +258,7 @@ def process_project(project_id: str):
                     prompt,
                     system=PROMPT_2_SYSTEM,
                     tools=["WebSearch"],
+                    timeout=600,
                 )
                 update_project(project_id, {"backend_spec": backend_spec})
                 print(f"        Backend spec written")
@@ -259,7 +275,7 @@ def process_project(project_id: str):
             frontend_spec=frontend_spec,
             backend_spec=backend_spec,
         )
-        spec_md = claude_text(prompt, system=PROMPT_3_SYSTEM, timeout=900)
+        spec_md = claude_text(prompt, system=PROMPT_3_SYSTEM, timeout=900, model=STITCH_MODEL)
 
         # Upload spec.md to Supabase Storage
         spec_key = f"{project_id}/spec.md"
