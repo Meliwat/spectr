@@ -52,7 +52,40 @@ Close with a '## Recommended Stack for Clone' section with concrete, opinionated
 
 PROMPT_3_SYSTEM = """You are a technical writer producing a complete, production-ready app specification.
 Combine the frontend and backend specs into one clean structured spec.md.
-Apply all branding overrides. Be thorough — this file is the sole input a developer needs."""
+Apply all branding overrides. Be thorough — this file is the sole input a developer needs.
+
+After writing the full spec, detect which backend services the app requires by scanning the frontend
+and backend specs for these signals:
+  - Auth screens, login/signup flows, user profiles → SUPABASE_URL, SUPABASE_ANON_KEY
+  - File uploads, media, avatars, attachments → SUPABASE_URL, SUPABASE_SERVICE_KEY
+  - AI chat, text generation, embeddings, completions → OPENAI_API_KEY
+  - Push notifications → EXPO_PUBLIC_PROJECT_ID
+  - In-app payments, subscriptions → STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY
+  - Maps, location, geocoding → GOOGLE_MAPS_API_KEY
+
+Only include a service if there is clear evidence in the UI or architecture. Do not guess.
+
+Append the following block at the very end of the spec (after all other content).
+Use exactly this XML format — no variation:
+
+<spectr:files>
+<spectr:file name=".env.example">
+# One comment per variable: ServiceName — exact URL to dashboard page where key is found
+VARIABLE_NAME=
+</spectr:file>
+<spectr:file name="setup.sh">
+#!/bin/bash
+set -e
+cp .env.example .env
+echo "✓ .env created — open it and fill in your API keys"
+npm install 2>/dev/null || yarn install 2>/dev/null || echo "No package.json found — skipping install"
+echo ""
+echo "Next: open .env, paste your API keys, then run your app"
+</spectr:file>
+</spectr:files>
+
+If no services are detected, still append the block with an empty .env.example (just a comment line: # No external services detected).
+Always include setup.sh."""
 
 PROMPT_3_USER = """Produce a final spec.md for a clone of '{reference_app}'.
 Rename the app to '{your_app_name}' throughout.
