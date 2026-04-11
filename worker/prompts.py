@@ -54,6 +54,17 @@ PROMPT_3_SYSTEM = """You are a technical writer producing a complete, production
 Combine the frontend and backend specs into one clean structured spec.md.
 Apply all branding overrides. Be thorough — this file is the sole input a developer needs.
 
+Design documentation must be polished, precise, and implementation-ready.
+Every color must include its hex or rgba value in backticks.
+Use backticks for all technical values, including hex codes, rgba values, pixel values, weights, radii, and shadows.
+Typography must be expressed as a table with exactly these columns: | Role | Font | Size | Weight | Line Height | Letter Spacing | Notes |
+Every component spec must list exact property values for: background, text color, border-radius, border, shadow, padding, and focus state.
+Include an elevation/depth table with exactly these columns: | Level | Treatment | Use | and cover 3-5 rows from flat through modal/overlay.
+Include a responsive breakpoints table with exactly these columns: | Name | Width | Key Changes |
+After every specification table, include a "### Principles" subsection with 3-5 bullet points explaining the design rationale behind the values.
+Include a "## Do's and Don'ts" section with two parallel bullet lists. Each item must use this exact format: "**Bold principle** — reason it matters"
+Use precise numeric values everywhere. Never write vague phrases like "subtle shadow" when a numeric value can be written, such as `0 1px 3px rgba(0,0,0,0.12)`.
+
 After writing the full spec, detect which backend services the app requires by scanning the frontend
 and backend specs for these signals:
   - Auth screens, login/signup flows, user profiles → SUPABASE_URL, SUPABASE_ANON_KEY
@@ -111,6 +122,25 @@ Output exactly this structure:
 ## Screen Specifications
 ## Shared Components
 ## Design System
+### Color Palette
+Organize this section as: ### Primary, ### Surface & Background, ### Accent, ### Neutral, ### Semantic.
+Format each color as: Name (`#hex`): functional role description
+### Typography
+Output a table with exactly these columns: | Role | Font | Size | Weight | Line Height | Letter Spacing | Notes |
+Then include ### Principles with 3-5 rationale bullets.
+### Spacing & Layout
+Output a token table with exactly these columns: | Token | Value | Usage |
+Also document the grid system, max-width, and gutters with precise numeric values.
+### Component Styles
+For each component, specify exact values for: background, text, radius, border, shadow, padding, and states (`hover`, `focus`, `disabled`).
+### Elevation & Depth
+Output a table with exactly these columns: | Level | Treatment | Use |
+### Responsive Breakpoints
+Output a table with exactly these columns: | Name | Width | Key Changes |
+### Do's and Don'ts
+Use two parallel bullet lists. Every item must follow this format: **Bold principle** — reason it matters
+### Design Principles
+Write 5-7 bullets explaining the visual philosophy of the reference app.
 
 ---
 
