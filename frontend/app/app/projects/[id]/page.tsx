@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Project } from '@/lib/types'
 import StatusTracker from '@/components/StatusTracker'
@@ -9,6 +9,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
   const { id } = params
   const [project, setProject] = useState<Project | null>(null)
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
+  const downloadRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     supabase.from('projects').select('*').eq('id', id).single()
@@ -30,7 +31,11 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
     if (project?.status === 'complete' && !downloadUrl) {
       fetch(`/api/projects/${id}/download`)
         .then(r => r.json())
-        .then(d => setDownloadUrl(d.url))
+        .then(d => {
+          setDownloadUrl(d.url)
+          // Scroll to download button after it appears
+          setTimeout(() => downloadRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100)
+        })
     }
   }, [project?.status, id, downloadUrl])
 
@@ -62,7 +67,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
       {project && <StatusTracker project={project} />}
 
       {project?.status === 'complete' && downloadUrl && (
-        <div className="mt-10 space-y-3">
+        <div ref={downloadRef} className="mt-10 space-y-3">
           <a
             href={downloadUrl}
             download="spec.md"
