@@ -9,6 +9,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
   const { id } = params
   const [project, setProject] = useState<Project | null>(null)
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
+  const [downloadFilename, setDownloadFilename] = useState<string>('bundle.zip')
   const downloadRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -34,7 +35,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
         .then(d => {
           if (d.url) {
             setDownloadUrl(d.url)
-            // Scroll to download button after it appears
+            setDownloadFilename(d.filename || 'bundle.zip')
             setTimeout(() => downloadRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100)
           }
         })
@@ -72,11 +73,11 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
         <div ref={downloadRef} className="mt-10 space-y-3">
           <a
             href={downloadUrl}
-            download="spec.md"
+            download={downloadFilename}
             className="btn-primary block w-full py-3 text-center text-base"
             style={{ borderRadius: 6 }}
           >
-            Download spec.md
+            Download Bundle
           </a>
           <div
             className="px-4 py-3 text-sm mono"
@@ -87,7 +88,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
               color: 'var(--muted)',
             }}
           >
-            Then run: <span style={{ color: 'var(--violet)' }}>claude --file spec.md</span>
+            Unzip, run <span style={{ color: 'var(--violet)' }}>./setup.sh</span>, fill in <span style={{ color: 'var(--violet)' }}>.env</span>, then <span style={{ color: 'var(--violet)' }}>claude --file spec.md</span>
           </div>
         </div>
       )}
