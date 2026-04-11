@@ -32,9 +32,11 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
       fetch(`/api/projects/${id}/download`)
         .then(r => r.json())
         .then(d => {
-          setDownloadUrl(d.url)
-          // Scroll to download button after it appears
-          setTimeout(() => downloadRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100)
+          if (d.url) {
+            setDownloadUrl(d.url)
+            // Scroll to download button after it appears
+            setTimeout(() => downloadRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100)
+          }
         })
     }
   }, [project?.status, id, downloadUrl])

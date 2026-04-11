@@ -1,0 +1,20 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Frontend (Next.js)",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "frontend",
+      "port": 3000,
+      "autoPort": false
+    },
+    {
+      "name": "Worker (FastAPI)",
+      "runtimeExecutable": "python3.9",
+      "runtimeArgs": ["main.py"],
+      "cwd": "worker",
+      "port": 8001
+    }
+  ]
+}

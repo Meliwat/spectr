@@ -12,5 +12,9 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
   const { data: signed } = await supabaseServer
     .storage.from('spectr-uploads').createSignedUrl(data.spec_md_s3_key, 86400)
 
-  return NextResponse.json({ url: signed?.signedUrl })
+  if (!signed?.signedUrl) {
+    return NextResponse.json({ error: 'Failed to generate download link' }, { status: 500 })
+  }
+
+  return NextResponse.json({ url: signed.signedUrl })
 }

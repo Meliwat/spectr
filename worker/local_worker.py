@@ -194,32 +194,33 @@ def process_project(project_id: str):
             backend_spec = stored_backend_spec
             print(f"  [1-3/4] Resuming from stored specs (skipping extraction + analysis)")
         else:
-            # ── Stage 1: Extract frames ──────────────────────────
-            update_project(project_id, {"status": STATUS_EXTRACTING})
-            print(f"  [1/4] Downloading MP4 from Supabase Storage...")
-
-            mp4_path = f"{tmpdir}/input.mp4"
-            mp4_bytes = client.storage.from_(BUCKET).download(project["mp4_s3_key"])
-            with open(mp4_path, "wb") as f:
-                f.write(mp4_bytes)
-
-            print(f"        Extracting frames...")
-            frames_dir = f"{tmpdir}/frames"
-            all_frames = extract_frames(mp4_path, frames_dir)
-            unique = deduplicate_frames(all_frames)
-
-            if len(unique) > MAX_FRAMES:
-                step = len(unique) // MAX_FRAMES
-                unique = unique[::step][:MAX_FRAMES]
-
-            update_project(project_id, {"frame_count": len(unique)})
-            print(f"        {len(all_frames)} total → {len(unique)} unique frames")
-
-            # ── Stage 2: Analyze frontend ────────────────────────
             if stored_frontend_spec:
+                # Frontend vision already done — skip extraction + vision, run research only
                 frontend_spec = stored_frontend_spec
-                print(f"  [2/4] Using stored frontend spec")
+                print(f"  [1-2/4] Resuming: skipping extraction + vision (frontend spec stored)")
             else:
+                # ── Stage 1: Extract frames ──────────────────────────
+                update_project(project_id, {"status": STATUS_EXTRACTING})
+                print(f"  [1/4] Downloading MP4 from Supabase Storage...")
+
+                mp4_path = f"{tmpdir}/input.mp4"
+                mp4_bytes = client.storage.from_(BUCKET).download(project["mp4_s3_key"])
+                with open(mp4_path, "wb") as f:
+                    f.write(mp4_bytes)
+
+                print(f"        Extracting frames...")
+                frames_dir = f"{tmpdir}/frames"
+                all_frames = extract_frames(mp4_path, frames_dir)
+                unique = deduplicate_frames(all_frames)
+
+                if len(unique) > MAX_FRAMES:
+                    step = len(unique) // MAX_FRAMES
+                    unique = unique[::step][:MAX_FRAMES]
+
+                update_project(project_id, {"frame_count": len(unique)})
+                print(f"        {len(all_frames)} total → {len(unique)} unique frames")
+
+                # ── Stage 2: Analyze frontend ────────────────────────
                 update_project(project_id, {"status": STATUS_ANALYZING_FRONTEND})
                 print(f"  [2/4] Analyzing UI with Claude vision...")
 
@@ -231,9 +232,18 @@ def process_project(project_id: str):
                     idx, batch = args
                     prompt = PROMPT_1_USER.format(n=len(batch), reference_app=reference_app)
                     print(f"        → Batch {idx + 1}/{len(batches)} started ({len(batch)} frames)")
-                    result = claude_vision(batch, prompt, system=PROMPT_1_SYSTEM)
-                    print(f"        ✓ Batch {idx + 1}/{len(batches)} done")
-                    return result
+                    last_exc = None
+                    for attempt in range(3):
+                        try:
+                            result = claude_vision(batch, prompt, system=PROMPT_1_SYSTEM)
+                            print(f"        ✓ Batch {idx + 1}/{len(batches)} done")
+                            return result
+                        except Exception as exc:
+                            last_exc = exc
+                            wait = 2 ** attempt
+                            print(f"        ! Batch {idx + 1}/{len(batches)} attempt {attempt + 1} failed: {exc}; retrying in {wait}s")
+                            time.sleep(wait)
+                    raise last_exc
 
                 with ThreadPoolExecutor(max_workers=min(len(batches), 4)) as pool:
                     screen_specs = list(pool.map(_analyze_batch, enumerate(batches)))
