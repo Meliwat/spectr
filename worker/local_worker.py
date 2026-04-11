@@ -21,7 +21,7 @@ import shutil
 import tempfile
 import argparse
 import subprocess
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -53,7 +53,7 @@ BATCH_SIZE = int(os.getenv("FRAME_BATCH_SIZE", 25))  # increased from 15 → 25
 POLL_INTERVAL = 5  # seconds between Supabase polls
 
 # Model overrides — defaults use claude CLI (subscription, no API key needed)
-# Set STITCH_MODEL=claude-haiku-4-5-20251022 to use Haiku (3-6x cheaper/faster)
+# Set STITCH_MODEL=claude-haiku-4-5 to use Haiku (3-6x cheaper/faster)
 STITCH_MODEL = os.getenv("STITCH_MODEL", "claude-haiku-4-5")
 
 
@@ -226,19 +226,17 @@ def process_project(project_id: str):
                 batches = [unique[i:i + BATCH_SIZE] for i in range(0, len(unique), BATCH_SIZE)]
                 print(f"        {len(batches)} batch(es) × {BATCH_SIZE} frames — running in parallel...")
 
-                # Run all vision batches concurrently
+                # Run all vision batches concurrently (order preserved by pool.map)
                 def _analyze_batch(args):
                     idx, batch = args
                     prompt = PROMPT_1_USER.format(n=len(batch), reference_app=reference_app)
                     print(f"        → Batch {idx + 1}/{len(batches)} started ({len(batch)} frames)")
                     result = claude_vision(batch, prompt, system=PROMPT_1_SYSTEM)
                     print(f"        ✓ Batch {idx + 1}/{len(batches)} done")
-                    return idx, result
+                    return result
 
-                screen_specs = [None] * len(batches)
-                with ThreadPoolExecutor(max_workers=len(batches)) as pool:
-                    for idx, spec in pool.map(_analyze_batch, enumerate(batches)):
-                        screen_specs[idx] = spec
+                with ThreadPoolExecutor(max_workers=min(len(batches), 4)) as pool:
+                    screen_specs = list(pool.map(_analyze_batch, enumerate(batches)))
 
                 frontend_spec = "\n\n---\n\n".join(screen_specs)
                 update_project(project_id, {"frontend_spec": frontend_spec})
