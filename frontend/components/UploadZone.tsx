@@ -1,7 +1,7 @@
 'use client'
 import { useRef, useState } from 'react'
 
-const MAX_MB = 500
+const MAX_MB = 50
 
 interface Props { file: File | null; onFile: (f: File) => void }
 
