@@ -1,0 +1,7 @@
+STATUS_PENDING            = "pending"
+STATUS_EXTRACTING         = "extracting"
+STATUS_ANALYZING_FRONTEND = "analyzing_frontend"
+STATUS_ANALYZING_BACKEND  = "analyzing_backend"
+STATUS_STITCHING          = "stitching"
+STATUS_COMPLETE           = "complete"
+STATUS_FAILED             = "failed"

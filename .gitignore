@@ -1,0 +1,26 @@
+# Environment — never commit real credentials
+.env
+.env.local
+.env.*.local
+
+# Frontend
+frontend/.env.local
+frontend/.next/
+frontend/node_modules/
+frontend/out/
+
+# Worker
+worker/__pycache__/
+worker/*.pyc
+worker/*.pyo
+
+# Root
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+
+# Supabase
+supabase/.branches/
+supabase/.temp/
