@@ -30,6 +30,7 @@ from supabase import create_client
 from dotenv import load_dotenv
 from services.ffmpeg import extract_frames, compress_video
 from services.dedup import deduplicate_frames
+from services.bundle import extract_bundle_files, create_bundle_zip
 from prompts import (
     PROMPT_1_SYSTEM, PROMPT_1_USER,
     PROMPT_2_SYSTEM, PROMPT_2_USER,
@@ -293,21 +294,35 @@ def process_project(project_id: str):
             frontend_spec=frontend_spec,
             backend_spec=backend_spec,
         )
-        spec_md = claude_text(prompt, system=PROMPT_3_SYSTEM, timeout=900, model=STITCH_MODEL)
+        raw_spec = claude_text(prompt, system=PROMPT_3_SYSTEM, timeout=900, model=STITCH_MODEL)
 
-        # Upload spec.md to Supabase Storage
+        # Extract <spectr:file> blocks and strip them from the displayed spec
+        clean_spec, bundle_files = extract_bundle_files(raw_spec)
+
+        # Upload clean spec.md
         spec_key = f"{project_id}/spec.md"
         client.storage.from_(BUCKET).upload(
             path=spec_key,
-            file=spec_md.encode("utf-8"),
+            file=clean_spec.encode("utf-8"),
             file_options={"content-type": "text/markdown", "upsert": "true"},
         )
+
+        # Build and upload bundle.zip (spec.md + .env.example + setup.sh)
+        zip_bytes = create_bundle_zip(clean_spec, bundle_files)
+        bundle_key = f"{project_id}/bundle.zip"
+        client.storage.from_(BUCKET).upload(
+            path=bundle_key,
+            file=zip_bytes,
+            file_options={"content-type": "application/zip", "upsert": "true"},
+        )
+
         update_project(project_id, {
             "status": STATUS_COMPLETE,
             "spec_md_s3_key": spec_key,
-            "spec_md_text": spec_md,
+            "spec_md_text": clean_spec,
+            "bundle_s3_key": bundle_key,
         })
-        print(f"\n  ✓ Done — spec.md uploaded to Storage")
+        print(f"\n  ✓ Done — bundle.zip uploaded to Storage ({len(bundle_files)} extra files)")
 
     except Exception as e:
         update_project(project_id, {"status": STATUS_FAILED, "error_text": str(e)})
