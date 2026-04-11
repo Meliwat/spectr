@@ -56,6 +56,7 @@ export default function UploadPage() {
       if (!res.ok) throw new Error(await res.text())
       router.push(`/app/projects/${projectId}`)
     } catch (e: any) {
+      console.error('[submit error]', e)
       setError(e.message || 'Something went wrong')
       setLoading(false)
     }
@@ -104,7 +105,11 @@ export default function UploadPage() {
 
       <BrandingForm onColors={setBrandColors} onLogo={setLogoFile} onBundleId={setBundleId} />
 
-      {error && <p className="mt-4 text-sm" style={{ color: 'var(--error)' }}>{error}</p>}
+      {error && (
+        <div className="mt-4 px-4 py-3 rounded text-sm" style={{ background: 'rgba(255,80,80,0.08)', border: '1px solid rgba(255,80,80,0.25)', color: 'var(--error)' }}>
+          {error}
+        </div>
+      )}
 
       <button
         onClick={handleSubmit}
