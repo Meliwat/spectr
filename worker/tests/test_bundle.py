@@ -73,3 +73,21 @@ def test_create_bundle_empty_extra_files():
     zip_bytes = create_bundle_zip("# spec", {})
     with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf:
         assert zf.namelist() == ["spec.md"]
+
+
+def test_extract_orphaned_file_tags_stripped_from_spec():
+    """LLM may omit outer <spectr:files> wrapper — XML should still be stripped from clean."""
+    spec = """# MyApp\n\n<spectr:file name=".env.example">\nSUPABASE_URL=\n</spectr:file>"""
+    clean, files = extract_bundle_files(spec)
+    assert "<spectr:file" not in clean
+    assert ".env.example" in files
+
+
+def test_create_bundle_path_traversal_sanitized():
+    """Filenames with path traversal should be sanitized."""
+    extra = {"../evil.sh": "rm -rf /", ".env.example": "KEY=val"}
+    zip_bytes = create_bundle_zip("# spec", extra)
+    with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf:
+        names = zf.namelist()
+        assert "../evil.sh" not in names
+        assert ".env.example" in names
