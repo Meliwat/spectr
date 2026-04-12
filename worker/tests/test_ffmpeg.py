@@ -11,6 +11,7 @@ import types
 import unittest
 from unittest.mock import patch, MagicMock, call
 from pathlib import Path
+import subprocess
 
 # ---------------------------------------------------------------------------
 # Make the worker package importable without installing it
@@ -184,6 +185,31 @@ class TestExtractFrames(unittest.TestCase):
             extract_frames("/input/video.mp4", "/out")
 
         self.assertIn("ffmpeg failed", str(ctx.exception))
+
+    @patch("services.ffmpeg.subprocess.run")
+    @patch("services.ffmpeg.Path")
+    @patch("services.ffmpeg.os.makedirs")
+    def test_scene_detection_timeout_falls_back_to_fps(
+        self, mock_makedirs, mock_Path_cls, mock_run
+    ):
+        fps_frames = [f"/out/frame_{i:04d}.jpg" for i in range(1, 4)]
+
+        mock_run.side_effect = [
+            subprocess.TimeoutExpired(cmd="ffmpeg", timeout=600),
+            _ok_result(),
+        ]
+
+        path_instance = MagicMock(spec=Path)
+        path_instance.glob.side_effect = [
+            [],  # cleanup loop after timed out scene extraction
+            [Path(p) for p in fps_frames],
+        ]
+        mock_Path_cls.return_value = path_instance
+
+        result = extract_frames("/input/video.mp4", "/out")
+
+        self.assertEqual(mock_run.call_count, 2)
+        self.assertEqual(result, sorted(fps_frames))
 
 
 if __name__ == "__main__":

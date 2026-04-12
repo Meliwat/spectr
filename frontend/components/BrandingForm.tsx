@@ -4,8 +4,9 @@ import { useState } from 'react'
 interface Props {
   onColors: (c: Record<string, string> | null) => void
   onLogo: (f: File | null) => void
-  onBundleId: (s: string) => void
-  bundlePlaceholder: string
+  onBundleId?: (s: string) => void
+  bundlePlaceholder?: string
+  showBundleId?: boolean
 }
 
 const DEFAULT_COLORS = {
@@ -15,7 +16,13 @@ const DEFAULT_COLORS = {
   text: '#f7f8f8',
 }
 
-export default function BrandingForm({ onColors, onLogo, onBundleId, bundlePlaceholder }: Props) {
+export default function BrandingForm({
+  onColors,
+  onLogo,
+  onBundleId,
+  bundlePlaceholder = '',
+  showBundleId = true,
+}: Props) {
   const [open, setOpen] = useState(false)
   const [colors, setColors] = useState(DEFAULT_COLORS)
 
@@ -46,7 +53,7 @@ export default function BrandingForm({ onColors, onLogo, onBundleId, bundlePlace
             <path d="M4.5 2.25 8.25 6 4.5 9.75" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </span>
-        Customize
+        Add your brand
       </button>
 
       {open && (
@@ -55,9 +62,9 @@ export default function BrandingForm({ onColors, onLogo, onBundleId, bundlePlace
           style={{
             borderRadius: 16,
           }}
-        >
+          >
           <div>
-            <p className="section-title">Brand colors</p>
+            <p className="section-title">Color direction</p>
             <div className="grid grid-cols-2 gap-4">
               {Object.entries(colors).map(([key, val]) => (
                 <div
@@ -92,15 +99,17 @@ export default function BrandingForm({ onColors, onLogo, onBundleId, bundlePlace
             />
           </div>
 
-          <div>
-            <label className="field-label">Bundle ID</label>
-            <input
-              type="text"
-              placeholder={bundlePlaceholder}
-              onChange={e => onBundleId(e.target.value)}
-              className="input text-sm"
-            />
-          </div>
+          {showBundleId && onBundleId && (
+            <div>
+              <label className="field-label">Bundle ID</label>
+              <input
+                type="text"
+                placeholder={bundlePlaceholder}
+                onChange={e => onBundleId(e.target.value)}
+                className="input text-sm"
+              />
+            </div>
+          )}
         </div>
       )}
     </div>

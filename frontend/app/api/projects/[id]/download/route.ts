@@ -12,9 +12,9 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
     return NextResponse.json({ error: 'Not ready' }, { status: 404 })
   }
 
-  // Prefer bundle.zip; fall back to spec.md for older projects
-  const storageKey = data.bundle_s3_key || data.spec_md_s3_key
-  const filename = data.bundle_s3_key ? 'bundle.zip' : 'spec.md'
+  // Prefer spec.md for the restored spec workflow; fall back to bundle.zip for older mobile runs
+  const storageKey = data.spec_md_s3_key || data.bundle_s3_key
+  const filename = data.spec_md_s3_key ? 'spec.md' : 'bundle.zip'
 
   if (!storageKey) {
     return NextResponse.json({ error: 'No download available' }, { status: 404 })

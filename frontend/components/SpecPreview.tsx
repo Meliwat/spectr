@@ -7,13 +7,13 @@ export default function SpecPreview({ content }: { content: string }) {
   return (
     <div className="mt-12">
       <div className="flex items-center justify-between mb-4">
-        <p className="text-sm" style={{ color: 'var(--text-2)', fontWeight: 510, letterSpacing: '-0.165px' }}>Spec preview</p>
+        <p className="text-sm" style={{ color: 'var(--text-2)', fontWeight: 510, letterSpacing: '-0.165px' }}>Peek inside</p>
         <button
           onClick={() => setExpanded(e => !e)}
           className="btn"
           style={{ padding: '8px 12px', fontSize: 12 }}
         >
-          {expanded ? 'Collapse' : 'Expand'}
+          {expanded ? 'Show less' : 'Show more'}
         </button>
       </div>
       <div

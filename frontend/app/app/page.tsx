@@ -1,20 +1,10 @@
 'use client'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import UploadZone from '@/components/UploadZone'
 import BrandingForm from '@/components/BrandingForm'
 import { useToast } from '@/hooks/useToast'
-
-function buildBundlePlaceholder(value: string) {
-  const slug = value
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '')
-    .slice(0, 24)
-
-  return slug ? `com.acme.${slug}` : 'com.acme.myapp'
-}
 
 export default function UploadPage() {
   const router = useRouter()
@@ -22,16 +12,10 @@ export default function UploadPage() {
   const [mp4File, setMp4File] = useState<File | null>(null)
   const [referenceApp, setReferenceApp] = useState('')
   const [yourAppName, setYourAppName] = useState('')
-  const [bundleId, setBundleId] = useState('')
   const [brandColors, setBrandColors] = useState<Record<string, string> | null>(null)
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-
-  const bundlePlaceholder = useMemo(
-    () => buildBundlePlaceholder(yourAppName || referenceApp),
-    [yourAppName, referenceApp],
-  )
 
   const canSubmit = mp4File && referenceApp.trim().length > 0 && !loading
 
@@ -73,7 +57,7 @@ export default function UploadPage() {
           your_app_name: yourAppName.trim() || referenceApp.trim(),
           brand_colors: brandColors,
           logo_s3_key: logoKey,
-          bundle_id: bundleId.trim() || null,
+          bundle_id: null,
         }),
       })
       if (!res.ok) throw new Error(await res.text())
@@ -92,17 +76,17 @@ export default function UploadPage() {
       <section className="page-shell">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_320px]">
           <div className="panel-strong p-6 sm:p-8">
-            <span className="eyebrow">New reverse-engineering run</span>
+            <span className="eyebrow">New brief</span>
             <h1
               className="mt-6 text-4xl sm:text-5xl"
               style={{ color: 'var(--text)', fontWeight: 510, letterSpacing: '-0.704px', lineHeight: 1.04 }}
             >
-              Build the brief before
+              Turn a recording
               <br />
-              you write a line of code.
+              into a living brief.
             </h1>
             <p className="mt-4 max-w-2xl text-sm sm:text-base" style={{ color: 'var(--muted)', letterSpacing: '-0.165px', lineHeight: 1.65 }}>
-              Upload a product recording, name the source app, and Spectr will generate a dark, implementation-ready teardown across UI, backend, and setup.
+              Upload a mobile app recording, name the product that inspired it, and Spectr will turn what it sees into a detailed brief your team can read, share, and build from.
             </p>
 
             <div className="mt-8">
@@ -121,7 +105,7 @@ export default function UploadPage() {
                   onChange={e => setReferenceApp(e.target.value)}
                   className="input"
                 />
-                <p className="mt-2 helper-copy">Use the real product name so backend research has an anchor.</p>
+                <p className="mt-2 helper-copy">Use the real product name so the brief stays grounded in the app you captured.</p>
               </div>
               <div>
                 <label className="field-label">Your app name</label>
@@ -132,15 +116,14 @@ export default function UploadPage() {
                   onChange={e => setYourAppName(e.target.value)}
                   className="input"
                 />
-                <p className="mt-2 helper-copy">Leave blank to keep the reference name in the generated bundle.</p>
+                <p className="mt-2 helper-copy">Leave this blank if you want the brief to keep the original name.</p>
               </div>
             </div>
 
             <BrandingForm
               onColors={setBrandColors}
               onLogo={setLogoFile}
-              onBundleId={setBundleId}
-              bundlePlaceholder={bundlePlaceholder}
+              showBundleId={false}
             />
 
             {error && (
@@ -158,20 +141,20 @@ export default function UploadPage() {
                 disabled={!canSubmit}
                 className={canSubmit ? 'btn-primary' : 'btn'}
               >
-                {loading ? 'Uploading...' : 'Generate spec'}
+                {loading ? 'Starting...' : 'Create my brief'}
               </button>
-              <p className="helper-copy">Bundle upload, live project status, and downloadable `spec.md` package included.</p>
+              <p className="helper-copy">You’ll get a live view of the progress and a downloadable brief when it’s ready.</p>
             </div>
           </div>
 
           <aside className="space-y-4">
             <div className="panel p-5">
-              <p className="section-title">What gets generated</p>
+              <p className="section-title">What you’ll receive</p>
               <div className="mt-4 space-y-3">
                 {[
-                  ['Frontend', 'Screen-by-screen breakdown with shared component inventory.'],
-                  ['Backend', 'Research-backed stack, entities, auth, and deployment notes.'],
-                  ['Bundle', 'A stitched spec plus env and setup files ready to download.'],
+                  ['Screens', 'Screen-by-screen notes with hierarchy, patterns, states, and flow.'],
+                  ['Design language', 'Color, type, spacing, icon direction, and the details that give the app its feel.'],
+                  ['One clear brief', 'A downloadable document your team can share, discuss, and build from.'],
                 ].map(([title, copy]) => (
                   <div
                     key={title}
@@ -186,19 +169,19 @@ export default function UploadPage() {
             </div>
 
             <div className="panel-soft p-5">
-              <p className="section-title">Current defaults</p>
+              <p className="section-title">Current approach</p>
               <div className="mt-4 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="helper-copy">Theme</span>
-                  <span className="mono text-xs" style={{ color: 'var(--text-2)' }}>Dark native</span>
+                  <span className="helper-copy">Style</span>
+                  <span className="mono text-xs" style={{ color: 'var(--text-2)' }}>Dark, native feel</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="helper-copy">Frame cap</span>
-                  <span className="mono text-xs" style={{ color: 'var(--text-2)' }}>80 unique</span>
+                  <span className="helper-copy">Coverage</span>
+                  <span className="mono text-xs" style={{ color: 'var(--text-2)' }}>Up to 24 distinct moments</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="helper-copy">Output</span>
-                  <span className="mono text-xs" style={{ color: 'var(--text-2)' }}>bundle.zip</span>
+                  <span className="helper-copy">Format</span>
+                  <span className="mono text-xs" style={{ color: 'var(--text-2)' }}>One shareable brief</span>
                 </div>
               </div>
             </div>

@@ -1,0 +1,17 @@
+export const PROJECT_BASE_SELECT = [
+  'id',
+  'status',
+  'reference_app',
+  'your_app_name',
+  'brand_colors',
+  'mp4_s3_key',
+  'frontend_spec',
+  'backend_spec',
+  'frame_count',
+  'error_text',
+  'logo_s3_key',
+  'bundle_id',
+  'created_at',
+  'spec_md_s3_key',
+  'bundle_s3_key',
+].join(', ')

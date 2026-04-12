@@ -1,6 +1,6 @@
 import os
 from fastapi import BackgroundTasks, FastAPI, Request, HTTPException
-from local_worker import process_project
+from local_worker import get_project_logs, process_project
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -24,6 +24,13 @@ async def run(request: Request, background_tasks: BackgroundTasks):
 @app.get("/health")
 def health():
     return {"ok": True}
+
+
+@app.get("/logs/{project_id}")
+def logs(project_id: str, request: Request):
+    if SECRET and request.headers.get("x-webhook-secret") != SECRET:
+        raise HTTPException(403, "Forbidden")
+    return {"lines": get_project_logs(project_id)}
 
 
 if __name__ == "__main__":

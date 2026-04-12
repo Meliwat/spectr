@@ -15,25 +15,29 @@ export default async function ProjectsPage() {
     complete: 'var(--success)',
     failed: 'var(--error)',
   }
+  const statusLabel: Record<string, string> = {
+    complete: 'Ready',
+    failed: 'Needs attention',
+  }
 
   return (
     <main className="page-frame">
       <section className="page-shell">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <span className="eyebrow">Recent output</span>
+            <span className="eyebrow">Your library</span>
             <h1
               className="mt-5 text-4xl"
               style={{ color: 'var(--text)', fontWeight: 510, letterSpacing: '-0.704px', lineHeight: 1.08 }}
             >
-              Project history
+              Every brief in one place
             </h1>
             <p className="mt-3 text-sm" style={{ color: 'var(--muted)', lineHeight: 1.6 }}>
-              Every uploaded recording, its current pipeline state, and the generated bundle when complete.
+              Return to past recordings, follow what is still in motion, and reopen any brief whenever you need it.
             </p>
           </div>
           <Link href="/app" className="btn-primary">
-            New spec
+            New brief
           </Link>
         </div>
 
@@ -41,9 +45,9 @@ export default async function ProjectsPage() {
           <div className="panel mt-8 p-6">
             <div style={{ textAlign: 'center', padding: '48px 0' }}>
               <p style={{ fontSize: 32, marginBottom: 12, animation: 'ghost-float 3s ease-in-out infinite', display: 'inline-block' }}>◎</p>
-              <p style={{ color: 'var(--text-2)', fontWeight: 510, marginBottom: 6 }}>No projects yet</p>
-              <p style={{ color: 'var(--subdued)', fontSize: 14, marginBottom: 24 }}>Upload a screen recording to generate your first spec.</p>
-              <a href="/app" className="btn-primary" style={{ padding: '10px 24px', borderRadius: 6, display: 'inline-block' }}>New project →</a>
+              <p style={{ color: 'var(--text-2)', fontWeight: 510, marginBottom: 6 }}>Nothing here yet</p>
+              <p style={{ color: 'var(--subdued)', fontSize: 14, marginBottom: 24 }}>Upload a recording and we’ll turn it into your first product brief.</p>
+              <a href="/app" className="btn-primary" style={{ padding: '10px 24px', borderRadius: 6, display: 'inline-block' }}>Create a brief →</a>
             </div>
           </div>
         ) : (
@@ -60,7 +64,7 @@ export default async function ProjectsPage() {
                     {p.your_app_name || p.reference_app}
                   </p>
                   <p className="mt-1 text-xs" style={{ color: 'var(--muted)' }}>
-                    Ref: {p.reference_app} · {new Date(p.created_at).toLocaleDateString()}
+                    Inspired by {p.reference_app} · {new Date(p.created_at).toLocaleDateString()}
                   </p>
                 </div>
                 <span
@@ -71,7 +75,7 @@ export default async function ProjectsPage() {
                     border: '1px solid rgba(255,255,255,0.06)',
                   }}
                 >
-                  {p.status}
+                  {statusLabel[p.status] || 'In progress'}
                 </span>
               </Link>
             ))}

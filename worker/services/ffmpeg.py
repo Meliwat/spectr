@@ -15,6 +15,7 @@ MIN_SCENE_FRAMES = int(os.getenv("MIN_SCENE_FRAMES", "3"))
 # Videos larger than this (MB) are compressed before frame extraction.
 # Keeps processing fast and avoids Supabase storage limits on upload.
 COMPRESS_THRESHOLD_MB = float(os.getenv("COMPRESS_THRESHOLD_MB", "50"))
+FFMPEG_TIMEOUT_SECONDS = int(os.getenv("FFMPEG_TIMEOUT_SECONDS", "600"))
 
 
 def compress_video(input_path: str) -> tuple[str, bool]:
@@ -41,7 +42,12 @@ def compress_video(input_path: str) -> tuple[str, bool]:
         "-y", tmp.name,
         "-loglevel", "error",
     ]
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=FFMPEG_TIMEOUT_SECONDS)
+    except subprocess.TimeoutExpired:
+        os.unlink(tmp.name)
+        print(f"[warn] compression timed out after {FFMPEG_TIMEOUT_SECONDS}s, using original")
+        return input_path, False
     if result.returncode != 0:
         os.unlink(tmp.name)
         print(f"[warn] compression failed, using original: {result.stderr.strip()}")
@@ -70,9 +76,15 @@ def extract_frames(input_path: str, output_dir: str, fps: int = 1) -> list[str]:
         f"{output_dir}/frame_%04d.jpg",
         "-y", "-loglevel", "error",
     ]
-    result = subprocess.run(cmd_scene, capture_output=True, text=True)
-    if result.returncode != 0:
-        print(f"[warn] scene detection failed (exit {result.returncode}), falling back to 1fps: {result.stderr.strip()}")
+    try:
+        result = subprocess.run(cmd_scene, capture_output=True, text=True, timeout=FFMPEG_TIMEOUT_SECONDS)
+    except subprocess.TimeoutExpired:
+        result = None
+        print(f"[warn] scene detection timed out after {FFMPEG_TIMEOUT_SECONDS}s, falling back to 1fps")
+    if result is None or result.returncode != 0:
+        exit_code = "timeout" if result is None else result.returncode
+        stderr = "" if result is None else result.stderr.strip()
+        print(f"[warn] scene detection failed (exit {exit_code}), falling back to 1fps: {stderr}")
     else:
         frames = sorted(str(f) for f in Path(output_dir).glob("frame_*.jpg"))
         if len(frames) >= MIN_SCENE_FRAMES:
@@ -89,7 +101,10 @@ def extract_frames(input_path: str, output_dir: str, fps: int = 1) -> list[str]:
         f"{output_dir}/frame_%04d.jpg",
         "-y", "-loglevel", "error",
     ]
-    result = subprocess.run(cmd_fps, capture_output=True, text=True)
+    try:
+        result = subprocess.run(cmd_fps, capture_output=True, text=True, timeout=FFMPEG_TIMEOUT_SECONDS)
+    except subprocess.TimeoutExpired as exc:
+        raise RuntimeError(f"ffmpeg timed out after {FFMPEG_TIMEOUT_SECONDS}s during fallback extraction") from exc
     if result.returncode != 0:
         raise RuntimeError(f"ffmpeg failed: {result.stderr}")
     return sorted(str(f) for f in Path(output_dir).glob("frame_*.jpg"))

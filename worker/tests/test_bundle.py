@@ -22,6 +22,14 @@ echo "done"
 </spectr:file>
 </spectr:files>"""
 
+SPEC_WITH_PATH_FILES = """# MyApp
+
+<spectr:files>
+<spectr:file path="app/index.tsx">
+export default function Index() { return null }
+</spectr:file>
+</spectr:files>"""
+
 SPEC_WITHOUT_FILES = """# MyApp — Full Stack Specification
 
 ## App Overview
@@ -51,6 +59,12 @@ def test_extract_no_files_returns_empty():
     clean, files = extract_bundle_files(SPEC_WITHOUT_FILES)
     assert files == {}
     assert clean == SPEC_WITHOUT_FILES
+
+
+def test_extract_supports_path_attribute():
+    clean, files = extract_bundle_files(SPEC_WITH_PATH_FILES)
+    assert "app/index.tsx" in files
+    assert "<spectr:file" not in clean
 
 
 def test_create_bundle_contains_spec():
@@ -91,3 +105,11 @@ def test_create_bundle_path_traversal_sanitized():
         names = zf.namelist()
         assert "../evil.sh" not in names
         assert ".env.example" in names
+
+
+def test_create_bundle_supports_project_root_without_spec():
+    extra = {"app/index.tsx": "export default null"}
+    zip_bytes = create_bundle_zip("", extra, root_dir="sample-app", include_spec=False)
+    with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf:
+        assert "sample-app/app/index.tsx" in zf.namelist()
+        assert "sample-app/spec.md" not in zf.namelist()
