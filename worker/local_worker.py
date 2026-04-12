@@ -54,19 +54,100 @@ MAX_FRAMES = int(os.getenv("MAX_FRAMES", 80))
 BATCH_SIZE = int(os.getenv("FRAME_BATCH_SIZE", 25))
 POLL_INTERVAL = 5  # seconds between Supabase polls
 
-# Model overrides — defaults use claude CLI (subscription, no API key needed)
-# Set STITCH_MODEL=claude-haiku-4-5 to use Haiku (3-6x cheaper/faster)
+# Model used for vision batches (Haiku is fast and cheap for UI analysis)
+VISION_MODEL = os.getenv("VISION_MODEL", "claude-haiku-4-5-20251001")
+# Model used for the stitch stage (Sonnet for quality output)
 STITCH_MODEL = os.getenv("STITCH_MODEL", "claude-sonnet-4-6")
 
 _bucket_mime_ok = False  # cached after first successful allowlist check
+_anthropic_client = None  # lazy-initialised when ANTHROPIC_API_KEY is set
 
 
 # ──────────────────────────────────────────────
-# Claude CLI helpers
+# Anthropic SDK helpers (used when ANTHROPIC_API_KEY is set)
+# ──────────────────────────────────────────────
+
+def _get_anthropic():
+    global _anthropic_client
+    if _anthropic_client is None:
+        try:
+            import anthropic
+        except ImportError:
+            raise RuntimeError("anthropic package not installed — run: pip install anthropic")
+        _anthropic_client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+    return _anthropic_client
+
+
+def _sdk_extract_text(response) -> str:
+    for block in response.content:
+        if hasattr(block, "text"):
+            return block.text
+    raise RuntimeError(f"No text block in response (stop_reason={response.stop_reason})")
+
+
+def _claude_text_sdk(prompt: str, system: str = None, tools: list[str] = None,
+                     model: str = None) -> str:
+    ac = _get_anthropic()
+    model = model or STITCH_MODEL
+
+    create_kwargs: dict = {"model": model, "max_tokens": 16000}
+    if system:
+        create_kwargs["system"] = system
+    if tools and "WebSearch" in tools:
+        create_kwargs["tools"] = [{"type": "web_search_20250305", "name": "web_search"}]
+
+    messages = [{"role": "user", "content": prompt}]
+
+    for _ in range(15):  # safety cap on agentic turns
+        resp = ac.messages.create(**create_kwargs, messages=messages)
+
+        if resp.stop_reason == "end_turn":
+            return _sdk_extract_text(resp)
+
+        if resp.stop_reason == "tool_use":
+            messages.append({"role": "assistant", "content": resp.content})
+            tool_results = [
+                {"type": "tool_result", "tool_use_id": b.id, "content": ""}
+                for b in resp.content
+                if b.type == "tool_use"
+            ]
+            messages.append({"role": "user", "content": tool_results})
+        else:
+            return _sdk_extract_text(resp)
+
+    raise RuntimeError("Exceeded maximum agentic turns")
+
+
+def _claude_vision_sdk(frame_paths: list[str], text_prompt: str,
+                       system: str = None) -> str:
+    ac = _get_anthropic()
+    content = []
+    for path in frame_paths:
+        with open(path, "rb") as f:
+            data = base64.b64encode(f.read()).decode()
+        content.append({
+            "type": "image",
+            "source": {"type": "base64", "media_type": "image/jpeg", "data": data},
+        })
+    content.append({"type": "text", "text": text_prompt})
+
+    create_kwargs: dict = {
+        "model": VISION_MODEL,
+        "max_tokens": 4096,
+        "messages": [{"role": "user", "content": content}],
+    }
+    if system:
+        create_kwargs["system"] = system
+
+    resp = ac.messages.create(**create_kwargs)
+    return _sdk_extract_text(resp)
+
+
+# ──────────────────────────────────────────────
+# Claude CLI helpers (fallback when no API key)
 # ──────────────────────────────────────────────
 
 def _parse_stream_json(output: str) -> str:
-    """Extract the final text result from stream-json output lines."""
     for line in reversed(output.strip().splitlines()):
         line = line.strip()
         if not line:
@@ -81,7 +162,6 @@ def _parse_stream_json(output: str) -> str:
 
 
 def _run_claude(cmd: list[str], stdin_data: str = None, timeout: int = 300) -> str:
-    """Execute a claude CLI command and return stdout."""
     result = subprocess.run(
         cmd,
         input=stdin_data,
@@ -98,9 +178,8 @@ def _run_claude(cmd: list[str], stdin_data: str = None, timeout: int = 300) -> s
     return result.stdout.strip()
 
 
-def claude_text(prompt: str, system: str = None, tools: list[str] = None,
-                timeout: int = 300, model: str = None) -> str:
-    """Run a text-only prompt non-interactively, returns plain text."""
+def _claude_text_cli(prompt: str, system: str = None, tools: list[str] = None,
+                     timeout: int = 300, model: str = None) -> str:
     cmd = [
         "claude", "--print",
         "--output-format", "text",
@@ -118,8 +197,8 @@ def claude_text(prompt: str, system: str = None, tools: list[str] = None,
     return _run_claude(cmd, timeout=timeout)
 
 
-def claude_vision(frame_paths: list[str], text_prompt: str, system: str = None) -> str:
-    """Run a vision prompt by piping image content via stream-json stdin."""
+def _claude_vision_cli(frame_paths: list[str], text_prompt: str,
+                       system: str = None) -> str:
     content = []
     for path in frame_paths:
         with open(path, "rb") as f:
@@ -148,6 +227,23 @@ def claude_vision(frame_paths: list[str], text_prompt: str, system: str = None) 
 
     raw = _run_claude(cmd, stdin_data=stdin_message + "\n", timeout=300)
     return _parse_stream_json(raw)
+
+
+# ──────────────────────────────────────────────
+# Public Claude interface — SDK if key present, CLI otherwise
+# ──────────────────────────────────────────────
+
+def claude_text(prompt: str, system: str = None, tools: list[str] = None,
+                timeout: int = 300, model: str = None) -> str:
+    if os.getenv("ANTHROPIC_API_KEY"):
+        return _claude_text_sdk(prompt, system=system, tools=tools, model=model)
+    return _claude_text_cli(prompt, system=system, tools=tools, timeout=timeout, model=model)
+
+
+def claude_vision(frame_paths: list[str], text_prompt: str, system: str = None) -> str:
+    if os.getenv("ANTHROPIC_API_KEY"):
+        return _claude_vision_sdk(frame_paths, text_prompt, system=system)
+    return _claude_vision_cli(frame_paths, text_prompt, system=system)
 
 
 # ──────────────────────────────────────────────
@@ -288,17 +384,45 @@ def process_project(project_id: str):
                 update_project(project_id, {"frame_count": len(unique)})
                 print(f"        {len(all_frames)} total → {len(unique)} unique frames")
 
-                # ── Stage 2: Analyze frontend ────────────────────────
+                # ── Stage 2+3: Analyze frontend (backend research runs in parallel) ──
                 update_project(project_id, {"status": STATUS_ANALYZING_FRONTEND})
                 print(f"  [2/4] Analyzing UI with Claude vision...")
 
                 batches = [unique[i:i + BATCH_SIZE] for i in range(0, len(unique), BATCH_SIZE)]
-                screen_specs = run_vision_batches(
-                    batches,
+
+                # Run first screen batch synchronously — its output seeds backend research
+                first_screen = run_vision_batches(
+                    batches[:1],
                     prompt_template=PROMPT_1_USER,
                     system_prompt=PROMPT_1_SYSTEM,
                     reference_app=reference_app,
                     pass_name="screen analysis",
+                )
+
+                # Fire backend research in a thread while remaining vision batches run
+                _backend_executor = ThreadPoolExecutor(max_workers=1)
+                _backend_future = _backend_executor.submit(
+                    claude_text,
+                    PROMPT_2_USER.format(
+                        reference_app=reference_app,
+                        frontend_summary=first_screen[0][:2000],
+                    ),
+                    system=PROMPT_2_SYSTEM,
+                    tools=["WebSearch"],
+                    timeout=600,
+                )
+                print(f"        Backend research started in parallel")
+
+                # Remaining screen batches continue while backend research runs
+                rest_screen = (
+                    run_vision_batches(
+                        batches[1:],
+                        prompt_template=PROMPT_1_USER,
+                        system_prompt=PROMPT_1_SYSTEM,
+                        reference_app=reference_app,
+                        pass_name="screen analysis",
+                    )
+                    if len(batches) > 1 else []
                 )
                 design_token_specs = run_vision_batches(
                     batches,
@@ -308,6 +432,7 @@ def process_project(project_id: str):
                     pass_name="design token extraction",
                 )
 
+                screen_specs = first_screen + rest_screen
                 frontend_spec = (
                     "\n\n---\n\n".join(screen_specs)
                     + "\n\n---\n## DESIGN TOKENS\n---\n\n"
@@ -319,10 +444,21 @@ def process_project(project_id: str):
                     f"{len(design_token_specs)} design-token batch(es) extracted"
                 )
 
+                # Collect backend result (likely already done)
+                print(f"  [3/4] Collecting backend research result...")
+                _backend_spec_parallel = _backend_future.result()
+                _backend_executor.shutdown(wait=False)
+                stored_backend_spec = _backend_spec_parallel
+
             # ── Stage 3: Research backend ────────────────────────
             if stored_backend_spec:
                 backend_spec = stored_backend_spec
-                print(f"  [3/4] Using stored backend spec")
+                if not stored_frontend_spec:
+                    # Already printed above for the parallel case
+                    update_project(project_id, {"backend_spec": backend_spec})
+                    print(f"        Backend spec written")
+                else:
+                    print(f"  [3/4] Using stored backend spec")
             else:
                 update_project(project_id, {"status": STATUS_ANALYZING_BACKEND})
                 print(f"  [3/4] Researching backend architecture...")
