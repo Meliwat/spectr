@@ -19,6 +19,69 @@ For each distinct screen visible, output:
 Merge screenshots that show the same screen.
 Output screen specs only — no preamble, no closing remarks."""
 
+PROMPT_1B_SYSTEM = """You are a senior product designer and design-systems reverse-engineer.
+Analyze the provided screenshots and extract implementation-ready design tokens.
+Write like a precise DESIGN.md, not like marketing copy. Be concrete, numeric, and exhaustive."""
+
+PROMPT_1B_USER = """These {n} screenshots are from the app '{reference_app}'.
+
+Extract the app's visual system with the same level of specificity as a high-quality design reference.
+Your output should be detailed enough that a designer or frontend engineer can recreate the UI without guessing.
+
+Rules:
+- Use only what is visible in the screenshots. Do not invent features that are not supported by the frames.
+- Prefer exact values everywhere. Use concrete hex, rgba, px, rem, weights, radii, spacing, and shadow values instead of vague adjectives.
+- Use backticks for all technical values.
+- Name recurring design patterns consistently and consolidate duplicate observations instead of repeating them.
+- If a value is not explicit in the frames, provide the closest precise visual estimate rather than generic prose.
+
+Output exactly these sections:
+
+## 1. Visual Theme & Atmosphere
+- Summarize the overall look, mood, contrast model, surface treatment, and visual hierarchy.
+- Call out the dominant background/surface strategy, accent usage, and any notable motion or translucency patterns.
+
+## 2. Color Palette & Roles
+- Organize this section with clear role-based groups such as background surfaces, text/content, accent/brand, semantic/status, border/divider, and overlay.
+- For each color, format it as: **Name** (`#hex` or `rgba(...)`): exact functional role description
+- Include recurring border colors, translucent fills, overlays, and focus-ring treatments when visible.
+
+## 3. Typography Rules
+- Output a table with exactly these columns: | Role | Font | Size | Weight | Line Height | Letter Spacing | Notes |
+- Cover headline, section heading, body, label, metadata, and any mono/code usage visible in the app.
+- After the table, add a `### Principles` subsection with 3-5 bullets explaining the typography logic and hierarchy.
+
+## 4. Component Recipes
+- Organize by component families that are clearly visible, such as buttons, inputs, cards, modals, navigation, pills/badges, tables, tabs, toasts, and empty states.
+- For every component recipe, list exact values for: background, text color, border-radius, border, shadow, padding, and states (`hover`, `focus`, `disabled`) when visible or reasonably inferable from the frames.
+- Describe icon treatment, divider usage, density, and any notable layering or blur treatments when relevant.
+
+## 5. Layout Principles
+- Document the spacing scale, layout rhythm, container widths, grid behavior, gutters, section spacing, alignment patterns, and whitespace strategy.
+- Include exact numeric values where visible or strongly implied by repeated spacing relationships.
+
+## 6. Depth & Elevation
+- Output a table with exactly these columns: | Level | Treatment | Use |
+- Cover flat surfaces through overlays/modals, including borders, shadows, blur, and luminance shifts.
+- After the table, add a `### Principles` subsection with 3-5 bullets explaining how depth is communicated.
+
+## 7. Do's and Don'ts
+### Do
+- Write 5-9 bullets describing what must be preserved to maintain the design language.
+### Don't
+- Write 5-9 bullets describing which visual mistakes would break the design language.
+
+## 8. Responsive Rules
+- Output a table with exactly these columns: | Name | Width | Key Changes |
+- Document layout shifts, density changes, navigation collapse rules, and how major modules adapt across sizes.
+- After the table, add a `### Principles` subsection with 3-5 bullets explaining the responsive strategy.
+
+## 9. Quick Reference Cheat Sheet
+- Provide a compact build-oriented reference for the most important colors, typography roles, spacing tokens, component recipes, and implementation cues.
+- Make this section practical for an engineer translating the design into code.
+
+Output only the design token document — no preamble, no closing remarks."""
+
 PROMPT_2_SYSTEM = """You are a senior backend architect who specializes in reverse-engineering
 app architectures from public information.
 
@@ -64,6 +127,9 @@ Include a responsive breakpoints table with exactly these columns: | Name | Widt
 After every specification table, include a "### Principles" subsection with 3-5 bullet points explaining the design rationale behind the values.
 Include a "## Do's and Don'ts" section with two parallel bullet lists. Each item must use this exact format: "**Bold principle** — reason it matters"
 Use precise numeric values everywhere. Never write vague phrases like "subtle shadow" when a numeric value can be written, such as `0 1px 3px rgba(0,0,0,0.12)`.
+A DESIGN TOKENS block is included in the frontend input. Use it as the authoritative source for color values, typography specs, spacing, border radii, elevation, responsive rules, and component recipes in Part 1.
+Do not invent or approximate design values when the DESIGN TOKENS block provides them.
+Dissolve the DESIGN TOKENS material into the existing Part 1 sections. Do not reproduce the raw DESIGN TOKENS block as its own visible section in the final spec.
 
 After writing the full spec, detect which backend services the app requires by scanning the frontend
 and backend specs for these signals:
@@ -107,6 +173,10 @@ FRONTEND SPEC:
 
 BACKEND SPEC:
 {backend_spec}
+
+The frontend input may contain a `## DESIGN TOKENS` block extracted directly from the app frames.
+Use that block as the authoritative design source for Part 1. Map its values into the existing frontend sections,
+especially `## Design System`, and do not output a standalone `## DESIGN TOKENS` section in the final visible spec.
 
 Output exactly this structure:
 
@@ -159,8 +229,18 @@ Write 5-7 bullets explaining the visual philosophy of the reference app.
 
 # PART 3: CLAUDE CODE PROMPT
 
-Provide a complete, self-contained prompt the user can paste directly into Claude Code
-to scaffold this entire app from scratch. Reference key screens, data models, the recommended
-stack, and instruct Claude Code to build as much as possible in one shot.
+Write a concise, plain-English prompt (no code blocks, no implementation snippets)
+that a developer can paste directly into Claude Code to scaffold this app from scratch.
+
+The prompt must include:
+- One paragraph describing what the app is and what to build
+- Tech stack (bullet list, names only — no configuration or code)
+- The 5 most important screens to implement first
+- The 3 most critical API endpoints or data models
+- A single sentence on auth approach
+- A single sentence on real-time requirements (if any)
+- End with: "Use the spec.md in this project as your source of truth for all screens, components, and data models."
+
+Maximum 400 words. No code. No markdown headers inside the prompt itself — write it as flowing instructions.
 Start this section with: "Paste everything below this line into Claude Code:"
 """

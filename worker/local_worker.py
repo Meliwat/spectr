@@ -33,6 +33,7 @@ from services.dedup import deduplicate_frames
 from services.bundle import extract_bundle_files, create_bundle_zip
 from prompts import (
     PROMPT_1_SYSTEM, PROMPT_1_USER,
+    PROMPT_1B_SYSTEM, PROMPT_1B_USER,
     PROMPT_2_SYSTEM, PROMPT_2_USER,
     PROMPT_3_SYSTEM, PROMPT_3_USER,
 )
@@ -50,12 +51,14 @@ load_dotenv(Path(__file__).parent.parent / ".env")
 
 BUCKET = "spectr-uploads"
 MAX_FRAMES = int(os.getenv("MAX_FRAMES", 80))
-BATCH_SIZE = int(os.getenv("FRAME_BATCH_SIZE", 25))  # increased from 15 → 25
+BATCH_SIZE = int(os.getenv("FRAME_BATCH_SIZE", 25))
 POLL_INTERVAL = 5  # seconds between Supabase polls
 
 # Model overrides — defaults use claude CLI (subscription, no API key needed)
 # Set STITCH_MODEL=claude-haiku-4-5 to use Haiku (3-6x cheaper/faster)
-STITCH_MODEL = os.getenv("STITCH_MODEL", "claude-haiku-4-5")
+STITCH_MODEL = os.getenv("STITCH_MODEL", "claude-sonnet-4-6")
+
+_bucket_mime_ok = False  # cached after first successful allowlist check
 
 
 # ──────────────────────────────────────────────
@@ -164,6 +167,62 @@ def update_project(project_id: str, data: dict):
     get_db().table("projects").update(data).eq("id", project_id).execute()
 
 
+def ensure_bucket_allows_bundle_uploads(client) -> None:
+    """Expand the bucket MIME allowlist so bundle.zip uploads don't fail."""
+    global _bucket_mime_ok
+    if _bucket_mime_ok:
+        return
+
+    bucket = client.storage.get_bucket(BUCKET)
+    allowed = getattr(bucket, "allowed_mime_types", None)
+
+    # No allowlist means unrestricted uploads.
+    if not allowed or "application/zip" in allowed:
+        _bucket_mime_ok = True
+        return
+
+    client.storage.update_bucket(BUCKET, {
+        "allowed_mime_types": [*allowed, "application/zip"],
+    })
+    _bucket_mime_ok = True
+    print(f"        Updated bucket allowlist to include application/zip")
+
+
+def run_vision_batches(
+    batches: list[list[str]],
+    *,
+    prompt_template: str,
+    system_prompt: str,
+    reference_app: str,
+    pass_name: str,
+) -> list[str]:
+    """Run a batch-oriented vision pass with retries while preserving batch order."""
+    print(f"        {len(batches)} batch(es) × {BATCH_SIZE} frames — running {pass_name} in parallel...")
+
+    def _analyze_batch(args):
+        idx, batch = args
+        prompt = prompt_template.format(n=len(batch), reference_app=reference_app)
+        print(f"        → {pass_name} batch {idx + 1}/{len(batches)} started ({len(batch)} frames)")
+        last_exc = None
+        for attempt in range(3):
+            try:
+                result = claude_vision(batch, prompt, system=system_prompt)
+                print(f"        ✓ {pass_name} batch {idx + 1}/{len(batches)} done")
+                return result
+            except Exception as exc:
+                last_exc = exc
+                wait = 2 ** attempt
+                print(
+                    f"        ! {pass_name} batch {idx + 1}/{len(batches)} "
+                    f"attempt {attempt + 1} failed: {exc}; retrying in {wait}s"
+                )
+                time.sleep(wait)
+        raise last_exc
+
+    with ThreadPoolExecutor(max_workers=min(len(batches), 4)) as pool:
+        return list(pool.map(_analyze_batch, enumerate(batches)))
+
+
 # ──────────────────────────────────────────────
 # Pipeline
 # ──────────────────────────────────────────────
@@ -234,32 +293,31 @@ def process_project(project_id: str):
                 print(f"  [2/4] Analyzing UI with Claude vision...")
 
                 batches = [unique[i:i + BATCH_SIZE] for i in range(0, len(unique), BATCH_SIZE)]
-                print(f"        {len(batches)} batch(es) × {BATCH_SIZE} frames — running in parallel...")
+                screen_specs = run_vision_batches(
+                    batches,
+                    prompt_template=PROMPT_1_USER,
+                    system_prompt=PROMPT_1_SYSTEM,
+                    reference_app=reference_app,
+                    pass_name="screen analysis",
+                )
+                design_token_specs = run_vision_batches(
+                    batches,
+                    prompt_template=PROMPT_1B_USER,
+                    system_prompt=PROMPT_1B_SYSTEM,
+                    reference_app=reference_app,
+                    pass_name="design token extraction",
+                )
 
-                # Run all vision batches concurrently (order preserved by pool.map)
-                def _analyze_batch(args):
-                    idx, batch = args
-                    prompt = PROMPT_1_USER.format(n=len(batch), reference_app=reference_app)
-                    print(f"        → Batch {idx + 1}/{len(batches)} started ({len(batch)} frames)")
-                    last_exc = None
-                    for attempt in range(3):
-                        try:
-                            result = claude_vision(batch, prompt, system=PROMPT_1_SYSTEM)
-                            print(f"        ✓ Batch {idx + 1}/{len(batches)} done")
-                            return result
-                        except Exception as exc:
-                            last_exc = exc
-                            wait = 2 ** attempt
-                            print(f"        ! Batch {idx + 1}/{len(batches)} attempt {attempt + 1} failed: {exc}; retrying in {wait}s")
-                            time.sleep(wait)
-                    raise last_exc
-
-                with ThreadPoolExecutor(max_workers=min(len(batches), 4)) as pool:
-                    screen_specs = list(pool.map(_analyze_batch, enumerate(batches)))
-
-                frontend_spec = "\n\n---\n\n".join(screen_specs)
+                frontend_spec = (
+                    "\n\n---\n\n".join(screen_specs)
+                    + "\n\n---\n## DESIGN TOKENS\n---\n\n"
+                    + "\n\n---\n\n".join(design_token_specs)
+                )
                 update_project(project_id, {"frontend_spec": frontend_spec})
-                print(f"        {len(screen_specs)} batch(es) analyzed (parallel)")
+                print(
+                    f"        {len(screen_specs)} screen batch(es) analyzed and "
+                    f"{len(design_token_specs)} design-token batch(es) extracted"
+                )
 
             # ── Stage 3: Research backend ────────────────────────
             if stored_backend_spec:
@@ -294,12 +352,10 @@ def process_project(project_id: str):
             frontend_spec=frontend_spec,
             backend_spec=backend_spec,
         )
-        raw_spec = claude_text(prompt, system=PROMPT_3_SYSTEM, timeout=900, model=STITCH_MODEL)
+        raw_spec = claude_text(prompt, system=PROMPT_3_SYSTEM, timeout=1200, model=STITCH_MODEL)
 
-        # Extract <spectr:file> blocks and strip them from the displayed spec
         clean_spec, bundle_files = extract_bundle_files(raw_spec)
 
-        # Upload clean spec.md
         spec_key = f"{project_id}/spec.md"
         client.storage.from_(BUCKET).upload(
             path=spec_key,
@@ -307,9 +363,9 @@ def process_project(project_id: str):
             file_options={"content-type": "text/markdown", "upsert": "true"},
         )
 
-        # Build and upload bundle.zip (spec.md + .env.example + setup.sh)
         zip_bytes = create_bundle_zip(clean_spec, bundle_files)
         bundle_key = f"{project_id}/bundle.zip"
+        ensure_bucket_allows_bundle_uploads(client)
         client.storage.from_(BUCKET).upload(
             path=bundle_key,
             file=zip_bytes,

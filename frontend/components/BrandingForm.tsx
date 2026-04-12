@@ -2,9 +2,10 @@
 import { useState } from 'react'
 
 interface Props {
-  onColors: (c: Record<string, string>) => void
+  onColors: (c: Record<string, string> | null) => void
   onLogo: (f: File | null) => void
   onBundleId: (s: string) => void
+  bundlePlaceholder: string
 }
 
 const DEFAULT_COLORS = {
@@ -14,7 +15,7 @@ const DEFAULT_COLORS = {
   text: '#f7f8f8',
 }
 
-export default function BrandingForm({ onColors, onLogo, onBundleId }: Props) {
+export default function BrandingForm({ onColors, onLogo, onBundleId, bundlePlaceholder }: Props) {
   const [open, setOpen] = useState(false)
   const [colors, setColors] = useState(DEFAULT_COLORS)
 
@@ -29,27 +30,41 @@ export default function BrandingForm({ onColors, onLogo, onBundleId }: Props) {
       <button
         type="button"
         onClick={() => setOpen(o => !o)}
-        className="text-sm flex items-center gap-2"
-        style={{ color: 'var(--muted)', fontWeight: 510 }}
+        className="btn"
+        style={{ paddingInline: 14 }}
       >
-        <span style={{ fontSize: 9, color: 'var(--subdued)' }}>{open ? '▼' : '▶'}</span>
-        Branding (optional)
+        <span
+          aria-hidden="true"
+          style={{
+            display: 'inline-flex',
+            color: 'var(--subdued)',
+            transform: open ? 'rotate(90deg)' : 'rotate(0deg)',
+            transition: 'transform 0.2s ease',
+          }}
+        >
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M4.5 2.25 8.25 6 4.5 9.75" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
+        Customize
       </button>
 
       {open && (
         <div
-          className="mt-4 space-y-6 p-5"
+          className="panel mt-4 space-y-6 p-5"
           style={{
-            background: 'rgba(255,255,255,0.02)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            borderRadius: 8,
+            borderRadius: 16,
           }}
         >
           <div>
-            <p className="text-xs mb-4" style={{ color: 'var(--muted)', fontWeight: 510 }}>Brand colors</p>
+            <p className="section-title">Brand colors</p>
             <div className="grid grid-cols-2 gap-4">
               {Object.entries(colors).map(([key, val]) => (
-                <div key={key} className="flex items-center gap-3">
+                <div
+                  key={key}
+                  className="flex items-center gap-3 rounded-xl px-3 py-3"
+                  style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-subtle)' }}
+                >
                   <input
                     type="color"
                     value={val}
@@ -67,21 +82,21 @@ export default function BrandingForm({ onColors, onLogo, onBundleId }: Props) {
           </div>
 
           <div>
-            <label className="block text-xs mb-2" style={{ color: 'var(--muted)', fontWeight: 510 }}>Logo (PNG or SVG)</label>
+            <label className="field-label">Logo (PNG or SVG)</label>
             <input
               type="file"
               accept="image/png,image/svg+xml"
               onChange={e => onLogo(e.target.files?.[0] || null)}
-              className="text-xs w-full"
+              className="input pt-3"
               style={{ color: 'var(--muted)' }}
             />
           </div>
 
           <div>
-            <label className="block text-xs mb-2" style={{ color: 'var(--muted)', fontWeight: 510 }}>Bundle ID</label>
+            <label className="field-label">Bundle ID</label>
             <input
               type="text"
-              placeholder="com.yourco.appname"
+              placeholder={bundlePlaceholder}
               onChange={e => onBundleId(e.target.value)}
               className="input text-sm"
             />

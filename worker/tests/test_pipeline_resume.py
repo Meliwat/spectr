@@ -60,6 +60,18 @@ def _make_db_client(project_data: dict):
 
     # Storage upload
     client.storage.from_.return_value.upload.return_value = MagicMock()
+    bucket = MagicMock()
+    bucket.public = False
+    bucket.file_size_limit = 524288000
+    bucket.allowed_mime_types = [
+        "video/mp4",
+        "video/quicktime",
+        "image/png",
+        "image/svg+xml",
+        "text/markdown",
+        "application/zip",
+    ]
+    client.storage.get_bucket.return_value = bucket
 
     return client
 
@@ -83,6 +95,10 @@ def _base_project(**kwargs):
 # ---------------------------------------------------------------------------
 
 class TestPipelineResume(unittest.TestCase):
+
+    def setUp(self):
+        # Reset the module-level bucket-MIME cache so each test gets a clean slate.
+        local_worker._bucket_mime_ok = False
 
     # ------------------------------------------------------------------
     # 1. Both specs in DB → only stitching runs; extraction is skipped.
@@ -177,6 +193,8 @@ class TestPipelineResume(unittest.TestCase):
         # Storage download must return bytes
         client.storage.from_.return_value.download.return_value = b"fake-mp4-bytes"
 
+        mock_vision.side_effect = ["## Screen Batch", "## Design Tokens Batch"]
+
         # claude_text: first call = research, second = stitch
         mock_claude_text.side_effect = ["## Backend", "# Spec"]
 
@@ -185,8 +203,39 @@ class TestPipelineResume(unittest.TestCase):
         # All stages must have run
         mock_extract.assert_called_once()
         mock_dedup.assert_called_once()
-        mock_vision.assert_called()    # at least one batch
+        self.assertEqual(mock_vision.call_count, 2)
         self.assertEqual(mock_claude_text.call_count, 2)
+
+        first_vision_call = mock_vision.call_args_list[0]
+        second_vision_call = mock_vision.call_args_list[1]
+        expected_frames = ["/tmp/f/frame_0001.jpg"]
+        self.assertEqual(first_vision_call.args[0], expected_frames)
+        self.assertEqual(second_vision_call.args[0], expected_frames)
+        self.assertEqual(
+            first_vision_call.args[1],
+            local_worker.PROMPT_1_USER.format(n=1, reference_app="TestApp"),
+        )
+        self.assertEqual(
+            second_vision_call.args[1],
+            local_worker.PROMPT_1B_USER.format(n=1, reference_app="TestApp"),
+        )
+        self.assertEqual(first_vision_call.kwargs["system"], local_worker.PROMPT_1_SYSTEM)
+        self.assertEqual(second_vision_call.kwargs["system"], local_worker.PROMPT_1B_SYSTEM)
+
+        first_text_call = mock_claude_text.call_args_list[0]
+        self.assertEqual(first_text_call.kwargs["system"], local_worker.PROMPT_2_SYSTEM)
+        self.assertEqual(first_text_call.kwargs["tools"], ["WebSearch"])
+
+        frontend_updates = [
+            c.args[0]["frontend_spec"]
+            for c in client.table.return_value.update.call_args_list
+            if "frontend_spec" in c.args[0]
+        ]
+        self.assertEqual(len(frontend_updates), 1)
+        self.assertEqual(
+            frontend_updates[0],
+            "## Screen Batch\n\n---\n## DESIGN TOKENS\n---\n\n## Design Tokens Batch",
+        )
 
         update_calls = client.table.return_value.update.call_args_list
         statuses_set = [c[0][0].get("status") for c in update_calls if "status" in c[0][0]]
@@ -195,6 +244,40 @@ class TestPipelineResume(unittest.TestCase):
         self.assertIn("analyzing_backend", statuses_set)
         self.assertIn("stitching", statuses_set)
         self.assertIn("complete", statuses_set)
+
+    @patch.object(local_worker, "get_db")
+    @patch.object(local_worker, "claude_text", return_value="some text")
+    @patch.object(local_worker, "claude_vision", return_value="frontend batch result")
+    @patch.object(local_worker, "extract_frames", return_value=["/tmp/f/frame_0001.jpg"])
+    @patch.object(local_worker, "deduplicate_frames", return_value=["/tmp/f/frame_0001.jpg"])
+    def test_bundle_upload_updates_bucket_allowlist_for_zip(
+        self, mock_dedup, mock_extract, mock_vision, mock_claude_text, mock_get_db
+    ):
+        project_data = _base_project(
+            frontend_spec=None,
+            backend_spec=None,
+            mp4_s3_key="proj/video.mp4",
+        )
+        client = _make_db_client(project_data)
+        client.storage.from_.return_value.download.return_value = b"fake-mp4-bytes"
+        client.storage.get_bucket.return_value.allowed_mime_types = [
+            "video/mp4",
+            "video/quicktime",
+            "image/png",
+            "image/svg+xml",
+            "text/markdown",
+        ]
+        mock_get_db.return_value = client
+        mock_vision.side_effect = ["## Screen Batch", "## Design Tokens Batch"]
+        mock_claude_text.side_effect = ["## Backend", "# Spec"]
+
+        process_project("proj-uuid-zip-fix")
+
+        client.storage.update_bucket.assert_called_once()
+        bucket_id, options = client.storage.update_bucket.call_args.args
+        self.assertEqual(bucket_id, "spectr-uploads")
+        self.assertEqual(list(options.keys()), ["allowed_mime_types"])
+        self.assertIn("application/zip", options["allowed_mime_types"])
 
 
 if __name__ == "__main__":
