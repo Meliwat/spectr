@@ -1,5 +1,5 @@
 # Spectr
-
+Demo Link: https://youtu.be/Vj8HwvQLo9Q
 > See an app. Ship an app.
 
 Upload a screen recording of any app + its name.
