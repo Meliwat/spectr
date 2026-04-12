@@ -51,8 +51,8 @@ export const STAGE_LABELS: Record<ProjectStatus, string> = {
   bundling: 'Wrapping everything up...',
   analyzing_frontend: 'Reading the screens and the feel of the product...',
   analyzing_backend: 'Tracing how the experience is put together...',
-  stitching: 'Writing your product brief...',
-  complete: 'Your brief is ready.',
+  stitching: 'Writing your product spec...',
+  complete: 'Your spec is ready.',
   failed: 'This run hit a snag.',
 }
 
@@ -115,7 +115,7 @@ export const STAGE_SUBSTEPS: Partial<Record<ProjectStatus, string[]>> = {
   ],
   stitching: [
     'Bringing every screen into one clear story...',
-    'Weaving the visual language into the brief...',
+    'Weaving the visual language into the spec...',
     'Shaping the final document you can share...',
   ],
   analyzing_screens: [

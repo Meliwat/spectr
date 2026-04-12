@@ -3,7 +3,6 @@ import { useState } from 'react'
 
 interface Props {
   onColors: (c: Record<string, string> | null) => void
-  onLogo: (f: File | null) => void
   onBundleId?: (s: string) => void
   bundlePlaceholder?: string
   showBundleId?: boolean
@@ -18,7 +17,6 @@ const DEFAULT_COLORS = {
 
 export default function BrandingForm({
   onColors,
-  onLogo,
   onBundleId,
   bundlePlaceholder = '',
   showBundleId = true,
@@ -86,17 +84,6 @@ export default function BrandingForm({
                 </div>
               ))}
             </div>
-          </div>
-
-          <div>
-            <label className="field-label">Logo (PNG or SVG)</label>
-            <input
-              type="file"
-              accept="image/png,image/svg+xml"
-              onChange={e => onLogo(e.target.files?.[0] || null)}
-              className="input pt-3"
-              style={{ color: 'var(--muted)' }}
-            />
           </div>
 
           {showBundleId && onBundleId && (

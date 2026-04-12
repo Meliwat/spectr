@@ -13,7 +13,6 @@ export default function UploadPage() {
   const [referenceApp, setReferenceApp] = useState('')
   const [yourAppName, setYourAppName] = useState('')
   const [brandColors, setBrandColors] = useState<Record<string, string> | null>(null)
-  const [logoFile, setLogoFile] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -25,9 +24,7 @@ export default function UploadPage() {
     setError('')
     try {
       const projectId = crypto.randomUUID()
-
       const mp4Key = `${projectId}/input.mp4`
-      let logoKey: string | null = null
 
       const uploads: Promise<unknown>[] = [
         supabase.storage
@@ -35,16 +32,6 @@ export default function UploadPage() {
           .upload(mp4Key, mp4File, { contentType: 'video/mp4', upsert: true })
           .then(({ error: err }) => { if (err) throw err }),
       ]
-      if (logoFile) {
-        const ext = logoFile.name.split('.').pop()
-        logoKey = `${projectId}/logo.${ext}`
-        uploads.push(
-          supabase.storage
-            .from('spectr-uploads')
-            .upload(logoKey, logoFile, { contentType: logoFile.type, upsert: true })
-            .then(({ error: err }) => { if (err) throw err }),
-        )
-      }
       await Promise.all(uploads)
 
       const res = await fetch('/api/projects', {
@@ -56,7 +43,7 @@ export default function UploadPage() {
           reference_app: referenceApp.trim(),
           your_app_name: yourAppName.trim() || referenceApp.trim(),
           brand_colors: brandColors,
-          logo_s3_key: logoKey,
+          logo_s3_key: null,
           bundle_id: null,
         }),
       })
@@ -76,17 +63,17 @@ export default function UploadPage() {
       <section className="page-shell">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_320px]">
           <div className="panel-strong p-6 sm:p-8">
-            <span className="eyebrow">New brief</span>
+            <span className="eyebrow">New blueprint</span>
             <h1
               className="mt-6 text-4xl sm:text-5xl"
               style={{ color: 'var(--text)', fontWeight: 510, letterSpacing: '-0.704px', lineHeight: 1.04 }}
             >
               Turn a recording
               <br />
-              into a living brief.
+              into a living blueprint.
             </h1>
             <p className="mt-4 max-w-2xl text-sm sm:text-base" style={{ color: 'var(--muted)', letterSpacing: '-0.165px', lineHeight: 1.65 }}>
-              Upload a mobile app recording, name the product that inspired it, and Spectr will turn what it sees into a detailed brief your team can read, share, and build from.
+              Upload a mobile app recording, name the product that inspired it, and Spectr will turn what it sees into a detailed blueprint your agents can read, share, and build from.
             </p>
 
             <div className="mt-8">
@@ -105,7 +92,7 @@ export default function UploadPage() {
                   onChange={e => setReferenceApp(e.target.value)}
                   className="input"
                 />
-                <p className="mt-2 helper-copy">Use the real product name so the brief stays grounded in the app you captured.</p>
+                <p className="mt-2 helper-copy">Use the real product name so the blueprint stays grounded in the app you captured.</p>
               </div>
               <div>
                 <label className="field-label">Your app name</label>
@@ -116,13 +103,12 @@ export default function UploadPage() {
                   onChange={e => setYourAppName(e.target.value)}
                   className="input"
                 />
-                <p className="mt-2 helper-copy">Leave this blank if you want the brief to keep the original name.</p>
+                <p className="mt-2 helper-copy">Leave this blank if you want the blueprint to keep the original name.</p>
               </div>
             </div>
 
             <BrandingForm
               onColors={setBrandColors}
-              onLogo={setLogoFile}
               showBundleId={false}
             />
 
@@ -141,9 +127,9 @@ export default function UploadPage() {
                 disabled={!canSubmit}
                 className={canSubmit ? 'btn-primary' : 'btn'}
               >
-                {loading ? 'Starting...' : 'Create my brief'}
+                {loading ? 'Starting...' : 'Create my blueprint'}
               </button>
-              <p className="helper-copy">You’ll get a live view of the progress and a downloadable brief when it’s ready.</p>
+              <p className="helper-copy">You’ll get a live view of the progress and a downloadable spec when it’s ready.</p>
             </div>
           </div>
 
@@ -154,7 +140,7 @@ export default function UploadPage() {
                 {[
                   ['Screens', 'Screen-by-screen notes with hierarchy, patterns, states, and flow.'],
                   ['Design language', 'Color, type, spacing, icon direction, and the details that give the app its feel.'],
-                  ['One clear brief', 'A downloadable document your team can share, discuss, and build from.'],
+                  ['One clear blueprint', 'A structured plan your agents can share, discuss, and build from.'],
                 ].map(([title, copy]) => (
                   <div
                     key={title}
@@ -181,7 +167,7 @@ export default function UploadPage() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="helper-copy">Format</span>
-                  <span className="mono text-xs" style={{ color: 'var(--text-2)' }}>One shareable brief</span>
+                  <span className="mono text-xs" style={{ color: 'var(--text-2)' }}>Blueprint in, spec out</span>
                 </div>
               </div>
             </div>

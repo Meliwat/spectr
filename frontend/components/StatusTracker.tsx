@@ -25,9 +25,9 @@ const LEGACY_PIPELINE_STAGES: TrackerStage[] = [
   { key: 'selecting_moments', label: 'Selection', start: 20, end: 28, stageLabel: 'Keeping the clearest distinct moments...' },
   { key: 'analyzing_screens', label: 'Screens', start: 28, end: 48, stageLabel: 'Reading screen layouts and repeated patterns...' },
   { key: 'analyzing_design', label: 'Style', start: 48, end: 64, stageLabel: 'Capturing color, type, spacing, and components...' },
-  { key: 'preparing_brief', label: 'Prep', start: 64, end: 70, stageLabel: 'Organizing the brief before writing...' },
-  { key: 'writing_brief', label: 'Writing', start: 70, end: 97, stageLabel: 'Writing the brief section by section...' },
-  { key: 'saving', label: 'Saving', start: 97, end: 100, stageLabel: 'Saving your brief...' },
+  { key: 'preparing_brief', label: 'Prep', start: 64, end: 70, stageLabel: 'Organizing the spec before writing...' },
+  { key: 'writing_brief', label: 'Writing', start: 70, end: 97, stageLabel: 'Writing the spec section by section...' },
+  { key: 'saving', label: 'Saving', start: 97, end: 100, stageLabel: 'Saving your spec...' },
 ] as const
 
 const SECTION_TITLES: Record<string, string> = {
@@ -404,7 +404,7 @@ function buildLegacyLiveMetrics(
       return {
         progress: getLegacyStage('preparing_brief').end,
         etaSeconds: STAGE_ETA_SECONDS.stitching ?? 0,
-        substep: 'Setting up the brief structure for section-by-section writing',
+        substep: 'Setting up the spec structure for section-by-section writing',
         stageKey: 'preparing_brief',
         stageLabel: getLegacyStage('preparing_brief').stageLabel,
       }
@@ -427,7 +427,7 @@ function buildLegacyLiveMetrics(
         return {
           progress: 98.5,
           etaSeconds: 4,
-          substep: 'Saving the brief to storage',
+          substep: 'Saving the spec to storage',
           stageKey: 'saving',
           stageLabel: getLegacyStage('saving').stageLabel,
         }
@@ -447,7 +447,7 @@ function buildLegacyLiveMetrics(
     return {
       progress: getLegacyStage('preparing_brief').start + 2,
       etaSeconds: STAGE_ETA_SECONDS.stitching ?? 0,
-      substep: 'Preparing the brief for writing',
+      substep: 'Preparing the spec for writing',
       stageKey: 'preparing_brief',
       stageLabel: getLegacyStage('preparing_brief').stageLabel,
     }

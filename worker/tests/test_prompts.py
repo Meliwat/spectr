@@ -4,13 +4,6 @@ from prompts import (
     SPEC_SECTION_SYSTEM,
     SPEC_SECTION_DEFINITIONS,
     build_spec_section_prompt,
-    SCREEN_JSON_USER,
-    TRANSITION_ANALYSIS_USER,
-    MOBILE_FRONTEND_SYSTEM,
-    MOBILE_FRONTEND_USER,
-    MOBILE_VIEW_MODEL_SYSTEM,
-    MOBILE_VIEW_MODEL_USER,
-    MOBILE_REPAIR_USER,
 )
 
 
@@ -20,6 +13,11 @@ def test_prompt_3_system_uses_design_tokens_as_authoritative_source():
     assert "Do not reproduce the raw DESIGN TOKENS block" in PROMPT_3_SYSTEM
     assert "SVG icons or SVG" in PROMPT_3_SYSTEM
     assert "React Native mobile app" in PROMPT_3_SYSTEM
+    assert "Expo SDK 54" in PROMPT_3_SYSTEM
+    assert "Expo Go compatibility" in PROMPT_3_SYSTEM
+    assert "npx expo install" in PROMPT_3_SYSTEM
+    assert "iPhone 15" in PROMPT_3_SYSTEM
+    assert "merchant logos" in PROMPT_3_SYSTEM
 
 
 def test_prompt_3_user_consumes_design_tokens_without_visible_section():
@@ -27,6 +25,13 @@ def test_prompt_3_user_consumes_design_tokens_without_visible_section():
     assert "do not output a standalone `## DESIGN TOKENS` section" in PROMPT_3_USER
     assert "local SVG" in PROMPT_3_USER
     assert "React Native mobile app for phones" in PROMPT_3_USER
+    assert "Expo SDK 54" in PROMPT_3_USER
+    assert "React Navigation" in PROMPT_3_USER
+    assert "Zustand" in PROMPT_3_USER
+    assert "react-native-svg" in PROMPT_3_USER
+    assert "npx expo install" in PROMPT_3_USER
+    assert "iPhone 15" in PROMPT_3_USER
+    assert "merchant logos" in PROMPT_3_USER
     assert "\n## DESIGN TOKENS\n" not in PROMPT_3_USER
 
 
@@ -65,38 +70,23 @@ def test_section_system_uses_design_tokens_as_authoritative_source():
     assert "Do not include any other top-level `##` sections." in SPEC_SECTION_SYSTEM
     assert "SVG icons or SVG" in SPEC_SECTION_SYSTEM
     assert "React Native mobile app" in SPEC_SECTION_SYSTEM
+    assert "Expo SDK 54" in SPEC_SECTION_SYSTEM
+    assert "Expo Go compatibility" in SPEC_SECTION_SYSTEM
+    assert "npx expo install" in SPEC_SECTION_SYSTEM
+    assert "iPhone 15" in SPEC_SECTION_SYSTEM
+    assert "merchant logos" in SPEC_SECTION_SYSTEM
 
 
-def test_transition_prompt_requires_json_only():
-    assert "Return valid JSON only" in TRANSITION_ANALYSIS_USER
-    assert "No markdown" in TRANSITION_ANALYSIS_USER
-    assert "READ | CREATE | UPDATE | DELETE" in TRANSITION_ANALYSIS_USER
+def test_spec_sections_require_expo_and_branding_constraints():
+    app_overview = next(section for section in SPEC_SECTION_DEFINITIONS if section["key"] == "app_overview")
+    implementation_notes = next(section for section in SPEC_SECTION_DEFINITIONS if section["key"] == "implementation_notes")
+    claude_code_prompt = next(section for section in SPEC_SECTION_DEFINITIONS if section["key"] == "claude_code_prompt")
 
+    assert "iPhone 15" in app_overview["required_substrings"]
+    assert "Expo SDK 54" in implementation_notes["required_substrings"]
+    assert "Expo Go" in implementation_notes["required_substrings"]
+    assert "merchant logos" in implementation_notes["required_substrings"]
+    assert "Expo SDK 54" in claude_code_prompt["required_substrings"]
+    assert "react-native-svg" in claude_code_prompt["required_substrings"]
+    assert "npx expo install" in claude_code_prompt["required_substrings"]
 
-def test_structured_prompts_can_be_formatted_without_key_errors():
-    rendered_screen = SCREEN_JSON_USER.format(n=2, reference_app="DoorDash")
-    rendered_transition = TRANSITION_ANALYSIS_USER.format(reference_app="DoorDash")
-    assert '"screens"' in rendered_screen
-    assert '"from_screen"' in rendered_transition
-
-
-def test_mobile_frontend_prompt_forbids_web_only_behavior():
-    assert "demo mode" in MOBILE_FRONTEND_SYSTEM
-    assert "Do not use web-only APIs" in MOBILE_FRONTEND_SYSTEM
-    assert "Expo Router" in MOBILE_FRONTEND_SYSTEM
-    assert "src/features/{route_key}" in MOBILE_FRONTEND_USER
-    assert "Import scaffold-owned files with the `@/` alias" in MOBILE_FRONTEND_USER
-    assert "src/lib/view-models" in MOBILE_FRONTEND_USER
-
-
-def test_mobile_view_model_prompt_requires_ui_facing_contract():
-    assert "UI-facing data contract" in MOBILE_VIEW_MODEL_SYSTEM
-    assert "Generate `src/lib/view-models.ts`" in MOBILE_VIEW_MODEL_USER
-    assert "Screens will import from `@/src/lib/view-models` only." in MOBILE_VIEW_MODEL_USER
-    assert "Available Scaffold API" in MOBILE_VIEW_MODEL_USER
-
-
-def test_mobile_repair_prompt_limits_scope():
-    assert "Fix only the files listed below" in MOBILE_REPAIR_USER
-    assert "Available Scaffold API" in MOBILE_REPAIR_USER
-    assert "src/lib/view-models" in MOBILE_REPAIR_USER

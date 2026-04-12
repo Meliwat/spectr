@@ -12,7 +12,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: 'Spectr — See an app. Ship an app.',
-  description: 'Upload a mobile app recording and receive a beautifully structured product brief with screens, flow, and design language.',
+  description: 'Upload a mobile app recording and receive a beautifully structured product blueprint with screens, flow, and design language.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -44,8 +44,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 />
               </Link>
               <div className="site-nav-links">
-                <Link href="/app/projects" className="site-link">Briefs</Link>
-                <Link href="/app" className="btn-primary nav-cta">New brief</Link>
+                <Link href="/app/projects" className="site-link">Specs</Link>
+                <Link href="/app" className="btn-primary nav-cta">New blueprint</Link>
               </div>
             </div>
           </nav>

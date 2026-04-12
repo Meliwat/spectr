@@ -14,6 +14,29 @@ Apply all branding overrides. Be thorough — this file is the sole frontend
 source of truth a developer needs.
 Make it explicit somewhere in the visible spec that the intended build target
 is a React Native mobile app for iPhone and Android phones, not a desktop site.
+Treat the base-model iPhone 15 viewport as the primary sizing reference for
+layout decisions unless the recording clearly proves otherwise.
+Preferred implementation stack is Expo SDK 54 with React Native, TypeScript,
+React Navigation, Zustand, and react-native-svg.
+Prefer React Native Animated and FlatList by default. Use
+react-native-reanimated or FlashList only when clearly necessary.
+Install Expo-native packages only with `npx expo install` and use only
+Expo-compatible package versions for the installed SDK.
+Do not recommend custom Babel or native configuration unless it is required by
+the current official Expo docs.
+Prioritize Expo Go compatibility and runtime stability over exact animation
+fidelity.
+If a requested animation or library setup risks runtime issues, simplify it
+instead of leaving a broken app.
+If the source material mentions older or ambiguous versions such as
+"Reanimated 2", interpret that as the current Expo-compatible version rather
+than a legacy setup.
+Do not instruct the developer to run iOS build, simulator, or npm commands at
+the end; assume final app execution will be done manually by the user.
+Branding overrides should only change brand-owned colors, app naming, and any
+explicitly provided replacement logo. Preserve universal third-party imagery
+such as restaurant photography, merchant banners, and merchant logos unless a
+replacement logo is explicitly provided for a brand-owned surface.
 
 Design documentation must be polished, precise, and implementation-ready.
 Every color must include its hex or rgba value in backticks.
@@ -66,7 +89,7 @@ Output exactly this structure:
 
 ## App Overview
 Summarize the product, target user, and core value proposition in 2-4 concise paragraphs.
-Explicitly state in this section that the intended implementation target is a React Native mobile app for phones.
+Explicitly state in this section that the intended implementation target is a React Native mobile app for phones and that the baseline sizing reference is the base-model iPhone 15.
 
 ## Navigation Structure
 Document the primary navigation model, route hierarchy, tab structure, and cross-screen movement patterns.
@@ -119,18 +142,24 @@ Use two parallel bullet lists. Every item must follow this format:
 Write 5-7 bullets explaining the visual philosophy of the reference app.
 
 ## Frontend Implementation Notes
-Give concise, opinionated notes on information architecture, route priorities, shared component extraction, and the first frontend build order.
+Give concise, opinionated notes on information architecture, route priorities, shared component extraction, the first frontend build order, Expo Go safety, iPhone 15 baseline sizing, package-install rules, and branding-override boundaries.
 
 ## Claude Code Prompt
 Write a concise, plain-English prompt that a developer can paste directly into Claude Code to scaffold the frontend from scratch.
 
 The prompt must include:
 - One paragraph describing what the app is and what to build
-- The preferred frontend stack (bullet list, names only — no configuration or code)
+- The preferred frontend stack as exactly these bullet items: Expo SDK 54, React Native, TypeScript, React Navigation, Zustand, react-native-svg
 - The 5 most important screens to implement first
 - The shared components that must exist from day one
 - A single sentence explicitly stating that this should be built as a React Native mobile app for iPhone and Android phones
 - A single sentence requiring local SVG icons/illustrations instead of emoji assets
+- A single sentence saying to prefer React Native Animated and FlatList by default, using react-native-reanimated or FlashList only when clearly necessary
+- A single sentence saying Expo-native packages must be installed only with `npx expo install` and only at Expo-compatible versions for SDK 54
+- A single sentence saying to prioritize Expo Go compatibility and runtime stability over exact animation fidelity and to simplify risky animation setups if needed
+- A single sentence saying not to run iOS build, simulator, or npm commands at the end because final execution will be done manually by the user
+- A single sentence saying the baseline device target is the base-model iPhone 15
+- A single sentence saying branding overrides should only change colors and an explicitly provided replacement logo, while preserving universal restaurant photos, merchant banners, and merchant logos
 - A single sentence on local demo data / mocked data expectations
 - End with: "Use the spec.md in this project as your source of truth for all screens, components, and visual rules."
 
@@ -153,6 +182,29 @@ Apply all branding overrides. Be thorough — this section must be detailed
 enough to stand on its own inside the final spec.
 Make it explicit somewhere in the visible spec that the intended build target
 is a React Native mobile app for iPhone and Android phones, not a desktop site.
+Treat the base-model iPhone 15 viewport as the primary sizing reference for
+layout decisions unless the recording clearly proves otherwise.
+Preferred implementation stack is Expo SDK 54 with React Native, TypeScript,
+React Navigation, Zustand, and react-native-svg.
+Prefer React Native Animated and FlatList by default. Use
+react-native-reanimated or FlashList only when clearly necessary.
+Install Expo-native packages only with `npx expo install` and use only
+Expo-compatible package versions for the installed SDK.
+Do not recommend custom Babel or native configuration unless it is required by
+the current official Expo docs.
+Prioritize Expo Go compatibility and runtime stability over exact animation
+fidelity.
+If a requested animation or library setup risks runtime issues, simplify it
+instead of leaving a broken app.
+If the source material mentions older or ambiguous versions such as
+"Reanimated 2", interpret that as the current Expo-compatible version rather
+than a legacy setup.
+Do not instruct the developer to run iOS build, simulator, or npm commands at
+the end; assume final app execution will be done manually by the user.
+Branding overrides should only change brand-owned colors, app naming, and any
+explicitly provided replacement logo. Preserve universal third-party imagery
+such as restaurant photography, merchant banners, and merchant logos unless a
+replacement logo is explicitly provided for a brand-owned surface.
 
 Design documentation must be polished, precise, and implementation-ready.
 Every color must include its hex or rgba value in backticks.
@@ -179,7 +231,7 @@ SPEC_SECTION_DEFINITIONS = (
         "key": "app_overview",
         "filename": "01-app-overview.md",
         "top_level_headings": ("## App Overview",),
-        "required_substrings": ("React Native",),
+        "required_substrings": ("React Native", "iPhone 15"),
         "instructions": """Output exactly one top-level section:
 
 ## App Overview
@@ -187,8 +239,9 @@ SPEC_SECTION_DEFINITIONS = (
 Summarize the product, target user, and core value proposition in 2-4 concise
 paragraphs. The opening paragraph must explicitly state that the intended
 implementation target is a React Native mobile app for iPhone and Android
-phones. Keep this section tightly focused on the user-facing frontend
-experience and the product promise visible in the recording.""",
+phones and that the base-model iPhone 15 is the primary sizing reference.
+Keep this section tightly focused on the user-facing frontend experience and
+the product promise visible in the recording.""",
     },
     {
         "key": "navigation_structure",
@@ -306,14 +359,26 @@ Write 5-7 bullets explaining the visual philosophy of the reference app.""",
         "key": "implementation_notes",
         "filename": "06-frontend-implementation-notes.md",
         "top_level_headings": ("## Frontend Implementation Notes",),
-        "required_substrings": (),
+        "required_substrings": ("Expo SDK 54", "Expo Go", "Animated", "FlatList", "npx expo install", "iPhone 15", "merchant logos"),
         "instructions": """Output exactly one top-level section:
 
 ## Frontend Implementation Notes
 
 Give concise, opinionated notes on information architecture, route priorities,
 shared component extraction, performance-sensitive UI behavior, and the first
-frontend build order. Keep the guidance practical and implementation-oriented.""",
+frontend build order.
+The section must explicitly cover:
+- Expo SDK 54 with React Native, TypeScript, React Navigation, Zustand, and react-native-svg
+- prefer React Native Animated and FlatList by default, with react-native-reanimated or FlashList only when clearly necessary
+- install Expo-native packages only with `npx expo install` and only at Expo-compatible versions for the installed SDK
+- avoid custom Babel or native config unless current official Expo docs require it
+- prioritize Expo Go compatibility and runtime stability over exact animation fidelity
+- simplify risky animation or library setups instead of leaving a broken app
+- do not run or instruct final iOS build, simulator, or npm commands because execution will be done manually by the user
+- optimize for the base-model iPhone 15 as the baseline device size
+- when branding overrides only change colors, preserve universal restaurant photos, merchant banners, and merchant logos; only swap the app logo when an explicit replacement logo is provided
+
+Keep the guidance practical and implementation-oriented.""",
     },
     {
         "key": "claude_code_prompt",
@@ -322,6 +387,17 @@ frontend build order. Keep the guidance practical and implementation-oriented.""
         "required_substrings": (
             "Paste everything below this line into Claude Code:",
             "React Native",
+            "Expo SDK 54",
+            "TypeScript",
+            "React Navigation",
+            "Zustand",
+            "react-native-svg",
+            "Animated",
+            "FlatList",
+            "npx expo install",
+            "Expo Go",
+            "iPhone 15",
+            "merchant logos",
         ),
         "instructions": """Output exactly one top-level section:
 
@@ -335,11 +411,25 @@ into Claude Code to scaffold the frontend from scratch.
 
 The prompt must include:
 - one paragraph describing what the app is and what to build
-- the preferred frontend stack (bullet list, names only — no configuration or code)
+- the preferred frontend stack as exactly these bullet items, in this order:
+  - Expo SDK 54
+  - React Native
+  - TypeScript
+  - React Navigation
+  - Zustand
+  - react-native-svg
 - the 5 most important screens to implement first
 - the shared components that must exist from day one
 - one sentence explicitly stating that this should be built as a React Native mobile app for iPhone and Android phones
 - a single sentence requiring local SVG icons/illustrations instead of emoji assets
+- a single sentence saying to prefer React Native Animated and FlatList by default, using react-native-reanimated or FlashList only when clearly necessary
+- a single sentence saying Expo-native packages must be installed only with `npx expo install` and only at Expo-compatible versions for SDK 54
+- a single sentence saying not to add custom Babel or native configuration unless the current official Expo docs require it
+- a single sentence saying to prioritize Expo Go compatibility and runtime stability over exact animation fidelity, simplifying risky setups instead of leaving a broken app
+- a single sentence saying that if the spec mentions older or ambiguous versions like "Reanimated 2", that should be interpreted as the current Expo-compatible version rather than a legacy setup
+- a single sentence saying not to run iOS build, simulator, or npm commands at the end because final execution will be done manually by the user
+- a single sentence saying the baseline device target is the base-model iPhone 15
+- a single sentence saying branding overrides should only change colors and an explicitly provided replacement logo while preserving universal restaurant photos, merchant banners, and merchant logos
 - a single sentence on local demo data or mocked data expectations
 - this exact closing sentence:
   Use the spec.md in this project as your source of truth for all screens, components, and visual rules.

@@ -30,14 +30,14 @@ export default async function ProjectsPage() {
               className="mt-5 text-4xl"
               style={{ color: 'var(--text)', fontWeight: 510, letterSpacing: '-0.704px', lineHeight: 1.08 }}
             >
-              Every brief in one place
+              Every spec in one place
             </h1>
             <p className="mt-3 text-sm" style={{ color: 'var(--muted)', lineHeight: 1.6 }}>
-              Return to past recordings, follow what is still in motion, and reopen any brief whenever you need it.
+              Return to past recordings, follow what is still in motion, and reopen any spec whenever you need it.
             </p>
           </div>
           <Link href="/app" className="btn-primary">
-            New brief
+            New blueprint
           </Link>
         </div>
 
@@ -46,8 +46,8 @@ export default async function ProjectsPage() {
             <div style={{ textAlign: 'center', padding: '48px 0' }}>
               <p style={{ fontSize: 32, marginBottom: 12, animation: 'ghost-float 3s ease-in-out infinite', display: 'inline-block' }}>◎</p>
               <p style={{ color: 'var(--text-2)', fontWeight: 510, marginBottom: 6 }}>Nothing here yet</p>
-              <p style={{ color: 'var(--subdued)', fontSize: 14, marginBottom: 24 }}>Upload a recording and we’ll turn it into your first product brief.</p>
-              <a href="/app" className="btn-primary" style={{ padding: '10px 24px', borderRadius: 6, display: 'inline-block' }}>Create a brief →</a>
+              <p style={{ color: 'var(--subdued)', fontSize: 14, marginBottom: 24 }}>Upload a recording and we’ll turn it into your first spec.</p>
+              <a href="/app" className="btn-primary" style={{ padding: '10px 24px', borderRadius: 6, display: 'inline-block' }}>Create a blueprint →</a>
             </div>
           </div>
         ) : (

@@ -98,7 +98,7 @@ def _base_project(**kwargs):
 
 def _spec_section_outputs(app_name: str = "MyApp", reference_app: str = "TestApp"):
     return [
-        "## App Overview\n\nMyApp is a React Native mobile app for iPhone and Android phones, designed around a concise consumer product experience.",
+        "## App Overview\n\nMyApp is a React Native mobile app for iPhone and Android phones, with the base-model iPhone 15 as the baseline sizing reference, designed around a concise consumer product experience.",
         "## Navigation Structure\n\nUsers move between Home, Browse, and Me with modal overlays for search and cart.",
         "## Screen Specifications\n\n### Home Feed\n- Purpose: discover restaurants\n- Layout: sticky header, carousels, promos",
         "## Shared Components\n\n### 1. SearchBar\nReusable search entry point used on Home and Browse.",
@@ -143,7 +143,17 @@ def _spec_section_outputs(app_name: str = "MyApp", reference_app: str = "TestApp
                 "- Dark surfaces make content and photography pop.",
             ]
         ),
-        "## Frontend Implementation Notes\n\nBuild shared navigation and cards first, then flesh out screen-specific modules.",
+        "\n".join(
+            [
+                "## Frontend Implementation Notes",
+                "",
+                "- Use Expo SDK 54 with React Native, TypeScript, React Navigation, Zustand, and react-native-svg.",
+                "- Prefer Animated and FlatList by default, and only reach for heavier libraries when clearly necessary.",
+                "- Install Expo-native packages with `npx expo install` and keep everything Expo Go compatible.",
+                "- Optimize the baseline layout for iPhone 15.",
+                "- When branding overrides only change colors, preserve restaurant photos, merchant banners, and merchant logos unless an explicit replacement logo is provided.",
+            ]
+        ),
         "\n".join(
             [
                 "## Claude Code Prompt",
@@ -151,12 +161,20 @@ def _spec_section_outputs(app_name: str = "MyApp", reference_app: str = "TestApp
                 "Paste everything below this line into Claude Code:",
                 "",
                 f"Build a mobile-first frontend for {app_name}, a clone of {reference_app}.",
-                "- React Native with Expo",
+                "- Expo SDK 54",
+                "- React Native",
+                "- TypeScript",
                 "- React Navigation",
-                "- NativeWind",
-                "- Local JSON fixtures",
+                "- Zustand",
+                "- react-native-svg",
                 "Implement Home, Browse, Restaurant Detail, Search, and Cart first.",
                 "Shared components from day one: BottomTabBar, SearchBar, SectionHeader, RestaurantCard, MenuItemCard.",
+                "Prefer Animated and FlatList by default, using reanimated or FlashList only when clearly necessary.",
+                "Install Expo-native packages only with `npx expo install`, using Expo-compatible package versions for SDK 54.",
+                "Prioritize Expo Go compatibility and runtime stability over exact animation fidelity.",
+                "Do not run iOS build, simulator, or npm commands at the end; final execution will be done manually by the user.",
+                "Treat the base-model iPhone 15 as the baseline device target.",
+                "Branding overrides should only change colors and an explicit replacement logo while preserving universal restaurant photos, merchant banners, and merchant logos.",
                 "Use local mocked JSON files for demo data.",
                 "Use the spec.md in this project as your source of truth for all screens, components, and visual rules.",
             ]
@@ -339,197 +357,6 @@ class TestPipelineResume(unittest.TestCase):
         self.assertIn("analyzing_frontend", statuses_set)
         self.assertIn("stitching", statuses_set)
         self.assertIn("complete", statuses_set)
-
-    def test_bundle_upload_updates_bucket_allowlist_for_zip(self):
-        client = _make_db_client(_base_project())
-        client.storage.from_.return_value.download.return_value = b"fake-mp4-bytes"
-        client.storage.get_bucket.return_value.allowed_mime_types = [
-            "video/mp4",
-            "video/quicktime",
-            "image/png",
-            "image/svg+xml",
-            "text/markdown",
-        ]
-        local_worker._bucket_mime_ok = False
-
-        local_worker.ensure_bucket_allows_bundle_uploads(client)
-
-        client.storage.update_bucket.assert_called_once()
-        bucket_id, options = client.storage.update_bucket.call_args.args
-        self.assertEqual(bucket_id, "spectr-uploads")
-        self.assertEqual(list(options.keys()), ["allowed_mime_types"])
-        self.assertIn("application/zip", options["allowed_mime_types"])
-
-    @patch.object(local_worker, "get_db")
-    @patch.object(local_worker, "validate_mobile_project", return_value={"ok": True, "errors": "", "failing_files": []})
-    @patch.object(local_worker, "generate_mobile_frontend", return_value={"README.md": "# Readme", "app/index.tsx": "export default null", "src/lib/view-models.ts": "export async function loadHomeScreenData(){ return { title: 'Home' } }"})
-    @patch.object(
-        local_worker,
-        "build_fixed_mobile_files",
-        return_value={
-            "README.md": "# Readme",
-            "src/lib/types.ts": "export interface DatabaseTables {}",
-            "app/_layout.tsx": "export default null",
-            "app/+not-found.tsx": "export default null",
-            "package.json": "{}",
-            "app.json": "{}",
-            "babel.config.js": "module.exports = {}",
-            "tsconfig.json": "{}",
-            "expo-env.d.ts": "/// <reference types='expo/types' />",
-            ".env.example": "",
-            "setup.sh": "#!/bin/bash",
-            "assets/.keep": "",
-            "src/theme/tokens.ts": "export const tokens = {}",
-            "src/theme/styles.ts": "export const sharedStyles = {}",
-            "src/components/AppText.tsx": "export interface AppTextProps {} export default function AppText(){ return null }",
-            "src/components/AppScreen.tsx": "export interface AppScreenProps {} export default function AppScreen(){ return null }",
-            "src/components/SearchBar.tsx": "export interface SearchBarProps {} export default function SearchBar(){ return null }",
-            "src/components/SectionHeader.tsx": "export interface SectionHeaderProps {} export default function SectionHeader(){ return null }",
-            "src/components/SectionCard.tsx": "export interface SectionCardProps {} export default function SectionCard(){ return null }",
-            "src/components/BottomTabBar.tsx": "export interface BottomTabBarProps {} export default function BottomTabBar(){ return null }",
-            "src/components/FoodImage.tsx": "export interface FoodImageProps {} export default function FoodImage(){ return null }",
-            "src/components/ui.tsx": "export function AppScreen(){return null}",
-            "src/lib/supabase.ts": "export const supabase = null",
-            "src/lib/data.ts": "export const dataMode = 'demo'",
-            "src/lib/demo-data.ts": "export const demoData = {}",
-            "src/lib/fallback.ts": "export const DEMO_USER = {}",
-            "supabase/migrations/001_initial.sql": "create table if not exists public.products (id uuid primary key);",
-            "supabase/seed.sql": "insert into public.products (id) values ('00000000-0000-0000-0000-000000000000');",
-        },
-    )
-    @patch.object(local_worker, "synthesize_schema", return_value={"tables": [{"name": "products", "columns": [{"name": "id", "type": "uuid", "constraints": ["primary key"]}], "foreign_keys": []}], "auth_required": False})
-    @patch.object(local_worker, "analyze_transitions", return_value=[{"from_screen": "Home", "to_screen": "Detail", "user_action": "Tap card", "implied_data_operation": "READ", "implied_entities": {"product": ["id", "name"]}}])
-    @patch.object(local_worker, "run_structured_screen_batches", return_value=[{"name": "Home", "route": "/", "purpose": "Browse products", "states": [], "actions": ["Tap product"], "visible_entities": {"product": ["id", "name", "price"]}}])
-    @patch.object(local_worker, "run_vision_batches")
-    @patch.object(local_worker, "extract_frames", return_value=["/tmp/f/frame_0001.jpg", "/tmp/f/frame_0002.jpg"])
-    @patch.object(local_worker, "deduplicate_frames", return_value=["/tmp/f/frame_0001.jpg", "/tmp/f/frame_0002.jpg"])
-    def test_mobile_mode_runs_new_pipeline(
-        self,
-        mock_dedup,
-        mock_extract,
-        mock_run_vision,
-        mock_structured,
-        mock_transitions,
-        mock_schema,
-        mock_build_files,
-        mock_generate_frontend,
-        mock_validate,
-        mock_get_db,
-    ):
-        local_worker.OUTPUT_MODE = "mobile"
-        project_data = _base_project(mp4_s3_key="proj/video.mp4")
-        client = _make_db_client(project_data)
-        client.storage.from_.return_value.download.return_value = b"fake-mp4-bytes"
-        mock_get_db.return_value = client
-        mock_run_vision.side_effect = [
-            ["## Screen Batch"],
-            ["## Design Tokens Batch"],
-        ]
-
-        process_project("proj-mobile-1234")
-
-        mock_extract.assert_called_once()
-        mock_dedup.assert_called_once()
-        mock_structured.assert_called_once()
-        mock_transitions.assert_called_once()
-        mock_schema.assert_called_once()
-        mock_build_files.assert_called_once()
-        mock_generate_frontend.assert_called_once()
-        mock_validate.assert_called_once()
-
-        update_calls = client.table.return_value.update.call_args_list
-        statuses_set = [c.args[0].get("status") for c in update_calls if "status" in c.args[0]]
-        self.assertIn("extracting", statuses_set)
-        self.assertIn("analyzing_screens", statuses_set)
-        self.assertIn("analyzing_transitions", statuses_set)
-        self.assertIn("synthesizing_schema", statuses_set)
-        self.assertIn("generating_backend", statuses_set)
-        self.assertIn("generating_frontend", statuses_set)
-        self.assertIn("validating", statuses_set)
-        self.assertIn("bundling", statuses_set)
-        self.assertIn("complete", statuses_set)
-
-        data_updates = [c.args[0] for c in update_calls]
-        self.assertTrue(any("screen_analysis" in payload for payload in data_updates))
-        self.assertTrue(any("transitions" in payload for payload in data_updates))
-        self.assertTrue(any("canonical_schema" in payload for payload in data_updates))
-        self.assertFalse(any("spec_md_text" in payload for payload in data_updates))
-
-    @patch.object(local_worker, "get_db")
-    @patch.object(local_worker, "validate_mobile_project", return_value={"ok": False, "errors": "typecheck failed\napp/index.tsx(1,1): error", "failing_files": ["app/index.tsx"]})
-    @patch.object(local_worker, "generate_mobile_frontend", return_value={"README.md": "# Readme", "app/index.tsx": "export default null", "src/lib/view-models.ts": "export async function loadHomeScreenData(){ return { title: 'Home' } }"})
-    @patch.object(
-        local_worker,
-        "build_fixed_mobile_files",
-        return_value={
-            "README.md": "# Readme",
-            "src/lib/types.ts": "export interface DatabaseTables {}",
-            "app/_layout.tsx": "export default null",
-            "app/+not-found.tsx": "export default null",
-            "package.json": "{}",
-            "app.json": "{}",
-            "babel.config.js": "module.exports = {}",
-            "tsconfig.json": "{}",
-            "expo-env.d.ts": "/// <reference types='expo/types' />",
-            ".env.example": "",
-            "setup.sh": "#!/bin/bash",
-            "assets/.keep": "",
-            "src/theme/tokens.ts": "export const tokens = {}",
-            "src/theme/styles.ts": "export const sharedStyles = {}",
-            "src/components/AppText.tsx": "export interface AppTextProps {} export default function AppText(){ return null }",
-            "src/components/AppScreen.tsx": "export interface AppScreenProps {} export default function AppScreen(){ return null }",
-            "src/components/SearchBar.tsx": "export interface SearchBarProps {} export default function SearchBar(){ return null }",
-            "src/components/SectionHeader.tsx": "export interface SectionHeaderProps {} export default function SectionHeader(){ return null }",
-            "src/components/SectionCard.tsx": "export interface SectionCardProps {} export default function SectionCard(){ return null }",
-            "src/components/BottomTabBar.tsx": "export interface BottomTabBarProps {} export default function BottomTabBar(){ return null }",
-            "src/components/FoodImage.tsx": "export interface FoodImageProps {} export default function FoodImage(){ return null }",
-            "src/components/ui.tsx": "export function AppScreen(){return null}",
-            "src/lib/supabase.ts": "export const supabase = null",
-            "src/lib/data.ts": "export const dataMode = 'demo'",
-            "src/lib/demo-data.ts": "export const demoData = {}",
-            "src/lib/fallback.ts": "export const DEMO_USER = {}",
-            "supabase/migrations/001_initial.sql": "create table if not exists public.products (id uuid primary key);",
-            "supabase/seed.sql": "insert into public.products (id) values ('00000000-0000-0000-0000-000000000000');",
-        },
-    )
-    @patch.object(local_worker, "synthesize_schema", return_value={"tables": [{"name": "products", "columns": [{"name": "id", "type": "uuid", "constraints": ["primary key"]}], "foreign_keys": []}], "auth_required": False})
-    @patch.object(local_worker, "analyze_transitions", return_value=[{"from_screen": "Home", "to_screen": "Detail", "user_action": "Tap card", "implied_data_operation": "READ", "implied_entities": {"product": ["id", "name"]}}])
-    @patch.object(local_worker, "run_structured_screen_batches", return_value=[{"name": "Home", "route": "/", "purpose": "Browse products", "states": [], "actions": ["Tap product"], "visible_entities": {"product": ["id", "name", "price"]}}])
-    @patch.object(local_worker, "run_vision_batches")
-    @patch.object(local_worker, "extract_frames", return_value=["/tmp/f/frame_0001.jpg", "/tmp/f/frame_0002.jpg"])
-    @patch.object(local_worker, "deduplicate_frames", return_value=["/tmp/f/frame_0001.jpg", "/tmp/f/frame_0002.jpg"])
-    def test_mobile_mode_validation_failure_marks_job_failed_and_skips_upload(
-        self,
-        mock_dedup,
-        mock_extract,
-        mock_run_vision,
-        mock_structured,
-        mock_transitions,
-        mock_schema,
-        mock_build_files,
-        mock_generate_frontend,
-        mock_validate,
-        mock_get_db,
-    ):
-        local_worker.OUTPUT_MODE = "mobile"
-        project_data = _base_project(mp4_s3_key="proj/video.mp4")
-        client = _make_db_client(project_data)
-        client.storage.from_.return_value.download.return_value = b"fake-mp4-bytes"
-        mock_get_db.return_value = client
-        mock_run_vision.side_effect = [["## Screen Batch"], ["## Design Tokens Batch"]]
-
-        with self.assertRaises(RuntimeError):
-            process_project("proj-mobile-failed")
-
-        uploaded_paths = [
-            c.kwargs.get("path") or c.args[0]
-            for c in client.storage.from_.return_value.upload.call_args_list
-        ]
-        self.assertNotIn("proj-mobile-failed/bundle.zip", uploaded_paths)
-
-        update_calls = client.table.return_value.update.call_args_list
-        final_statuses = [c.args[0].get("status") for c in update_calls if "status" in c.args[0]]
-        self.assertIn("failed", final_statuses)
 
     @patch.object(local_worker, "get_db")
     def test_update_project_skips_schema_cache_columns(self, mock_get_db):

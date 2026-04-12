@@ -12,7 +12,6 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
   const { id } = params
   const { toast } = useToast()
   const [project, setProject] = useState<Project | null>(null)
-  const [download, setDownload] = useState<{ url: string; filename: string } | null>(null)
   const [debugLines, setDebugLines] = useState<string[]>([])
   const downloadRef = useRef<HTMLDivElement>(null)
   const readyToastShown = useRef(false)
@@ -37,24 +36,12 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
   }, [id])
 
   useEffect(() => {
-    if (project?.status === 'complete' && !download) {
-      fetch(`/api/projects/${id}/download`)
-        .then(r => r.json())
-        .then(d => {
-          if (d.url) {
-            setDownload({ url: d.url, filename: d.filename || 'spec.md' })
-            setTimeout(() => downloadRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100)
-          }
-        })
-    }
-  }, [project?.status, id, download])
-
-  useEffect(() => {
-    if (download && !readyToastShown.current) {
+    if (project?.status === 'complete' && !readyToastShown.current) {
       readyToastShown.current = true
-      toast('Your brief is ready.', 'success')
+      toast('Your spec is ready.', 'success')
+      setTimeout(() => downloadRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100)
     }
-  }, [download, toast])
+  }, [project?.status, toast])
 
   useEffect(() => {
     let cancelled = false
@@ -92,7 +79,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
       <main className="page-frame">
         <section className="page-shell">
           <div className="max-w-3xl">
-            <a href="/app/projects" className="mono text-xs" style={{ color: 'var(--subdued)' }}>← briefs</a>
+            <a href="/app/projects" className="mono text-xs" style={{ color: 'var(--subdued)' }}>← specs</a>
             <div className="mt-5 flex items-center gap-2">
               <span className="mono text-xs" style={{ color: 'var(--subdued)' }}>{id.slice(0, 8)}</span>
             </div>
@@ -105,13 +92,15 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
   }
 
   const isLive = project.status !== 'complete' && project.status !== 'failed'
+  const downloadFilename = project.bundle_s3_key ? 'bundle.zip' : 'spec.md'
+  const downloadHref = `/api/projects/${id}/download`
 
   return (
     <main className="page-frame">
       <section className="page-shell">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_320px]">
           <div>
-            <a href="/app/projects" className="mono text-xs" style={{ color: 'var(--subdued)' }}>← briefs</a>
+            <a href="/app/projects" className="mono text-xs" style={{ color: 'var(--subdued)' }}>← specs</a>
             <div className="mb-5 mt-5 flex items-center">
               <p className="mono text-xs" style={{ color: 'var(--subdued)' }}>{id.slice(0, 8)}</p>
               {isLive && (
@@ -133,7 +122,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
               className="text-4xl mb-2"
               style={{ color: 'var(--text)', fontWeight: 510, letterSpacing: '-0.704px', lineHeight: 1.08 }}
             >
-              {project.status === 'complete' ? 'Your brief is ready.' : 'Your brief is taking shape.'}
+              {project.status === 'complete' ? 'Your spec is ready.' : 'Your spec is taking shape.'}
             </h1>
 
             {project.reference_app && (
@@ -146,15 +135,14 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
 
             <StatusTracker project={project} debugLines={debugLines} />
 
-            {project.status === 'complete' && download && (
+            {project.status === 'complete' && (
               <div ref={downloadRef} className="panel mt-8 space-y-4 p-5" style={{ borderRadius: 16 }}>
                 <a
-                  href={download.url}
-                  download={download.filename}
+                  href={downloadHref}
                   className="btn-primary w-full"
                   style={{ justifyContent: 'center' }}
                 >
-                  Download brief
+                  Download spec
                 </a>
                 <div
                   className="rounded-xl px-4 py-4 text-sm"
@@ -165,7 +153,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
                     lineHeight: 1.65,
                   }}
                 >
-                  Download the brief whenever you’re ready. It brings together the screens, patterns, and design language in one place.
+                  Download the spec whenever you’re ready. It brings together the screens, patterns, and design language in one place.
                 </div>
               </div>
             )}
@@ -218,7 +206,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
 
           <aside className="space-y-4">
             <div className="panel p-5">
-              <p className="section-title">This brief</p>
+              <p className="section-title">This spec</p>
               <div className="mt-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="helper-copy">Inspired by</span>
@@ -235,13 +223,13 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
                 <div className="flex items-center justify-between">
                   <span className="helper-copy">File</span>
                   <span className="mono text-xs" style={{ color: 'var(--text-2)' }}>
-                    {download?.filename ?? 'spec.md'}
+                    {downloadFilename}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="helper-copy">Format</span>
                   <span className="mono text-xs" style={{ color: 'var(--text-2)' }}>
-                    Product brief
+                    Frontend spec
                   </span>
                 </div>
               </div>
@@ -250,7 +238,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
             <div className="panel-soft p-5">
               <p className="section-title">What to do next</p>
               <p className="mt-3 text-sm" style={{ color: 'var(--muted)', lineHeight: 1.65 }}>
-                Download the brief, share it with your team, and use it as the blueprint for whatever comes next.
+                Download the spec, share it with your agents, and use it as the blueprint for whatever comes next.
               </p>
             </div>
           </aside>

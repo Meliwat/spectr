@@ -20,12 +20,20 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
     return NextResponse.json({ error: 'No download available' }, { status: 404 })
   }
 
-  const { data: signed } = await supabaseServer
-    .storage.from('spectr-uploads').createSignedUrl(storageKey, 86400)
+  const { data: file, error } = await supabaseServer
+    .storage.from('spectr-uploads').download(storageKey)
 
-  if (!signed?.signedUrl) {
-    return NextResponse.json({ error: 'Failed to generate download link' }, { status: 500 })
+  if (error || !file) {
+    return NextResponse.json({ error: 'Failed to download file' }, { status: 500 })
   }
 
-  return NextResponse.json({ url: signed.signedUrl, filename })
+  const contentType = file.type || (filename.endsWith('.md') ? 'text/markdown; charset=utf-8' : 'application/zip')
+
+  return new NextResponse(await file.arrayBuffer(), {
+    headers: {
+      'Content-Type': contentType,
+      'Content-Disposition': `attachment; filename="${filename}"`,
+      'Cache-Control': 'no-store',
+    },
+  })
 }

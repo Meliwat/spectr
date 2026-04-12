@@ -11,7 +11,7 @@ export default function Landing() {
       <section className="page-shell landing-shell">
         <div className="panel-strong overflow-hidden px-6 py-7 sm:px-9 sm:py-8">
           <div className="ghost-emerge mb-7 flex flex-wrap items-center gap-3" style={reveal(120)}>
-            <span className="eyebrow">From recording to product brief</span>
+            <span className="eyebrow">From recording to product blueprint</span>
             <span className="metric-chip"><strong>Screen-by-screen clarity</strong></span>
             <span className="metric-chip"><strong>Design language included</strong></span>
           </div>
@@ -36,16 +36,16 @@ export default function Landing() {
                 className="ghost-emerge max-w-2xl text-base sm:text-lg"
                 style={{ ...reveal(420), color: 'var(--text-2)', fontWeight: 400, letterSpacing: '-0.165px', lineHeight: 1.6 }}
               >
-                Spectr turns a mobile app recording into a beautifully structured brief with screens,
-                flow, design language, and guidance your team can read, share, and build from.
+                Spectr turns a mobile app recording into a beautifully structured blueprint with screens,
+                flow, design language, and guidance your agents can read, share, and build from.
               </p>
 
               <div className="ghost-emerge mt-7 flex flex-wrap gap-3" style={reveal(580)}>
                 <Link href="/app" className="btn-primary">
-                  Start a new brief
+                  Start a new blueprint
                 </Link>
                 <Link href="/app/projects" className="btn">
-                  View recent briefs
+                  View recent specs
                 </Link>
               </div>
 
@@ -62,8 +62,8 @@ export default function Landing() {
                 </div>
                 <div className="ghost-emerge stat-card" style={reveal(1100)}>
                   <p className="stat-card-label">What you leave with</p>
-                  <p className="stat-card-value">One clear brief</p>
-                  <p className="stat-card-copy">A single document your team can align on without extra translation.</p>
+                  <p className="stat-card-value">One clear blueprint</p>
+                  <p className="stat-card-copy">A single document your agents can align on before the build begins.</p>
                 </div>
               </div>
             </div>
@@ -81,7 +81,7 @@ export default function Landing() {
                   <div>
                     <p className="section-title">What unfolds</p>
                     <p className="mt-2 text-sm" style={{ color: 'var(--muted)' }}>
-                      From one recording to one shareable brief.
+                      From one recording to one shareable blueprint.
                     </p>
                   </div>
                 </div>
@@ -91,7 +91,7 @@ export default function Landing() {
                     ['01', 'We gather the moments that matter'],
                     ['02', 'We notice recurring patterns, components, and states'],
                     ['03', 'We capture the visual language, from color to spacing to tone'],
-                    ['04', 'We shape it all into one brief your team can carry forward'],
+                    ['04', 'We shape it all into one blueprint your agents can carry forward'],
                   ].map(([step, label], index) => (
                     <div
                       key={step}
@@ -122,7 +122,7 @@ export default function Landing() {
                 >
                   <p className="section-title" style={{ color: 'var(--lavender)' }}>What you get</p>
                   <p className="mt-2 text-sm" style={{ color: 'var(--text-2)', lineHeight: 1.6 }}>
-                    A clear, thoughtful brief you can hand to design, product, or engineering without explaining it twice.
+                    A clear, thoughtful blueprint you can hand to design, product, or engineering without explaining it twice.
                   </p>
                 </div>
               </div>
