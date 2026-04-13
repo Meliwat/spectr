@@ -277,9 +277,9 @@ export default function WaitlistClient() {
            BACKGROUND — 7 LAYERS
         ════════════════════════════════════════════════ */
         .wl-page {
-          height: calc(100dvh - 72px);
+          min-height: calc(100dvh - 72px);
           display: flex; align-items: center; justify-content: center;
-          padding: 16px 24px 16px;
+          padding: 16px 24px 24px;
           position: relative; overflow: hidden;
           background: radial-gradient(ellipse 180% 100% at 50% -20%,
             #0d0e18 0%, #07080f 40%, #010102 100%);
@@ -721,6 +721,17 @@ export default function WaitlistClient() {
         }
         .wl-card-sub {
           font-size: 12px; color: #6b7280; text-align: center; margin: 0 0 18px; line-height: 1.5;
+        }
+
+        /* ── RESPONSIVE ─────────────────────────────────────────────────────── */
+        @media (min-width: 768px) {
+          /* Lock to one screen on desktop/tablet landscape */
+          .wl-page { height: calc(100dvh - 72px); }
+          body { overflow-y: hidden; }
+        }
+        @media (max-width: 767px) {
+          /* Mobile: hide strip to keep content above fold */
+          .wl-strip { display: none; }
         }
       `}</style>
 
