@@ -43,10 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   className="brand-logotype"
                 />
               </Link>
-              <div className="site-nav-links">
-                <Link href="/app/projects" className="site-link">Specs</Link>
-                <Link href="/app" className="btn-primary nav-cta">New blueprint</Link>
-              </div>
+              <div className="site-nav-links" />
             </div>
           </nav>
           {children}
