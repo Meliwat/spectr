@@ -6,7 +6,7 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
     .from('projects')
     .select('spec_md_s3_key, bundle_s3_key, status')
     .eq('id', params.id)
-    .single()
+    .single() as { data: { spec_md_s3_key: string | null; bundle_s3_key: string | null; status: string } | null }
 
   if (!data || data.status !== 'complete') {
     return NextResponse.json({ error: 'Not ready' }, { status: 404 })
