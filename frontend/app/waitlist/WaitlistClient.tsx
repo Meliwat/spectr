@@ -42,11 +42,107 @@ function WordReveal({ text, baseDelay, className }: { text: string; baseDelay: n
   )
 }
 
+// ── WISP CONFIG ──────────────────────────────────────────────────────────────
+const WISPS = [
+  { x: 0.12, y: 0.82, len: 180, phase: 0.0,  hue: '113,112,255' },
+  { x: 0.88, y: 0.75, len: 155, phase: 1.3,  hue: '130,143,255' },
+  { x: 0.28, y: 0.90, len: 200, phase: 2.5,  hue: '94,106,210'  },
+  { x: 0.72, y: 0.85, len: 165, phase: 0.7,  hue: '113,112,255' },
+  { x: 0.50, y: 0.95, len: 145, phase: 3.2,  hue: '160,170,255' },
+  { x: 0.04, y: 0.60, len: 170, phase: 1.9,  hue: '130,143,255' },
+  { x: 0.96, y: 0.55, len: 190, phase: 2.8,  hue: '113,112,255' },
+  { x: 0.40, y: 0.88, len: 158, phase: 0.4,  hue: '94,106,210'  },
+]
+
 export default function WaitlistClient() {
   const [email, setEmail]         = useState('')
   const [formState, setFormState] = useState<FormState>('idle')
   const [focused, setFocused]     = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef  = useRef<HTMLInputElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const mouseRef  = useRef({ x: -2000, y: -2000 })
+
+  // ── Wisp canvas animation ──────────────────────────────────────────────────
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')!
+    let raf: number
+    let t = 0
+
+    const resize = () => {
+      canvas.width  = window.innerWidth
+      canvas.height = window.innerHeight
+    }
+    resize()
+    window.addEventListener('resize', resize)
+
+    const onMove = (e: MouseEvent) => { mouseRef.current = { x: e.clientX, y: e.clientY } }
+    const onLeave = () => { mouseRef.current = { x: -2000, y: -2000 } }
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseleave', onLeave)
+
+    function drawWisp(wx: number, wy: number, len: number, phase: number, hue: string, mx: number, my: number, time: number) {
+      const dx   = mx - wx
+      const dy   = my - wy
+      const dist = Math.sqrt(dx * dx + dy * dy)
+      const pull = Math.max(0, 1 - dist / 380)
+
+      // two passes: sharp core + soft glow
+      for (let pass = 0; pass < 2; pass++) {
+        const alpha = pass === 0 ? 0.055 + pull * 0.22 : 0.025 + pull * 0.09
+        const lw    = pass === 0 ? 0.9 + pull * 2.0   : 4.0   + pull * 8.0
+
+        ctx.beginPath()
+        let px = wx, py = wy
+        ctx.moveTo(px, py)
+
+        const segs = 10
+        for (let s = 1; s <= segs; s++) {
+          const f    = s / segs
+          const wave = Math.sin(time * 0.55 + phase + s * 0.65) * 22 * f
+          const wave2= Math.cos(time * 0.42 + phase * 1.4 + s * 0.45) * 13 * f
+          const nx   = wx + wave + dx * pull * 0.55 * f
+          const ny   = wy - len * f + wave2 + dy * pull * 0.30 * f
+          const cpx  = (px + nx) / 2 + wave * 0.4
+          const cpy  = (py + ny) / 2
+          ctx.quadraticCurveTo(cpx, cpy, nx, ny)
+          px = nx; py = ny
+        }
+
+        const tipX = wx + Math.sin(time * 0.55 + phase) * 22 + dx * pull * 0.55
+        const tipY = wy - len + dy * pull * 0.30
+        const grad = ctx.createLinearGradient(wx, wy, tipX, tipY)
+        grad.addColorStop(0,   `rgba(${hue},${alpha})`)
+        grad.addColorStop(0.55,`rgba(${hue},${alpha * 0.5})`)
+        grad.addColorStop(1,   `rgba(${hue},0)`)
+
+        ctx.strokeStyle = grad
+        ctx.lineWidth   = lw
+        ctx.lineCap     = 'round'
+        ctx.lineJoin    = 'round'
+        ctx.stroke()
+      }
+    }
+
+    function loop() {
+      t += 0.014
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      const { x: mx, y: my } = mouseRef.current
+      WISPS.forEach(w => {
+        drawWisp(w.x * canvas.width, w.y * canvas.height, w.len, w.phase, w.hue, mx, my, t)
+      })
+      raf = requestAnimationFrame(loop)
+    }
+    loop()
+
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('resize', resize)
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('mouseleave', onLeave)
+    }
+  }, [])
 
   useEffect(() => {
     inputRef.current?.focus()
@@ -317,9 +413,8 @@ export default function WaitlistClient() {
         }
         .wl-h1-line2 {
           display: block;
-          background: linear-gradient(180deg, rgba(200,205,255,0.68) 0%, rgba(180,188,255,0.38) 100%);
-          -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-          filter: drop-shadow(0 0 20px rgba(113,112,255,0.14));
+          color: rgba(190,198,255,0.82);
+          filter: drop-shadow(0 0 32px rgba(113,112,255,0.35));
         }
         .wl-h1-wrap { position: relative; display: inline-block; width: 100%; }
 
@@ -519,9 +614,20 @@ export default function WaitlistClient() {
           ))}
         </div>
 
+        {/* Wisp canvas — mouse-reactive tendrils */}
+        <canvas
+          ref={canvasRef}
+          style={{
+            position: 'absolute', inset: 0, pointerEvents: 'none',
+            zIndex: 2, opacity: 0,
+            animation: 'wl-particles-in 3s ease 1200ms forwards',
+          }}
+          aria-hidden="true"
+        />
+
         {/* Content */}
         <div style={{
-          position:'relative', zIndex:2,
+          position:'relative', zIndex:3,
           width:'min(580px, calc(100vw - 48px))',
           textAlign:'center',
         }}>
@@ -538,7 +644,7 @@ export default function WaitlistClient() {
           <div className="wl-h1-wrap">
             <h1 className="wl-h1">
               <WordReveal text="See an app." baseDelay={180} className="wl-h1-line1" />
-              <WordReveal text="Build an app." baseDelay={320} className="wl-h1-line2" />
+              <WordReveal text="Ship an app." baseDelay={320} className="wl-h1-line2" />
             </h1>
             <div className="wl-h1-scan" aria-hidden="true" />
           </div>
