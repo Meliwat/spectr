@@ -22,6 +22,44 @@ const HALOS: [number, number, number, number, number][] = [
   [18,8,22,0,0.18],[42,6,28,9,0.14],[63,9,19,4,0.16],[82,7,25,14,0.12],
 ]
 
+// ── FLYING WISP SYSTEM ───────────────────────────────────────────────────────
+const WISP_HUES = ['113,112,255','130,143,255','94,106,210','160,170,255','180,192,255']
+const WISP_COUNT = 9
+const TRAIL_LEN  = 90
+
+type FlyWisp = {
+  x: number; y: number; vx: number; vy: number; curve: number
+  trail: { x: number; y: number }[]
+  hue: string; alpha: number; width: number; life: number; maxLife: number
+}
+
+function spawnWisp(cw: number, ch: number, mid = false): FlyWisp {
+  const edge  = Math.floor(Math.random() * 4)
+  let x = 0, y = 0, angle = 0
+  switch (edge) {
+    case 0: x = Math.random() * cw; y = -20;    angle = Math.PI * 0.3  + Math.random() * Math.PI * 0.4; break
+    case 1: x = cw + 20;            y = Math.random() * ch; angle = Math.PI + (Math.random() - 0.5) * 0.8; break
+    case 2: x = Math.random() * cw; y = ch + 20; angle = -Math.PI * 0.3 - Math.random() * Math.PI * 0.4; break
+    default: x = -20; y = Math.random() * ch;    angle = (Math.random() - 0.5) * 0.8; break
+  }
+  const speed = 0.45 + Math.random() * 1.1
+  const w: FlyWisp = {
+    x: mid ? Math.random() * cw : x,
+    y: mid ? Math.random() * ch : y,
+    vx: Math.cos(angle) * speed,
+    vy: Math.sin(angle) * speed,
+    curve: (Math.random() - 0.5) * 0.005,
+    trail: [],
+    hue:   WISP_HUES[Math.floor(Math.random() * WISP_HUES.length)],
+    alpha: 0.14 + Math.random() * 0.24,
+    width: 1.2  + Math.random() * 2.8,
+    life:  0,
+    maxLife: 420 + Math.random() * 480,
+  }
+  if (mid) w.life = Math.random() * w.maxLife * 0.6
+  return w
+}
+
 type FormState = 'idle' | 'loading' | 'success' | 'error'
 
 // Split headline into word spans for staggered word reveal
@@ -42,17 +80,6 @@ function WordReveal({ text, baseDelay, className }: { text: string; baseDelay: n
   )
 }
 
-// ── WISP CONFIG ──────────────────────────────────────────────────────────────
-const WISPS = [
-  { x: 0.12, y: 0.82, len: 180, phase: 0.0,  hue: '113,112,255' },
-  { x: 0.88, y: 0.75, len: 155, phase: 1.3,  hue: '130,143,255' },
-  { x: 0.28, y: 0.90, len: 200, phase: 2.5,  hue: '94,106,210'  },
-  { x: 0.72, y: 0.85, len: 165, phase: 0.7,  hue: '113,112,255' },
-  { x: 0.50, y: 0.95, len: 145, phase: 3.2,  hue: '160,170,255' },
-  { x: 0.04, y: 0.60, len: 170, phase: 1.9,  hue: '130,143,255' },
-  { x: 0.96, y: 0.55, len: 190, phase: 2.8,  hue: '113,112,255' },
-  { x: 0.40, y: 0.88, len: 158, phase: 0.4,  hue: '94,106,210'  },
-]
 
 export default function WaitlistClient() {
   const [email, setEmail]         = useState('')
@@ -60,78 +87,84 @@ export default function WaitlistClient() {
   const [focused, setFocused]     = useState(false)
   const inputRef  = useRef<HTMLInputElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const mouseRef  = useRef({ x: -2000, y: -2000 })
 
-  // ── Wisp canvas animation ──────────────────────────────────────────────────
+  // ── Flying wisp canvas ────────────────────────────────────────────────────
   useEffect(() => {
     const el = canvasRef.current
     if (!el) return
-    const g = el.getContext('2d')
-    if (!g) return
-
-    // Capture as explicit non-nullable types so TS doesn't lose narrowing in closures
-    const cvs: HTMLCanvasElement = el
-    const ctx: CanvasRenderingContext2D = g
-
+    const g  = el.getContext('2d')
+    if (!g)  return
+    const cvs: HTMLCanvasElement          = el
+    const ctx: CanvasRenderingContext2D   = g
     let raf: number
-    let t = 0
 
-    const resize = () => {
-      cvs.width  = window.innerWidth
-      cvs.height = window.innerHeight
-    }
+    const resize = () => { cvs.width = window.innerWidth; cvs.height = window.innerHeight }
     resize()
     window.addEventListener('resize', resize)
 
-    const onMove  = (e: MouseEvent) => { mouseRef.current = { x: e.clientX, y: e.clientY } }
-    const onLeave = () => { mouseRef.current = { x: -2000, y: -2000 } }
-    window.addEventListener('mousemove', onMove)
-    window.addEventListener('mouseleave', onLeave)
-
-    function drawWisp(wx: number, wy: number, len: number, phase: number, hue: string, mx: number, my: number, time: number) {
-      const dx   = mx - wx
-      const dy   = my - wy
-      const dist = Math.sqrt(dx * dx + dy * dy)
-      const pull = Math.max(0, 1 - dist / 380)
-
-      for (let pass = 0; pass < 2; pass++) {
-        const alpha = pass === 0 ? 0.055 + pull * 0.22 : 0.025 + pull * 0.09
-        const lw    = pass === 0 ? 0.9  + pull * 2.0   : 4.0   + pull * 8.0
-
-        ctx.beginPath()
-        let px = wx, py = wy
-        ctx.moveTo(px, py)
-
-        for (let s = 1; s <= 10; s++) {
-          const f     = s / 10
-          const wave  = Math.sin(time * 0.55 + phase + s * 0.65) * 22 * f
-          const wave2 = Math.cos(time * 0.42 + phase * 1.4 + s * 0.45) * 13 * f
-          const nx    = wx + wave + dx * pull * 0.55 * f
-          const ny    = wy - len * f + wave2 + dy * pull * 0.30 * f
-          ctx.quadraticCurveTo((px + nx) / 2 + wave * 0.4, (py + ny) / 2, nx, ny)
-          px = nx; py = ny
-        }
-
-        const tipX = wx + Math.sin(time * 0.55 + phase) * 22 + dx * pull * 0.55
-        const tipY = wy - len + dy * pull * 0.30
-        const grad = ctx.createLinearGradient(wx, wy, tipX, tipY)
-        grad.addColorStop(0,    `rgba(${hue},${alpha})`)
-        grad.addColorStop(0.55, `rgba(${hue},${alpha * 0.5})`)
-        grad.addColorStop(1,    `rgba(${hue},0)`)
-
-        ctx.strokeStyle = grad
-        ctx.lineWidth   = lw
-        ctx.lineCap     = 'round'
-        ctx.lineJoin    = 'round'
-        ctx.stroke()
-      }
-    }
+    // Seed wisps scattered across the screen on first load
+    const wisps: FlyWisp[] = Array.from({ length: WISP_COUNT }, (_, i) =>
+      spawnWisp(cvs.width, cvs.height, i < 6)
+    )
 
     function loop() {
-      t += 0.014
       ctx.clearRect(0, 0, cvs.width, cvs.height)
-      const { x: mx, y: my } = mouseRef.current
-      WISPS.forEach(w => drawWisp(w.x * cvs.width, w.y * cvs.height, w.len, w.phase, w.hue, mx, my, t))
+      const margin = 180
+
+      wisps.forEach((w, i) => {
+        w.life++
+
+        // Gentle curve: rotate velocity slightly each frame
+        const c = Math.cos(w.curve), s = Math.sin(w.curve)
+        const nvx = w.vx * c - w.vy * s
+        w.vy = w.vx * s + w.vy * c
+        w.vx = nvx
+        w.x += w.vx
+        w.y += w.vy
+
+        w.trail.push({ x: w.x, y: w.y })
+        if (w.trail.length > TRAIL_LEN) w.trail.shift()
+
+        // Respawn if lifetime elapsed or well off-screen
+        if (w.life >= w.maxLife ||
+            w.x < -margin || w.x > cvs.width  + margin ||
+            w.y < -margin || w.y > cvs.height + margin) {
+          wisps[i] = spawnWisp(cvs.width, cvs.height)
+          return
+        }
+
+        if (w.trail.length < 3) return
+
+        // Life alpha envelope: ramp in → sustain → fade out
+        const lr = w.life / w.maxLife
+        const la = lr < 0.12 ? lr / 0.12 : lr > 0.78 ? (1 - lr) / 0.22 : 1
+
+        // Draw trail segments — each gets more transparent toward the tail
+        for (let t = 1; t < w.trail.length; t++) {
+          const tRatio = t / w.trail.length           // 0 = tail, 1 = head
+          const a      = w.alpha * la * tRatio * tRatio
+          ctx.beginPath()
+          ctx.moveTo(w.trail[t - 1].x, w.trail[t - 1].y)
+          ctx.lineTo(w.trail[t].x,     w.trail[t].y)
+          ctx.strokeStyle = `rgba(${w.hue},${a})`
+          ctx.lineWidth   = w.width * tRatio
+          ctx.lineCap     = 'round'
+          ctx.stroke()
+        }
+
+        // Soft radial glow at the head
+        const headA = w.alpha * la * 0.55
+        const r     = w.width * 5
+        const grad  = ctx.createRadialGradient(w.x, w.y, 0, w.x, w.y, r)
+        grad.addColorStop(0,   `rgba(${w.hue},${headA})`)
+        grad.addColorStop(0.5, `rgba(${w.hue},${headA * 0.35})`)
+        grad.addColorStop(1,   `rgba(${w.hue},0)`)
+        ctx.beginPath()
+        ctx.arc(w.x, w.y, r, 0, Math.PI * 2)
+        ctx.fillStyle = grad
+        ctx.fill()
+      })
+
       raf = requestAnimationFrame(loop)
     }
     loop()
@@ -139,8 +172,6 @@ export default function WaitlistClient() {
     return () => {
       cancelAnimationFrame(raf)
       window.removeEventListener('resize', resize)
-      window.removeEventListener('mousemove', onMove)
-      window.removeEventListener('mouseleave', onLeave)
     }
   }, [])
 
@@ -153,9 +184,9 @@ export default function WaitlistClient() {
     if (!email || formState === 'loading') return
     setFormState('loading')
     try {
-      const res = await fetch('https://formspree.io/f/PLACEHOLDER', {
+      const res = await fetch('/api/waitlist', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       })
       setFormState(res.ok ? 'success' : 'error')
@@ -414,7 +445,18 @@ export default function WaitlistClient() {
         .wl-h1-line2 {
           display: block;
           color: rgba(190,198,255,0.82);
-          filter: drop-shadow(0 0 32px rgba(113,112,255,0.35));
+          animation: wl-tagline-glow 3.2s ease-in-out infinite;
+        }
+        @keyframes wl-tagline-glow {
+          0%, 100% {
+            filter: drop-shadow(0 0 8px rgba(113,112,255,0.22))
+                    drop-shadow(0 0 24px rgba(113,112,255,0.10));
+          }
+          50% {
+            filter: drop-shadow(0 0 18px rgba(130,143,255,0.55))
+                    drop-shadow(0 0 48px rgba(113,112,255,0.28))
+                    drop-shadow(0 0 80px rgba(113,112,255,0.10));
+          }
         }
         .wl-h1-wrap { position: relative; display: inline-block; width: 100%; }
 
