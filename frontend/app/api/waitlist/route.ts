@@ -1,24 +1,55 @@
+// frontend/app/api/waitlist/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer } from '@/lib/supabase-server'
 
 export async function POST(req: NextRequest) {
-  const { email } = await req.json()
+  const { email, video_s3_key, video_filename } = await req.json()
 
   if (!email || typeof email !== 'string' || !email.includes('@')) {
     return NextResponse.json({ error: 'Invalid email' }, { status: 400 })
   }
 
+  const normalised = email.trim().toLowerCase()
+
   const { error } = await supabaseServer
     .from('waitlist')
-    .insert({ email: email.trim().toLowerCase() })
+    .insert({
+      email:          normalised,
+      video_s3_key:   video_s3_key  ?? null,
+      video_filename: video_filename ?? null,
+    })
 
   if (error) {
     if (error.code === '23505') {
-      // Already on the list — treat as success so we don't leak whether an email is registered
+      // Duplicate email — treat as success (don't leak membership)
       return NextResponse.json({ ok: true })
     }
+    console.error('[waitlist] insert error:', error)
     return NextResponse.json({ error: 'Failed to join waitlist' }, { status: 500 })
   }
+
+  // Fire Resend notification — non-blocking, never fails the request
+  const adminUrl =
+    `${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.spectr.to'}` +
+    `/admin?key=${process.env.ADMIN_SECRET ?? ''}`
+
+  fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${process.env.RESEND_API_KEY ?? ''}`,
+      'Content-Type':  'application/json',
+    },
+    body: JSON.stringify({
+      from:    'spectr <onboarding@resend.dev>',
+      to:      'muhammedeliwat@gmail.com',
+      subject: `🎬 New blueprint request — ${normalised}`,
+      html: [
+        `<p><strong>${normalised}</strong> just submitted a video.</p>`,
+        `<p>File: ${video_filename ?? '(no file)'}</p>`,
+        `<p><a href="${adminUrl}">View in admin →</a></p>`,
+      ].join(''),
+    }),
+  }).catch(err => console.error('[resend] notification failed:', err))
 
   return NextResponse.json({ ok: true })
 }
