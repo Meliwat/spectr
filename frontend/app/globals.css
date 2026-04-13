@@ -226,6 +226,44 @@ body:has(.landing-frame)::-webkit-scrollbar {
     drop-shadow(0 0 7px rgba(255, 255, 255, 0.12));
 }
 
+.brand-neon-text {
+  font-size: 20px;
+  font-weight: 300;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #ffffff;
+  line-height: 1;
+  text-shadow:
+    0 0 3px rgba(255,255,255,1),
+    0 0 8px rgba(255,255,255,0.85),
+    0 0 18px rgba(255,255,255,0.55),
+    0 0 36px rgba(200,212,255,0.50),
+    0 0 70px rgba(160,180,255,0.32),
+    0 0 110px rgba(130,150,255,0.18);
+  animation: neon-breathe 4s ease-in-out infinite;
+}
+
+@keyframes neon-breathe {
+  0%, 100% {
+    text-shadow:
+      0 0 3px rgba(255,255,255,1),
+      0 0 8px rgba(255,255,255,0.85),
+      0 0 18px rgba(255,255,255,0.55),
+      0 0 36px rgba(200,212,255,0.50),
+      0 0 70px rgba(160,180,255,0.32),
+      0 0 110px rgba(130,150,255,0.18);
+  }
+  50% {
+    text-shadow:
+      0 0 3px rgba(255,255,255,1),
+      0 0 10px rgba(255,255,255,0.95),
+      0 0 24px rgba(255,255,255,0.65),
+      0 0 48px rgba(200,212,255,0.65),
+      0 0 90px rgba(160,180,255,0.45),
+      0 0 140px rgba(130,150,255,0.28);
+  }
+}
+
 .site-nav-links {
   display: flex;
   align-items: center;

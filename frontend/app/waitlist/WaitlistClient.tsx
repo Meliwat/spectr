@@ -396,7 +396,7 @@ export default function WaitlistClient() {
         /* Eyebrow chips slide in from left with stagger */
         .wl-badge-wrap {
           display: flex; flex-wrap: wrap; justify-content: center;
-          gap: 10px; margin-bottom: 20px;
+          gap: 10px; margin-bottom: 14px;
           opacity: 0;
           animation: wl-badges-in 0.7s var(--wl-spring) 60ms forwards;
         }
@@ -472,6 +472,48 @@ export default function WaitlistClient() {
         }
 
         /* ════════════════════════════════════════════════
+           NEON WORDMARK
+        ════════════════════════════════════════════════ */
+        .wl-neon-mark {
+          font-size: clamp(30px, 5vw, 60px);
+          font-weight: 200;
+          letter-spacing: 0.22em;
+          text-transform: uppercase;
+          color: #ffffff;
+          line-height: 1;
+          margin-bottom: 14px;
+          text-indent: 0.22em; /* optical offset for letter-spacing */
+          text-shadow:
+            0 0 4px rgba(255,255,255,1),
+            0 0 10px rgba(255,255,255,0.9),
+            0 0 22px rgba(255,255,255,0.6),
+            0 0 45px rgba(200,212,255,0.55),
+            0 0 85px rgba(160,180,255,0.35),
+            0 0 130px rgba(130,150,255,0.20);
+          animation: wl-neon-breathe 4.5s ease-in-out infinite;
+        }
+        @keyframes wl-neon-breathe {
+          0%, 100% {
+            text-shadow:
+              0 0 4px rgba(255,255,255,1),
+              0 0 10px rgba(255,255,255,0.9),
+              0 0 22px rgba(255,255,255,0.6),
+              0 0 45px rgba(200,212,255,0.55),
+              0 0 85px rgba(160,180,255,0.35),
+              0 0 130px rgba(130,150,255,0.20);
+          }
+          50% {
+            text-shadow:
+              0 0 4px rgba(255,255,255,1),
+              0 0 12px rgba(255,255,255,1),
+              0 0 28px rgba(255,255,255,0.75),
+              0 0 60px rgba(210,220,255,0.70),
+              0 0 110px rgba(170,188,255,0.48),
+              0 0 170px rgba(140,160,255,0.28);
+          }
+        }
+
+        /* ════════════════════════════════════════════════
            EYEBROW
         ════════════════════════════════════════════════ */
         .wl-live-badge {
@@ -498,9 +540,9 @@ export default function WaitlistClient() {
            HEADLINE
         ════════════════════════════════════════════════ */
         .wl-h1 {
-          font-size: clamp(38px, 5.5vw, 66px);
+          font-size: clamp(34px, 4.8vw, 58px);
           font-weight: 510; line-height: 1.0; letter-spacing: -0.04em;
-          margin-bottom: 14px;
+          margin-bottom: 12px;
           perspective: 600px;
         }
         .wl-h1-line1 {
@@ -792,13 +834,18 @@ export default function WaitlistClient() {
           width:'min(580px, calc(100vw - 48px))',
           textAlign:'center',
         }}>
+          {/* Neon wordmark */}
+          <div className="wl-neon-mark wl-reveal" style={{'--rd':'0ms'} as React.CSSProperties} aria-hidden="true">
+            Spectr
+          </div>
+
           {/* Eyebrow */}
           <div className="wl-badge-wrap">
             <span className="wl-live-badge">
               <span className="wl-live-dot" />
               Accepting orders
             </span>
-            <span className="metric-chip">Free for founding members</span>
+            <span className="metric-chip">Founders free early access</span>
           </div>
 
           {/* Headline — per-word staggered reveal */}

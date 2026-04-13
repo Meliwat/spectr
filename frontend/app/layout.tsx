@@ -33,15 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   priority
                   className="brand-symbol"
                 />
-                <Image
-                  src="/brand/spectr-logotype.png"
-                  alt=""
-                  aria-hidden="true"
-                  width={1522}
-                  height={639}
-                  priority
-                  className="brand-logotype"
-                />
+                <span className="brand-neon-text" aria-hidden="true">Spectr</span>
               </Link>
               <div className="site-nav-links">
                 <a
