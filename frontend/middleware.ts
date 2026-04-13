@@ -3,8 +3,13 @@ import { NextRequest, NextResponse } from 'next/server'
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Allow /waitlist and all API routes through
-  if (pathname === '/waitlist' || pathname.startsWith('/api/') || pathname.startsWith('/_next/')) {
+  // Allow /waitlist, /admin, and all API routes through
+  if (
+    pathname === '/waitlist' ||
+    pathname === '/admin' ||
+    pathname.startsWith('/api/') ||
+    pathname.startsWith('/_next/')
+  ) {
     return NextResponse.next()
   }
 
