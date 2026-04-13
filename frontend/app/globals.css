@@ -229,7 +229,41 @@ body:has(.landing-frame)::-webkit-scrollbar {
 .site-nav-links {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 4px;
+}
+
+.nav-icon-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  color: rgba(255,255,255,0.45);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.18s ease, background 0.18s ease;
+  flex-shrink: 0;
+}
+
+.nav-icon-link:hover {
+  color: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.05);
+}
+
+.nav-icon-link svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.nav-icon-sep {
+  width: 1px;
+  height: 16px;
+  background: rgba(255,255,255,0.10);
+  flex-shrink: 0;
+  margin: 0 2px;
 }
 
 .site-link {
