@@ -490,7 +490,10 @@ export default function WaitlistClient() {
             0 0 45px rgba(200,212,255,0.55),
             0 0 85px rgba(160,180,255,0.35),
             0 0 130px rgba(130,150,255,0.20);
-          animation: wl-neon-breathe 4.5s ease-in-out infinite;
+          opacity: 0;
+          animation:
+            wl-reveal-in 0.9s var(--wl-spring) 0ms forwards,
+            wl-neon-breathe 4.5s 0.95s ease-in-out infinite;
         }
         @keyframes wl-neon-breathe {
           0%, 100% {
@@ -835,7 +838,7 @@ export default function WaitlistClient() {
           textAlign:'center',
         }}>
           {/* Neon wordmark */}
-          <div className="wl-neon-mark wl-reveal" style={{'--rd':'0ms'} as React.CSSProperties} aria-hidden="true">
+          <div className="wl-neon-mark" aria-hidden="true">
             Spectr
           </div>
 
