@@ -277,9 +277,9 @@ export default function WaitlistClient() {
            BACKGROUND — 7 LAYERS
         ════════════════════════════════════════════════ */
         .wl-page {
-          min-height: calc(100dvh - 72px);
+          height: calc(100dvh - 72px);
           display: flex; align-items: center; justify-content: center;
-          padding: 40px 24px 80px;
+          padding: 16px 24px 16px;
           position: relative; overflow: hidden;
           background: radial-gradient(ellipse 180% 100% at 50% -20%,
             #0d0e18 0%, #07080f 40%, #010102 100%);
@@ -396,7 +396,7 @@ export default function WaitlistClient() {
         /* Eyebrow chips slide in from left with stagger */
         .wl-badge-wrap {
           display: flex; flex-wrap: wrap; justify-content: center;
-          gap: 10px; margin-bottom: 40px;
+          gap: 10px; margin-bottom: 20px;
           opacity: 0;
           animation: wl-badges-in 0.7s var(--wl-spring) 60ms forwards;
         }
@@ -409,7 +409,7 @@ export default function WaitlistClient() {
         .wl-divider {
           width: 40px; height: 1px;
           background: linear-gradient(90deg, transparent, rgba(113,112,255,0.5), rgba(255,255,255,0.2), rgba(113,112,255,0.5), transparent);
-          margin: 0 auto 28px;
+          margin: 0 auto 14px;
           transform-origin: center;
           opacity: 0;
           animation: wl-divider-in 0.6s var(--wl-snap) 520ms forwards;
@@ -453,7 +453,7 @@ export default function WaitlistClient() {
         /* Social strip: each item staggers in */
         .wl-strip {
           display: flex; align-items: center; justify-content: center;
-          flex-wrap: wrap; gap: 16px; margin-top: 32px;
+          flex-wrap: wrap; gap: 16px; margin-top: 18px;
         }
         .wl-strip-item {
           display: flex; align-items: center; gap: 6px;
@@ -498,9 +498,9 @@ export default function WaitlistClient() {
            HEADLINE
         ════════════════════════════════════════════════ */
         .wl-h1 {
-          font-size: clamp(44px, 7vw, 80px);
+          font-size: clamp(38px, 5.5vw, 66px);
           font-weight: 510; line-height: 1.0; letter-spacing: -0.04em;
-          margin-bottom: 28px;
+          margin-bottom: 14px;
           perspective: 600px;
         }
         .wl-h1-line1 {
@@ -533,9 +533,9 @@ export default function WaitlistClient() {
            SUBHEADLINE
         ════════════════════════════════════════════════ */
         .wl-sub {
-          font-size: 17px; color: var(--text-2);
-          line-height: 1.65; letter-spacing: -0.01em; font-weight: 400;
-          margin: 0 auto 44px;
+          font-size: 15px; color: var(--text-2);
+          line-height: 1.55; letter-spacing: -0.01em; font-weight: 400;
+          margin: 0 auto 20px;
         }
         .wl-sub strong { color: rgba(200,205,255,0.8); font-weight: 500; }
 
@@ -550,7 +550,7 @@ export default function WaitlistClient() {
         .wl-card-wrap.focused .wl-card-bloom { opacity: 1; }
 
         .wl-card {
-          position: relative; width: 100%; padding: 26px; border-radius: 20px;
+          position: relative; width: 100%; padding: 18px; border-radius: 20px;
           border: 1px solid rgba(255,255,255,0.07);
           background: rgba(10,11,14,0.75);
           backdrop-filter: blur(32px) saturate(1.4);
@@ -687,7 +687,7 @@ export default function WaitlistClient() {
         /* ── UPLOAD SCREEN ──────────────────────────────────────────────────────── */
         .wl-upload-zone {
           border: 1.5px dashed rgba(113,112,255,0.30);
-          border-radius: 10px; padding: 28px 20px; text-align: center;
+          border-radius: 10px; padding: 18px 20px; text-align: center;
           cursor: pointer; transition: border-color 0.2s, background 0.2s;
           position: relative; margin-bottom: 14px;
         }
