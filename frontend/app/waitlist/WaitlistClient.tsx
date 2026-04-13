@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { supabase } from '@/lib/supabase'
 
 // ── PARTICLE LAYERS ──────────────────────────────────────────────────────────
 const DUST: [number, number, number, number, number][] = [
@@ -61,6 +62,7 @@ function spawnWisp(cw: number, ch: number, mid = false): FlyWisp {
 }
 
 type FormState = 'idle' | 'loading' | 'success' | 'error'
+type UploadState = 'idle' | 'uploading' | 'error'
 
 // Split headline into word spans for staggered word reveal
 function WordReveal({ text, baseDelay, className }: { text: string; baseDelay: number; className?: string }) {
@@ -87,6 +89,14 @@ export default function WaitlistClient() {
   const [focused, setFocused]     = useState(false)
   const inputRef  = useRef<HTMLInputElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  const [screen,        setScreen]        = useState<'upload' | 'email'>('upload')
+  const [uploadState,   setUploadState]   = useState<UploadState>('idle')
+  const [selectedFile,  setSelectedFile]  = useState<File | null>(null)
+  const [dragActive,    setDragActive]    = useState(false)
+  const [videoKey,      setVideoKey]      = useState('')
+  const [videoFilename, setVideoFilename] = useState('')
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // ── Flying wisp canvas ────────────────────────────────────────────────────
   useEffect(() => {
@@ -179,6 +189,65 @@ export default function WaitlistClient() {
     inputRef.current?.focus()
   }, [])
 
+  function validateFile(file: File): string | null {
+    if (!file.name.toLowerCase().endsWith('.mp4') && file.type !== 'video/mp4') {
+      return 'Only .mp4 files are accepted'
+    }
+    if (file.size > 500 * 1024 * 1024) {
+      return 'File must be under 500 MB'
+    }
+    return null
+  }
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const err = validateFile(file)
+    if (err) { setUploadState('error'); return }
+    setSelectedFile(file)
+    setUploadState('idle')
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault()
+    setDragActive(false)
+    const file = e.dataTransfer.files?.[0]
+    if (!file) return
+    const err = validateFile(file)
+    if (err) { setUploadState('error'); return }
+    setSelectedFile(file)
+    setUploadState('idle')
+  }
+
+  async function handleUpload() {
+    if (!selectedFile || uploadState === 'uploading') return
+    setUploadState('uploading')
+
+    try {
+      // 1. Get signed upload URL from our API
+      const res = await fetch('/api/waitlist/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename: selectedFile.name, size: selectedFile.size }),
+      })
+      if (!res.ok) { setUploadState('error'); return }
+      const { key, filename, token } = await res.json()
+
+      // 2. Upload directly to Supabase Storage using the signed token
+      const { error: uploadErr } = await supabase.storage
+        .from('waitlist-videos')
+        .uploadToSignedUrl(key, token, selectedFile, { contentType: 'video/mp4' })
+
+      if (uploadErr) { setUploadState('error'); return }
+
+      setVideoKey(key)
+      setVideoFilename(filename)
+      setScreen('email')
+    } catch {
+      setUploadState('error')
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!email || formState === 'loading') return
@@ -187,7 +256,7 @@ export default function WaitlistClient() {
       const res = await fetch('/api/waitlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, video_s3_key: videoKey, video_filename: videoFilename }),
       })
       setFormState(res.ok ? 'success' : 'error')
     } catch {
@@ -614,6 +683,45 @@ export default function WaitlistClient() {
           font-size: 12px; color: var(--error); margin-top: 10px;
           opacity: 0; animation: wl-reveal-in 0.4s var(--wl-spring) forwards;
         }
+
+        /* ── UPLOAD SCREEN ──────────────────────────────────────────────────────── */
+        .wl-upload-zone {
+          border: 1.5px dashed rgba(113,112,255,0.30);
+          border-radius: 10px; padding: 28px 20px; text-align: center;
+          cursor: pointer; transition: border-color 0.2s, background 0.2s;
+          position: relative; margin-bottom: 14px;
+        }
+        .wl-upload-zone:hover, .wl-upload-zone.drag-active {
+          border-color: rgba(113,112,255,0.65);
+          background: rgba(113,112,255,0.04);
+        }
+        .wl-upload-zone input[type="file"] {
+          position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+        }
+        .wl-upload-icon { font-size: 26px; margin-bottom: 10px; }
+        .wl-upload-label { color: #6b7280; font-size: 12px; line-height: 1.6; }
+        .wl-upload-label strong { color: #a0a4d0; }
+
+        .wl-file-pill {
+          display: flex; align-items: center; gap: 10px;
+          background: rgba(113,112,255,0.08); border: 1px solid rgba(113,112,255,0.20);
+          border-radius: 8px; padding: 10px 14px; margin-bottom: 14px;
+        }
+        .wl-file-name { font-size: 12px; color: #a0a4d0; flex: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .wl-file-remove { background: none; border: none; color: #6b7280; cursor: pointer; font-size: 16px; line-height: 1; padding: 0; }
+
+        .wl-screen-enter { animation: wl-screen-in 0.4s cubic-bezier(0.16,1,0.3,1) both; }
+        @keyframes wl-screen-in {
+          from { opacity: 0; transform: translateY(10px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .wl-card-heading {
+          font-size: 15px; font-weight: 600; color: #e0e4ff;
+          margin: 0 0 5px; text-align: center;
+        }
+        .wl-card-sub {
+          font-size: 12px; color: #6b7280; text-align: center; margin: 0 0 18px; line-height: 1.5;
+        }
       `}</style>
 
       <main className="wl-page">
@@ -706,34 +814,94 @@ export default function WaitlistClient() {
             <div className="wl-card">
               <div className="wl-card-scan" aria-hidden="true" />
 
-              {formState === 'success' ? (
-                <div className="wl-success-wrap">
+              {screen === 'upload' ? (
+                /* ── Screen 1: Upload ── */
+                <div className="wl-screen-enter">
+                  {selectedFile ? (
+                    <div className="wl-file-pill">
+                      <span style={{ fontSize: 16 }}>🎬</span>
+                      <span className="wl-file-name">{selectedFile.name}</span>
+                      <button
+                        className="wl-file-remove"
+                        onClick={() => { setSelectedFile(null); setUploadState('idle') }}
+                        aria-label="Remove file"
+                      >×</button>
+                    </div>
+                  ) : (
+                    <div
+                      className={`wl-upload-zone${dragActive ? ' drag-active' : ''}`}
+                      onDragOver={e => { e.preventDefault(); setDragActive(true) }}
+                      onDragLeave={() => setDragActive(false)}
+                      onDrop={handleDrop}
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <div className="wl-upload-icon">🎬</div>
+                      <div className="wl-upload-label">
+                        <strong>Drop your screen recording here</strong><br />
+                        or click to browse · MP4 only · max 500 MB
+                      </div>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept=".mp4,video/mp4"
+                        onChange={handleFileChange}
+                        onClick={e => e.stopPropagation()}
+                      />
+                    </div>
+                  )}
+
+                  <button
+                    className="wl-btn"
+                    onClick={handleUpload}
+                    disabled={!selectedFile || uploadState === 'uploading'}
+                  >
+                    {uploadState === 'uploading' ? 'Uploading...' : 'Get Free Blueprint →'}
+                  </button>
+
+                  {uploadState === 'error' && (
+                    <p className="wl-error">Upload failed — check your file and try again.</p>
+                  )}
+
+                  <p className="wl-founding">
+                    Founding members get a <span>lifetime discount</span> at launch.
+                  </p>
+                </div>
+              ) : formState === 'success' ? (
+                /* ── Success state ── */
+                <div className="wl-success-wrap wl-screen-enter">
                   <div className="wl-success-icon" aria-hidden="true">✓</div>
                   <div className="wl-success-text">
-                    <strong>You&rsquo;re in.</strong>
-                    We&rsquo;ll reach out to get your screen recording and build your first blueprint.
+                    <strong>You&rsquo;re in.</strong>{' '}
+                    We&rsquo;ll send your blueprint within 24 hours.
                   </div>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit}>
-                  <input
-                    ref={inputRef} className="wl-input" type="email"
-                    placeholder="your@email.com" value={email}
-                    onChange={e => setEmail(e.target.value)}
-                    onFocus={() => setFocused(true)}
-                    onBlur={() => setFocused(false)}
-                    required disabled={formState === 'loading'}
-                  />
-                  <button className="wl-btn" type="submit" disabled={formState === 'loading'}>
-                    {formState === 'loading' ? 'Sending...' : 'Get my free blueprint'}
-                  </button>
-                  {formState === 'error' && <p className="wl-error">Something went wrong — try again.</p>}
-                </form>
+                /* ── Screen 2: Email ── */
+                <div className="wl-screen-enter">
+                  <p className="wl-card-heading">Your blueprint is being prepared.</p>
+                  <p className="wl-card-sub">Drop your email and we&rsquo;ll send it within 24 hours.</p>
+                  <form onSubmit={handleSubmit}>
+                    <input
+                      ref={inputRef} className="wl-input" type="email"
+                      placeholder="your@email.com" value={email}
+                      onChange={e => setEmail(e.target.value)}
+                      onFocus={() => setFocused(true)}
+                      onBlur={() => setFocused(false)}
+                      required disabled={formState === 'loading'}
+                      autoFocus
+                    />
+                    <button className="wl-btn" type="submit" disabled={formState === 'loading'}>
+                      {formState === 'loading' ? 'Sending...' : 'Send my blueprint'}
+                    </button>
+                    {formState === 'error' && (
+                      <p className="wl-error">Something went wrong — try again.</p>
+                    )}
+                  </form>
+                  <p className="wl-founding">
+                    Founding members get a <span>lifetime discount</span> at launch.
+                  </p>
+                </div>
               )}
-
-              <p className="wl-founding">
-                Founding members get a <span>lifetime discount</span> at launch.
-              </p>
             </div>
           </div>
 
