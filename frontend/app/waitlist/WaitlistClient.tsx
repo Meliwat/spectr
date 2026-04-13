@@ -64,20 +64,26 @@ export default function WaitlistClient() {
 
   // ── Wisp canvas animation ──────────────────────────────────────────────────
   useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')!
+    const el = canvasRef.current
+    if (!el) return
+    const g = el.getContext('2d')
+    if (!g) return
+
+    // Capture as explicit non-nullable types so TS doesn't lose narrowing in closures
+    const cvs: HTMLCanvasElement = el
+    const ctx: CanvasRenderingContext2D = g
+
     let raf: number
     let t = 0
 
     const resize = () => {
-      canvas.width  = window.innerWidth
-      canvas.height = window.innerHeight
+      cvs.width  = window.innerWidth
+      cvs.height = window.innerHeight
     }
     resize()
     window.addEventListener('resize', resize)
 
-    const onMove = (e: MouseEvent) => { mouseRef.current = { x: e.clientX, y: e.clientY } }
+    const onMove  = (e: MouseEvent) => { mouseRef.current = { x: e.clientX, y: e.clientY } }
     const onLeave = () => { mouseRef.current = { x: -2000, y: -2000 } }
     window.addEventListener('mousemove', onMove)
     window.addEventListener('mouseleave', onLeave)
@@ -88,34 +94,30 @@ export default function WaitlistClient() {
       const dist = Math.sqrt(dx * dx + dy * dy)
       const pull = Math.max(0, 1 - dist / 380)
 
-      // two passes: sharp core + soft glow
       for (let pass = 0; pass < 2; pass++) {
         const alpha = pass === 0 ? 0.055 + pull * 0.22 : 0.025 + pull * 0.09
-        const lw    = pass === 0 ? 0.9 + pull * 2.0   : 4.0   + pull * 8.0
+        const lw    = pass === 0 ? 0.9  + pull * 2.0   : 4.0   + pull * 8.0
 
         ctx.beginPath()
         let px = wx, py = wy
         ctx.moveTo(px, py)
 
-        const segs = 10
-        for (let s = 1; s <= segs; s++) {
-          const f    = s / segs
-          const wave = Math.sin(time * 0.55 + phase + s * 0.65) * 22 * f
-          const wave2= Math.cos(time * 0.42 + phase * 1.4 + s * 0.45) * 13 * f
-          const nx   = wx + wave + dx * pull * 0.55 * f
-          const ny   = wy - len * f + wave2 + dy * pull * 0.30 * f
-          const cpx  = (px + nx) / 2 + wave * 0.4
-          const cpy  = (py + ny) / 2
-          ctx.quadraticCurveTo(cpx, cpy, nx, ny)
+        for (let s = 1; s <= 10; s++) {
+          const f     = s / 10
+          const wave  = Math.sin(time * 0.55 + phase + s * 0.65) * 22 * f
+          const wave2 = Math.cos(time * 0.42 + phase * 1.4 + s * 0.45) * 13 * f
+          const nx    = wx + wave + dx * pull * 0.55 * f
+          const ny    = wy - len * f + wave2 + dy * pull * 0.30 * f
+          ctx.quadraticCurveTo((px + nx) / 2 + wave * 0.4, (py + ny) / 2, nx, ny)
           px = nx; py = ny
         }
 
         const tipX = wx + Math.sin(time * 0.55 + phase) * 22 + dx * pull * 0.55
         const tipY = wy - len + dy * pull * 0.30
         const grad = ctx.createLinearGradient(wx, wy, tipX, tipY)
-        grad.addColorStop(0,   `rgba(${hue},${alpha})`)
-        grad.addColorStop(0.55,`rgba(${hue},${alpha * 0.5})`)
-        grad.addColorStop(1,   `rgba(${hue},0)`)
+        grad.addColorStop(0,    `rgba(${hue},${alpha})`)
+        grad.addColorStop(0.55, `rgba(${hue},${alpha * 0.5})`)
+        grad.addColorStop(1,    `rgba(${hue},0)`)
 
         ctx.strokeStyle = grad
         ctx.lineWidth   = lw
@@ -127,11 +129,9 @@ export default function WaitlistClient() {
 
     function loop() {
       t += 0.014
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      ctx.clearRect(0, 0, cvs.width, cvs.height)
       const { x: mx, y: my } = mouseRef.current
-      WISPS.forEach(w => {
-        drawWisp(w.x * canvas.width, w.y * canvas.height, w.len, w.phase, w.hue, mx, my, t)
-      })
+      WISPS.forEach(w => drawWisp(w.x * cvs.width, w.y * cvs.height, w.len, w.phase, w.hue, mx, my, t))
       raf = requestAnimationFrame(loop)
     }
     loop()
