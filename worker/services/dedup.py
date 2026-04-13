@@ -1,8 +1,13 @@
+import os
+
 import imagehash
 from PIL import Image
 
 
-def deduplicate_frames(frame_paths: list[str], threshold: int = 8) -> list[str]:
+_DEDUP_THRESHOLD = int(os.getenv("DEDUP_THRESHOLD", "6"))
+
+
+def deduplicate_frames(frame_paths: list[str], threshold: int = _DEDUP_THRESHOLD) -> list[str]:
     seen, unique = [], []
     for path in frame_paths:
         try:

@@ -53,7 +53,7 @@ from constants import (
 load_dotenv(Path(__file__).parent.parent / ".env")
 
 BUCKET = "spectr-uploads"
-MAX_FRAMES = int(os.getenv("MAX_FRAMES", 24))
+MAX_FRAMES = int(os.getenv("MAX_FRAMES", 48))
 BATCH_SIZE = int(os.getenv("FRAME_BATCH_SIZE", 25))
 POLL_INTERVAL = 5  # seconds between Supabase polls
 
@@ -532,7 +532,7 @@ def _generate_spec_section(
         except Exception as exc:
             last_error = exc
             if attempt == 2:
-                raise RuntimeError(f"Failed to generate {section['filename']}: {exc}") from exc
+                break
             wait = 2 ** attempt
             project_log(
                 project_id,
@@ -541,7 +541,21 @@ def _generate_spec_section(
             )
             time.sleep(wait)
 
-    raise RuntimeError(f"Failed to generate {section['filename']}: {last_error}")
+    # All retries exhausted — write a degraded placeholder so the rest of the
+    # bundle can still be assembled and delivered. A partial spec beats no spec.
+    placeholder = (
+        f"{section['top_level_headings'][0]}\n\n"
+        f"> ⚠️ This section could not be generated automatically "
+        f"(error: {last_error}). "
+        f"Please re-run the project or fill in this section manually.\n"
+    )
+    (output_dir / section["filename"]).write_text(placeholder + "\n", encoding="utf-8")
+    project_log(
+        project_id,
+        f"        ⚠️ section {section_index}/{total_sections} failed after 3 attempts — "
+        f"placeholder written, continuing build",
+    )
+    return placeholder
 
 
 def _run_spec_lane(

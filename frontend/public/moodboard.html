@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spectr — Landing Page Directions</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #080808; color: #fff; font-family: system-ui, sans-serif; }
+
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; gap: 8px; padding: 16px 24px;
+    background: rgba(8,8,8,0.9); backdrop-filter: blur(12px);
+    border-bottom: 1px solid #1a1a1a;
+  }
+  .nav button {
+    padding: 6px 16px; border-radius: 6px; border: 1px solid #222;
+    background: transparent; color: #666; font-size: 12px; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .nav button.active { background: #fff; color: #000; border-color: #fff; }
+  .nav button:hover:not(.active) { color: #fff; border-color: #444; }
+  .nav-label { color: #333; font-size: 12px; display: flex; align-items: center; margin-right: 8px; }
+
+  .direction { display: none; min-height: 100vh; }
+  .direction.active { display: block; }
+
+  /* ─── DIRECTION 1: TERMINAL / SCAN ─── */
+  #d1 {
+    background: #000;
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; padding: 120px 24px;
+    position: relative; overflow: hidden;
+  }
+  #d1 .scanline {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 2px,
+      rgba(0,255,100,0.015) 2px, rgba(0,255,100,0.015) 4px
+    );
+    pointer-events: none;
+  }
+  #d1 .glow {
+    position: absolute; top: 40%; left: 50%; transform: translate(-50%,-50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(0,255,100,0.04) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  #d1 .label {
+    font-family: 'Courier New', monospace; font-size: 11px;
+    color: #0f0; letter-spacing: 0.2em; margin-bottom: 32px;
+    opacity: 0.7;
+  }
+  #d1 h1 {
+    font-family: 'Courier New', monospace;
+    font-size: clamp(32px, 6vw, 72px);
+    font-weight: 400; color: #fff;
+    text-align: center; line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  #d1 h1 .cursor {
+    display: inline-block; width: 3px; height: 0.9em;
+    background: #0f0; margin-left: 4px; vertical-align: middle;
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  #d1 .sub {
+    font-family: 'Courier New', monospace;
+    font-size: 14px; color: #555; text-align: center;
+    max-width: 480px; margin: 24px auto 0; line-height: 1.8;
+  }
+  #d1 .sub span { color: #0f0; }
+  #d1 .form { margin-top: 48px; display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 400px; }
+  #d1 input {
+    background: transparent; border: 1px solid #0f03;
+    border-left: 2px solid #0f0; color: #0f0;
+    font-family: 'Courier New', monospace; font-size: 14px;
+    padding: 14px 16px; outline: none;
+    transition: border-color 0.2s;
+  }
+  #d1 input::placeholder { color: #0f04; }
+  #d1 input:focus { border-color: #0f0; }
+  #d1 button {
+    background: transparent; border: 1px solid #0f0;
+    color: #0f0; font-family: 'Courier New', monospace;
+    font-size: 13px; padding: 14px; cursor: pointer;
+    letter-spacing: 0.1em; transition: all 0.15s;
+  }
+  #d1 button:hover { background: #0f0; color: #000; }
+  #d1 .founding { font-family: 'Courier New', monospace; font-size: 11px; color: #0f04; margin-top: 8px; text-align: center; letter-spacing: 0.1em; }
+
+  /* ─── DIRECTION 2: CINEMATIC / VOID ─── */
+  #d2 {
+    background: #050508;
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; padding: 120px 24px;
+    position: relative; overflow: hidden;
+  }
+  #d2 .orb {
+    position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
+    width: 800px; height: 800px;
+    background: radial-gradient(circle at 50% 40%,
+      rgba(120,80,255,0.12) 0%,
+      rgba(60,40,180,0.06) 40%,
+      transparent 70%
+    );
+    pointer-events: none;
+  }
+  #d2 .orb2 {
+    position: absolute; bottom: -300px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(255,60,120,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  #d2 .label {
+    font-size: 10px; letter-spacing: 0.3em; color: #ffffff22;
+    text-transform: uppercase; margin-bottom: 40px;
+    font-weight: 500;
+  }
+  #d2 h1 {
+    font-size: clamp(48px, 8vw, 96px);
+    font-weight: 700; text-align: center;
+    line-height: 0.95; letter-spacing: -0.04em;
+    background: linear-gradient(135deg, #fff 0%, #ffffff88 50%, #ffffff44 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  #d2 .dot { color: #7b4fff; -webkit-text-fill-color: #7b4fff; }
+  #d2 .sub {
+    font-size: 16px; color: #ffffff44; text-align: center;
+    max-width: 440px; margin: 32px auto 0; line-height: 1.7;
+    font-weight: 300; letter-spacing: 0.01em;
+  }
+  #d2 .sub em { color: #ffffff88; font-style: normal; }
+  #d2 .form { margin-top: 56px; display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 380px; }
+  #d2 input {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+    color: #fff; font-size: 15px; padding: 15px 18px;
+    border-radius: 10px; outline: none; transition: all 0.2s;
+  }
+  #d2 input::placeholder { color: rgba(255,255,255,0.2); }
+  #d2 input:focus { background: rgba(255,255,255,0.07); border-color: rgba(123,79,255,0.5); }
+  #d2 button {
+    background: linear-gradient(135deg, #7b4fff, #5b2fdf);
+    border: none; color: #fff; font-size: 14px; font-weight: 600;
+    padding: 15px; border-radius: 10px; cursor: pointer;
+    letter-spacing: 0.02em; transition: all 0.2s;
+    box-shadow: 0 0 40px rgba(123,79,255,0.3);
+  }
+  #d2 button:hover { transform: translateY(-1px); box-shadow: 0 4px 60px rgba(123,79,255,0.5); }
+  #d2 .founding { font-size: 12px; color: rgba(255,255,255,0.2); margin-top: 12px; text-align: center; }
+
+  /* ─── DIRECTION 3: SURGICAL / EDITORIAL ─── */
+  #d3 {
+    background: #0a0a0a;
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; padding: 120px 24px;
+    position: relative; overflow: hidden;
+  }
+  #d3 .grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 0%, transparent 100%);
+    pointer-events: none;
+  }
+  #d3 .tag {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 48px;
+  }
+  #d3 .tag-dot { width: 6px; height: 6px; border-radius: 50%; background: #fff; }
+  #d3 .tag-text { font-size: 11px; letter-spacing: 0.2em; color: #444; text-transform: uppercase; }
+  #d3 h1 {
+    font-size: clamp(40px, 7vw, 88px);
+    font-weight: 600; text-align: center;
+    line-height: 1.0; letter-spacing: -0.035em;
+    color: #fff;
+  }
+  #d3 h1 .line2 { color: #ffffff33; }
+  #d3 .divider {
+    width: 40px; height: 1px; background: #222;
+    margin: 40px auto;
+  }
+  #d3 .sub {
+    font-size: 15px; color: #555; text-align: center;
+    max-width: 420px; margin: 0 auto; line-height: 1.8;
+    font-weight: 400;
+  }
+  #d3 .sub strong { color: #888; font-weight: 500; }
+  #d3 .form {
+    margin-top: 52px; display: flex; gap: 0;
+    width: 100%; max-width: 420px;
+    border: 1px solid #1e1e1e; border-radius: 10px; overflow: hidden;
+  }
+  #d3 input {
+    flex: 1; background: transparent; border: none;
+    color: #fff; font-size: 14px; padding: 15px 18px;
+    outline: none;
+  }
+  #d3 input::placeholder { color: #2a2a2a; }
+  #d3 button {
+    background: #fff; border: none; color: #000;
+    font-size: 13px; font-weight: 600; padding: 15px 20px;
+    cursor: pointer; white-space: nowrap; transition: background 0.15s;
+    letter-spacing: 0.01em;
+  }
+  #d3 button:hover { background: #e5e5e5; }
+  #d3 .founding { font-size: 12px; color: #2a2a2a; margin-top: 16px; text-align: center; }
+  #d3 .founding span { color: #444; }
+
+  /* Comparison label */
+  .dir-label {
+    position: absolute; top: 80px; left: 24px;
+    font-size: 10px; letter-spacing: 0.2em; color: #333;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <span class="nav-label">Direction →</span>
+  <button class="active" onclick="show(1)">1 — Terminal</button>
+  <button onclick="show(2)">2 — Cinematic</button>
+  <button onclick="show(3)">3 — Surgical</button>
+</div>
+
+<!-- DIRECTION 1: TERMINAL -->
+<div id="d1" class="direction active">
+  <div class="scanline"></div>
+  <div class="glow"></div>
+  <div class="label">SPECTR.APP // v0.1</div>
+  <h1>See an app.<br>Build an app.<span class="cursor"></span></h1>
+  <p class="sub">
+    Send us a screen recording of any mobile app.<br>
+    We send back a <span>complete UI spec</span> — every screen,<br>
+    component, and token — ready for Claude Code.
+  </p>
+  <div class="form">
+    <input type="email" placeholder="your@email.com">
+    <button>GET MY FREE SPEC_</button>
+  </div>
+  <p class="founding">// FOUNDING MEMBERS GET LIFETIME DISCOUNT AT LAUNCH</p>
+</div>
+
+<!-- DIRECTION 2: CINEMATIC -->
+<div id="d2" class="direction">
+  <div class="orb"></div>
+  <div class="orb2"></div>
+  <div class="label">Spectr</div>
+  <h1>See an app<span class="dot">.</span><br>Build an app<span class="dot">.</span></h1>
+  <p class="sub">
+    Send a screen recording of any mobile app.
+    Get back a <em>complete UI spec</em> — every screen, component,
+    and design token — ready to drop into Claude Code.
+  </p>
+  <div class="form">
+    <input type="email" placeholder="your@email.com">
+    <button>Get my free spec →</button>
+  </div>
+  <p class="founding">Founding members get a lifetime discount at launch.</p>
+</div>
+
+<!-- DIRECTION 3: SURGICAL -->
+<div id="d3" class="direction">
+  <div class="grid"></div>
+  <div class="tag">
+    <div class="tag-dot"></div>
+    <span class="tag-text">Spectr</span>
+  </div>
+  <h1>See an app.<br><span class="line2">Build an app.</span></h1>
+  <div class="divider"></div>
+  <p class="sub">
+    Send us a screen recording of any mobile app.<br>
+    We send back a <strong>complete UI spec</strong> ready to drop<br>
+    straight into Claude Code and start building.
+  </p>
+  <div class="form">
+    <input type="email" placeholder="your@email.com">
+    <button>Get my free spec</button>
+  </div>
+  <p class="founding"><span>Founding members get a lifetime discount at launch.</span></p>
+</div>
+
+<script>
+function show(n) {
+  document.querySelectorAll('.direction').forEach(d => d.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('d' + n).classList.add('active');
+  document.querySelectorAll('.nav button')[n-1].classList.add('active');
+}
+</script>
+</body>
+</html>
