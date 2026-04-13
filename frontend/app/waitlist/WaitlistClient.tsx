@@ -796,7 +796,7 @@ export default function WaitlistClient() {
           <div className="wl-badge-wrap">
             <span className="wl-live-badge">
               <span className="wl-live-dot" />
-              Accepting applications
+              Accepting orders
             </span>
             <span className="metric-chip">Free for founding members</span>
           </div>
