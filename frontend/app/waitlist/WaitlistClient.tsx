@@ -1043,15 +1043,6 @@ export default function WaitlistClient() {
             Spectr
           </div>
 
-          {/* Eyebrow */}
-          <div className="wl-badge-wrap">
-            <span className="wl-live-badge">
-              <span className="wl-live-dot" />
-              Accepting orders
-            </span>
-            <span className="metric-chip">Founders free early access</span>
-          </div>
-
           {/* Headline — per-word staggered reveal */}
           <div className="wl-h1-wrap">
             <h1 className="wl-h1">

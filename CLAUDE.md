@@ -282,7 +282,7 @@ Before the product opens to the public, the landing page collects waitlist signu
 
 ### Flow
 
-1. **Screen 1 — Upload**: Dedicated page at `/waitlist` (`app/waitlist/page.tsx` + `WaitlistClient.tsx`). Neon wordmark → badge → headline → subcopy → **phone-framed demo video** → upload card → social proof strip. The demo video autoplays looped above the upload card. Drag/drop zone. Validates MP4. "Get Free Blueprint" button uploads the video directly to Supabase Storage (`waitlist-videos` bucket, private) via `POST /api/waitlist/upload`. Shows loading state during upload, then transitions to Screen 2.
+1. **Screen 1 — Upload**: Dedicated page at `/waitlist` (`app/waitlist/page.tsx` + `WaitlistClient.tsx`). Neon wordmark → badge → headline → subcopy → upload card → social proof strip. The **phone-framed demo video** is pinned absolutely to the right side of the viewport (212px wide on desktop, 168px on ≥768px, hidden below 960px) so it doesn't compete with the upload CTA on small screens. Drag/drop zone. Validates MP4. "Get Free Blueprint" button uploads the video directly to Supabase Storage (`waitlist-videos` bucket, private) via `POST /api/waitlist/upload`. Shows loading state during upload, then transitions to Screen 2.
 2. **Screen 2 — Email**: Full-page transition after upload succeeds. "Your blueprint is being prepared" heading, email input, submit. `POST /api/waitlist` stores `{email, video_s3_key, video_filename}` in the `waitlist` table and sends a Resend notification to muhammedeliwat@gmail.com.
 
 ### Demo Video Assets
@@ -342,6 +342,39 @@ This helper is already applied in `lib/supabase.ts` (for `NEXT_PUBLIC_SUPABASE_U
 
 ---
 
+## Pre-Launch Waitlist Gate
+
+Before the Supabase auth check, `middleware.ts` enforces an invite-only gate via a `spectr_access` cookie. This prevents non-invited traffic from ever reaching the product — they land on `/waitlist` instead.
+
+### How it works
+
+1. Middleware checks for `request.cookies.get('spectr_access')?.value === 'main'`
+2. If the cookie is absent → redirect to `/waitlist`
+3. If the cookie is present → proceed to the Supabase auth check (for `/app/*` routes)
+
+### Granting access
+
+`GET /spectr-enter?to=<path>` (`app/spectr-enter/route.ts`) sets the cookie and redirects to `<path>` (defaults to `/app`). Share this URL with invited users. The cookie is `httpOnly`, `sameSite: lax`, secure in production, and expires after 30 days.
+
+```
+https://www.spectr.to/spectr-enter?to=/app
+```
+
+After deployment, hit this URL in every browser you want to grant access to — including your own.
+
+### Ungated paths
+
+These bypass both the waitlist gate and the auth check:
+
+- `/waitlist` — public sign-up page
+- `/spectr-enter` — cookie setter (must stay ungated or you can't grant access)
+- `/admin` — admin dashboard
+- `/auth/callback` — Supabase magic-link exchange
+- `/api/*` — all API routes
+- `/_next/*` and static assets — Next.js internals
+
+---
+
 ## Authentication Architecture
 
 Auth is implemented via Supabase magic-link (OTP email). Full user isolation is live.
@@ -371,6 +404,8 @@ There are now three Supabase client modules — use the right one:
 
 The `projects` table has a `user_id uuid REFERENCES auth.users(id)` column (nullable for legacy rows) and an index on `user_id`.
 
+`spectr-uploads` storage bucket has RLS policies for the `authenticated` role: INSERT, SELECT, and UPDATE on `storage.objects` scoped to `bucket_id = 'spectr-uploads'`. All three are required — the upload call uses `upsert: true`, which needs UPDATE in addition to INSERT. The `/app` upload flow uses the browser JWT client and these policies allow it through.
+
 ### Known State After Migration
 
 The 35 pre-auth `projects` rows with `user_id = NULL` were deleted on 2026-04-14. The table is clean; all remaining rows have an owner.
@@ -397,7 +432,7 @@ These must remain configured. Removing them breaks the magic-link callback.
 
 ## Known Pre-Launch Gaps
 
-Auth and user isolation are now implemented. No remaining blocking pre-launch gaps identified as of 2026-04-14.
+Auth and user isolation are now implemented. The `spectr-uploads` RLS policies (INSERT, SELECT, UPDATE for `authenticated`) are in place. No known open gaps remain.
 
 ---
 
@@ -424,14 +459,37 @@ Every prompt instruction that could produce vague output should specify that exa
 **Do not skip the validation pass on spec sections.**
 Each section is validated against required headings and substrings before acceptance. This is the quality gate. Bypassing it produces specs that look complete but are missing critical content.
 
+**Do not leave app-specific strings in `required_substrings` validators.**
+`legacy_spec.py` sections 6 (`implementation_notes`) and 7 (`claude_code_prompt`) had a hardcoded `"merchant logos"` entry in their `required_substrings` tuples — a DoorDash-era leftover. For any non-food-delivery app Claude correctly omits that phrase, fails validation, retries 3×, then falls back to a placeholder. This burns ~60–90s per failing section and silently degrades output quality. Keep `required_substrings` generic (structural headings only); never put app-specific content there. Check `SPEC_SECTION_DEFINITIONS` in `worker/prompts/legacy_spec.py` if sections 6–7 are consistently falling back to placeholders.
+
+The fix is to remove the string from the **validator tuple only** — do not remove it from the **prompt instructions**. The prompt still tells Claude to write the branding-override guidance; for food-delivery clones Claude will still emit it naturally. The validator just stops policing a specific literal wording, so non-food apps no longer fail validation on irrelevant content.
+
 **Do not use the `supabaseServer` module-level singleton in API route handlers.**
 `lib/supabase-server.ts` exports a `supabaseServer` singleton that is initialized at module load time — before Vercel injects environment variables into the runtime. Using it in API routes produces "invalid api key" errors in production even when the env vars are correctly set. Always call `makeSupabaseServer()` inside the request handler function body instead. The `supabaseServer` export exists for compatibility with existing imports but must not be the pattern for new routes.
 
 **Do not use internal Next.js fetch loopback in server-rendered pages.**
 Server-rendered pages (like `app/admin/page.tsx`) must not call their own API routes via `fetch('/api/...')` internally. On Vercel, server-to-server loopback fetches are unreliable — the request may fail or time out because the function tries to call itself before it has fully initialized. Instead, query Supabase (or any data source) directly inside the server component using `makeSupabaseServer()`. This was the root cause of the admin dashboard failing to load waitlist data in production despite the API route working correctly when called externally.
 
+**Do not let `middleware.ts` intercept static assets in `/public/`.**
+The auth middleware must explicitly pass through requests for `/public/` paths (including the demo video at `/demo/spectr-demo.mp4`). Without this, Vercel serves a redirect to `/login` instead of the video file, breaking the waitlist page demo player. Any static asset path that needs to load unauthenticated — including `/demo/*`, `/fonts/*`, `/_next/*` — must be excluded from the auth gate matcher in `middleware.ts`.
+
+**Do not put centering transforms and reveal animations on the same element.**
+The waitlist demo phone frame (`<aside>` in `WaitlistClient.tsx`) uses `translateY(-50%)` to vertically center against the viewport. Any CSS animation whose end keyframe includes a `transform` reset (e.g. `translateY(0) scale(1)`) will overwrite that centering once the animation completes — causing visible drift ~1.5s after page load. The fix is to split them onto separate elements: the outer element holds only the centering transform and is never animated; the inner element runs the reveal animation. If you add or modify reveal animations on the phone frame, keep this two-element structure intact.
+
+**Do not call `triggerWorker()` without awaiting it.**
+`lib/trigger-worker.ts` is async — not awaiting it makes the call fire-and-forget. The API route returns before the worker ever receives the POST, so the project stays stuck at `pending` indefinitely. Always `await triggerWorker(id)` in both `app/api/projects/route.ts` and `app/api/projects/[id]/retry/route.ts`. The `\n`-stripping for `WORKER_URL` and `WORKER_WEBHOOK_SECRET` is handled inside `triggerWorker` itself — do not strip them at the call site.
+
+**Any API route that directly fetches the worker must also trim `WORKER_URL` and `WORKER_WEBHOOK_SECRET`.**
+`triggerWorker()` does the trim internally, but routes that call the worker directly (e.g. `app/api/projects/[id]/logs/route.ts`) must apply their own `clean()` helper: `const clean = (v: string | undefined) => (v ?? '').replace(/\\n/g, '').trim()`. Without this, the Vercel-injected trailing `\n` produces a malformed URL and the route silently returns `{ lines: [] }` with no indication of failure. Also log worker errors explicitly (`console.error`) — silent empty returns make this class of bug nearly invisible.
+
 **Do not put an `env` block in `vercel.json`.**
 Vercel's `vercel.json` `"env"` section hardcodes values that are embedded at deployment time and **override** anything set in the Vercel dashboard at runtime. A `"SUPABASE_SERVICE_KEY": "placeholder"` entry will always win over the real key — producing silent "invalid api key" failures where debug tooling shows the correct-looking value but the running function gets the hardcoded string. Keep `vercel.json` free of any `env` block; set all environment variables exclusively through the Vercel dashboard.
+
+---
+
+## Vercel Deployment
+
+The `frontend` Vercel project is connected to the `Meliwat/spectr` GitHub repository (scoped install, not all-repos). Production branch is `master`, root directory is `frontend`. Every `git push origin master` auto-deploys — no manual `vercel --prod` needed.
 
 ---
 

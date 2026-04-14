@@ -10,7 +10,7 @@ export async function POST(_: NextRequest, { params }: { params: { id: string } 
   await makeSupabaseServer()
     .from('projects').update({ status: 'pending', error_text: null }).eq('id', params.id)
 
-  triggerWorker(params.id)
+  await triggerWorker(params.id)
 
   return NextResponse.json({ ok: true })
 }
