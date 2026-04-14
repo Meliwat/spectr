@@ -62,7 +62,7 @@ function spawnWisp(cw: number, ch: number, mid = false): FlyWisp {
 }
 
 type FormState = 'idle' | 'loading' | 'success' | 'error'
-type UploadState = 'idle' | 'uploading' | 'error'
+type UploadState = 'idle' | 'uploading' | 'done' | 'error'
 
 // Split headline into word spans for staggered word reveal
 function WordReveal({ text, baseDelay, className }: { text: string; baseDelay: number; className?: string }) {
@@ -90,13 +90,16 @@ export default function WaitlistClient() {
   const inputRef  = useRef<HTMLInputElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
-  const [screen,        setScreen]        = useState<'upload' | 'email'>('upload')
-  const [uploadState,   setUploadState]   = useState<UploadState>('idle')
-  const [selectedFile,  setSelectedFile]  = useState<File | null>(null)
-  const [dragActive,    setDragActive]    = useState(false)
-  const [videoKey,      setVideoKey]      = useState('')
-  const [videoFilename, setVideoFilename] = useState('')
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [screen,          setScreen]          = useState<'upload' | 'email'>('upload')
+  const [uploadState,     setUploadState]     = useState<UploadState>('idle')
+  const [uploadProgress,  setUploadProgress]  = useState(0)
+  const [selectedFile,    setSelectedFile]    = useState<File | null>(null)
+  const [dragActive,      setDragActive]      = useState(false)
+  const [videoKey,        setVideoKey]        = useState('')
+  const [videoFilename,   setVideoFilename]   = useState('')
+  const fileInputRef   = useRef<HTMLInputElement>(null)
+  const uploadDoneRef  = useRef(false)
+  const rafRef         = useRef<number>(0)
 
   // ── Flying wisp canvas ────────────────────────────────────────────────────
   useEffect(() => {
@@ -222,6 +225,28 @@ export default function WaitlistClient() {
   async function handleUpload() {
     if (!selectedFile || uploadState === 'uploading') return
     setUploadState('uploading')
+    setUploadProgress(0)
+    uploadDoneRef.current = false
+
+    // Fake progress: slow, steady linear climb to ~72%, then stalls.
+    // When the real upload finishes, springs to 100%.
+    // Updates every 80ms so React isn't thrashing at 60fps.
+    const CEILING = 72
+    const estimatedMs = Math.max(6000, (selectedFile.size / (2 * 1024 * 1024)) * 1000)
+    const startTime = Date.now()
+    let lastTick = 0
+
+    function tick(now: number) {
+      if (uploadDoneRef.current) return
+      if (now - lastTick >= 80) {
+        lastTick = now
+        const elapsed = Date.now() - startTime
+        const p = Math.min((elapsed / estimatedMs) * CEILING, CEILING)
+        setUploadProgress(parseFloat(p.toFixed(1)))
+      }
+      rafRef.current = requestAnimationFrame(tick)
+    }
+    rafRef.current = requestAnimationFrame(tick)
 
     try {
       // 1. Get signed upload URL from our API
@@ -230,7 +255,12 @@ export default function WaitlistClient() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ filename: selectedFile.name, size: selectedFile.size }),
       })
-      if (!res.ok) { setUploadState('error'); return }
+      if (!res.ok) {
+        uploadDoneRef.current = true
+        cancelAnimationFrame(rafRef.current)
+        setUploadState('error')
+        return
+      }
       const { key, filename, token } = await res.json()
 
       // 2. Upload directly to Supabase Storage using the signed token
@@ -238,12 +268,22 @@ export default function WaitlistClient() {
         .from('waitlist-videos')
         .uploadToSignedUrl(key, token, selectedFile, { contentType: 'video/mp4' })
 
+      uploadDoneRef.current = true
+      cancelAnimationFrame(rafRef.current)
+
       if (uploadErr) { setUploadState('error'); return }
+
+      // Fill to 100%, hold briefly, then transition
+      setUploadProgress(100)
+      setUploadState('done')
+      await new Promise(r => setTimeout(r, 650))
 
       setVideoKey(key)
       setVideoFilename(filename)
       setScreen('email')
     } catch {
+      uploadDoneRef.current = true
+      cancelAnimationFrame(rafRef.current)
       setUploadState('error')
     }
   }
@@ -585,6 +625,74 @@ export default function WaitlistClient() {
         .wl-sub strong { color: rgba(200,205,255,0.8); font-weight: 500; }
 
         /* ════════════════════════════════════════════════
+           DEMO PREVIEW — phone-framed autoplay loop
+        ════════════════════════════════════════════════ */
+        .wl-demo {
+          position: relative;
+          display: flex; flex-direction: column; align-items: center;
+          gap: 10px;
+          margin: 0 auto 20px;
+        }
+        .wl-demo-label {
+          display: inline-flex; align-items: center; gap: 6px;
+          font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+          color: var(--subdued); font-weight: 500;
+          padding: 4px 10px; border-radius: 999px;
+          background: rgba(113,112,255,0.06);
+          border: 1px solid rgba(113,112,255,0.14);
+        }
+        .wl-demo-dot {
+          width: 5px; height: 5px; border-radius: 50%;
+          background: rgba(113,112,255,0.9);
+          box-shadow: 0 0 8px rgba(113,112,255,0.6);
+          animation: wl-demo-pulse 2.4s ease-in-out infinite;
+        }
+        @keyframes wl-demo-pulse {
+          0%, 100% { opacity: 0.5; transform: scale(1); }
+          50%      { opacity: 1;   transform: scale(1.25); }
+        }
+        .wl-demo-frame {
+          position: relative;
+          width: 176px;
+          aspect-ratio: 1180 / 2556;
+          border-radius: 26px;
+          padding: 5px;
+          background: linear-gradient(160deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 40%, rgba(113,112,255,0.10) 100%);
+          box-shadow:
+            0 0 0 1px rgba(0,0,0,0.5),
+            0 12px 32px rgba(0,0,0,0.45),
+            0 28px 70px rgba(0,0,0,0.55),
+            0 0 48px rgba(113,112,255,0.08),
+            inset 0 1px 0 rgba(255,255,255,0.08);
+        }
+        .wl-demo-glow {
+          position: absolute; inset: -18px;
+          background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(113,112,255,0.14) 0%, transparent 70%);
+          pointer-events: none;
+          animation: wl-demo-breathe 5s ease-in-out infinite;
+        }
+        @keyframes wl-demo-breathe {
+          0%, 100% { opacity: 0.55; }
+          50%      { opacity: 1; }
+        }
+        .wl-demo-video {
+          position: relative; z-index: 1;
+          width: 100%; height: 100%;
+          display: block;
+          border-radius: 22px;
+          object-fit: cover;
+          background: #0a0b0e;
+        }
+        @media (max-width: 520px) {
+          .wl-demo-frame { width: 140px; border-radius: 22px; padding: 4px; }
+          .wl-demo-video { border-radius: 19px; }
+          .wl-demo { margin-bottom: 16px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .wl-demo-glow, .wl-demo-dot { animation: none; }
+        }
+
+        /* ════════════════════════════════════════════════
            GLASS CARD
         ════════════════════════════════════════════════ */
         .wl-card-bloom {
@@ -768,6 +876,54 @@ export default function WaitlistClient() {
           font-size: 12px; color: #6b7280; text-align: center; margin: 0 0 18px; line-height: 1.5;
         }
 
+        /* ── UPLOAD PROGRESS BAR ──────────────────────────────────────────── */
+        .wl-progress-wrap {
+          border-radius: 11px; overflow: hidden;
+          background: rgba(255,255,255,0.04);
+          border: 1px solid rgba(113,112,255,0.18);
+          padding: 14px 16px;
+          margin-bottom: 10px;
+          position: relative;
+        }
+        .wl-progress-label {
+          display: flex; justify-content: space-between; align-items: center;
+          margin-bottom: 10px; font-size: 12px; color: #a0a4d0;
+          letter-spacing: 0.01em;
+        }
+        .wl-progress-pct {
+          font-variant-numeric: tabular-nums;
+          color: rgba(160,170,255,0.9);
+          font-weight: 500;
+        }
+        .wl-progress-track {
+          height: 4px; border-radius: 99px;
+          background: rgba(255,255,255,0.06);
+          overflow: hidden; position: relative;
+        }
+        .wl-progress-fill {
+          height: 100%; border-radius: 99px;
+          background: linear-gradient(90deg, rgba(94,106,210,1) 0%, rgba(130,143,255,1) 100%);
+          transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+        }
+        .wl-progress-fill::after {
+          content: '';
+          position: absolute; top: 0; right: 0;
+          width: 40px; height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55));
+          border-radius: 99px;
+          animation: wl-progress-shimmer 1.2s ease-in-out infinite;
+        }
+        @keyframes wl-progress-shimmer {
+          0%,100% { opacity: 0.6; }
+          50%      { opacity: 1; }
+        }
+        .wl-progress-done .wl-progress-fill::after { display: none; }
+        .wl-progress-done .wl-progress-fill {
+          background: linear-gradient(90deg, rgba(16,185,129,0.8) 0%, rgba(52,211,153,1) 100%);
+          transition: width 0.55s cubic-bezier(0.16, 1, 0.3, 1), background 0.4s ease;
+        }
+
         /* ── RESPONSIVE ─────────────────────────────────────────────────────── */
         @media (min-width: 768px) {
           /* Lock to one screen on desktop/tablet landscape */
@@ -869,6 +1025,28 @@ export default function WaitlistClient() {
             ready for your <strong>agent to design</strong>.
           </p>
 
+          {/* Demo preview — autoplays muted loop, primes expectations before drop */}
+          <div className="wl-demo wl-reveal" style={{'--rd':'620ms'} as React.CSSProperties}>
+            <span className="wl-demo-label">
+              <span className="wl-demo-dot" aria-hidden="true" />
+              20-second preview
+            </span>
+            <div className="wl-demo-frame">
+              <div className="wl-demo-glow" aria-hidden="true" />
+              <video
+                className="wl-demo-video"
+                src="/demo/spectr-demo.mp4"
+                poster="/demo/spectr-demo-poster.jpg"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                aria-label="Spectr demo: turning a screen recording into a spec"
+              />
+            </div>
+          </div>
+
           {/* Card */}
           <div className={`wl-card-wrap${focused ? ' focused' : ''}`}>
             <div className="wl-card-bloom" aria-hidden="true" />
@@ -884,7 +1062,13 @@ export default function WaitlistClient() {
                       <span className="wl-file-name">{selectedFile.name}</span>
                       <button
                         className="wl-file-remove"
-                        onClick={() => { setSelectedFile(null); setUploadState('idle') }}
+                        onClick={() => {
+                          uploadDoneRef.current = true
+                          cancelAnimationFrame(rafRef.current)
+                          setSelectedFile(null)
+                          setUploadState('idle')
+                          setUploadProgress(0)
+                        }}
                         aria-label="Remove file"
                       >×</button>
                     </div>
@@ -911,13 +1095,28 @@ export default function WaitlistClient() {
                     </div>
                   )}
 
-                  <button
-                    className="wl-btn"
-                    onClick={handleUpload}
-                    disabled={!selectedFile || uploadState === 'uploading'}
-                  >
-                    {uploadState === 'uploading' ? 'Uploading...' : 'Get Free Blueprint →'}
-                  </button>
+                  {uploadState === 'uploading' || uploadState === 'done' ? (
+                    <div className={`wl-progress-wrap${uploadState === 'done' ? ' wl-progress-done' : ''}`}>
+                      <div className="wl-progress-label">
+                        <span>{uploadState === 'done' ? 'Upload complete ✓' : 'Uploading…'}</span>
+                        <span className="wl-progress-pct">{Math.round(uploadProgress)}%</span>
+                      </div>
+                      <div className="wl-progress-track">
+                        <div
+                          className="wl-progress-fill"
+                          style={{ width: `${uploadProgress}%` }}
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      className="wl-btn"
+                      onClick={handleUpload}
+                      disabled={!selectedFile}
+                    >
+                      Get Free Blueprint →
+                    </button>
+                  )}
 
                   {uploadState === 'error' && (
                     <p className="wl-error">Upload failed — check your file and try again.</p>
