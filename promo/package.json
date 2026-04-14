@@ -1,0 +1,15 @@
+{
+  "name": "spectr-promo",
+  "version": "1.0.0",
+  "scripts": {
+    "preview": "npx remotion preview src/index.tsx",
+    "render": "npx remotion render src/index.tsx SpectrePromo out/spectr-promo.mp4 --codec=h264"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.0",
+    "@remotion/google-fonts": "^4.0.448",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "remotion": "^4.0.0"
+  }
+}
