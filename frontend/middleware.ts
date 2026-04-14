@@ -74,6 +74,9 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|brand/|icon.png).*)',
+    // Skip middleware for Next internals + anything in /public/* that's a
+    // static asset. Extension-based skip at the end covers files served
+    // straight out of /public/ (demo videos, posters, OG images, etc.).
+    '/((?!_next/static|_next/image|favicon.ico|brand/|icon.png|demo/|.*\\.(?:mp4|webm|mov|jpg|jpeg|png|gif|webp|svg|ico|woff2?|ttf|otf)$).*)',
   ],
 }
