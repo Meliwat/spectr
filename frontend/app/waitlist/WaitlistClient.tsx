@@ -637,7 +637,7 @@ export default function WaitlistClient() {
              FRAME ends up where we want, not the wrapper.
              bias = 34px label/gap / 2 ≈ 17px + ~30px to sit above
              viewport midline where the sub-copy sits. */
-          top: calc(44% - 6px);
+          top: calc(42% - 6px);
           right: max(32px, 4vw);
           transform: translateY(-50%);
           z-index: 3;
