@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseServer } from '@/lib/supabase-server'
+import { makeSupabaseServer } from '@/lib/supabase-server'
 
 export async function PATCH(req: NextRequest) {
   const key = req.nextUrl.searchParams.get('key')
-  if (!key || key !== process.env.ADMIN_SECRET) {
+  if (!key || key !== (process.env['ADMIN_SECRET'] ?? '').split('\n').join('').trim()) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -12,7 +12,7 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: 'Missing id' }, { status: 400 })
   }
 
-  const { error } = await supabaseServer
+  const { error } = await makeSupabaseServer()
     .from('waitlist')
     .update({ status: 'fulfilled' })
     .eq('id', id)
