@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseServer } from '@/lib/supabase-server'
+import { makeSupabaseServer } from '@/lib/supabase-server'
+import { requireProjectOwner } from '@/lib/auth-project'
 
 export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
-  const { data } = await supabaseServer
+  const guard = await requireProjectOwner(params.id)
+  if (!guard.ok) return NextResponse.json({ error: guard.error }, { status: guard.status })
+
+  const { data } = await makeSupabaseServer()
     .from('projects').select('spec_md_text').eq('id', params.id).single()
   if (!data?.spec_md_text) return NextResponse.json({ error: 'Not ready' }, { status: 404 })
   return NextResponse.json({ preview: data.spec_md_text.slice(0, 3000) })

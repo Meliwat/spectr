@@ -21,9 +21,12 @@ create table projects (
   spec_md_text      text,
   bundle_s3_key     text,
   error_text        text,
+  user_id           uuid references auth.users(id) on delete cascade,
   created_at        timestamptz default now(),
   updated_at        timestamptz default now()
 );
+
+create index if not exists projects_user_id_idx on projects (user_id);
 
 create or replace function update_updated_at()
 returns trigger as $$
@@ -38,3 +41,25 @@ create trigger projects_updated_at
   for each row execute function update_updated_at();
 
 alter publication supabase_realtime add table projects;
+
+-- Row-Level Security.
+-- Service role (worker + server API routes) bypasses RLS automatically.
+-- Authenticated users can only see / mutate rows they own.
+alter table projects enable row level security;
+
+create policy "projects_owner_select"
+  on projects for select to authenticated
+  using (user_id = auth.uid());
+
+create policy "projects_owner_insert"
+  on projects for insert to authenticated
+  with check (user_id = auth.uid());
+
+create policy "projects_owner_update"
+  on projects for update to authenticated
+  using (user_id = auth.uid())
+  with check (user_id = auth.uid());
+
+-- Waitlist: write-only via server API; lock down with RLS (no policies →
+-- only service_role can read/write).
+alter table waitlist enable row level security;

@@ -1,13 +1,26 @@
-import { supabaseServer } from '@/lib/supabase-server'
+import { createSupabaseServerClient } from '@/lib/supabase-ssr'
+import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Project } from '@/lib/types'
 
 export const dynamic = 'force-dynamic'
 
 export default async function ProjectsPage() {
-  const { data: projects } = await supabaseServer
+  const supabase = createSupabaseServerClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login?next=/app/projects')
+  }
+
+  // RLS policy filters to user_id = auth.uid() — the explicit .eq() is a
+  // belt-and-suspenders against a misconfigured policy.
+  const { data: projects } = await supabase
     .from('projects')
     .select('id, status, reference_app, your_app_name, created_at')
+    .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     .limit(50)
 

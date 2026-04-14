@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseServer } from '@/lib/supabase-server'
+import { makeSupabaseServer } from '@/lib/supabase-server'
+import { requireProjectOwner } from '@/lib/auth-project'
 
 export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
-  const { data } = await supabaseServer
+  const guard = await requireProjectOwner(params.id)
+  if (!guard.ok) return NextResponse.json({ error: guard.error }, { status: guard.status })
+
+  const admin = makeSupabaseServer()
+  const { data } = await admin
     .from('projects')
     .select('spec_md_s3_key, bundle_s3_key, status')
     .eq('id', params.id)
@@ -20,7 +25,7 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
     return NextResponse.json({ error: 'No download available' }, { status: 404 })
   }
 
-  const { data: file, error } = await supabaseServer
+  const { data: file, error } = await admin
     .storage.from('spectr-uploads').download(storageKey)
 
   if (error || !file) {
