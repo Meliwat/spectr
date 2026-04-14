@@ -625,13 +625,17 @@ export default function WaitlistClient() {
         .wl-sub strong { color: rgba(200,205,255,0.8); font-weight: 500; }
 
         /* ════════════════════════════════════════════════
-           DEMO PREVIEW — phone-framed autoplay loop
+           DEMO PREVIEW — pinned to the right on wide viewports
         ════════════════════════════════════════════════ */
-        .wl-demo {
-          position: relative;
+        .wl-demo-side {
+          position: absolute;
+          top: 50%;
+          right: max(32px, 4vw);
+          transform: translateY(-50%);
+          z-index: 3;
           display: flex; flex-direction: column; align-items: center;
-          gap: 10px;
-          margin: 0 auto 20px;
+          gap: 12px;
+          pointer-events: auto;
         }
         .wl-demo-label {
           display: inline-flex; align-items: center; gap: 6px;
@@ -653,21 +657,21 @@ export default function WaitlistClient() {
         }
         .wl-demo-frame {
           position: relative;
-          width: 176px;
+          width: 212px;
           aspect-ratio: 1180 / 2556;
-          border-radius: 26px;
+          border-radius: 30px;
           padding: 5px;
           background: linear-gradient(160deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 40%, rgba(113,112,255,0.10) 100%);
           box-shadow:
             0 0 0 1px rgba(0,0,0,0.5),
-            0 12px 32px rgba(0,0,0,0.45),
-            0 28px 70px rgba(0,0,0,0.55),
-            0 0 48px rgba(113,112,255,0.08),
+            0 14px 36px rgba(0,0,0,0.45),
+            0 32px 80px rgba(0,0,0,0.55),
+            0 0 56px rgba(113,112,255,0.10),
             inset 0 1px 0 rgba(255,255,255,0.08);
         }
         .wl-demo-glow {
-          position: absolute; inset: -18px;
-          background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(113,112,255,0.14) 0%, transparent 70%);
+          position: absolute; inset: -22px;
+          background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(113,112,255,0.16) 0%, transparent 70%);
           pointer-events: none;
           animation: wl-demo-breathe 5s ease-in-out infinite;
         }
@@ -679,14 +683,21 @@ export default function WaitlistClient() {
           position: relative; z-index: 1;
           width: 100%; height: 100%;
           display: block;
-          border-radius: 22px;
+          border-radius: 26px;
           object-fit: cover;
           background: #0a0b0e;
         }
-        @media (max-width: 520px) {
-          .wl-demo-frame { width: 140px; border-radius: 22px; padding: 4px; }
-          .wl-demo-video { border-radius: 19px; }
-          .wl-demo { margin-bottom: 16px; }
+        /* On medium widths the centered content column gets close to the
+           demo — tuck the demo smaller and tighter to the edge. */
+        @media (max-width: 1180px) {
+          .wl-demo-side { right: max(20px, 2.5vw); }
+          .wl-demo-frame { width: 168px; border-radius: 26px; }
+          .wl-demo-video { border-radius: 22px; }
+        }
+        /* Below this the viewport can't hold both — hide the demo so the
+           upload CTA stays above the fold on tablets and phones. */
+        @media (max-width: 960px) {
+          .wl-demo-side { display: none; }
         }
         @media (prefers-reduced-motion: reduce) {
           .wl-demo-glow, .wl-demo-dot { animation: none; }
@@ -987,6 +998,28 @@ export default function WaitlistClient() {
           aria-hidden="true"
         />
 
+        {/* Demo preview — pinned to the right side on wide viewports */}
+        <aside className="wl-demo-side wl-reveal" style={{'--rd':'680ms'} as React.CSSProperties}>
+          <span className="wl-demo-label">
+            <span className="wl-demo-dot" aria-hidden="true" />
+            20-second preview
+          </span>
+          <div className="wl-demo-frame">
+            <div className="wl-demo-glow" aria-hidden="true" />
+            <video
+              className="wl-demo-video"
+              src="/demo/spectr-demo.mp4"
+              poster="/demo/spectr-demo-poster.jpg"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              aria-label="Spectr demo: turning a screen recording into a spec"
+            />
+          </div>
+        </aside>
+
         {/* Content */}
         <div style={{
           position:'relative', zIndex:3,
@@ -1024,28 +1057,6 @@ export default function WaitlistClient() {
             Record any app. Get a UI blueprint inspired by it —<br />
             ready for your <strong>agent to design</strong>.
           </p>
-
-          {/* Demo preview — autoplays muted loop, primes expectations before drop */}
-          <div className="wl-demo wl-reveal" style={{'--rd':'620ms'} as React.CSSProperties}>
-            <span className="wl-demo-label">
-              <span className="wl-demo-dot" aria-hidden="true" />
-              20-second preview
-            </span>
-            <div className="wl-demo-frame">
-              <div className="wl-demo-glow" aria-hidden="true" />
-              <video
-                className="wl-demo-video"
-                src="/demo/spectr-demo.mp4"
-                poster="/demo/spectr-demo-poster.jpg"
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="metadata"
-                aria-label="Spectr demo: turning a screen recording into a spec"
-              />
-            </div>
-          </div>
 
           {/* Card */}
           <div className={`wl-card-wrap${focused ? ' focused' : ''}`}>
