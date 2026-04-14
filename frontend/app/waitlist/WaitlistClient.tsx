@@ -628,7 +628,7 @@ export default function WaitlistClient() {
            DEMO PREVIEW — pinned to the right on wide viewports
         ════════════════════════════════════════════════ */
         .wl-demo-side {
-          position: absolute;
+          position: fixed;
           top: 50%;
           right: max(32px, 4vw);
           transform: translateY(-50%);
@@ -636,6 +636,7 @@ export default function WaitlistClient() {
           display: flex; flex-direction: column; align-items: center;
           gap: 12px;
           pointer-events: auto;
+          max-height: calc(100dvh - 48px);
         }
         .wl-demo-label {
           display: inline-flex; align-items: center; gap: 6px;
@@ -657,9 +658,9 @@ export default function WaitlistClient() {
         }
         .wl-demo-frame {
           position: relative;
-          width: 212px;
+          width: min(186px, calc((100dvh - 120px) * 0.462));
           aspect-ratio: 1180 / 2556;
-          border-radius: 30px;
+          border-radius: 28px;
           padding: 5px;
           background: linear-gradient(160deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 40%, rgba(113,112,255,0.10) 100%);
           box-shadow:
@@ -688,11 +689,11 @@ export default function WaitlistClient() {
           background: #0a0b0e;
         }
         /* On medium widths the centered content column gets close to the
-           demo — tuck the demo smaller and tighter to the edge. */
+           demo — tuck it smaller and tighter to the edge. */
         @media (max-width: 1180px) {
           .wl-demo-side { right: max(20px, 2.5vw); }
-          .wl-demo-frame { width: 168px; border-radius: 26px; }
-          .wl-demo-video { border-radius: 22px; }
+          .wl-demo-frame { width: min(158px, calc((100dvh - 120px) * 0.462)); border-radius: 24px; }
+          .wl-demo-video { border-radius: 20px; }
         }
         /* Below this the viewport can't hold both — hide the demo so the
            upload CTA stays above the fold on tablets and phones. */
