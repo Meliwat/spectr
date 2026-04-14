@@ -630,7 +630,7 @@ export default function WaitlistClient() {
         .wl-demo-side {
           position: fixed;
           top: calc(44% - 6px);
-          right: max(32px, 4vw);
+          right: max(80px, 8vw);
           /* translateY(-50%) must live here on the OUTER wrapper because
              the inner .wl-demo-inner runs the reveal animation, whose
              final keyframe sets its own transform. If we put our
