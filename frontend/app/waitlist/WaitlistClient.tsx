@@ -629,14 +629,22 @@ export default function WaitlistClient() {
         ════════════════════════════════════════════════ */
         .wl-demo-side {
           position: fixed;
-          top: 50%;
+          /* Tuned so the PHONE FRAME's vertical middle aligns with the
+             "Record any app. Get a UI blueprint…" sub-copy line on
+             typical desktop viewport heights (700–1000px).
+             The label above the frame + its gap (~34px) would drag the
+             wrapper's visual centre down, so we bias top UPWARD so the
+             FRAME ends up where we want, not the wrapper.
+             bias = 34px label/gap / 2 ≈ 17px + ~30px to sit above
+             viewport midline where the sub-copy sits. */
+          top: calc(44% - 6px);
           right: max(32px, 4vw);
           transform: translateY(-50%);
           z-index: 3;
           display: flex; flex-direction: column; align-items: center;
-          gap: 12px;
+          gap: 10px;
           pointer-events: auto;
-          max-height: calc(100dvh - 48px);
+          max-height: calc(100dvh - 64px);
         }
         .wl-demo-label {
           display: inline-flex; align-items: center; gap: 6px;
