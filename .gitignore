@@ -24,3 +24,18 @@ __pycache__/
 # Supabase
 supabase/.branches/
 supabase/.temp/
+.vercel
+
+# Next.js build output + TS incremental
+.next/
+frontend/tsconfig.tsbuildinfo
+
+# Local tool state (Claude Code, Superpowers)
+.claude/
+frontend/.claude/
+.superpowers/
+docs/superpowers/
+
+# Remotion promo build artifacts
+promo/node_modules/
+promo/out/
