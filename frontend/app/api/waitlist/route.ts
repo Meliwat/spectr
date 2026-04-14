@@ -33,6 +33,10 @@ export async function POST(req: NextRequest) {
     `${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.spectr.to'}` +
     `/admin?key=${process.env.ADMIN_SECRET ?? ''}`
 
+  // `from` is env-driven so we can flip from the Resend sandbox to hello@spectr.to
+  // the moment DNS verifies, without a redeploy.
+  const fromAddress = (process.env.RESEND_FROM ?? 'spectr <onboarding@resend.dev>').trim()
+
   fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
@@ -40,7 +44,7 @@ export async function POST(req: NextRequest) {
       'Content-Type':  'application/json',
     },
     body: JSON.stringify({
-      from:    'spectr <onboarding@resend.dev>',
+      from:    fromAddress,
       to:      'muhammedeliwat@gmail.com',
       subject: `🎬 New blueprint request — ${normalised}`,
       html: [
