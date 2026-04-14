@@ -65,7 +65,7 @@ export async function middleware(request: NextRequest) {
   // Everything else is behind the pre-launch waitlist gate. The /spectr-enter
   // route sets `spectr_access=main` for 30 days; without that cookie the visit
   // is redirected to /waitlist so non-invited traffic never sees the product.
-  const hasAccess = request.cookies.get('spectr_access')?.value === 'main'
+  const hasAccess = request.cookies.get('spectr_access')?.value === 'v2'
   if (!hasAccess) {
     return NextResponse.redirect(new URL('/waitlist', request.url))
   }

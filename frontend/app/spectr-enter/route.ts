@@ -13,7 +13,7 @@ export function GET(request: NextRequest) {
 
   response.cookies.set({
     name: 'spectr_access',
-    value: 'main',
+    value: 'v2',
     httpOnly: true,
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',
