@@ -259,6 +259,148 @@ If any of these are missing or approximate, the spec is incomplete. The self-cri
 
 ---
 
+## Output Bundle Contents
+
+The `bundle.zip` download contains:
+- `spec.md` — the 7-section spec assembled by the pipeline
+- `.env.example` — auto-detected service keys based on UI signals (auth → Supabase, payments → Stripe, AI → OpenAI)
+- `setup.sh` — one-command environment scaffolding script
+
+The `spec.md` alone is the core deliverable. The bundle adds scaffolding helpers.
+
+---
+
+## Target Output Stack
+
+The entire pipeline produces specs targeting **Expo SDK 54 / React Native / iPhone 15 baseline**. This is not configurable — `PROMPT_3_SYSTEM` hardcodes this context, and the `claude_code_prompt` section instructs Claude Code to build Expo/React Native apps specifically. The product is a mobile-only spec generator. Do not position it as generating backend or web code.
+
+---
+
+## Waitlist Video Upload Feature
+
+Before the product opens to the public, the landing page collects waitlist signups with an MP4 upload. This is a lightweight pre-launch data collection flow, not the main pipeline.
+
+### Flow
+
+1. **Screen 1 — Upload**: Dedicated page at `/waitlist` (`app/waitlist/page.tsx` + `WaitlistClient.tsx`). Neon wordmark → badge → headline → subcopy → **phone-framed demo video** → upload card → social proof strip. The demo video autoplays looped above the upload card. Drag/drop zone. Validates MP4. "Get Free Blueprint" button uploads the video directly to Supabase Storage (`waitlist-videos` bucket, private) via `POST /api/waitlist/upload`. Shows loading state during upload, then transitions to Screen 2.
+2. **Screen 2 — Email**: Full-page transition after upload succeeds. "Your blueprint is being prepared" heading, email input, submit. `POST /api/waitlist` stores `{email, video_s3_key, video_filename}` in the `waitlist` table and sends a Resend notification to muhammedeliwat@gmail.com.
+
+### Demo Video Assets
+
+The phone-framed looping preview on Screen 1 uses:
+- `frontend/public/demo/spectr-demo.mp4` — 1.6 MB, H.264, 30fps, audio stripped, faststart-muxed
+- `frontend/public/demo/spectr-demo-poster.jpg` — ~50 KB first-frame poster so initial paint isn't black
+
+To regenerate: transcode source to H.264 CRF, strip audio, 30fps, add `-movflags faststart`. The `<video>` element must carry all four attributes — `autoPlay muted loop playsInline` — or iOS Safari fullscreens the video on tap instead of autoplaying inline.
+
+### Admin Dashboard (`/admin`)
+
+Server-rendered. Protected by `ADMIN_SECRET` env var — access via `/admin?key=<ADMIN_SECRET>`. Shows a table of all waitlist rows: email, filename (signed URL for direct video download), timestamp, status badge. "Mark fulfilled" button per row (`PATCH /api/admin/fulfill`). CSV export.
+
+### Supabase Changes
+
+- `waitlist-videos` storage bucket — private, signed URLs used for admin downloads
+- `waitlist` table gains three columns: `video_s3_key TEXT`, `video_filename TEXT`, `status TEXT DEFAULT 'pending'`
+
+### New Files
+
+| File | Purpose |
+|---|---|
+| `app/api/waitlist/upload/route.ts` | Receives MP4, streams to Supabase Storage, returns the storage key |
+| `app/api/waitlist/route.ts` | Stores email + video key in DB, fires Resend notification |
+| `app/api/admin/fulfill/route.ts` | PATCH — flips waitlist row status to `fulfilled` |
+| `app/admin/page.tsx` | Admin dashboard, server-rendered |
+
+### New Environment Variables
+
+| Variable | Purpose |
+|---|---|
+| `ADMIN_SECRET` | Guards `/admin` dashboard |
+| `RESEND_API_KEY` | Sends email notification on new waitlist submission |
+| `RESEND_FROM` | Sender address — `spectr <hello@spectr.to>`. Set in Vercel on all environments (2026-04-14). |
+
+### Deployment Status
+
+The waitlist feature is **live in production at `www.spectr.to`**. The full two-screen flow (upload → email) is deployed on Vercel with Supabase env vars configured.
+
+**Resend domain verification — DNS changes applied, pending Resend confirmation.** DKIM was already verified. The stale CNAME on `send` has been deleted and the required MX + TXT records have been added:
+- **MX** · Host `send` · Value `feedback-smtp.us-east-1.amazonses.com` · Priority `10`
+- **TXT** · Host `send` · Value `v=spf1 include:amazonses.com ~all`
+
+**Namecheap-specific note:** Adding an MX on the `send` subdomain required switching Mail Settings from "Email Forwarding" → "Custom MX" mode in Namecheap. This automatically removed the old SPF TXT at `@` (`v=spf1 include:spf.efwd.registrar-servers.com ~all`). That record only covered Namecheap's email-forwarding service, which was not in use — harmless.
+
+**Resend domain is fully verified (2026-04-14).** DKIM + MX + SPF all green. `RESEND_FROM=spectr <hello@spectr.to>` is set in Vercel on all environments. Waitlist notification emails now send from `hello@spectr.to`.
+
+**Vercel env vars can have trailing newlines — ALL of them.** This affects every env var set via the Vercel dashboard, not just secrets. Without stripping, failures are silent and the Vercel dashboard shows the correct-looking value. The fix is a `clean()` helper in both Supabase client files:
+
+```ts
+const clean = (v: string | undefined, fallback: string) =>
+  (v ?? fallback).replace(/\\n/g, '').trim()
+```
+
+This helper is already applied in `lib/supabase.ts` (for `NEXT_PUBLIC_SUPABASE_URL` + `NEXT_PUBLIC_SUPABASE_ANON_KEY`) and `lib/supabase-server.ts` (for `SUPABASE_URL` + `SUPABASE_SERVICE_KEY`). Also apply `.trim()` to `ADMIN_SECRET` comparisons. Confirmed affected: every env var on this project's Vercel deployment — the URL, anon key, service key, and admin secret all had trailing `\n`.
+
+---
+
+## Authentication Architecture
+
+Auth is implemented via Supabase magic-link (OTP email). Full user isolation is live.
+
+### Auth Flow
+
+1. Unauthenticated user hits `/app/*` → `middleware.ts` redirects to `/login`
+2. User enters email → `POST /auth/v1/otp` via Supabase → magic link email sent
+3. Link click → `/auth/callback` exchanges the code for a session cookie
+4. Middleware refreshes the session cookie on every request to `/app/*`
+
+### Supabase Client Files
+
+There are now three Supabase client modules — use the right one:
+
+| File | Use when |
+|---|---|
+| `lib/supabase-browser.ts` | Client Components — auth-aware, inherits signed-in user's JWT |
+| `lib/supabase-ssr.ts` | Server Components + Route Handlers — reads/writes session cookies |
+| `lib/supabase.ts` | Legacy browser client alias — same as `supabase-browser.ts`; Realtime subscriptions use this so they inherit the JWT |
+
+`lib/auth-project.ts` exports `requireProjectOwner(supabase, projectId)` — call this in every `/api/projects/[id]/*` route. It returns the project row if the authenticated user owns it, or throws a 404 response. Do not re-implement ownership checks inline.
+
+### RLS Policies
+
+`projects` table has RLS enabled with owner-only `SELECT/INSERT/UPDATE` policies scoped to `auth.uid() = user_id`. `waitlist` table also has RLS enabled (service-role only — no user-facing access).
+
+The `projects` table has a `user_id uuid REFERENCES auth.users(id)` column (nullable for legacy rows) and an index on `user_id`.
+
+### Known State After Migration
+
+The 35 pre-auth `projects` rows with `user_id = NULL` were deleted on 2026-04-14. The table is clean; all remaining rows have an owner.
+
+### Supabase Dashboard Configuration
+
+- Site URL: `https://www.spectr.to`
+- Redirect allow-list: `https://www.spectr.to/auth/callback`, `http://localhost:3000/auth/callback`
+
+These must remain configured. Removing them breaks the magic-link callback.
+
+### New Frontend Files
+
+| File | Purpose |
+|---|---|
+| `lib/supabase-browser.ts` | Auth-aware browser Supabase client |
+| `lib/supabase-ssr.ts` | Session-cookie Supabase client for server use |
+| `lib/auth-project.ts` | `requireProjectOwner()` ownership guard |
+| `app/login/` | Magic-link login page + `LoginClient.tsx` |
+| `app/auth/callback/` | Code-exchange route handler |
+| `app/app/projects/[id]/ProjectClient.tsx` | Client component split out for realtime subscription under JWT |
+
+---
+
+## Known Pre-Launch Gaps
+
+Auth and user isolation are now implemented. No remaining blocking pre-launch gaps identified as of 2026-04-14.
+
+---
+
 ## What Not To Do
 
 **Do not add a backend research pass back into the active pipeline.**
@@ -281,6 +423,85 @@ Every prompt instruction that could produce vague output should specify that exa
 
 **Do not skip the validation pass on spec sections.**
 Each section is validated against required headings and substrings before acceptance. This is the quality gate. Bypassing it produces specs that look complete but are missing critical content.
+
+**Do not use the `supabaseServer` module-level singleton in API route handlers.**
+`lib/supabase-server.ts` exports a `supabaseServer` singleton that is initialized at module load time — before Vercel injects environment variables into the runtime. Using it in API routes produces "invalid api key" errors in production even when the env vars are correctly set. Always call `makeSupabaseServer()` inside the request handler function body instead. The `supabaseServer` export exists for compatibility with existing imports but must not be the pattern for new routes.
+
+**Do not use internal Next.js fetch loopback in server-rendered pages.**
+Server-rendered pages (like `app/admin/page.tsx`) must not call their own API routes via `fetch('/api/...')` internally. On Vercel, server-to-server loopback fetches are unreliable — the request may fail or time out because the function tries to call itself before it has fully initialized. Instead, query Supabase (or any data source) directly inside the server component using `makeSupabaseServer()`. This was the root cause of the admin dashboard failing to load waitlist data in production despite the API route working correctly when called externally.
+
+**Do not put an `env` block in `vercel.json`.**
+Vercel's `vercel.json` `"env"` section hardcodes values that are embedded at deployment time and **override** anything set in the Vercel dashboard at runtime. A `"SUPABASE_SERVICE_KEY": "placeholder"` entry will always win over the real key — producing silent "invalid api key" failures where debug tooling shows the correct-looking value but the running function gets the hardcoded string. Keep `vercel.json` free of any `env` block; set all environment variables exclusively through the Vercel dashboard.
+
+---
+
+## Railway Worker Deployment
+
+The worker requires `worker/nixpacks.toml` to declare system dependencies explicitly. Without it, Railway's Nixpacks builder does not install `ffmpeg`, causing frame extraction to fail silently at runtime.
+
+Current `worker/nixpacks.toml`:
+```toml
+[phases.setup]
+nixPkgs = ["ffmpeg", "python311"]
+
+[phases.install]
+cmds = ["pip install -r requirements.txt"]
+
+[start]
+cmd = "uvicorn main:app --host 0.0.0.0 --port $PORT"
+```
+
+Do not remove this file. If Railway is ever migrated to a Dockerfile approach, ensure `ffmpeg` is installed explicitly in the image.
+
+---
+
+## Promo Video
+
+`promo/` is a standalone [Remotion](https://www.remotion.dev/) project for generating marketing video assets. It is not part of the Spectr pipeline — it's a separate tool for producing promo clips.
+
+There are three compositions registered in `promo/src/index.tsx`. **SpectrePromo is the primary/canonical composition** — the user has confirmed it is preferred over the alternatives. Do not suggest replacing or deprecating it.
+
+### SpectrePromo (`promo/src/SpectrePromo.tsx`)
+
+8-second (480 frames, 60fps) cinematic promo — the phone/scanner/particle story.
+
+- **Assets used**: `spectr-symbol.png` + `spectr-logotype.png` brand assets via Remotion `<Img>`
+- **Fonts**: Orbitron 900 (wordmark) + Share Tech Mono (tagline/readout) — loaded via `@remotion/google-fonts`
+- **Animation structure** (8s, 480 frames @ 60fps):
+  - **0–1.6s** — Phone materializes from darkness, backlit with amber warmth. "You see an app." types in corner. Real-looking UI lives inside (gradient hero card, cards, list items, tab bar).
+  - **1.6–2.8s** — Cyan scanner sweeps top-to-bottom. As it passes, warm app drains to blueprint: wireframe strokes, cyan border, grid overlay. "You want to build it." Component labels scatter outward — NAVIGATION, TYPOGRAPHY, COLOR SYSTEM, COMPONENTS.
+  - **3.5–4.5s** — Phone implodes. 56 particles burst outward in cyan and white. White flash. A `spec.md` document icon draws itself from stroke — violet glow builds, text lines materialize inside.
+  - **5.2–6.5s** — S·P·E·C·T·R glitch into position one-by-one in Orbitron 900, each crackling from static to clean white. All six lock simultaneously; neon bloom hits full (6-layer white shadow stack with breathing animation).
+  - **6.5–7.5s** — Gradient divider draws itself. "See an app. Ship an app." lifts in Share Tech Mono. spectr.to badge springs in bottom-right.
+  - **7.5–8s** — Hold and fade.
+
+### SpectreSignal (`promo/src/SpectreSignal.tsx`)
+
+8-second (480 frames, 60fps) alternative promo — the waveform/signal-processing story. Same timing constants and SPECTR wordmark finale, different visual metaphor.
+
+- **Animation structure** (8s, 480 frames @ 60fps):
+  - **Act I (0–2s)** — Amber waveform of 80 bars pulses across the canvas with seeded organic phase offsets. Terminal readout types: `analyzing signal...`. Visual metaphor: raw screen-recording data.
+  - **Act II (2–5s)** — Waveform fragments into 24 discrete cyan frequency columns (representing extracted frames). Columns rise from bottom staggered. Readout ticks through the pipeline: frames extracted → vision analysis → spec generation. Columns then sort by height — Spectr ranking frames by uniqueness.
+  - **Act III (5–8s)** — Columns collapse to a violet implosion point. Flash. SPECTR assembles with each letter entering from a unique direction (S from bottom-left, P from below, E from bottom-right, C from top-left, T from above, R from top-right), converging simultaneously. Full 6-layer neon bloom. Tagline lifts. spectr.to badge springs in.
+
+### SpectreIdentity (`promo/src/SpectreIdentity.tsx`)
+
+6-second (360 frames, 60fps) brand identity reel — aurora + symbol + logotype + tagline. Uses the exact visual language of the waitlist landing page (globals.css aurora palette, violet/indigo radials, wisp particles).
+
+- **Animation structure** (6s, 360 frames @ 60fps):
+  - **0–1.3s** — Aurora blooms from top (violet/indigo radials), grid lines fade in, 15 wisp particles drift across
+  - **1.0–2.7s** — `spectr-symbol.png` springs up from below with a violet glow ring behind it
+  - **2.2–3.7s** — `spectr-logotype.png` slides in beside the symbol with neon drop-shadows
+  - **3.3–4.8s** — "See an app." and "Ship an app." lift in line by line, 74px Inter 400
+  - **4.5–5.5s** — Eyebrow badge ("From recording to product blueprint" with pulsing violet dot) + `spectr.to` URL badge spring in
+  - **5.5–6.0s** — Hold, gentle glow pulse, fade out
+- **Cinematic touches**: letterbox bars top/bottom, film grain overlay at 4.5% opacity, radial vignette (all low intensity)
+
+- **Preview**: `cd promo && npx remotion preview src/index.tsx`
+
+The `promo/` directory has its own `node_modules` and is not wired into the frontend build.
+
+**Detailed animation reference**: `promo/ANIMATION_SPEC.md` — 2,238-line spec covering every timing constant (frames + seconds), every color (hex + rgba), every easing config (damping/stiffness/mass), every SVG filter attribute, exact pixel coordinates per component, 24 critical frames annotated, motion principles, layer order, render commands, and implementation notes. Read this before modifying any animation in the promo.
 
 ---
 
