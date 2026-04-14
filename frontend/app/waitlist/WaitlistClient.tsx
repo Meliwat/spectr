@@ -645,23 +645,16 @@ export default function WaitlistClient() {
           display: flex; flex-direction: column; align-items: center;
           gap: 10px;
         }
-        .wl-demo-label {
-          display: inline-flex; align-items: center; gap: 6px;
-          font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
-          color: var(--subdued); font-weight: 500;
-          padding: 4px 10px; border-radius: 999px;
-          background: rgba(113,112,255,0.06);
-          border: 1px solid rgba(113,112,255,0.14);
+        /* Phone slides up from below the viewport into its centered position.
+           Lives on the INNER wrapper so the outer .wl-demo-side translateY(-50%)
+           centering isn't clobbered once the animation ends. */
+        .wl-demo-slide-up {
+          opacity: 0;
+          animation: wl-demo-slide-up 1.1s var(--wl-spring) var(--rd, 0ms) forwards;
         }
-        .wl-demo-dot {
-          width: 5px; height: 5px; border-radius: 50%;
-          background: rgba(113,112,255,0.9);
-          box-shadow: 0 0 8px rgba(113,112,255,0.6);
-          animation: wl-demo-pulse 2.4s ease-in-out infinite;
-        }
-        @keyframes wl-demo-pulse {
-          0%, 100% { opacity: 0.5; transform: scale(1); }
-          50%      { opacity: 1;   transform: scale(1.25); }
+        @keyframes wl-demo-slide-up {
+          0%   { opacity: 0; transform: translateY(100vh); }
+          100% { opacity: 1; transform: translateY(0); }
         }
         .wl-demo-frame {
           position: relative;
@@ -708,7 +701,8 @@ export default function WaitlistClient() {
           .wl-demo-side { display: none; }
         }
         @media (prefers-reduced-motion: reduce) {
-          .wl-demo-glow, .wl-demo-dot { animation: none; }
+          .wl-demo-glow { animation: none; }
+          .wl-demo-slide-up { animation-duration: 0.01s; }
         }
 
         /* ════════════════════════════════════════════════
@@ -1010,11 +1004,7 @@ export default function WaitlistClient() {
             transform. Inner div gets the reveal animation so its transform
             doesn't clobber the outer translateY(-50%). */}
         <aside className="wl-demo-side">
-          <div className="wl-demo-inner wl-reveal" style={{'--rd':'680ms'} as React.CSSProperties}>
-            <span className="wl-demo-label">
-              <span className="wl-demo-dot" aria-hidden="true" />
-              20-second preview
-            </span>
+          <div className="wl-demo-inner wl-demo-slide-up" style={{'--rd':'680ms'} as React.CSSProperties}>
             <div className="wl-demo-frame">
               <div className="wl-demo-glow" aria-hidden="true" />
               <video
