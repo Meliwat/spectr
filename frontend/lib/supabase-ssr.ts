@@ -1,9 +1,6 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { cookies } from 'next/headers'
-
-function getEnv(key: string): string {
-  return (process.env[key] ?? '').split('\n').join('').trim()
-}
+import { getEnv } from '@/lib/env'
 
 /**
  * Server Supabase client scoped to the CURRENT user's session via cookies.

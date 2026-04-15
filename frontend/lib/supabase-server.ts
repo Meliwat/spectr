@@ -1,11 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
-
-// getEnv() uses a variable key so Next.js/SWC cannot replace it at build time.
-// Without this, encrypted Vercel env vars are undefined in the built bundle
-// even though they're present in process.env at runtime.
-function getEnv(key: string): string {
-  return (process.env[key] ?? '').split('\n').join('').trim()
-}
+import { getEnv } from '@/lib/env'
 
 export function makeSupabaseServer() {
   return createClient(
@@ -16,4 +10,3 @@ export function makeSupabaseServer() {
 
 // Singleton for routes that import directly — initialized at request time in Next.js App Router
 export const supabaseServer = makeSupabaseServer()
-
