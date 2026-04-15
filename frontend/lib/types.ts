@@ -16,6 +16,9 @@ export type MobileProjectStatus =
   | 'bundling'
   | 'complete'
   | 'failed'
+  | 'awaiting_manual_processing'
+
+export type ProcessingMode = 'auto' | 'manual'
 
 export type ProjectStatus = MobileProjectStatus | LegacyProjectStatus
 
@@ -34,6 +37,7 @@ export interface Project {
   error_text: string | null
   repair_attempts?: number | null
   total_retries?: number | null
+  processing_mode?: ProcessingMode
   created_at: string
   updated_at: string
 }
@@ -54,6 +58,7 @@ export const STAGE_LABELS: Record<ProjectStatus, string> = {
   stitching: 'Writing your product spec...',
   complete: 'Your spec is ready.',
   failed: 'This run hit a snag.',
+  awaiting_manual_processing: 'Queued for free-sample review',
 }
 
 export const STAGE_PROGRESS: Record<ProjectStatus, number> = {
@@ -72,6 +77,7 @@ export const STAGE_PROGRESS: Record<ProjectStatus, number> = {
   stitching: 85,
   complete: 100,
   failed: 0,
+  awaiting_manual_processing: 0,
 }
 
 export const STAGE_CEILINGS: Record<ProjectStatus, number> = {
@@ -90,6 +96,7 @@ export const STAGE_CEILINGS: Record<ProjectStatus, number> = {
   stitching: 96,
   complete: 100,
   failed: 0,
+  awaiting_manual_processing: 0,
 }
 
 export const STAGE_ETA_SECONDS: Partial<Record<ProjectStatus, number>> = {
