@@ -32,13 +32,13 @@ export default function BillingCTA({ open, onClose, onFreeDemo, onPaid, busy, er
           How would you like your blueprint?
         </h2>
 
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
+        <div className="mt-6 grid gap-4 sm:grid-cols-2" style={{ alignItems: 'stretch' }}>
           <div
-            className="rounded-xl p-5"
+            className="flex flex-col rounded-xl p-5"
             style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)' }}
           >
             <h3 className="text-lg" style={{ fontWeight: 510 }}>Full spec — $19</h3>
-            <p className="mt-2 text-sm" style={{ color: 'var(--muted)', lineHeight: 1.5 }}>
+            <p className="mt-2 flex-1 text-sm" style={{ color: 'var(--muted)', lineHeight: 1.5 }}>
               Automatic processing. Your complete blueprint is ready in about three minutes.
             </p>
             <button
@@ -52,11 +52,11 @@ export default function BillingCTA({ open, onClose, onFreeDemo, onPaid, busy, er
           </div>
 
           <div
-            className="rounded-xl p-5"
+            className="flex flex-col rounded-xl p-5"
             style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)' }}
           >
             <h3 className="text-lg" style={{ fontWeight: 510 }}>Free demo</h3>
-            <p className="mt-2 text-sm" style={{ color: 'var(--muted)', lineHeight: 1.5 }}>
+            <p className="mt-2 flex-1 text-sm" style={{ color: 'var(--muted)', lineHeight: 1.5 }}>
               Sample preview only — not a full spec. We review your video and email a demo within 24 hours.
             </p>
             <button
