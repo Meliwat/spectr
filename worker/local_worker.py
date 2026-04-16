@@ -18,6 +18,7 @@ import json
 import time
 import re
 import base64
+import io
 import shutil
 import tempfile
 import argparse
@@ -31,6 +32,22 @@ from threading import Lock
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 log = logging.getLogger(__name__)
+
+MAX_IMAGE_DIM = 1920  # Claude API rejects >2000px in multi-image requests
+
+
+def _resize_frame_for_api(path: str) -> str:
+    """Return base64 JPEG of the frame, resized if any dimension > MAX_IMAGE_DIM."""
+    from PIL import Image
+    img = Image.open(path)
+    w, h = img.size
+    if w > MAX_IMAGE_DIM or h > MAX_IMAGE_DIM:
+        scale = MAX_IMAGE_DIM / max(w, h)
+        img = img.resize((int(w * scale), int(h * scale)), Image.LANCZOS)
+    buf = io.BytesIO()
+    img.save(buf, format="JPEG", quality=85)
+    return base64.b64encode(buf.getvalue()).decode()
+
 
 from supabase import create_client
 from dotenv import load_dotenv
@@ -143,8 +160,7 @@ def _claude_vision_sdk(frame_paths: list[str], text_prompt: str,
     ac = _get_anthropic()
     content = []
     for path in frame_paths:
-        with open(path, "rb") as f:
-            data = base64.b64encode(f.read()).decode()
+        data = _resize_frame_for_api(path)
         content.append({
             "type": "image",
             "source": {"type": "base64", "media_type": "image/jpeg", "data": data},
@@ -221,8 +237,7 @@ def _claude_vision_cli(frame_paths: list[str], text_prompt: str,
                        system: str = None, model: str = None) -> str:
     content = []
     for path in frame_paths:
-        with open(path, "rb") as f:
-            data = base64.b64encode(f.read()).decode()
+        data = _resize_frame_for_api(path)
         content.append({
             "type": "image",
             "source": {"type": "base64", "media_type": "image/jpeg", "data": data},
