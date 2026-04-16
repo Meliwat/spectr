@@ -2,10 +2,21 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase-ssr'
 import { makeSupabaseServer } from '@/lib/supabase-server'
 import { triggerWorker } from '@/lib/trigger-worker'
+import { paywallEnabled } from '@/lib/paywall'
+import { sendFounderSampleNotification } from '@/lib/email'
 
 export async function POST(req: NextRequest) {
   const body = await req.json()
-  const { id, mp4_s3_key, reference_app, your_app_name, brand_colors, logo_s3_key, bundle_id } = body
+  const {
+    id,
+    mp4_s3_key,
+    reference_app,
+    your_app_name,
+    brand_colors,
+    logo_s3_key,
+    bundle_id,
+    mode: rawMode,
+  } = body
 
   if (!id || !mp4_s3_key || !reference_app) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -13,35 +24,86 @@ export async function POST(req: NextRequest) {
 
   // Verify the request comes from a signed-in user.
   const sessionClient = createSupabaseServerClient()
-  const {
-    data: { user },
-  } = await sessionClient.auth.getUser()
-
+  const { data: { user } } = await sessionClient.auth.getUser()
   if (!user) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
   }
 
-  // Use the service-role client for the actual write — we need to stamp the
-  // row with user_id so RLS will expose it to this user on subsequent reads,
-  // and we want the insert to succeed regardless of policy wording.
+  const mode: 'auto' | 'manual' = rawMode === 'sample' ? 'manual' : 'auto'
+  const paywall = paywallEnabled()
+
   const admin = makeSupabaseServer()
-  const { error } = await admin
-    .from('projects')
-    .insert({
-      id,
-      status: 'pending',
-      mp4_s3_key,
-      reference_app,
-      your_app_name,
-      brand_colors,
-      logo_s3_key,
-      bundle_id,
-      user_id: user.id,
+
+  // ─── Auto path: consume one available credit if paywall is on ──────────
+  let consumedCreditId: string | null = null
+  if (mode === 'auto' && paywall) {
+    const { data: credit, error: creditErr } = await admin
+      .from('spec_credits')
+      .update({
+        status: 'consumed',
+        consumed_at: new Date().toISOString(),
+      })
+      .eq('user_id', user.id)
+      .eq('status', 'available')
+      .order('created_at', { ascending: true })
+      .limit(1)
+      .select('id')
+      .maybeSingle()
+
+    if (creditErr) {
+      console.error('[projects] credit consume failed:', creditErr.message)
+      return NextResponse.json({ error: 'credit_consume_failed' }, { status: 500 })
+    }
+    if (!credit) {
+      return NextResponse.json({ error: 'no_credits' }, { status: 402 })
+    }
+    consumedCreditId = credit.id
+  }
+
+  // ─── Insert project row ─────────────────────────────────────────────────
+  const { error: insertErr } = await admin.from('projects').insert({
+    id,
+    status: mode === 'manual' ? 'awaiting_manual_processing' : 'pending',
+    processing_mode: mode,
+    mp4_s3_key,
+    reference_app,
+    your_app_name,
+    brand_colors,
+    logo_s3_key,
+    bundle_id,
+    user_id: user.id,
+  })
+
+  if (insertErr) {
+    // Refund the credit if we consumed one.
+    if (consumedCreditId) {
+      await admin
+        .from('spec_credits')
+        .update({ status: 'available', consumed_at: null, project_id: null })
+        .eq('id', consumedCreditId)
+    }
+    return NextResponse.json({ error: insertErr.message }, { status: 500 })
+  }
+
+  // Link credit to project (best-effort, non-fatal).
+  if (consumedCreditId) {
+    await admin
+      .from('spec_credits')
+      .update({ project_id: id })
+      .eq('id', consumedCreditId)
+  }
+
+  // ─── Branch on mode ─────────────────────────────────────────────────────
+  if (mode === 'auto') {
+    await triggerWorker(id)
+  } else {
+    // Free-sample path: notify founder, do NOT trigger worker.
+    await sendFounderSampleNotification({
+      projectId: id,
+      userEmail: user.email,
+      referenceApp: reference_app,
     })
-
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-
-  await triggerWorker(id)
+  }
 
   return NextResponse.json({ id })
 }
