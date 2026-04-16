@@ -285,6 +285,21 @@ export default function HomeClient() {
     if (!email.trim() || choiceBusy) return
     setChoiceBusy('paid')
     setChoiceError(null)
+
+    // Guard against clicks that arrive before the upload finished. Without
+    // this the API returns 400 "Missing video key" and the user just sees
+    // "Something went wrong", which doesn't explain the real problem.
+    if (!uploadedKey) {
+      setChoiceError('Upload isn\u2019t finished yet — give it a moment and try again.')
+      setChoiceBusy(null)
+      return
+    }
+    if (!referenceApp.trim()) {
+      setChoiceError('Add the reference app name first.')
+      setChoiceBusy(null)
+      return
+    }
+
     try {
       const res = await fetch('/api/projects/anon', {
         method: 'POST',
@@ -299,7 +314,14 @@ export default function HomeClient() {
         }),
       })
       if (!res.ok) {
-        setChoiceError('Something went wrong — try again.')
+        // Surface the real server error so we can see which step failed
+        // (copy_failed, insert_failed, STRIPE_PRICE_ID not set, etc.).
+        let detail = `HTTP ${res.status}`
+        try {
+          const body = await res.json()
+          if (body?.error) detail = body.error
+        } catch {}
+        setChoiceError(`Something went wrong (${detail}) — try again.`)
         setChoiceBusy(null)
         return
       }
@@ -310,8 +332,8 @@ export default function HomeClient() {
         return
       }
       window.location.href = checkoutUrl
-    } catch {
-      setChoiceError('Network error — try again.')
+    } catch (err: any) {
+      setChoiceError(`Network error (${err?.message || 'fetch failed'}) — try again.`)
       setChoiceBusy(null)
     }
   }
