@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ["ffmpeg"]
+nixPkgs = ["ffmpeg", "python311", "python311Packages.pip"]
 
 [start]
 cmd = "uvicorn main:app --host 0.0.0.0 --port $PORT"
