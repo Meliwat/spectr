@@ -368,7 +368,7 @@ export default function HomeClient() {
         .wl-page {
           min-height: calc(100dvh - 72px);
           display: flex; align-items: center; justify-content: center;
-          padding: 16px 24px 24px;
+          padding: 8px 24px 16px;
           position: relative; overflow: hidden;
           background: radial-gradient(ellipse 180% 100% at 50% -20%,
             #0d0e18 0%, #07080f 40%, #010102 100%);
@@ -526,7 +526,7 @@ export default function HomeClient() {
         .wl-h1 {
           font-size: clamp(34px, 4.8vw, 58px);
           font-weight: 510; line-height: 1.0; letter-spacing: -0.04em;
-          margin-bottom: 12px;
+          margin-bottom: 6px;
           perspective: 600px;
         }
         .wl-h1-line1 {
@@ -557,7 +557,7 @@ export default function HomeClient() {
         .wl-sub {
           font-size: 15px; color: var(--text-2);
           line-height: 1.55; letter-spacing: -0.01em; font-weight: 400;
-          margin: 0 auto 20px;
+          margin: 0 auto 10px;
         }
         .wl-sub strong { color: rgba(200,205,255,0.8); font-weight: 500; }
 
@@ -628,7 +628,7 @@ export default function HomeClient() {
         }
 
         .wl-card {
-          position: relative; width: 100%; padding: 18px; border-radius: 20px;
+          position: relative; width: 100%; padding: 14px; border-radius: 20px;
           border: 1px solid rgba(255,255,255,0.07);
           background: rgba(10,11,14,0.75);
           backdrop-filter: blur(32px) saturate(1.4);
@@ -698,16 +698,11 @@ export default function HomeClient() {
         }
         .wl-btn-ghost:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .wl-founding {
-          font-size: 12px; color: var(--subdued); margin-top: 16px; letter-spacing: 0.01em; text-align: center;
-        }
-        .wl-founding span { color: rgba(113,112,255,0.7); }
-
         .wl-upload-zone {
           border: 1.5px dashed rgba(113,112,255,0.30);
-          border-radius: 10px; padding: 18px 20px; text-align: center;
+          border-radius: 10px; padding: 12px 20px; text-align: center;
           cursor: pointer; transition: border-color 0.2s, background 0.2s;
-          position: relative; margin-bottom: 12px;
+          position: relative; margin-bottom: 8px;
         }
         .wl-upload-zone:hover, .wl-upload-zone.drag-active {
           border-color: rgba(113,112,255,0.65);
@@ -982,10 +977,6 @@ export default function HomeClient() {
                   {uploadState === 'error' && (
                     <p className="wl-error">Upload failed — check your file and try again.</p>
                   )}
-
-                  <p className="wl-founding">
-                    Founding members get a <span>lifetime discount</span> at launch.
-                  </p>
                 </div>
               )}
 

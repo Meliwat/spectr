@@ -543,6 +543,7 @@ Stripe's `success_url` redirect often arrives before the webhook fires. The `/ap
 |---|---|
 | `STRIPE_SECRET_KEY` | Stripe API calls (server-only) |
 | `STRIPE_WEBHOOK_SECRET` | Validates incoming Stripe webhooks |
+| `STRIPE_PRICE_ID` | Stripe Price ID for the $19 spec product — read by `app/api/billing/checkout/route.ts` when creating a Checkout Session |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Client-side Stripe.js (if needed) |
 | `SITE_URL` | Full origin URL (e.g. `https://www.spectr.to`) for Checkout redirect URLs and magic-link `redirectTo`. Read by `app/api/billing/checkout/route.ts`, `app/api/billing/webhook/route.ts`, and `app/api/projects/anon/route.ts`. |
 
@@ -567,9 +568,9 @@ Before merging this redesign to `master` (which auto-deploys via Vercel), confir
 
 ---
 
-## Planned: Waitlist-as-Main-App Redesign
+## Waitlist-as-Main-App Redesign
 
-The founder decided (2026-04-16) to merge the waitlist page and the app page into one flow. The waitlist UI becomes the primary entry point for all users.
+Implemented 2026-04-16 (commit `9f1d42c`, 23 files, not yet pushed to origin/master at time of writing). The founder merged the waitlist page and the app page into one flow. The waitlist UI is the primary entry point for all users.
 
 ### New UX flow
 
