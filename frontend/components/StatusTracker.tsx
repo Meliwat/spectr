@@ -463,6 +463,32 @@ export default function StatusTracker({
   project: Project
   debugLines?: string[]
 }) {
+  // Free-sample projects: no realtime UI, just a static queued card.
+  if (project.status === 'awaiting_manual_processing') {
+    return (
+      <div className="panel-strong p-6">
+        <span className="eyebrow">Free sample</span>
+        <h2 className="mt-4 text-2xl" style={{ fontWeight: 510 }}>
+          Queued for review
+        </h2>
+        <p className="mt-3 text-sm" style={{ color: 'var(--muted)', lineHeight: 1.6 }}>
+          We&apos;re reviewing your video by hand. You&apos;ll get an email within 24 hours
+          with your finished spec.
+        </p>
+        <dl className="mt-6 grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <dt style={{ color: 'var(--muted)' }}>Reference</dt>
+            <dd className="mt-1">{project.reference_app}</dd>
+          </div>
+          <div>
+            <dt style={{ color: 'var(--muted)' }}>Submitted</dt>
+            <dd className="mt-1">{new Date(project.created_at).toLocaleString()}</dd>
+          </div>
+        </dl>
+      </div>
+    )
+  }
+
   const failed = project.status === 'failed'
   const complete = project.status === 'complete'
   const debugSuggestsSpecFlow = debugLines.some(line => line.includes('[spec] Starting project'))

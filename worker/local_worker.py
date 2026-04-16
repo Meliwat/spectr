@@ -22,12 +22,15 @@ import shutil
 import tempfile
 import argparse
 import subprocess
+import logging
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from collections import deque
 from threading import Lock
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+log = logging.getLogger(__name__)
 
 from supabase import create_client
 from dotenv import load_dotenv
@@ -345,6 +348,85 @@ def update_project(project_id: str, data: dict):
                 get_db().table("projects").update(filtered).eq("id", project_id).execute()
             return
         raise
+
+
+def refund_credit_for_failed_project(client, project_id: str) -> None:
+    """Flips a consumed credit back to 'available' when an auto project fails.
+
+    No-op if the project is in manual mode (no credit was consumed) or if no
+    matching consumed credit exists. Best-effort: errors are logged but do not
+    propagate, so a refund failure does not mask the underlying project failure.
+    """
+    try:
+        project = (
+            client.table("projects")
+            .select("processing_mode")
+            .eq("id", project_id)
+            .single()
+            .execute()
+            .data
+        )
+        if not project or project.get("processing_mode") != "auto":
+            return
+        client.table("spec_credits").update({
+            "status": "available",
+            "consumed_at": None,
+            "project_id": None,
+        }).eq("project_id", project_id).eq("status", "consumed").execute()
+        log.info("Refunded credit for failed auto project %s", project_id)
+    except Exception as exc:
+        log.error("Refund failed for project %s: %s", project_id, exc)
+
+
+def maybe_send_manual_completion_email(client, project_id: str) -> None:
+    """If the project is manual, send the user a completion email.
+
+    Best-effort: errors are logged but do not propagate. Skips if user email
+    cannot be looked up or RESEND_API_KEY is not set (the helper itself
+    handles that case).
+    """
+    from notify import send_manual_completion_email
+
+    try:
+        project = (
+            client.table("projects")
+            .select("user_id, processing_mode, spec_md_s3_key")
+            .eq("id", project_id)
+            .single()
+            .execute()
+            .data
+        )
+        if not project or project.get("processing_mode") != "manual":
+            return
+
+        spec_key = project.get("spec_md_s3_key")
+        if not spec_key:
+            log.warning("Manual project %s has no spec_md_s3_key, skipping email", project_id)
+            return
+
+        # Look up user email via auth admin API.
+        user_id = project["user_id"]
+        try:
+            user = client.auth.admin.get_user_by_id(user_id)
+            user_email = user.user.email if user and user.user else None
+        except Exception as exc:
+            log.error("Failed to look up user %s for project %s: %s", user_id, project_id, exc)
+            return
+
+        # Generate a 24h signed URL for the spec.
+        signed = client.storage.from_(BUCKET).create_signed_url(spec_key, 60 * 60 * 24)
+        signed_url = signed.get("signedURL") or signed.get("signedUrl") or signed.get("signed_url")
+        if not signed_url:
+            log.error("No signed URL returned for project %s", project_id)
+            return
+
+        send_manual_completion_email(
+            user_email=user_email,
+            project_id=project_id,
+            signed_url=signed_url,
+        )
+    except Exception as exc:
+        log.error("maybe_send_manual_completion_email failed for %s: %s", project_id, exc)
 
 
 def load_project(project_id: str) -> dict:
@@ -764,9 +846,11 @@ def process_project_spec(project_id: str):
             "backend_spec": None,
         })
         project_log(project_id, "  ✓ Done — spec.md uploaded to Storage")
+        maybe_send_manual_completion_email(get_db(), project_id)
 
     except Exception as e:
         update_project(project_id, {"status": STATUS_FAILED, "error_text": str(e)})
+        refund_credit_for_failed_project(get_db(), project_id)
         project_log(project_id, f"  ✗ Failed: {e}")
         raise
 

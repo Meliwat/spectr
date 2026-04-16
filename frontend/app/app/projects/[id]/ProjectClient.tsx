@@ -20,6 +20,9 @@ export default function ProjectClient({
   const readyToastShown = useRef(initialProject.status === 'complete')
 
   useEffect(() => {
+    if (project.processing_mode === 'manual') {
+      return  // No realtime for free samples — worker doesn't fire.
+    }
     // Realtime subscription — now runs under the user's JWT via the
     // auth-aware browser client, so RLS scopes updates to their own rows.
     const channel = supabase
@@ -32,7 +35,7 @@ export default function ProjectClient({
       .subscribe()
 
     return () => { supabase.removeChannel(channel) }
-  }, [id])
+  }, [id, project.processing_mode])
 
   useEffect(() => {
     if (project?.status === 'complete' && !readyToastShown.current) {

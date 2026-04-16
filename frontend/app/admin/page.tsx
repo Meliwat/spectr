@@ -1,4 +1,5 @@
 import AdminTable, { AdminRow } from './AdminTable'
+import PendingSamplesTable from '@/components/PendingSamplesTable'
 
 export const dynamic = 'force-dynamic'
 
@@ -83,5 +84,14 @@ export default async function AdminPage({
     })
   )
 
-  return <AdminTable rows={rows} adminKey={searchParams.key} />
+  return (
+    <>
+      <div style={{ background: '#07080f', padding: '32px 32px 0' }}>
+        <div style={{ maxWidth: 920, margin: '0 auto' }}>
+          <PendingSamplesTable />
+        </div>
+      </div>
+      <AdminTable rows={rows} adminKey={searchParams.key} />
+    </>
+  )
 }
