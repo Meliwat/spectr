@@ -66,13 +66,17 @@ All processing logic lives in `worker/local_worker.py`. This is the most importa
 3. Extract frames using ffmpeg scene-change detection (threshold: 0.15)
 4. If scene detection yields too few frames, fall back to 1fps extraction
 5. Deduplicate using perceptual hashing (pHash, threshold distance: 6)
-6. Cap at 48 unique frames (configurable via `MAX_FRAMES` env var)
+6. Cap at `MAX_FRAMES` unique frames (code default: 48; Railway production: 20)
+7. Before sending each frame to the vision API, resize to ≤1920px (`_resize_frame_for_api()`)
 
 **Why scene-change detection instead of 1fps:**
 Screen recordings have long static periods (user reading, loading states). 1fps generates hundreds of near-identical frames that waste token budget and slow processing. Scene detection captures ~5-15x fewer frames while catching every meaningful UI transition.
 
-**Why cap at 48 frames:**
-Vision batches are 25 frames each. 48 frames = 2 batches, which runs in parallel. More frames means more cost and more time with diminishing returns — most apps show all their unique screens within 48 well-chosen frames.
+**Why cap at 20 frames (production) / 48 (code default):**
+Vision batches are 25 frames each. Most apps expose all their unique screens within 20 well-chosen frames. 48 was the original default but is overkill for most apps — it triples API cost with minimal quality gain. The Railway `MAX_FRAMES` env var is set to 20 in production. Increase to 30–48 only for complex apps with many distinct screens.
+
+**Why resize frames to ≤1920px:**
+Claude's vision API rejects images larger than 2000px in any dimension when processing multi-image requests. High-resolution screen recordings (e.g. from modern iPhones at 3x) frequently exceed this. `_resize_frame_for_api()` re-encodes each frame as JPEG at ≤1920px before building the vision request content. Do not bypass this step — the API call will silently fail or error on oversized images.
 
 ### Stage 2: Vision Analysis
 
@@ -224,7 +228,7 @@ The frontend `StatusTracker` component handles both the legacy 3-stage set and t
 | `WORKER_WEBHOOK_SECRET` | Yes | — | Validates `/run` and `/logs` requests |
 | `VISION_MODEL` | No | haiku-4-5-20251001 | Model for frame analysis |
 | `STITCH_MODEL` | No | claude-sonnet-4-6 | Model for spec generation |
-| `MAX_FRAMES` | No | 48 | Cap on unique frames kept |
+| `MAX_FRAMES` | No | 48 (code) / 20 (Railway production) | Cap on unique frames kept |
 | `FRAME_BATCH_SIZE` | No | 25 | Frames per vision API call |
 | `SPEC_LANE_WORKERS` | No | 2 | Parallel spec section lanes |
 | `SPEC_ANALYSIS_WORKERS` | No | 2 | Parallel vision passes |
@@ -348,7 +352,7 @@ Before the Supabase auth check, `middleware.ts` enforces an invite-only gate via
 
 ### How it works
 
-1. Middleware checks for `request.cookies.get('spectr_access')?.value === 'main'`
+1. Middleware checks for `request.cookies.get('spectr_access')?.value === 'v2'`
 2. If the cookie is absent → redirect to `/waitlist`
 3. If the cookie is present → proceed to the Supabase auth check (for `/app/*` routes)
 
@@ -432,11 +436,156 @@ These must remain configured. Removing them breaks the magic-link callback.
 
 ## Known Pre-Launch Gaps
 
-Auth and user isolation are now implemented. The `spectr-uploads` RLS policies (INSERT, SELECT, UPDATE for `authenticated`) are in place. No known open gaps remain.
+Auth and user isolation are now implemented. The `spectr-uploads` RLS policies (INSERT, SELECT, UPDATE for `authenticated`) are in place.
+
+**Open gap: paywall.** The online pipeline is not yet paywalled. The design is finalized (see "Paywall Design" below) but not implemented. The waitlist gate keeps the product invite-only in the interim.
+
+---
+
+## Paywall Design
+
+The online pipeline will be pay-per-spec at **$19 USD**, with a free sample option processed manually by the founder. This section documents the finalized design — implement from here when ready.
+
+### Decisions locked
+
+- **Model**: Pay-per-spec (not subscription). One credit = one generated spec.
+- **Price**: $19, charged before upload. Free sample path exists alongside it (see below).
+- **Two processing modes**: `auto` (paid, $19 Stripe, worker triggered immediately, full realtime UI) and `manual` (free sample, founder processes manually within ~24h, no realtime progress UI).
+- **Payment UI**: Stripe Checkout (hosted page) — we never handle card data directly.
+- **Entitlement**: Credits table (`spec_credits`) — a row created by Stripe webhook, consumed atomically at upload time, refunded automatically if the worker fails.
+- **Rollout**: Feature-flagged. The paywall logic lives in the API layer (`POST /api/projects`). `NEXT_PUBLIC_PAYWALL_ENABLED` (default `'false'`) gates it — exposed to the client bundle so the `/app` UI can branch between the two CTAs.
+- **Local bypass**: The local pipeline (`python local_worker.py --project-id`) never touches the credit system. The `extract.py` CLI and `/spectr` skill are also unaffected. This ensures the developer can run renders locally without consuming credits or hitting the Anthropic API.
+
+### Database schema
+
+```sql
+create table spec_credits (
+  id                  uuid primary key default uuid_generate_v4(),
+  user_id             uuid not null references auth.users(id) on delete cascade,
+  status              text not null default 'available',
+    -- 'available' | 'consumed' | 'refunded'
+  source              text not null default 'stripe',
+    -- 'stripe' | 'comp' | 'refund'
+  stripe_session_id   text unique,
+  stripe_payment_id   text,
+  amount_cents        int,                  -- 1900 for $19
+  project_id          uuid references projects(id),  -- set when consumed
+  created_at          timestamptz default now(),
+  consumed_at         timestamptz
+);
+
+create index spec_credits_user_status_idx
+  on spec_credits(user_id, status);
+create unique index spec_credits_session_idx
+  on spec_credits(stripe_session_id) where stripe_session_id is not null;
+```
+
+**RLS**: `select` scoped to `auth.uid() = user_id`. All writes go through service-role API routes.
+
+`projects` table also gains a `processing_mode TEXT NOT NULL DEFAULT 'auto'` column (`'auto' | 'manual'`). Auto = paid, worker triggered immediately. Manual = free sample, stays at `awaiting_manual_processing` until founder runs the worker locally.
+
+### Design rationale
+
+- `status` is a 3-state machine — easy to flip atomically. Refund = flip `consumed` → `available`.
+- `stripe_session_id` unique → Stripe webhook is naturally idempotent (retried webhooks no-op).
+- `source = 'comp'` lets you grant free credits directly in SQL with no Stripe round-trip: `insert into spec_credits (user_id, status, source, amount_cents) values ('<uuid>', 'available', 'comp', 0)`.
+- `project_id` set on consume gives a clean audit trail per user.
+
+### API surface
+
+Three route changes when implementing the paywall:
+
+**`POST /api/billing/checkout` (new)**
+- Auth-gated — uses `makeSupabaseSSR()` to read session cookie.
+- Creates a Stripe Checkout session in `payment` mode, line item = the $19 spec product.
+- `client_reference_id = user.id` so the webhook can attribute the credit without a database lookup.
+- `success_url = ${SITE}/app?purchased=1`, `cancel_url = ${SITE}/app?canceled=1`.
+- Returns `{ url }`. Frontend does `window.location = url`.
+
+**`POST /api/billing/webhook` (new)**
+- Verifies `stripe-signature` header against `STRIPE_WEBHOOK_SECRET`. Reject if invalid.
+- In App Router, use `await req.text()` to get the raw body for signature verification — do NOT use `bodyParser: false` (that's Pages Router syntax).
+- Handles `checkout.session.completed`: read `client_reference_id` (user_id), `id` (session_id), `payment_intent`, `amount_total`. Insert with `ON CONFLICT (stripe_session_id) DO NOTHING` — webhook idempotency, Stripe may retry.
+- Returns `200` always (Stripe retries on 5xx).
+
+**`POST /api/projects` (modified)**
+Atomic credit-check + consume inside the handler (after auth, before project insert):
+
+```ts
+if (paywallEnabled()) {
+  const { data: credit, error } = await supabase
+    .from('spec_credits')
+    .update({ status: 'consumed', consumed_at: new Date().toISOString() })
+    .eq('user_id', user.id)
+    .eq('status', 'available')
+    .order('created_at', { ascending: true })  // FIFO
+    .limit(1)
+    .select()
+    .single();
+  if (error || !credit) return new Response('No credits', { status: 402 });
+  // After project insert: set spec_credits.project_id = newProject.id
+}
+```
+
+`UPDATE … LIMIT 1 RETURNING` is atomic in Postgres — two concurrent uploads can't double-spend the same credit.
+
+### UX: redirect vs webhook race
+
+Stripe's `success_url` redirect often arrives before the webhook fires. The `/app?purchased=1` page should poll for a credit for ~5 seconds before showing "still processing payment" — in the normal case the webhook wins and the credit is already there by the time the page loads.
+
+### New environment variables
+
+| Variable | Purpose |
+|---|---|
+| `STRIPE_SECRET_KEY` | Stripe API calls (server-only) |
+| `STRIPE_WEBHOOK_SECRET` | Validates incoming Stripe webhooks |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Client-side Stripe.js (if needed) |
+| `SITE` | Full origin URL (e.g. `https://www.spectr.to`) for Checkout redirect URLs |
+
+### What not to do
+
+**Do not put the paywall check in the worker.** The credit gate belongs in `POST /api/projects` (the API route), not in `local_worker.py`. The worker must remain credit-agnostic so local invocations stay free.
+
+**Do not deploy the paywall without the feature flag.** `PAYWALL_ENABLED=false` must be the default. Flip it to `true` in Vercel only when the full flow (Stripe → webhook → credit → upload → consume → refund-on-failure) is verified end-to-end.
+
+**Do not use `bodyParser: false` in the webhook route.** That is Pages Router syntax. In App Router, read the raw body with `await req.text()` before passing to `stripe.webhooks.constructEvent()`.
+
+---
+
+## Planned: Waitlist-as-Main-App Redesign
+
+The founder decided (2026-04-16) to merge the waitlist page and the app page into one flow. The waitlist UI becomes the primary entry point for all users.
+
+### New UX flow
+
+1. **Single landing page** — the current waitlist page (`/waitlist`) becomes the main page. Upload form always visible (MP4 + reference app name). No auth gate for viewing the form.
+2. **Paywall modal on submit** — when user clicks submit, the paywall popup appears with two choices:
+   - **"Full spec — $19"** → user enters email (for delivery) → Stripe Checkout → redirect back → pipeline processes automatically on Railway worker → user gets the "Taking Shape" realtime progress screen → spec delivered
+   - **"Free demo"** → user enters email → video + email stored in waitlist/admin table → founder fulfills manually via `python local_worker.py` → result emailed within 24 hours
+3. **Email collection** — the free-demo path collects the user's email and stores it alongside the video in the admin table (existing waitlist functionality preserved). The paid path also collects email for delivery.
+4. **Admin table** — the existing `/admin` dashboard shows both paid projects and free-demo requests with the CLI commands for manual fulfillment.
+
+### Key architectural implications
+
+- **Auth may change**: currently `/app` requires magic-link auth. The merged flow on `/waitlist` is public. The paid path needs auth for Stripe `client_reference_id` → either add lightweight auth (email-only, no password) or use Stripe's `customer_email` field and create the user on webhook receipt.
+- **The `spectr_access` cookie gate may be removed** — if the waitlist IS the app, the gate serves no purpose.
+- **Existing `/app` route** — either redirects to the new page or becomes the authenticated "my projects" dashboard.
+- **The "Taking Shape" progress screen** — currently at `/app/projects/[id]`. Needs to be accessible without full auth (or with a lightweight token).
+
+### What stays the same
+
+- Worker pipeline (Railway)
+- Stripe billing (checkout → webhook → credits → consume)
+- Supabase DB schema
+- Admin dashboard
+- Local pipeline for founder
 
 ---
 
 ## What Not To Do
+
+**Do not bypass `_resize_frame_for_api()` when building vision request content.**
+Claude's vision API silently rejects or errors on images larger than 2000px in any dimension when processing multi-image batches. High-resolution screen recordings (modern iPhones, Android at 3x) routinely exceed this. Every frame must pass through `_resize_frame_for_api()` before being added to a vision API request content block. Do not add raw PIL/base64 image data to vision calls directly.
 
 **Do not add a backend research pass back into the active pipeline.**
 `PROMPT_2_*` (web research via Claude web search) was removed from the active pipeline because it added significant latency and the output quality didn't justify it. The prompts are kept in `legacy_spec.py` for reference. Do not re-enable without a clear reason.
