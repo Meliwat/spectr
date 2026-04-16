@@ -2,8 +2,11 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Inter } from 'next/font/google'
+import { GoogleAnalytics } from '@next/third-parties/google'
 import { ToastProvider } from '@/components/Toast'
 import './globals.css'
+
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID?.trim()
 
 const inter = Inter({
   subsets: ['latin'],
@@ -60,6 +63,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </nav>
           {children}
         </ToastProvider>
+        {GA_ID ? <GoogleAnalytics gaId={GA_ID} /> : null}
       </body>
     </html>
   )

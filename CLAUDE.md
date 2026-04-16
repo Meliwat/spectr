@@ -247,6 +247,7 @@ The frontend `StatusTracker` component handles both the legacy 3-stage set and t
 | `SUPABASE_SERVICE_KEY` | Yes | Server-side API routes (full access) |
 | `WORKER_URL` | Yes | Worker endpoint for triggering runs |
 | `WORKER_WEBHOOK_SECRET` | Yes | Shared secret for worker requests |
+| `NEXT_PUBLIC_GA_ID` | No | Google Analytics 4 measurement ID (e.g. `G-XXXXXXXXXX`). When unset, `app/layout.tsx` skips rendering `<GoogleAnalytics />` — intentional so local `npm run dev` doesn't pollute prod GA data. Uses `@next/third-parties/google` (App Router-native; handles route changes automatically, no `useEffect` wiring required). |
 
 ---
 
@@ -555,6 +556,8 @@ Stripe's `success_url` redirect often arrives before the webhook fires. The `/ap
 
 **Do not use `bodyParser: false` in the webhook route.** That is Pages Router syntax. In App Router, read the raw body with `await req.text()` before passing to `stripe.webhooks.constructEvent()`.
 
+**Do not migrate Stripe to live mode piecemeal.** `STRIPE_SECRET_KEY`, `STRIPE_PRICE_ID`, and `STRIPE_WEBHOOK_SECRET` are three separate Stripe namespaces (test vs live). They must all be swapped to live values together in Vercel. A test webhook signing secret will not validate live events; a live price ID will not work with a test secret key. Steps: (1) create a live-mode price in the Stripe dashboard and copy its ID, (2) register a live-mode webhook endpoint for `checkout.session.completed` and copy its signing secret, (3) update all three vars in Vercel simultaneously. The Stripe publishable key (`NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`) must also move from `pk_test_…` to `pk_live_…` if used client-side.
+
 ---
 
 ## Waitlist-as-Main-App: Pre-Deploy Checklist
@@ -562,8 +565,10 @@ Stripe's `success_url` redirect often arrives before the webhook fires. The `/ap
 Before merging this redesign to `master` (which auto-deploys via Vercel), confirm:
 
 - [x] `supabase/migrations/2026-04-16-waitlist-as-main-app.sql` applied to the prod `spectr` Supabase project (`nlkwoezxicayljemxhma`). Adds `projects.email`, `projects.access_token` (+ unique partial index, + email index), comments the new `awaiting_payment` status, and adds `waitlist.reference_app / your_app_name / project_id / mode` (+ two indexes). **Applied 2026-04-16.**
+- [x] **Stripe live mode active in Vercel.** `STRIPE_SECRET_KEY`, `STRIPE_PRICE_ID`, and `STRIPE_WEBHOOK_SECRET` are all set to live values. Verified: `/api/projects/anon` returns `cs_live_…` Checkout Session IDs. **Active as of 2026-04-16.**
+- [x] **Stripe webhook end-to-end verification.** Verified 2026-04-16 with a real $19 purchase — project flipped `awaiting_payment → extracting` in 32 seconds. Stripe signing secret matches, customer-email-to-user resolution works, credit upsert succeeded, worker triggered correctly.
 - [ ] **Supabase Auth "Confirm email" flow** — the anon webhook calls `admin.createUser({ email, email_confirm: true })`. Verify this still works when Auth > Providers > Email has "Confirm email" enabled. The flag on `createUser` marks the user as pre-confirmed, so magic-link sign-in should succeed without a separate confirmation click, but test once against a real email before enabling paid flow in prod.
-- [ ] **`SITE_URL` env var set in Vercel (all environments).** Read by `app/api/billing/checkout/route.ts`, `app/api/billing/webhook/route.ts`, and `app/api/projects/anon/route.ts`. All three fall back to `https://www.spectr.to` if unset — OK for prod, but set it explicitly so Preview deployments point at themselves instead of prod. **Note:** the variable name is `SITE_URL`, not `SITE` — earlier docs were wrong.
+- [x] **`SITE_URL` env var set in Vercel (all environments).** Confirmed set 2026-04-16. Read by `app/api/billing/checkout/route.ts`, `app/api/billing/webhook/route.ts`, and `app/api/projects/anon/route.ts`. **Note:** the variable name is `SITE_URL`, not `SITE` — earlier docs were wrong.
 - [ ] **`spectr_access` cookie is now vestigial.** With the waitlist page becoming the main app, the invite-only gate in `middleware.ts` no longer has a useful job. Existing cookies on invited browsers are harmless. Safe to remove the gate entirely in a follow-up — don't need to purge cookies first.
 
 ---
@@ -647,14 +652,22 @@ The waitlist demo phone frame (`<aside>` in `WaitlistClient.tsx`) uses `translat
 **Any API route that directly fetches the worker must also trim `WORKER_URL` and `WORKER_WEBHOOK_SECRET`.**
 `triggerWorker()` does the trim internally, but routes that call the worker directly (e.g. `app/api/projects/[id]/logs/route.ts`) must apply their own `clean()` helper: `const clean = (v: string | undefined) => (v ?? '').replace(/\\n/g, '').trim()`. Without this, the Vercel-injected trailing `\n` produces a malformed URL and the route silently returns `{ lines: [] }` with no indication of failure. Also log worker errors explicitly (`console.error`) — silent empty returns make this class of bug nearly invisible.
 
+**Do not leave polling GET route handlers subject to Next.js caching.**
+Next.js 14.2 caches GET route handler responses by default. Any route that is polled for live state (e.g. `app/api/projects/[id]/route.ts`) must opt out explicitly or clients will receive a stale snapshot indefinitely. The symptom is a progress bar stuck mid-pipeline even after the worker completes, with no download button appearing. Fix: add `export const dynamic = 'force-dynamic'` and `export const revalidate = 0` at the top of the file, and stamp every response with `Cache-Control: no-store`. Binary-body routes (downloads) are not affected — only JSON polling routes. See commit `687bde3`.
+
 **Do not put an `env` block in `vercel.json`.**
 Vercel's `vercel.json` `"env"` section hardcodes values that are embedded at deployment time and **override** anything set in the Vercel dashboard at runtime. A `"SUPABASE_SERVICE_KEY": "placeholder"` entry will always win over the real key — producing silent "invalid api key" failures where debug tooling shows the correct-looking value but the running function gets the hardcoded string. Keep `vercel.json` free of any `env` block; set all environment variables exclusively through the Vercel dashboard.
+
+**Do not make the bucket copy in `app/api/projects/anon/route.ts` non-idempotent.**
+The anon route copies the uploaded MP4 from `waitlist-videos` to `spectr-uploads` before creating a project row. On retry (user pays again after a prior failure), the destination object already exists and the copy call errors. Treat a "already exists" / duplicate error from `storage.copy()` as success, not failure — the file is already where it needs to be. Fixed in commit `a179c15`.
 
 ---
 
 ## Vercel Deployment
 
 The `frontend` Vercel project is connected to the `Meliwat/spectr` GitHub repository (scoped install, not all-repos). Production branch is `master`, root directory is `frontend`. Every `git push origin master` auto-deploys — no manual `vercel --prod` needed.
+
+**Vercel does not auto-redeploy when env vars change.** After editing env vars in the Vercel dashboard, you must manually trigger a redeploy: go to Deployments → `•••` on the latest deploy → Redeploy (uncheck "Use existing build cache"). Alternatively, push a no-op commit. This affects all env var changes — including Stripe key rotations and any other secrets updated mid-lifecycle.
 
 ---
 
