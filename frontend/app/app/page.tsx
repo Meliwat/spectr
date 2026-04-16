@@ -1,11 +1,12 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import UploadZone from '@/components/UploadZone'
 import BrandingForm from '@/components/BrandingForm'
 import BillingCTA from '@/components/BillingCTA'
 import { useToast } from '@/hooks/useToast'
+import { paywallEnabled } from '@/lib/paywall'
 
 export default function UploadPage() {
   const router = useRouter()
@@ -17,33 +18,78 @@ export default function UploadPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
+  const [showModal, setShowModal] = useState(false)
+  const [hasCredits, setHasCredits] = useState<boolean | null>(null)
+  const [modalBusy, setModalBusy] = useState(false)
+  const [modalError, setModalError] = useState<string | null>(null)
+
+  const enabled = paywallEnabled()
   const canSubmit = mp4File && referenceApp.trim().length > 0 && !loading
 
-  async function handleSubmit(mode: 'auto' | 'sample') {
-    if (!canSubmit) return
+  // ─── Check credits on mount (paywall on only) ─────────────────────────
+  useEffect(() => {
+    if (!enabled) { setHasCredits(true); return }
+    fetch('/api/billing/credits')
+      .then((r) => (r.ok ? r.json() : { available: 0 }))
+      .then((d) => setHasCredits((d.available ?? 0) > 0))
+      .catch(() => setHasCredits(false))
+  }, [enabled])
+
+  // ─── Post-Stripe redirect: auto-submit from localStorage ──────────────
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('purchased') !== '1') return
+
+    window.history.replaceState({}, '', '/app')
+
+    const raw = localStorage.getItem('spectr_pending')
+    if (!raw) return
+    const pending = JSON.parse(raw)
+    localStorage.removeItem('spectr_pending')
+
+    let attempts = 0
+    const interval = setInterval(async () => {
+      attempts++
+      try {
+        const r = await fetch('/api/billing/credits')
+        const data = await r.json()
+        if ((data.available ?? 0) > 0) {
+          clearInterval(interval)
+          setHasCredits(true)
+          await createProject(pending.projectId, pending.mp4Key, pending.reference_app, pending.your_app_name, pending.brand_colors, 'auto')
+        } else if (attempts >= 15) {
+          clearInterval(interval)
+          setError('Payment is still processing — refresh the page in a moment.')
+        }
+      } catch {
+        if (attempts >= 15) clearInterval(interval)
+      }
+    }, 1000)
+
+    return () => clearInterval(interval)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // ─── Core: create project row + trigger worker or notify founder ──────
+  async function createProject(
+    projectId: string, mp4Key: string,
+    refApp: string, appName: string,
+    colors: Record<string, string> | null,
+    mode: 'auto' | 'sample',
+  ) {
     setLoading(true)
     setError('')
     try {
-      const projectId = crypto.randomUUID()
-      const mp4Key = `${projectId}/input.mp4`
-
-      const uploads: Promise<unknown>[] = [
-        supabase.storage
-          .from('spectr-uploads')
-          .upload(mp4Key, mp4File, { contentType: 'video/mp4', upsert: true })
-          .then(({ error: err }) => { if (err) throw err }),
-      ]
-      await Promise.all(uploads)
-
       const res = await fetch('/api/projects', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           id: projectId,
           mp4_s3_key: mp4Key,
-          reference_app: referenceApp.trim(),
-          your_app_name: yourAppName.trim() || referenceApp.trim(),
-          brand_colors: brandColors,
+          reference_app: refApp,
+          your_app_name: appName || refApp,
+          brand_colors: colors,
           logo_s3_key: null,
           bundle_id: null,
           mode,
@@ -53,72 +99,66 @@ export default function UploadPage() {
       router.push(`/app/projects/${projectId}`)
     } catch (e: any) {
       console.error('[submit error]', e)
-      const message = e.message || 'Something went wrong'
-      setError(message)
-      toast(message, 'error')
+      const msg = e.message || 'Something went wrong'
+      setError(msg)
+      toast(msg, 'error')
       setLoading(false)
     }
   }
 
-  const renderUploader = ({ mode }: { mode: 'auto' | 'sample' }) => (
-    <>
-      <div className="mt-8">
-        <UploadZone onFile={setMp4File} file={mp4File} />
-      </div>
+  // ─── Upload video to Storage, then proceed based on mode ──────────────
+  async function uploadAndProceed(mode: 'auto' | 'sample') {
+    if (!canSubmit) return
+    setModalBusy(true)
+    setModalError(null)
+    setShowModal(false)
 
-      <div className="mt-8 grid gap-5 sm:grid-cols-2">
-        <div>
-          <label className="field-label">
-            Reference app <span style={{ color: 'var(--error)' }}>*</span>
-          </label>
-          <input
-            type="text"
-            placeholder="DoorDash, Duolingo, Notion..."
-            value={referenceApp}
-            onChange={e => setReferenceApp(e.target.value)}
-            className="input"
-          />
-          <p className="mt-2 helper-copy">Use the real product name so the blueprint stays grounded in the app you captured.</p>
-        </div>
-        <div>
-          <label className="field-label">Your app name</label>
-          <input
-            type="text"
-            placeholder={referenceApp.trim() || 'Same as reference app'}
-            value={yourAppName}
-            onChange={e => setYourAppName(e.target.value)}
-            className="input"
-          />
-          <p className="mt-2 helper-copy">Leave this blank if you want the blueprint to keep the original name.</p>
-        </div>
-      </div>
+    const projectId = crypto.randomUUID()
+    const mp4Key = `${projectId}/input.mp4`
 
-      <BrandingForm
-        onColors={setBrandColors}
-        showBundleId={false}
-      />
+    try {
+      setLoading(true)
+      setError('')
 
-      {error && (
-        <div
-          className="mt-5 rounded-xl px-4 py-3 text-sm"
-          style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.24)', color: 'var(--error)' }}
-        >
-          {error}
-        </div>
-      )}
+      const { error: upErr } = await supabase.storage
+        .from('spectr-uploads')
+        .upload(mp4Key, mp4File!, { contentType: 'video/mp4', upsert: true })
+      if (upErr) throw upErr
 
-      <div className="mt-8 flex flex-wrap items-center gap-4">
-        <button
-          onClick={() => handleSubmit(mode)}
-          disabled={!canSubmit}
-          className={canSubmit ? 'btn-primary' : 'btn'}
-        >
-          {loading ? 'Starting...' : mode === 'sample' ? 'Submit for free review' : 'Generate spec'}
-        </button>
-        <p className="helper-copy">You’ll get a live view of the progress and a downloadable spec when it’s ready.</p>
-      </div>
-    </>
-  )
+      if (mode === 'auto' && enabled && !hasCredits) {
+        localStorage.setItem('spectr_pending', JSON.stringify({
+          projectId, mp4Key,
+          reference_app: referenceApp.trim(),
+          your_app_name: yourAppName.trim() || referenceApp.trim(),
+          brand_colors: brandColors,
+        }))
+        const r = await fetch('/api/billing/checkout', { method: 'POST' })
+        if (!r.ok) throw new Error('Checkout failed')
+        const { url } = await r.json()
+        window.location.href = url
+        return
+      }
+
+      await createProject(projectId, mp4Key, referenceApp.trim(), yourAppName.trim(), brandColors, mode)
+    } catch (e: any) {
+      console.error('[upload error]', e)
+      const msg = e.message || 'Upload failed'
+      setError(msg)
+      toast(msg, 'error')
+      setLoading(false)
+      setModalBusy(false)
+    }
+  }
+
+  // ─── Submit gate: direct submit or open modal ─────────────────────────
+  function handleSubmitClick() {
+    if (!canSubmit) return
+    if (!enabled || hasCredits) {
+      uploadAndProceed('auto')
+    } else {
+      setShowModal(true)
+    }
+  }
 
   return (
     <main className="page-frame">
@@ -138,12 +178,66 @@ export default function UploadPage() {
               Upload a mobile app recording, name the product that inspired it, and Spectr will turn what it sees into a detailed blueprint your agents can read, share, and build from.
             </p>
 
-            <BillingCTA renderUploader={renderUploader} />
+            <div className="mt-8">
+              <UploadZone onFile={setMp4File} file={mp4File} />
+            </div>
+
+            <div className="mt-8 grid gap-5 sm:grid-cols-2">
+              <div>
+                <label className="field-label">
+                  Reference app <span style={{ color: 'var(--error)' }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="DoorDash, Duolingo, Notion..."
+                  value={referenceApp}
+                  onChange={e => setReferenceApp(e.target.value)}
+                  className="input"
+                />
+                <p className="mt-2 helper-copy">Use the real product name so the blueprint stays grounded in the app you captured.</p>
+              </div>
+              <div>
+                <label className="field-label">Your app name</label>
+                <input
+                  type="text"
+                  placeholder={referenceApp.trim() || 'Same as reference app'}
+                  value={yourAppName}
+                  onChange={e => setYourAppName(e.target.value)}
+                  className="input"
+                />
+                <p className="mt-2 helper-copy">Leave this blank if you want the blueprint to keep the original name.</p>
+              </div>
+            </div>
+
+            <BrandingForm
+              onColors={setBrandColors}
+              showBundleId={false}
+            />
+
+            {error && (
+              <div
+                className="mt-5 rounded-xl px-4 py-3 text-sm"
+                style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.24)', color: 'var(--error)' }}
+              >
+                {error}
+              </div>
+            )}
+
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <button
+                onClick={handleSubmitClick}
+                disabled={!canSubmit}
+                className={canSubmit ? 'btn-primary' : 'btn'}
+              >
+                {loading ? 'Starting...' : 'Create my blueprint'}
+              </button>
+              <p className="helper-copy">You'll get a live view of the progress and a downloadable spec when it's ready.</p>
+            </div>
           </div>
 
           <aside className="space-y-4">
             <div className="panel p-5">
-              <p className="section-title">What you’ll receive</p>
+              <p className="section-title">What you'll receive</p>
               <div className="mt-4 space-y-3">
                 {[
                   ['Screens', 'Screen-by-screen notes with hierarchy, patterns, states, and flow.'],
@@ -182,6 +276,15 @@ export default function UploadPage() {
           </aside>
         </div>
       </section>
+
+      <BillingCTA
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        onPaid={() => uploadAndProceed('auto')}
+        onFreeDemo={() => uploadAndProceed('sample')}
+        busy={modalBusy}
+        error={modalError}
+      />
     </main>
   )
 }

@@ -2,137 +2,86 @@
 import { useEffect, useState } from 'react'
 import { paywallEnabled } from '@/lib/paywall'
 
-type Mode = 'auto' | 'sample'
-
 interface Props {
-  /**
-   * Renders the upload UI. Receives the chosen mode so the upload form can
-   * include it in the POST body.
-   */
-  renderUploader: (args: { mode: Mode }) => React.ReactNode
+  open: boolean
+  onClose: () => void
+  onFreeDemo: () => void
+  onPaid: () => void
+  busy: boolean
+  error: string | null
 }
 
-export default function BillingCTA({ renderUploader }: Props) {
-  const enabled = paywallEnabled()
-  const [credits, setCredits] = useState<number | null>(enabled ? null : 0)
-  const [chosenMode, setChosenMode] = useState<Mode | null>(null)
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  // ─── Bypass: paywall off → render the existing uploader as today ───────
-  if (!enabled) {
-    return <>{renderUploader({ mode: 'auto' })}</>
-  }
-
-  // ─── Initial credit fetch ──────────────────────────────────────────────
-  useEffect(() => {
-    let cancelled = false
-    fetch('/api/billing/credits')
-      .then((r) => (r.ok ? r.json() : { available: 0 }))
-      .then((data) => { if (!cancelled) setCredits(data.available ?? 0) })
-      .catch(() => { if (!cancelled) setCredits(0) })
-    return () => { cancelled = true }
-  }, [])
-
-  // ─── Post-Stripe redirect: poll for credit to appear ────────────────────
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    const params = new URLSearchParams(window.location.search)
-    if (params.get('purchased') !== '1') return
-
-    let attempts = 0
-    const interval = setInterval(async () => {
-      attempts++
-      try {
-        const r = await fetch('/api/billing/credits')
-        const data = await r.json()
-        if ((data.available ?? 0) > 0) {
-          clearInterval(interval)
-          setCredits(data.available)
-          window.history.replaceState({}, '', '/app')
-        } else if (attempts >= 10) {
-          clearInterval(interval)
-          setError('Payment is processing — refresh in a moment.')
-        }
-      } catch {
-        // Continue polling.
-      }
-    }, 500)
-
-    return () => clearInterval(interval)
-  }, [])
-
-  // ─── Loading state ─────────────────────────────────────────────────────
-  if (credits === null) {
-    return <div className="text-sm" style={{ color: 'var(--muted)' }}>Loading…</div>
-  }
-
-  // ─── Has credits OR user picked a mode → show uploader ─────────────────
-  if (credits > 0) {
-    return <>{renderUploader({ mode: 'auto' })}</>
-  }
-  if (chosenMode === 'sample') {
-    return <>{renderUploader({ mode: 'sample' })}</>
-  }
-
-  // ─── No credits, no choice yet → show two-CTA chooser ──────────────────
-  async function startCheckout() {
-    setBusy(true)
-    setError(null)
-    try {
-      const r = await fetch('/api/billing/checkout', { method: 'POST' })
-      if (!r.ok) {
-        const text = await r.text()
-        throw new Error(text || `HTTP ${r.status}`)
-      }
-      const { url } = await r.json()
-      if (url) {
-        window.location.href = url
-      } else {
-        throw new Error('No checkout URL returned')
-      }
-    } catch (err: any) {
-      setError(err.message ?? 'Checkout failed')
-      setBusy(false)
-    }
-  }
+export default function BillingCTA({ open, onClose, onFreeDemo, onPaid, busy, error }: Props) {
+  if (!open) return null
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
-      <div className="panel-strong p-6">
-        <h3 className="text-xl" style={{ fontWeight: 510 }}>Generate now — $19</h3>
-        <p className="mt-2 text-sm" style={{ color: 'var(--muted)' }}>
-          Automatic processing. Your spec is ready in about three minutes.
-        </p>
-        <button
-          onClick={startCheckout}
-          disabled={busy}
-          className="mt-4 w-full rounded-md px-4 py-2 text-sm"
-          style={{ background: 'var(--accent)', color: 'var(--accent-fg)', fontWeight: 500 }}
-        >
-          {busy ? 'Redirecting…' : 'Pay & upload'}
-        </button>
-      </div>
+    <div
+      style={{
+        position: 'fixed', inset: 0, zIndex: 100,
+        background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
+    >
+      <div
+        className="panel-strong p-6 sm:p-8"
+        style={{ maxWidth: 540, width: '90vw' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 className="text-2xl" style={{ fontWeight: 510 }}>
+          How would you like your blueprint?
+        </h2>
 
-      <div className="panel-strong p-6">
-        <h3 className="text-xl" style={{ fontWeight: 510 }}>Free sample</h3>
-        <p className="mt-2 text-sm" style={{ color: 'var(--muted)' }}>
-          We review your video by hand and email your spec within 24 hours.
-        </p>
-        <button
-          onClick={() => setChosenMode('sample')}
-          className="mt-4 w-full rounded-md px-4 py-2 text-sm"
-          style={{ background: 'var(--surface)', border: '1px solid var(--border)', fontWeight: 500 }}
-        >
-          Upload for free sample
-        </button>
-      </div>
+        <div className="mt-6 grid gap-4 sm:grid-cols-2">
+          <div
+            className="rounded-xl p-5"
+            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)' }}
+          >
+            <h3 className="text-lg" style={{ fontWeight: 510 }}>Full spec — $19</h3>
+            <p className="mt-2 text-sm" style={{ color: 'var(--muted)', lineHeight: 1.5 }}>
+              Automatic processing. Your complete blueprint is ready in about three minutes.
+            </p>
+            <button
+              onClick={onPaid}
+              disabled={busy}
+              className="mt-4 w-full rounded-md px-4 py-2 text-sm"
+              style={{ background: 'var(--accent)', color: 'var(--accent-fg)', fontWeight: 500 }}
+            >
+              {busy ? 'Processing…' : 'Pay & generate'}
+            </button>
+          </div>
 
-      {error && (
-        <div className="sm:col-span-2 text-sm" style={{ color: 'var(--danger)' }}>
-          {error}
+          <div
+            className="rounded-xl p-5"
+            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)' }}
+          >
+            <h3 className="text-lg" style={{ fontWeight: 510 }}>Free demo</h3>
+            <p className="mt-2 text-sm" style={{ color: 'var(--muted)', lineHeight: 1.5 }}>
+              Sample preview only — not a full spec. We review your video and email a demo within 24 hours.
+            </p>
+            <button
+              onClick={onFreeDemo}
+              disabled={busy}
+              className="mt-4 w-full rounded-md px-4 py-2 text-sm"
+              style={{ background: 'var(--surface)', border: '1px solid var(--border)', fontWeight: 500 }}
+            >
+              {busy ? 'Processing…' : 'Get free demo'}
+            </button>
+          </div>
         </div>
-      )}
+
+        {error && (
+          <p className="mt-4 text-sm" style={{ color: 'var(--danger)' }}>{error}</p>
+        )}
+
+        <button
+          onClick={onClose}
+          className="mt-4 w-full text-sm"
+          style={{ color: 'var(--muted)', padding: '8px' }}
+        >
+          Cancel
+        </button>
+      </div>
     </div>
   )
 }
