@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PROJECT_BASE_SELECT } from '@/lib/project-columns'
 import { makeSupabaseServer } from '@/lib/supabase-server'
-import { requireProjectOwner } from '@/lib/auth-project'
+import { requireProjectAccess } from '@/lib/auth-project'
 
-export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
-  const guard = await requireProjectOwner(params.id)
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+  const token = req.nextUrl.searchParams.get('t')
+  const guard = await requireProjectAccess(params.id, token)
   if (!guard.ok) return NextResponse.json({ error: guard.error }, { status: guard.status })
 
   const { data, error } = await makeSupabaseServer()

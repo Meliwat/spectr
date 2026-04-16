@@ -1,11 +1,6 @@
-import type { Metadata } from 'next'
-import WaitlistClient from './WaitlistClient'
+import { redirect } from 'next/navigation'
 
-export const metadata: Metadata = {
-  title: 'Spectr — Get early access',
-  description: 'Record any app. Get a UI blueprint inspired by it — ready for your agent to design.',
-}
-
-export default function WaitlistPage() {
-  return <WaitlistClient />
+// Legacy path — the waitlist has been merged into the main landing at /.
+export default function WaitlistRedirect() {
+  redirect('/')
 }

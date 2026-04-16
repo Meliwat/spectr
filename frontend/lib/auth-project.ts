@@ -1,5 +1,8 @@
 import { createSupabaseServerClient } from './supabase-ssr'
 import { makeSupabaseServer } from './supabase-server'
+import { timingSafeEqualStr } from './access-token'
+
+type Project = { id: string; user_id: string | null; access_token: string | null }
 
 /**
  * Ownership guard for any project-scoped operation.
@@ -42,4 +45,43 @@ export async function requireProjectOwner(projectId: string): Promise<
   }
 
   return { ok: true, userId: user.id, project }
+}
+
+/**
+ * Relaxed access guard: allows either the signed-in owner OR a caller holding
+ * a valid access token. Used on endpoints that the public progress page at
+ * /p/[id]?t=[token] hits while the user is still anonymous (paid flow before
+ * magic-link click, or free-demo flow that never creates a user).
+ */
+export async function requireProjectAccess(
+  projectId: string,
+  token: string | null | undefined,
+): Promise<
+  | { ok: true; mode: 'owner' | 'token'; userId: string | null; project: Project }
+  | { ok: false; status: number; error: string }
+> {
+  const admin = makeSupabaseServer()
+  const { data: project, error } = await admin
+    .from('projects')
+    .select('id, user_id, access_token')
+    .eq('id', projectId)
+    .single<Project>()
+
+  if (error || !project) {
+    return { ok: false, status: 404, error: 'Not found' }
+  }
+
+  // Token path — valid if the stored token is non-null and matches.
+  if (token && project.access_token && timingSafeEqualStr(project.access_token, token)) {
+    return { ok: true, mode: 'token', userId: project.user_id, project }
+  }
+
+  // Owner path.
+  const sessionClient = createSupabaseServerClient()
+  const { data: { user } } = await sessionClient.auth.getUser()
+  if (user && project.user_id === user.id) {
+    return { ok: true, mode: 'owner', userId: user.id, project }
+  }
+
+  return { ok: false, status: 404, error: 'Not found' }
 }

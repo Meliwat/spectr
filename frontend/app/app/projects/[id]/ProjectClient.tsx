@@ -9,9 +9,13 @@ import { useToast } from '@/hooks/useToast'
 export default function ProjectClient({
   id,
   initialProject,
+  accessToken,
 }: {
   id: string
   initialProject: Project
+  /** When set, the viewer isn't signed in — we poll rather than subscribe,
+   * and append ?t=<token> to every project-scoped API call. */
+  accessToken?: string
 }) {
   const { toast } = useToast()
   const [project, setProject] = useState<Project>(initialProject)
@@ -19,12 +23,30 @@ export default function ProjectClient({
   const downloadRef = useRef<HTMLDivElement>(null)
   const readyToastShown = useRef(initialProject.status === 'complete')
 
+  const tokenQs = accessToken ? `?t=${encodeURIComponent(accessToken)}` : ''
+
   useEffect(() => {
     if (project.processing_mode === 'manual') {
       return  // No realtime for free samples — worker doesn't fire.
     }
-    // Realtime subscription — now runs under the user's JWT via the
-    // auth-aware browser client, so RLS scopes updates to their own rows.
+
+    // Token-only viewers have no JWT, so the realtime subscription's RLS
+    // check rejects them. Fall back to polling /api/projects/[id] every 3s.
+    if (accessToken) {
+      let cancelled = false
+      const poll = async () => {
+        try {
+          const r = await fetch(`/api/projects/${id}${tokenQs}`, { cache: 'no-store' })
+          if (!r.ok) return
+          const data = (await r.json()) as Project
+          if (!cancelled) setProject(data)
+        } catch {}
+      }
+      const interval = window.setInterval(poll, 3000)
+      return () => { cancelled = true; window.clearInterval(interval) }
+    }
+
+    // Authenticated path: realtime under the user's JWT.
     const channel = supabase
       .channel(`project-${id}`)
       .on(
@@ -35,7 +57,7 @@ export default function ProjectClient({
       .subscribe()
 
     return () => { supabase.removeChannel(channel) }
-  }, [id, project.processing_mode])
+  }, [id, project.processing_mode, accessToken, tokenQs])
 
   useEffect(() => {
     if (project?.status === 'complete' && !readyToastShown.current) {
@@ -50,7 +72,7 @@ export default function ProjectClient({
 
     async function loadLogs() {
       try {
-        const response = await fetch(`/api/projects/${id}/logs`, { cache: 'no-store' })
+        const response = await fetch(`/api/projects/${id}/logs${tokenQs}`, { cache: 'no-store' })
         const data = await response.json()
         if (!cancelled && Array.isArray(data?.lines)) {
           setDebugLines(data.lines)
@@ -68,7 +90,7 @@ export default function ProjectClient({
       cancelled = true
       window.clearInterval(interval)
     }
-  }, [id])
+  }, [id, tokenQs])
 
   async function retry() {
     toast('Starting a fresh pass...', 'info')
@@ -78,14 +100,16 @@ export default function ProjectClient({
 
   const isLive = project.status !== 'complete' && project.status !== 'failed'
   const downloadFilename = project.bundle_s3_key ? 'bundle.zip' : 'spec.md'
-  const downloadHref = `/api/projects/${id}/download`
+  const downloadHref = `/api/projects/${id}/download${tokenQs}`
 
   return (
     <main className="page-frame">
       <section className="page-shell">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_320px]">
           <div>
-            <a href="/app/projects" className="mono text-xs" style={{ color: 'var(--subdued)' }}>← specs</a>
+            {!accessToken && (
+              <a href="/app/projects" className="mono text-xs" style={{ color: 'var(--subdued)' }}>← specs</a>
+            )}
             <div className="mb-5 mt-5 flex items-center">
               <p className="mono text-xs" style={{ color: 'var(--subdued)' }}>{id.slice(0, 8)}</p>
               {isLive && (

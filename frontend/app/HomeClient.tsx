@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
 // ── PARTICLE LAYERS ──────────────────────────────────────────────────────────
@@ -23,7 +24,6 @@ const HALOS: [number, number, number, number, number][] = [
   [18,8,22,0,0.18],[42,6,28,9,0.14],[63,9,19,4,0.16],[82,7,25,14,0.12],
 ]
 
-// ── FLYING WISP SYSTEM ───────────────────────────────────────────────────────
 const WISP_HUES = ['113,112,255','130,143,255','94,106,210','160,170,255','180,192,255']
 const WISP_COUNT = 9
 const TRAIL_LEN  = 90
@@ -61,10 +61,10 @@ function spawnWisp(cw: number, ch: number, mid = false): FlyWisp {
   return w
 }
 
-type FormState = 'idle' | 'loading' | 'success' | 'error'
+type Screen = 'details' | 'choice' | 'sending' | 'submitted'
 type UploadState = 'idle' | 'uploading' | 'done' | 'error'
+type ChoiceBusy = null | 'paid' | 'free'
 
-// Split headline into word spans for staggered word reveal
 function WordReveal({ text, baseDelay, className }: { text: string; baseDelay: number; className?: string }) {
   const words = text.split(' ')
   return (
@@ -82,40 +82,46 @@ function WordReveal({ text, baseDelay, className }: { text: string; baseDelay: n
   )
 }
 
-
-export default function WaitlistClient() {
-  const [email, setEmail]         = useState('')
-  const [formState, setFormState] = useState<FormState>('idle')
-  const [focused, setFocused]     = useState(false)
-  const inputRef  = useRef<HTMLInputElement>(null)
+export default function HomeClient() {
+  const router = useRouter()
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
-  const [screen,          setScreen]          = useState<'upload' | 'email'>('upload')
-  const [uploadState,     setUploadState]     = useState<UploadState>('idle')
-  const [uploadProgress,  setUploadProgress]  = useState(0)
-  const [selectedFile,    setSelectedFile]    = useState<File | null>(null)
-  const [dragActive,      setDragActive]      = useState(false)
-  const [videoKey,        setVideoKey]        = useState('')
-  const [videoFilename,   setVideoFilename]   = useState('')
-  const fileInputRef   = useRef<HTMLInputElement>(null)
-  const uploadDoneRef  = useRef(false)
-  const rafRef         = useRef<number>(0)
+  // Flow state
+  const [screen, setScreen] = useState<Screen>('details')
 
-  // ── Flying wisp canvas ────────────────────────────────────────────────────
+  // Upload + form state
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [dragActive,   setDragActive]   = useState(false)
+  const [referenceApp, setReferenceApp] = useState('')
+  const [yourAppName,  setYourAppName]  = useState('')
+  const [email,        setEmail]        = useState('')
+
+  const [uploadState,    setUploadState]    = useState<UploadState>('idle')
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [uploadedKey,    setUploadedKey]    = useState('')
+  const [fileError,      setFileError]      = useState<string | null>(null)
+
+  const [choiceBusy,  setChoiceBusy]  = useState<ChoiceBusy>(null)
+  const [choiceError, setChoiceError] = useState<string | null>(null)
+
+  const fileInputRef  = useRef<HTMLInputElement>(null)
+  const uploadDoneRef = useRef(false)
+  const rafRef        = useRef<number>(0)
+
+  // ── Flying wisp canvas ───────────────────────────────────────────────────
   useEffect(() => {
     const el = canvasRef.current
     if (!el) return
     const g  = el.getContext('2d')
     if (!g)  return
-    const cvs: HTMLCanvasElement          = el
-    const ctx: CanvasRenderingContext2D   = g
+    const cvs: HTMLCanvasElement = el
+    const ctx: CanvasRenderingContext2D = g
     let raf: number
 
     const resize = () => { cvs.width = window.innerWidth; cvs.height = window.innerHeight }
     resize()
     window.addEventListener('resize', resize)
 
-    // Seed wisps scattered across the screen on first load
     const wisps: FlyWisp[] = Array.from({ length: WISP_COUNT }, (_, i) =>
       spawnWisp(cvs.width, cvs.height, i < 6)
     )
@@ -126,8 +132,6 @@ export default function WaitlistClient() {
 
       wisps.forEach((w, i) => {
         w.life++
-
-        // Gentle curve: rotate velocity slightly each frame
         const c = Math.cos(w.curve), s = Math.sin(w.curve)
         const nvx = w.vx * c - w.vy * s
         w.vy = w.vx * s + w.vy * c
@@ -138,7 +142,6 @@ export default function WaitlistClient() {
         w.trail.push({ x: w.x, y: w.y })
         if (w.trail.length > TRAIL_LEN) w.trail.shift()
 
-        // Respawn if lifetime elapsed or well off-screen
         if (w.life >= w.maxLife ||
             w.x < -margin || w.x > cvs.width  + margin ||
             w.y < -margin || w.y > cvs.height + margin) {
@@ -148,14 +151,12 @@ export default function WaitlistClient() {
 
         if (w.trail.length < 3) return
 
-        // Life alpha envelope: ramp in → sustain → fade out
         const lr = w.life / w.maxLife
         const la = lr < 0.12 ? lr / 0.12 : lr > 0.78 ? (1 - lr) / 0.22 : 1
 
-        // Draw trail segments — each gets more transparent toward the tail
         for (let t = 1; t < w.trail.length; t++) {
-          const tRatio = t / w.trail.length           // 0 = tail, 1 = head
-          const a      = w.alpha * la * tRatio * tRatio
+          const tRatio = t / w.trail.length
+          const a = w.alpha * la * tRatio * tRatio
           ctx.beginPath()
           ctx.moveTo(w.trail[t - 1].x, w.trail[t - 1].y)
           ctx.lineTo(w.trail[t].x,     w.trail[t].y)
@@ -165,10 +166,9 @@ export default function WaitlistClient() {
           ctx.stroke()
         }
 
-        // Soft radial glow at the head
         const headA = w.alpha * la * 0.55
-        const r     = w.width * 5
-        const grad  = ctx.createRadialGradient(w.x, w.y, 0, w.x, w.y, r)
+        const r = w.width * 5
+        const grad = ctx.createRadialGradient(w.x, w.y, 0, w.x, w.y, r)
         grad.addColorStop(0,   `rgba(${w.hue},${headA})`)
         grad.addColorStop(0.5, `rgba(${w.hue},${headA * 0.35})`)
         grad.addColorStop(1,   `rgba(${w.hue},0)`)
@@ -188,10 +188,7 @@ export default function WaitlistClient() {
     }
   }, [])
 
-  useEffect(() => {
-    inputRef.current?.focus()
-  }, [])
-
+  // ── File validation ──────────────────────────────────────────────────────
   function validateFile(file: File): string | null {
     if (!file.name.toLowerCase().endsWith('.mp4') && file.type !== 'video/mp4') {
       return 'Only .mp4 files are accepted'
@@ -206,9 +203,9 @@ export default function WaitlistClient() {
     const file = e.target.files?.[0]
     if (!file) return
     const err = validateFile(file)
-    if (err) { setUploadState('error'); return }
+    if (err) { setFileError(err); return }
     setSelectedFile(file)
-    setUploadState('idle')
+    setFileError(null)
   }
 
   function handleDrop(e: React.DragEvent) {
@@ -217,20 +214,18 @@ export default function WaitlistClient() {
     const file = e.dataTransfer.files?.[0]
     if (!file) return
     const err = validateFile(file)
-    if (err) { setUploadState('error'); return }
+    if (err) { setFileError(err); return }
     setSelectedFile(file)
-    setUploadState('idle')
+    setFileError(null)
   }
 
-  async function handleUpload() {
-    if (!selectedFile || uploadState === 'uploading') return
+  // ── Step 1 → Step 2: upload file, then transition to choice screen ──────
+  async function handleContinue() {
+    if (!selectedFile || !referenceApp.trim() || uploadState === 'uploading') return
     setUploadState('uploading')
     setUploadProgress(0)
     uploadDoneRef.current = false
 
-    // Fake progress: slow, steady linear climb to ~72%, then stalls.
-    // When the real upload finishes, springs to 100%.
-    // Updates every 80ms so React isn't thrashing at 60fps.
     const CEILING = 72
     const estimatedMs = Math.max(6000, (selectedFile.size / (2 * 1024 * 1024)) * 1000)
     const startTime = Date.now()
@@ -249,7 +244,6 @@ export default function WaitlistClient() {
     rafRef.current = requestAnimationFrame(tick)
 
     try {
-      // 1. Get signed upload URL from our API
       const res = await fetch('/api/waitlist/upload', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -261,9 +255,8 @@ export default function WaitlistClient() {
         setUploadState('error')
         return
       }
-      const { key, filename, token } = await res.json()
+      const { key, token } = await res.json()
 
-      // 2. Upload directly to Supabase Storage using the signed token
       const { error: uploadErr } = await supabase.storage
         .from('waitlist-videos')
         .uploadToSignedUrl(key, token, selectedFile, { contentType: 'video/mp4' })
@@ -273,14 +266,12 @@ export default function WaitlistClient() {
 
       if (uploadErr) { setUploadState('error'); return }
 
-      // Fill to 100%, hold briefly, then transition
       setUploadProgress(100)
       setUploadState('done')
-      await new Promise(r => setTimeout(r, 650))
+      setUploadedKey(key)
+      await new Promise(r => setTimeout(r, 450))
 
-      setVideoKey(key)
-      setVideoFilename(filename)
-      setScreen('email')
+      setScreen('choice')
     } catch {
       uploadDoneRef.current = true
       cancelAnimationFrame(rafRef.current)
@@ -288,21 +279,83 @@ export default function WaitlistClient() {
     }
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  // ── Paid CTA: create project, kick off Stripe Checkout ──────────────────
+  async function handlePaid(e: React.FormEvent) {
     e.preventDefault()
-    if (!email || formState === 'loading') return
-    setFormState('loading')
+    if (!email.trim() || choiceBusy) return
+    setChoiceBusy('paid')
+    setChoiceError(null)
     try {
-      const res = await fetch('/api/waitlist', {
+      const res = await fetch('/api/projects/anon', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, video_s3_key: videoKey, video_filename: videoFilename }),
+        body: JSON.stringify({
+          mode: 'auto',
+          email: email.trim().toLowerCase(),
+          video_s3_key: uploadedKey,
+          video_filename: selectedFile?.name ?? null,
+          reference_app: referenceApp.trim(),
+          your_app_name: yourAppName.trim() || referenceApp.trim(),
+        }),
       })
-      setFormState(res.ok ? 'success' : 'error')
+      if (!res.ok) {
+        setChoiceError('Something went wrong — try again.')
+        setChoiceBusy(null)
+        return
+      }
+      const { checkoutUrl } = await res.json()
+      if (!checkoutUrl) {
+        setChoiceError('Checkout unavailable right now — try the free demo.')
+        setChoiceBusy(null)
+        return
+      }
+      window.location.href = checkoutUrl
     } catch {
-      setFormState('error')
+      setChoiceError('Network error — try again.')
+      setChoiceBusy(null)
     }
   }
+
+  // ── Free demo CTA: create project + waitlist row, notify founder ────────
+  async function handleFree(e: React.FormEvent) {
+    e.preventDefault()
+    if (!email.trim() || choiceBusy) return
+    setChoiceBusy('free')
+    setChoiceError(null)
+    setScreen('sending')
+    try {
+      const res = await fetch('/api/projects/anon', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mode: 'sample',
+          email: email.trim().toLowerCase(),
+          video_s3_key: uploadedKey,
+          video_filename: selectedFile?.name ?? null,
+          reference_app: referenceApp.trim(),
+          your_app_name: yourAppName.trim() || referenceApp.trim(),
+        }),
+      })
+      if (!res.ok) {
+        setChoiceError('Something went wrong — try again.')
+        setChoiceBusy(null)
+        setScreen('choice')
+        return
+      }
+      const { projectId, accessToken } = await res.json()
+      if (projectId && accessToken) {
+        router.push(`/p/${projectId}?t=${encodeURIComponent(accessToken)}`)
+        return
+      }
+      setScreen('submitted')
+    } catch {
+      setChoiceError('Network error — try again.')
+      setChoiceBusy(null)
+      setScreen('choice')
+    }
+  }
+
+  const canContinue = !!selectedFile && referenceApp.trim().length > 0 && uploadState !== 'uploading'
 
   return (
     <>
@@ -312,10 +365,6 @@ export default function WaitlistClient() {
           --wl-snap:     cubic-bezier(0.25, 1, 0.5, 1);
           --wl-ease-out: cubic-bezier(0.0,  0, 0.2, 1);
         }
-
-        /* ════════════════════════════════════════════════
-           BACKGROUND — 7 LAYERS
-        ════════════════════════════════════════════════ */
         .wl-page {
           min-height: calc(100dvh - 72px);
           display: flex; align-items: center; justify-content: center;
@@ -324,7 +373,6 @@ export default function WaitlistClient() {
           background: radial-gradient(ellipse 180% 100% at 50% -20%,
             #0d0e18 0%, #07080f 40%, #010102 100%);
         }
-
         .wl-aurora {
           position: absolute; inset: 0; pointer-events: none; z-index: 0;
           background:
@@ -338,7 +386,6 @@ export default function WaitlistClient() {
           50%  { opacity: 1.0; transform: scale(1.05) rotate(0.6deg); }
           100% { opacity: 0.8; transform: scale(1.02) rotate(-0.3deg); }
         }
-
         .wl-grid {
           position: absolute; inset: 0; pointer-events: none; z-index: 0;
           background-image: repeating-linear-gradient(to right,
@@ -347,14 +394,10 @@ export default function WaitlistClient() {
             rgba(255,255,255,0.016) calc(100% / 12 - 1px),
             rgba(255,255,255,0.016) calc(100% / 12));
           mask-image: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, transparent 70%);
-          /* grid fades in with page */
           opacity: 0;
           animation: wl-grid-in 2.2s var(--wl-ease-out) 300ms forwards;
         }
-        @keyframes wl-grid-in {
-          to { opacity: 1; }
-        }
-
+        @keyframes wl-grid-in { to { opacity: 1; } }
         .wl-bands {
           position: absolute; inset: 0; pointer-events: none; z-index: 0;
           background-image: repeating-linear-gradient(180deg,
@@ -376,18 +419,12 @@ export default function WaitlistClient() {
           height: 280px; pointer-events: none; z-index: 0;
           background: linear-gradient(0deg, rgba(1,1,2,0.8) 0%, transparent 100%);
         }
-
-        /* ════════════════════════════════════════════════
-           PARTICLES
-        ════════════════════════════════════════════════ */
         .wl-particles {
           position: absolute; inset: 0; pointer-events: none; z-index: 1; overflow: hidden;
-          /* particles fade in over 3s so they don't pop in at load */
           opacity: 0;
           animation: wl-particles-in 3s ease 800ms forwards;
         }
         @keyframes wl-particles-in { to { opacity: 1; } }
-
         @keyframes wl-rise-dust {
           0%   { transform: translateY(0)    translateX(0px);  opacity: var(--op); }
           45%  { transform: translateY(-45vh) translateX(3px); opacity: calc(var(--op) * 0.7); }
@@ -403,14 +440,6 @@ export default function WaitlistClient() {
           50%  { transform: translateY(-50vh) scale(1.2); opacity: calc(var(--op) * 0.6); }
           100% { transform: translateY(-105vh) scale(0.6); opacity: 0; }
         }
-
-        /* ════════════════════════════════════════════════
-           PAGE-LOAD REVEAL SYSTEM
-           Each element animates in individually with
-           spring easing + blur dissolve + lift.
-        ════════════════════════════════════════════════ */
-
-        /* Shared reveal base */
         .wl-reveal {
           opacity: 0;
           animation: wl-reveal-in 0.9s var(--wl-spring) var(--rd, 0ms) forwards;
@@ -420,8 +449,6 @@ export default function WaitlistClient() {
           60%  { filter: blur(0px); }
           100% { opacity: 1; transform: translateY(0)   scale(1);    filter: blur(0px); }
         }
-
-        /* Per-word staggered reveal for headline */
         .wl-word {
           display: inline-block;
           opacity: 0;
@@ -432,20 +459,6 @@ export default function WaitlistClient() {
           55%  { filter: blur(0); }
           100% { opacity: 1; transform: translateY(0)    rotateX(0deg);  filter: blur(0); }
         }
-
-        /* Eyebrow chips slide in from left with stagger */
-        .wl-badge-wrap {
-          display: flex; flex-wrap: wrap; justify-content: center;
-          gap: 10px; margin-bottom: 14px;
-          opacity: 0;
-          animation: wl-badges-in 0.7s var(--wl-spring) 60ms forwards;
-        }
-        @keyframes wl-badges-in {
-          0%   { opacity: 0; transform: translateY(12px) scale(0.94); filter: blur(4px); }
-          100% { opacity: 1; transform: translateY(0)    scale(1);    filter: blur(0); }
-        }
-
-        /* Divider draws itself */
         .wl-divider {
           width: 40px; height: 1px;
           background: linear-gradient(90deg, transparent, rgba(113,112,255,0.5), rgba(255,255,255,0.2), rgba(113,112,255,0.5), transparent);
@@ -459,26 +472,6 @@ export default function WaitlistClient() {
           60%  { opacity: 1; }
           100% { opacity: 1; transform: scaleX(1); }
         }
-
-        /* Scan line sweeps across headline once on load */
-        .wl-h1-scan {
-          position: absolute;
-          top: 0; left: 0; right: 0; height: 2px;
-          background: linear-gradient(90deg,
-            transparent 0%, rgba(113,112,255,0.4) 20%,
-            rgba(255,255,255,0.65) 50%, rgba(113,112,255,0.4) 80%, transparent 100%);
-          opacity: 0;
-          animation: wl-scan 1.4s var(--wl-ease-out) 380ms forwards;
-          pointer-events: none;
-        }
-        @keyframes wl-scan {
-          0%   { top: 0%;   opacity: 0; }
-          8%   { opacity: 1; }
-          88%  { opacity: 0.5; }
-          100% { top: 100%; opacity: 0; }
-        }
-
-        /* Card slides up from 40px with scale */
         .wl-card-wrap {
           position: relative;
           opacity: 0;
@@ -489,31 +482,6 @@ export default function WaitlistClient() {
           55%  { filter: blur(0); }
           100% { opacity: 1; transform: translateY(0)    scale(1);    filter: blur(0); }
         }
-
-        /* Social strip: each item staggers in */
-        .wl-strip {
-          display: flex; align-items: center; justify-content: center;
-          flex-wrap: wrap; gap: 16px; margin-top: 18px;
-        }
-        .wl-strip-item {
-          display: flex; align-items: center; gap: 6px;
-          font-size: 11.5px; color: var(--subdued); letter-spacing: 0.02em;
-          opacity: 0;
-          animation: wl-reveal-in 0.7s var(--wl-spring) var(--rd, 0ms) forwards;
-        }
-        .wl-strip-sep {
-          width: 3px; height: 3px; border-radius: 50%;
-          background: rgba(255,255,255,0.12);
-          opacity: 0;
-          animation: wl-reveal-in 0.7s var(--wl-spring) var(--rd, 0ms) forwards;
-        }
-        .wl-strip-icon {
-          width: 14px; height: 14px; opacity: 0.35; flex-shrink: 0;
-        }
-
-        /* ════════════════════════════════════════════════
-           NEON WORDMARK
-        ════════════════════════════════════════════════ */
         .wl-neon-mark {
           font-size: clamp(30px, 5vw, 60px);
           font-weight: 200;
@@ -522,7 +490,7 @@ export default function WaitlistClient() {
           color: #ffffff;
           line-height: 1;
           margin-bottom: 14px;
-          text-indent: 0.22em; /* optical offset for letter-spacing */
+          text-indent: 0.22em;
           text-shadow:
             0 0 4px rgba(255,255,255,1),
             0 0 10px rgba(255,255,255,0.9),
@@ -555,33 +523,6 @@ export default function WaitlistClient() {
               0 0 170px rgba(140,160,255,0.28);
           }
         }
-
-        /* ════════════════════════════════════════════════
-           EYEBROW
-        ════════════════════════════════════════════════ */
-        .wl-live-badge {
-          display: inline-flex; align-items: center; gap: 7px;
-          padding: 5px 12px 5px 10px;
-          background: rgba(16,185,129,0.06);
-          border: 1px solid rgba(16,185,129,0.18);
-          border-radius: 99px;
-          font-size: 11px; font-weight: 500;
-          color: rgba(16,185,129,0.9); letter-spacing: 0.04em; text-transform: uppercase;
-        }
-        .wl-live-dot {
-          width: 6px; height: 6px; border-radius: 50%;
-          background: #10b981;
-          box-shadow: 0 0 6px rgba(16,185,129,0.8);
-          animation: wl-live-pulse 2s ease-in-out infinite;
-        }
-        @keyframes wl-live-pulse {
-          0%, 100% { opacity: 1;   transform: scale(1);   box-shadow: 0 0 6px rgba(16,185,129,0.8); }
-          50%       { opacity: 0.6; transform: scale(0.8); box-shadow: 0 0 3px rgba(16,185,129,0.4); }
-        }
-
-        /* ════════════════════════════════════════════════
-           HEADLINE
-        ════════════════════════════════════════════════ */
         .wl-h1 {
           font-size: clamp(34px, 4.8vw, 58px);
           font-weight: 510; line-height: 1.0; letter-spacing: -0.04em;
@@ -613,10 +554,6 @@ export default function WaitlistClient() {
           }
         }
         .wl-h1-wrap { position: relative; display: inline-block; width: 100%; }
-
-        /* ════════════════════════════════════════════════
-           SUBHEADLINE
-        ════════════════════════════════════════════════ */
         .wl-sub {
           font-size: 15px; color: var(--text-2);
           line-height: 1.55; letter-spacing: -0.01em; font-weight: 400;
@@ -624,18 +561,10 @@ export default function WaitlistClient() {
         }
         .wl-sub strong { color: rgba(200,205,255,0.8); font-weight: 500; }
 
-        /* ════════════════════════════════════════════════
-           DEMO PREVIEW — pinned to the right on wide viewports
-        ════════════════════════════════════════════════ */
         .wl-demo-side {
           position: fixed;
           top: calc(44% - 6px);
           right: max(80px, 8vw);
-          /* translateY(-50%) must live here on the OUTER wrapper because
-             the inner .wl-demo-inner runs the reveal animation, whose
-             final keyframe sets its own transform. If we put our
-             centering transform on the same element as the animation,
-             the animation's end-state clobbers it. */
           transform: translateY(-50%);
           z-index: 3;
           pointer-events: auto;
@@ -645,9 +574,6 @@ export default function WaitlistClient() {
           display: flex; flex-direction: column; align-items: center;
           gap: 10px;
         }
-        /* Phone slides up from below the viewport into its centered position.
-           Lives on the INNER wrapper so the outer .wl-demo-side translateY(-50%)
-           centering isn't clobbered once the animation ends. */
         .wl-demo-slide-up {
           opacity: 0;
           animation: wl-demo-slide-up 1.1s var(--wl-spring) var(--rd, 0ms) forwards;
@@ -688,15 +614,11 @@ export default function WaitlistClient() {
           object-fit: cover;
           background: #0a0b0e;
         }
-        /* On medium widths the centered content column gets close to the
-           demo — tuck it smaller and tighter to the edge. */
         @media (max-width: 1180px) {
           .wl-demo-side { right: max(20px, 2.5vw); }
           .wl-demo-frame { width: min(158px, calc((100dvh - 120px) * 0.462)); border-radius: 24px; }
           .wl-demo-video { border-radius: 20px; }
         }
-        /* Below this the viewport can't hold both — hide the demo so the
-           upload CTA stays above the fold on tablets and phones. */
         @media (max-width: 960px) {
           .wl-demo-side { display: none; }
         }
@@ -704,16 +626,6 @@ export default function WaitlistClient() {
           .wl-demo-glow { animation: none; }
           .wl-demo-slide-up { animation-duration: 0.01s; }
         }
-
-        /* ════════════════════════════════════════════════
-           GLASS CARD
-        ════════════════════════════════════════════════ */
-        .wl-card-bloom {
-          position: absolute; inset: -24px;
-          background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(113,112,255,0.08) 0%, transparent 70%);
-          pointer-events: none; transition: opacity 0.4s ease; opacity: 0;
-        }
-        .wl-card-wrap.focused .wl-card-bloom { opacity: 1; }
 
         .wl-card {
           position: relative; width: 100%; padding: 18px; border-radius: 20px;
@@ -727,47 +639,14 @@ export default function WaitlistClient() {
             0 32px 80px rgba(0,0,0,0.55),
             inset 0 1px 0 rgba(255,255,255,0.06),
             inset 0 -1px 0 rgba(0,0,0,0.3);
-          transition: border-color 0.35s ease, box-shadow 0.35s ease;
           overflow: hidden;
         }
-        .wl-card-wrap.focused .wl-card {
-          border-color: rgba(113,112,255,0.20);
-          box-shadow:
-            0 0 0 1px rgba(0,0,0,0.5),
-            0 8px 24px rgba(0,0,0,0.4),
-            0 32px 80px rgba(0,0,0,0.55),
-            0 0 80px rgba(113,112,255,0.10),
-            inset 0 1px 0 rgba(113,112,255,0.10),
-            inset 0 -1px 0 rgba(0,0,0,0.3);
-        }
-        .wl-card::before {
-          content: '';
-          position: absolute; top: 0; left: 15%; right: 15%; height: 1px;
-          background: linear-gradient(90deg, transparent, rgba(113,112,255,0.5), rgba(200,210,255,0.6), rgba(113,112,255,0.5), transparent);
-          opacity: 0; transition: opacity 0.35s ease;
-        }
-        .wl-card-wrap.focused .wl-card::before { opacity: 1; }
         .wl-card::after {
           content: ''; position: absolute; top: 0; left: 0; width: 60%; height: 40%;
           background: radial-gradient(ellipse 120% 120% at 0% 0%, rgba(255,255,255,0.025) 0%, transparent 60%);
           pointer-events: none;
         }
 
-        .wl-card-scan {
-          position: absolute; top: -2px; left: 0; right: 0; height: 1px;
-          background: linear-gradient(90deg, transparent 0%, rgba(113,112,255,0.6) 30%, rgba(200,210,255,0.8) 50%, rgba(113,112,255,0.6) 70%, transparent 100%);
-          opacity: 0; pointer-events: none;
-        }
-        .wl-card-wrap.focused .wl-card-scan {
-          animation: wl-card-scan-drop 0.7s var(--wl-ease-out) forwards;
-        }
-        @keyframes wl-card-scan-drop {
-          0%  { top: -2px; opacity: 0; } 10% { opacity: 1; } 100% { top: 100%; opacity: 0; }
-        }
-
-        /* ════════════════════════════════════════════════
-           INPUT
-        ════════════════════════════════════════════════ */
         .wl-input {
           width: 100%; padding: 13px 16px;
           background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
@@ -784,9 +663,6 @@ export default function WaitlistClient() {
           transform: translateY(-1px) scale(1.004);
         }
 
-        /* ════════════════════════════════════════════════
-           BUTTON
-        ════════════════════════════════════════════════ */
         .wl-btn {
           position: relative; overflow: hidden; width: 100%; padding: 14px;
           background: linear-gradient(180deg, rgba(130,143,255,1) 0%, rgba(94,106,210,1) 100%);
@@ -805,57 +681,33 @@ export default function WaitlistClient() {
           box-shadow: 0 1px 0 rgba(255,255,255,0.18) inset, 0 -1px 0 rgba(0,0,0,0.20) inset, 0 0 60px rgba(113,112,255,0.50), 0 12px 36px rgba(94,106,210,0.45);
           transform: translateY(-1.5px); border-color: rgba(180,190,255,0.30);
         }
-        .wl-btn:active:not(:disabled) {
-          transform: translateY(0.5px) scale(0.978);
-          box-shadow: 0 0 0 rgba(255,255,255,0.12) inset, 0 -1px 0 rgba(0,0,0,0.25) inset, 0 0 20px rgba(113,112,255,0.20), 0 4px 12px rgba(94,106,210,0.25);
-        }
         .wl-btn:disabled { opacity: 0.50; cursor: not-allowed; }
-        .wl-btn::before {
-          content: ''; position: absolute; top: 0; left: -120%; width: 55%; height: 100%;
-          background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,0.08) 40%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.08) 60%, transparent 100%);
-          transform: skewX(-15deg); transition: none; pointer-events: none;
+
+        .wl-btn-ghost {
+          width: 100%; padding: 12px;
+          background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(255,255,255,0.12);
+          border-radius: 11px;
+          color: #e0e4ff; font-size: 14px; font-weight: 500; font-family: inherit;
+          cursor: pointer;
+          transition: background 0.2s, border-color 0.2s, transform 0.15s var(--wl-snap);
         }
-        .wl-btn:hover:not(:disabled)::before { animation: wl-shine 0.55s ease forwards; }
-        @keyframes wl-shine { from { left: -120%; } to { left: 140%; } }
+        .wl-btn-ghost:hover:not(:disabled) {
+          background: rgba(255,255,255,0.06);
+          border-color: rgba(255,255,255,0.22);
+        }
+        .wl-btn-ghost:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .wl-founding {
-          font-size: 12px; color: var(--subdued); margin-top: 16px; letter-spacing: 0.01em;
+          font-size: 12px; color: var(--subdued); margin-top: 16px; letter-spacing: 0.01em; text-align: center;
         }
         .wl-founding span { color: rgba(113,112,255,0.7); }
 
-        /* ════════════════════════════════════════════════
-           SUCCESS STATE
-        ════════════════════════════════════════════════ */
-        .wl-success-wrap {
-          padding: 8px 0 4px;
-          animation: wl-reveal-in 0.5s var(--wl-spring) forwards;
-        }
-        .wl-success-icon {
-          width: 36px; height: 36px; border-radius: 50%;
-          background: rgba(16,185,129,0.10); border: 1px solid rgba(16,185,129,0.25);
-          display: flex; align-items: center; justify-content: center;
-          margin: 0 auto 14px; font-size: 18px;
-          animation: wl-success-pop 0.4s var(--wl-spring) 0.1s both;
-        }
-        @keyframes wl-success-pop {
-          0%  { transform: scale(0.5); opacity: 0; }
-          60% { transform: scale(1.15); }
-          100%{ transform: scale(1);   opacity: 1; }
-        }
-        .wl-success-text { font-size: 16px; color: var(--text-2); line-height: 1.6; }
-        .wl-success-text strong { display: block; color: var(--text); font-size: 17px; margin-bottom: 4px; }
-
-        .wl-error {
-          font-size: 12px; color: var(--error); margin-top: 10px;
-          opacity: 0; animation: wl-reveal-in 0.4s var(--wl-spring) forwards;
-        }
-
-        /* ── UPLOAD SCREEN ──────────────────────────────────────────────────────── */
         .wl-upload-zone {
           border: 1.5px dashed rgba(113,112,255,0.30);
           border-radius: 10px; padding: 18px 20px; text-align: center;
           cursor: pointer; transition: border-color 0.2s, background 0.2s;
-          position: relative; margin-bottom: 14px;
+          position: relative; margin-bottom: 12px;
         }
         .wl-upload-zone:hover, .wl-upload-zone.drag-active {
           border-color: rgba(113,112,255,0.65);
@@ -864,14 +716,14 @@ export default function WaitlistClient() {
         .wl-upload-zone input[type="file"] {
           position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
         }
-        .wl-upload-icon { font-size: 26px; margin-bottom: 10px; }
-        .wl-upload-label { color: #6b7280; font-size: 12px; line-height: 1.6; }
+        .wl-upload-icon { font-size: 22px; margin-bottom: 6px; }
+        .wl-upload-label { color: #6b7280; font-size: 11.5px; line-height: 1.55; }
         .wl-upload-label strong { color: #a0a4d0; }
 
         .wl-file-pill {
           display: flex; align-items: center; gap: 10px;
           background: rgba(113,112,255,0.08); border: 1px solid rgba(113,112,255,0.20);
-          border-radius: 8px; padding: 10px 14px; margin-bottom: 14px;
+          border-radius: 8px; padding: 10px 14px; margin-bottom: 12px;
         }
         .wl-file-name { font-size: 12px; color: #a0a4d0; flex: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .wl-file-remove { background: none; border: none; color: #6b7280; cursor: pointer; font-size: 16px; line-height: 1; padding: 0; }
@@ -881,6 +733,7 @@ export default function WaitlistClient() {
           from { opacity: 0; transform: translateY(10px); }
           to   { opacity: 1; transform: translateY(0); }
         }
+
         .wl-card-heading {
           font-size: 15px; font-weight: 600; color: #e0e4ff;
           margin: 0 0 5px; text-align: center;
@@ -889,7 +742,12 @@ export default function WaitlistClient() {
           font-size: 12px; color: #6b7280; text-align: center; margin: 0 0 18px; line-height: 1.5;
         }
 
-        /* ── UPLOAD PROGRESS BAR ──────────────────────────────────────────── */
+        .wl-field-label {
+          display: block; font-size: 11px; color: #8b91b8; margin-bottom: 6px;
+          letter-spacing: 0.04em; text-transform: uppercase; font-weight: 500;
+        }
+        .wl-field-label span { color: rgba(113,112,255,0.9); }
+
         .wl-progress-wrap {
           border-radius: 11px; overflow: hidden;
           background: rgba(255,255,255,0.04);
@@ -900,14 +758,9 @@ export default function WaitlistClient() {
         }
         .wl-progress-label {
           display: flex; justify-content: space-between; align-items: center;
-          margin-bottom: 10px; font-size: 12px; color: #a0a4d0;
-          letter-spacing: 0.01em;
+          margin-bottom: 10px; font-size: 12px; color: #a0a4d0; letter-spacing: 0.01em;
         }
-        .wl-progress-pct {
-          font-variant-numeric: tabular-nums;
-          color: rgba(160,170,255,0.9);
-          font-weight: 500;
-        }
+        .wl-progress-pct { font-variant-numeric: tabular-nums; color: rgba(160,170,255,0.9); font-weight: 500; }
         .wl-progress-track {
           height: 4px; border-radius: 99px;
           background: rgba(255,255,255,0.06);
@@ -920,37 +773,45 @@ export default function WaitlistClient() {
           position: relative;
         }
         .wl-progress-fill::after {
-          content: '';
-          position: absolute; top: 0; right: 0;
+          content: ''; position: absolute; top: 0; right: 0;
           width: 40px; height: 100%;
           background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55));
           border-radius: 99px;
           animation: wl-progress-shimmer 1.2s ease-in-out infinite;
         }
-        @keyframes wl-progress-shimmer {
-          0%,100% { opacity: 0.6; }
-          50%      { opacity: 1; }
-        }
+        @keyframes wl-progress-shimmer { 0%,100% { opacity: 0.6; } 50% { opacity: 1; } }
         .wl-progress-done .wl-progress-fill::after { display: none; }
         .wl-progress-done .wl-progress-fill {
           background: linear-gradient(90deg, rgba(16,185,129,0.8) 0%, rgba(52,211,153,1) 100%);
-          transition: width 0.55s cubic-bezier(0.16, 1, 0.3, 1), background 0.4s ease;
         }
 
-        /* ── RESPONSIVE ─────────────────────────────────────────────────────── */
-        @media (min-width: 768px) {
-          /* Lock to one screen on desktop/tablet landscape */
-          .wl-page { height: calc(100dvh - 72px); }
-          body { overflow-y: hidden; }
+        .wl-error { font-size: 12px; color: var(--error); margin-top: 10px; text-align: center; }
+
+        .wl-choice-grid { display: grid; gap: 10px; margin-top: 14px; }
+        .wl-choice-card {
+          border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);
+          background: rgba(255,255,255,0.02); padding: 14px 16px; text-align: left;
         }
-        @media (max-width: 767px) {
-          /* Mobile: hide strip to keep content above fold */
-          .wl-strip { display: none; }
+        .wl-choice-card.wl-choice-primary {
+          border-color: rgba(113,112,255,0.35);
+          background: rgba(113,112,255,0.06);
+        }
+        .wl-choice-title { font-size: 13px; font-weight: 600; color: #e0e4ff; margin: 0 0 4px; letter-spacing: 0.01em; }
+        .wl-choice-sub { font-size: 11.5px; color: #8b91b8; margin: 0 0 10px; line-height: 1.5; }
+
+        .wl-success-icon {
+          width: 36px; height: 36px; border-radius: 50%;
+          background: rgba(16,185,129,0.10); border: 1px solid rgba(16,185,129,0.25);
+          display: flex; align-items: center; justify-content: center;
+          margin: 0 auto 14px; font-size: 18px;
+        }
+
+        @media (min-width: 768px) {
+          .wl-page { min-height: calc(100dvh - 72px); }
         }
       `}</style>
 
       <main className="wl-page">
-        {/* Background layers */}
         <div className="wl-aurora"   aria-hidden="true" />
         <div className="wl-grid"     aria-hidden="true" />
         <div className="wl-bands"    aria-hidden="true" />
@@ -958,7 +819,6 @@ export default function WaitlistClient() {
         <div className="wl-vignette" aria-hidden="true" />
         <div className="wl-floor"    aria-hidden="true" />
 
-        {/* 3-tier particle system */}
         <div className="wl-particles" aria-hidden="true">
           {DUST.map(([left, size, dur, negDelay, op], i) => (
             <div key={`d${i}`} style={{
@@ -989,7 +849,6 @@ export default function WaitlistClient() {
           ))}
         </div>
 
-        {/* Wisp canvas — mouse-reactive tendrils */}
         <canvas
           ref={canvasRef}
           style={{
@@ -1000,9 +859,6 @@ export default function WaitlistClient() {
           aria-hidden="true"
         />
 
-        {/* Demo preview — outer aside handles fixed positioning + centering
-            transform. Inner div gets the reveal animation so its transform
-            doesn't clobber the outer translateY(-50%). */}
         <aside className="wl-demo-side">
           <div className="wl-demo-inner wl-demo-slide-up" style={{'--rd':'680ms'} as React.CSSProperties}>
             <div className="wl-demo-frame">
@@ -1011,54 +867,38 @@ export default function WaitlistClient() {
                 className="wl-demo-video"
                 src="/demo/spectr-demo.mp4"
                 poster="/demo/spectr-demo-poster.jpg"
-                autoPlay
-                muted
-                loop
-                playsInline
+                autoPlay muted loop playsInline
                 preload="metadata"
-                aria-label="Spectr demo: turning a screen recording into a spec"
+                aria-label="Spectr demo"
               />
             </div>
           </div>
         </aside>
 
-        {/* Content */}
         <div style={{
           position:'relative', zIndex:3,
           width:'min(580px, calc(100vw - 48px))',
           textAlign:'center',
         }}>
-          {/* Neon wordmark */}
-          <div className="wl-neon-mark" aria-hidden="true">
-            Spectr
-          </div>
+          <div className="wl-neon-mark" aria-hidden="true">Spectr</div>
 
-          {/* Headline — per-word staggered reveal */}
           <div className="wl-h1-wrap">
             <h1 className="wl-h1">
               <WordReveal text="See an app." baseDelay={180} className="wl-h1-line1" />
               <WordReveal text="Ship an app." baseDelay={320} className="wl-h1-line2" />
             </h1>
-            <div className="wl-h1-scan" aria-hidden="true" />
           </div>
 
-          {/* Divider */}
           <div className="wl-divider" />
 
-          {/* Sub */}
           <p className="wl-sub wl-reveal" style={{'--rd':'520ms'} as React.CSSProperties}>
             Record any app. Get a UI blueprint inspired by it —<br />
             ready for your <strong>agent to design</strong>.
           </p>
 
-          {/* Card */}
-          <div className={`wl-card-wrap${focused ? ' focused' : ''}`}>
-            <div className="wl-card-bloom" aria-hidden="true" />
+          <div className="wl-card-wrap">
             <div className="wl-card">
-              <div className="wl-card-scan" aria-hidden="true" />
-
-              {screen === 'upload' ? (
-                /* ── Screen 1: Upload ── */
+              {screen === 'details' && (
                 <div className="wl-screen-enter">
                   {selectedFile ? (
                     <div className="wl-file-pill">
@@ -1072,6 +912,7 @@ export default function WaitlistClient() {
                           setSelectedFile(null)
                           setUploadState('idle')
                           setUploadProgress(0)
+                          setFileError(null)
                         }}
                         aria-label="Remove file"
                       >×</button>
@@ -1099,6 +940,24 @@ export default function WaitlistClient() {
                     </div>
                   )}
 
+                  <label className="wl-field-label">Reference app <span>*</span></label>
+                  <input
+                    className="wl-input"
+                    type="text"
+                    placeholder="DoorDash, Duolingo, Notion..."
+                    value={referenceApp}
+                    onChange={e => setReferenceApp(e.target.value)}
+                  />
+
+                  <label className="wl-field-label">Your app name</label>
+                  <input
+                    className="wl-input"
+                    type="text"
+                    placeholder={referenceApp.trim() || 'Same as reference app'}
+                    value={yourAppName}
+                    onChange={e => setYourAppName(e.target.value)}
+                  />
+
                   {uploadState === 'uploading' || uploadState === 'done' ? (
                     <div className={`wl-progress-wrap${uploadState === 'done' ? ' wl-progress-done' : ''}`}>
                       <div className="wl-progress-label">
@@ -1106,22 +965,20 @@ export default function WaitlistClient() {
                         <span className="wl-progress-pct">{Math.round(uploadProgress)}%</span>
                       </div>
                       <div className="wl-progress-track">
-                        <div
-                          className="wl-progress-fill"
-                          style={{ width: `${uploadProgress}%` }}
-                        />
+                        <div className="wl-progress-fill" style={{ width: `${uploadProgress}%` }} />
                       </div>
                     </div>
                   ) : (
                     <button
                       className="wl-btn"
-                      onClick={handleUpload}
-                      disabled={!selectedFile}
+                      onClick={handleContinue}
+                      disabled={!canContinue}
                     >
-                      Get Free Blueprint →
+                      Continue →
                     </button>
                   )}
 
+                  {fileError && <p className="wl-error">{fileError}</p>}
                   {uploadState === 'error' && (
                     <p className="wl-error">Upload failed — check your file and try again.</p>
                   )}
@@ -1130,60 +987,74 @@ export default function WaitlistClient() {
                     Founding members get a <span>lifetime discount</span> at launch.
                   </p>
                 </div>
-              ) : formState === 'success' ? (
-                /* ── Success state ── */
-                <div className="wl-success-wrap wl-screen-enter">
-                  <div className="wl-success-icon" aria-hidden="true">✓</div>
-                  <div className="wl-success-text">
-                    <strong>You&rsquo;re in.</strong>{' '}
-                    We&rsquo;ll send your blueprint within 24 hours.
-                  </div>
-                </div>
-              ) : (
-                /* ── Screen 2: Email ── */
+              )}
+
+              {screen === 'choice' && (
                 <div className="wl-screen-enter">
-                  <p className="wl-card-heading">Your blueprint is being prepared.</p>
-                  <p className="wl-card-sub">Drop your email and we&rsquo;ll send it within 24 hours.</p>
-                  <form onSubmit={handleSubmit}>
-                    <input
-                      ref={inputRef} className="wl-input" type="email"
-                      placeholder="your@email.com" value={email}
-                      onChange={e => setEmail(e.target.value)}
-                      onFocus={() => setFocused(true)}
-                      onBlur={() => setFocused(false)}
-                      required disabled={formState === 'loading'}
-                      autoFocus
-                    />
-                    <button className="wl-btn" type="submit" disabled={formState === 'loading'}>
-                      {formState === 'loading' ? 'Sending...' : 'Send my blueprint'}
-                    </button>
-                    {formState === 'error' && (
-                      <p className="wl-error">Something went wrong — try again.</p>
-                    )}
-                  </form>
-                  <p className="wl-founding">
-                    Founding members get a <span>lifetime discount</span> at launch.
+                  <p className="wl-card-heading">How would you like your blueprint?</p>
+                  <p className="wl-card-sub">Drop your email and choose a path.</p>
+
+                  <input
+                    className="wl-input"
+                    type="email"
+                    placeholder="your@email.com"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    required
+                    autoFocus
+                  />
+
+                  <div className="wl-choice-grid">
+                    <div className="wl-choice-card wl-choice-primary">
+                      <p className="wl-choice-title">Full spec — $19</p>
+                      <p className="wl-choice-sub">
+                        Automatic processing. Your complete blueprint is ready in about three minutes.
+                      </p>
+                      <button
+                        className="wl-btn"
+                        onClick={handlePaid}
+                        disabled={!email.trim() || choiceBusy !== null}
+                      >
+                        {choiceBusy === 'paid' ? 'Sending to Stripe…' : 'Pay & generate →'}
+                      </button>
+                    </div>
+
+                    <div className="wl-choice-card">
+                      <p className="wl-choice-title">Free demo</p>
+                      <p className="wl-choice-sub">
+                        Sample preview only — not a full spec. We review your video and email a demo within 24 hours.
+                      </p>
+                      <button
+                        className="wl-btn-ghost"
+                        onClick={handleFree}
+                        disabled={!email.trim() || choiceBusy !== null}
+                      >
+                        {choiceBusy === 'free' ? 'Sending…' : 'Get free demo'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {choiceError && <p className="wl-error">{choiceError}</p>}
+                </div>
+              )}
+
+              {screen === 'sending' && (
+                <div className="wl-screen-enter" style={{ padding: '16px 0' }}>
+                  <p className="wl-card-heading">Sending your request…</p>
+                  <p className="wl-card-sub">One moment.</p>
+                </div>
+              )}
+
+              {screen === 'submitted' && (
+                <div className="wl-screen-enter" style={{ padding: '16px 0' }}>
+                  <div className="wl-success-icon">✓</div>
+                  <p className="wl-card-heading">You&rsquo;re in.</p>
+                  <p className="wl-card-sub">
+                    We&rsquo;ll review your recording and email a sample blueprint within 24 hours.
                   </p>
                 </div>
               )}
             </div>
-          </div>
-
-          {/* Social proof strip */}
-          <div className="wl-strip">
-            {[
-              { icon: <svg className="wl-strip-icon" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.5"/><path d="M5 7l1.5 1.5L9 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>, label: 'Expo + React Native', delay: 920 },
-              null,
-              { icon: <svg className="wl-strip-icon" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="currentColor" strokeWidth="1.5"/><path d="M4 5h6M4 7h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>, label: 'Every screen & component', delay: 1020 },
-              null,
-              { icon: <svg className="wl-strip-icon" viewBox="0 0 14 14" fill="none"><path d="M2 7c0-2.76 2.24-5 5-5s5 2.24 5 5-2.24 5-5 5-5-2.24-5-5z" stroke="currentColor" strokeWidth="1.5"/><path d="M7 5v2l1.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>, label: 'Any AI agent', delay: 1120 },
-            ].map((item, i) =>
-              item === null
-                ? <span key={i} className="wl-strip-sep" style={{'--rd': `${980 + i * 50}ms`} as React.CSSProperties} />
-                : <span key={i} className="wl-strip-item" style={{'--rd': `${item.delay}ms`} as React.CSSProperties}>
-                    {item.icon}{item.label}
-                  </span>
-            )}
           </div>
         </div>
       </main>

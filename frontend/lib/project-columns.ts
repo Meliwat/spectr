@@ -11,6 +11,7 @@ export const PROJECT_BASE_SELECT = [
   'error_text',
   'logo_s3_key',
   'bundle_id',
+  'processing_mode',
   'created_at',
   'spec_md_s3_key',
   'bundle_s3_key',

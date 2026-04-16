@@ -5,6 +5,7 @@ export type LegacyProjectStatus =
 
 export type MobileProjectStatus =
   | 'pending'
+  | 'awaiting_payment'
   | 'extracting'
   | 'analyzing_screens'
   | 'analyzing_transitions'
@@ -44,6 +45,7 @@ export interface Project {
 
 export const STAGE_LABELS: Record<ProjectStatus, string> = {
   pending: 'Getting everything ready...',
+  awaiting_payment: 'Waiting for payment to clear...',
   extracting: 'Gathering the moments that matter...',
   analyzing_screens: 'Reading the screens and their visual rhythm...',
   analyzing_transitions: 'Following how the experience moves...',
@@ -63,6 +65,7 @@ export const STAGE_LABELS: Record<ProjectStatus, string> = {
 
 export const STAGE_PROGRESS: Record<ProjectStatus, number> = {
   pending: 0,
+  awaiting_payment: 0,
   extracting: 8,
   analyzing_screens: 18,
   analyzing_transitions: 34,
@@ -82,6 +85,7 @@ export const STAGE_PROGRESS: Record<ProjectStatus, number> = {
 
 export const STAGE_CEILINGS: Record<ProjectStatus, number> = {
   pending: 10,
+  awaiting_payment: 5,
   extracting: 16,
   analyzing_screens: 36,
   analyzing_transitions: 50,

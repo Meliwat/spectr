@@ -190,6 +190,10 @@ CREATE TABLE projects (
   error_text      TEXT,
   repair_attempts INT DEFAULT 0,
   total_retries   INT DEFAULT 0,
+  processing_mode TEXT NOT NULL DEFAULT 'auto',   -- 'auto' | 'manual' (sample)
+  email           TEXT,                            -- collected from anon submit form
+  access_token    TEXT UNIQUE,                     -- random 32-byte token for /p/[id] public view
+  user_id         UUID REFERENCES auth.users(id),  -- null for anon projects until webhook resolves
   created_at      TIMESTAMPTZ DEFAULT now(),
   updated_at      TIMESTAMPTZ DEFAULT now()
 );
@@ -540,7 +544,7 @@ Stripe's `success_url` redirect often arrives before the webhook fires. The `/ap
 | `STRIPE_SECRET_KEY` | Stripe API calls (server-only) |
 | `STRIPE_WEBHOOK_SECRET` | Validates incoming Stripe webhooks |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Client-side Stripe.js (if needed) |
-| `SITE` | Full origin URL (e.g. `https://www.spectr.to`) for Checkout redirect URLs |
+| `SITE_URL` | Full origin URL (e.g. `https://www.spectr.to`) for Checkout redirect URLs and magic-link `redirectTo`. Read by `app/api/billing/checkout/route.ts`, `app/api/billing/webhook/route.ts`, and `app/api/projects/anon/route.ts`. |
 
 ### What not to do
 
@@ -549,6 +553,17 @@ Stripe's `success_url` redirect often arrives before the webhook fires. The `/ap
 **Do not deploy the paywall without the feature flag.** `PAYWALL_ENABLED=false` must be the default. Flip it to `true` in Vercel only when the full flow (Stripe → webhook → credit → upload → consume → refund-on-failure) is verified end-to-end.
 
 **Do not use `bodyParser: false` in the webhook route.** That is Pages Router syntax. In App Router, read the raw body with `await req.text()` before passing to `stripe.webhooks.constructEvent()`.
+
+---
+
+## Waitlist-as-Main-App: Pre-Deploy Checklist
+
+Before merging this redesign to `master` (which auto-deploys via Vercel), confirm:
+
+- [x] `supabase/migrations/2026-04-16-waitlist-as-main-app.sql` applied to the prod `spectr` Supabase project (`nlkwoezxicayljemxhma`). Adds `projects.email`, `projects.access_token` (+ unique partial index, + email index), comments the new `awaiting_payment` status, and adds `waitlist.reference_app / your_app_name / project_id / mode` (+ two indexes). **Applied 2026-04-16.**
+- [ ] **Supabase Auth "Confirm email" flow** — the anon webhook calls `admin.createUser({ email, email_confirm: true })`. Verify this still works when Auth > Providers > Email has "Confirm email" enabled. The flag on `createUser` marks the user as pre-confirmed, so magic-link sign-in should succeed without a separate confirmation click, but test once against a real email before enabling paid flow in prod.
+- [ ] **`SITE_URL` env var set in Vercel (all environments).** Read by `app/api/billing/checkout/route.ts`, `app/api/billing/webhook/route.ts`, and `app/api/projects/anon/route.ts`. All three fall back to `https://www.spectr.to` if unset — OK for prod, but set it explicitly so Preview deployments point at themselves instead of prod. **Note:** the variable name is `SITE_URL`, not `SITE` — earlier docs were wrong.
+- [ ] **`spectr_access` cookie is now vestigial.** With the waitlist page becoming the main app, the invite-only gate in `middleware.ts` no longer has a useful job. Existing cookies on invited browsers are harmless. Safe to remove the gate entirely in a follow-up — don't need to purge cookies first.
 
 ---
 

@@ -28,14 +28,5 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(redirect)
   }
 
-  // Also set the legacy `spectr_access` cookie so the invite-gate middleware
-  // continues to let the user through without a second hoop. This is a
-  // transitional accommodation until the invite gate is fully retired.
-  const response = NextResponse.redirect(new URL(next, url.origin))
-  response.cookies.set('spectr_access', 'main', {
-    path: '/',
-    maxAge: 60 * 60 * 24 * 365,
-    sameSite: 'lax',
-  })
-  return response
+  return NextResponse.redirect(new URL(next, url.origin))
 }

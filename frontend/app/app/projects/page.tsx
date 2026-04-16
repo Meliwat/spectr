@@ -49,7 +49,7 @@ export default async function ProjectsPage() {
               Return to past recordings, follow what is still in motion, and reopen any spec whenever you need it.
             </p>
           </div>
-          <Link href="/app" className="btn-primary">
+          <Link href="/" className="btn-primary">
             New blueprint
           </Link>
         </div>
@@ -60,7 +60,7 @@ export default async function ProjectsPage() {
               <p style={{ fontSize: 32, marginBottom: 12, animation: 'ghost-float 3s ease-in-out infinite', display: 'inline-block' }}>◎</p>
               <p style={{ color: 'var(--text-2)', fontWeight: 510, marginBottom: 6 }}>Nothing here yet</p>
               <p style={{ color: 'var(--subdued)', fontSize: 14, marginBottom: 24 }}>Upload a recording and we’ll turn it into your first spec.</p>
-              <a href="/app" className="btn-primary" style={{ padding: '10px 24px', borderRadius: 6, display: 'inline-block' }}>Create a blueprint →</a>
+              <a href="/" className="btn-primary" style={{ padding: '10px 24px', borderRadius: 6, display: 'inline-block' }}>Create a blueprint →</a>
             </div>
           </div>
         ) : (
