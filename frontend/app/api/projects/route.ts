@@ -37,25 +37,33 @@ export async function POST(req: NextRequest) {
   // ─── Auto path: consume one available credit if paywall is on ──────────
   let consumedCreditId: string | null = null
   if (mode === 'auto' && paywall) {
-    const { data: credit, error: creditErr } = await admin
+    // Step 1: find the oldest available credit.
+    const { data: credit } = await admin
+      .from('spec_credits')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('status', 'available')
+      .order('created_at', { ascending: true })
+      .limit(1)
+      .maybeSingle()
+
+    if (!credit) {
+      return NextResponse.json({ error: 'no_credits' }, { status: 402 })
+    }
+
+    // Step 2: atomically consume it (the status guard prevents double-spend).
+    const { error: consumeErr } = await admin
       .from('spec_credits')
       .update({
         status: 'consumed',
         consumed_at: new Date().toISOString(),
       })
-      .eq('user_id', user.id)
+      .eq('id', credit.id)
       .eq('status', 'available')
-      .order('created_at', { ascending: true })
-      .limit(1)
-      .select('id')
-      .maybeSingle()
 
-    if (creditErr) {
-      console.error('[projects] credit consume failed:', creditErr.message)
+    if (consumeErr) {
+      console.error('[projects] credit consume failed:', consumeErr.message)
       return NextResponse.json({ error: 'credit_consume_failed' }, { status: 500 })
-    }
-    if (!credit) {
-      return NextResponse.json({ error: 'no_credits' }, { status: 402 })
     }
     consumedCreditId = credit.id
   }
