@@ -21,7 +21,7 @@ create index if not exists spec_credits_user_status_idx
   on spec_credits(user_id, status);
 
 create unique index if not exists spec_credits_session_idx
-  on spec_credits(stripe_session_id) where stripe_session_id is not null;
+  on spec_credits(stripe_session_id);
 
 alter table spec_credits enable row level security;
 
