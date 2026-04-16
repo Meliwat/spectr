@@ -62,13 +62,22 @@ export async function POST(req: NextRequest) {
   // can read it at `spectr-uploads/<key>` without changes. We keep the
   // original in `waitlist-videos` so the admin dashboard's signed URLs
   // against that bucket continue to work.
+  //
+  // Idempotent: if the destination already exists (retry after a prior
+  // attempt), treat it as success. Supabase surfaces "already exists" in
+  // the error message with HTTP 409 — swallow that and carry on.
   const mp4Key = video_s3_key
-  const { error: copyErr } = await admin.storage
+  const copyRes = await admin.storage
     .from('waitlist-videos')
     .copy(mp4Key, mp4Key, { destinationBucket: 'spectr-uploads' })
-  if (copyErr) {
-    console.error('[projects/anon] bucket copy failed:', copyErr.message)
-    return NextResponse.json({ error: 'copy_failed' }, { status: 500 })
+  if (copyRes.error) {
+    const msg = (copyRes.error.message || '').toLowerCase()
+    const alreadyExists = msg.includes('already exists') || msg.includes('duplicate') || msg.includes('resource already')
+    if (!alreadyExists) {
+      console.error('[projects/anon] bucket copy failed:', copyRes.error.message)
+      return NextResponse.json({ error: 'copy_failed' }, { status: 500 })
+    }
+    console.log('[projects/anon] bucket copy skipped (already present):', mp4Key)
   }
 
   if (mode === 'auto') {
