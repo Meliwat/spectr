@@ -22,12 +22,15 @@ import shutil
 import tempfile
 import argparse
 import subprocess
+import logging
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from collections import deque
 from threading import Lock
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+log = logging.getLogger(__name__)
 
 from supabase import create_client
 from dotenv import load_dotenv
@@ -345,6 +348,34 @@ def update_project(project_id: str, data: dict):
                 get_db().table("projects").update(filtered).eq("id", project_id).execute()
             return
         raise
+
+
+def refund_credit_for_failed_project(client, project_id: str) -> None:
+    """Flips a consumed credit back to 'available' when an auto project fails.
+
+    No-op if the project is in manual mode (no credit was consumed) or if no
+    matching consumed credit exists. Best-effort: errors are logged but do not
+    propagate, so a refund failure does not mask the underlying project failure.
+    """
+    try:
+        project = (
+            client.table("projects")
+            .select("processing_mode")
+            .eq("id", project_id)
+            .single()
+            .execute()
+            .data
+        )
+        if not project or project.get("processing_mode") != "auto":
+            return
+        client.table("spec_credits").update({
+            "status": "available",
+            "consumed_at": None,
+            "project_id": None,
+        }).eq("project_id", project_id).eq("status", "consumed").execute()
+        log.info("Refunded credit for failed auto project %s", project_id)
+    except Exception as exc:
+        log.error("Refund failed for project %s: %s", project_id, exc)
 
 
 def load_project(project_id: str) -> dict:
@@ -767,6 +798,7 @@ def process_project_spec(project_id: str):
 
     except Exception as e:
         update_project(project_id, {"status": STATUS_FAILED, "error_text": str(e)})
+        refund_credit_for_failed_project(get_db(), project_id)
         project_log(project_id, f"  ✗ Failed: {e}")
         raise
 
