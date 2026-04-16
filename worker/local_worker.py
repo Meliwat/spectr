@@ -400,7 +400,11 @@ def maybe_send_manual_completion_email(client, project_id: str) -> None:
     cannot be looked up or RESEND_API_KEY is not set (the helper itself
     handles that case).
     """
-    from notify import send_manual_completion_email
+    try:
+        from notify import send_manual_completion_email
+    except ImportError as exc:
+        log.error("notify module unavailable for project %s: %s", project_id, exc)
+        return
 
     try:
         project = (
