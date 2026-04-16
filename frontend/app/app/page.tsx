@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import UploadZone from '@/components/UploadZone'
 import BrandingForm from '@/components/BrandingForm'
+import BillingCTA from '@/components/BillingCTA'
 import { useToast } from '@/hooks/useToast'
 
 export default function UploadPage() {
@@ -18,7 +19,7 @@ export default function UploadPage() {
 
   const canSubmit = mp4File && referenceApp.trim().length > 0 && !loading
 
-  async function handleSubmit() {
+  async function handleSubmit(mode: 'auto' | 'sample') {
     if (!canSubmit) return
     setLoading(true)
     setError('')
@@ -45,6 +46,7 @@ export default function UploadPage() {
           brand_colors: brandColors,
           logo_s3_key: null,
           bundle_id: null,
+          mode,
         }),
       })
       if (!res.ok) throw new Error(await res.text())
@@ -57,6 +59,66 @@ export default function UploadPage() {
       setLoading(false)
     }
   }
+
+  const renderUploader = ({ mode }: { mode: 'auto' | 'sample' }) => (
+    <>
+      <div className="mt-8">
+        <UploadZone onFile={setMp4File} file={mp4File} />
+      </div>
+
+      <div className="mt-8 grid gap-5 sm:grid-cols-2">
+        <div>
+          <label className="field-label">
+            Reference app <span style={{ color: 'var(--error)' }}>*</span>
+          </label>
+          <input
+            type="text"
+            placeholder="DoorDash, Duolingo, Notion..."
+            value={referenceApp}
+            onChange={e => setReferenceApp(e.target.value)}
+            className="input"
+          />
+          <p className="mt-2 helper-copy">Use the real product name so the blueprint stays grounded in the app you captured.</p>
+        </div>
+        <div>
+          <label className="field-label">Your app name</label>
+          <input
+            type="text"
+            placeholder={referenceApp.trim() || 'Same as reference app'}
+            value={yourAppName}
+            onChange={e => setYourAppName(e.target.value)}
+            className="input"
+          />
+          <p className="mt-2 helper-copy">Leave this blank if you want the blueprint to keep the original name.</p>
+        </div>
+      </div>
+
+      <BrandingForm
+        onColors={setBrandColors}
+        showBundleId={false}
+      />
+
+      {error && (
+        <div
+          className="mt-5 rounded-xl px-4 py-3 text-sm"
+          style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.24)', color: 'var(--error)' }}
+        >
+          {error}
+        </div>
+      )}
+
+      <div className="mt-8 flex flex-wrap items-center gap-4">
+        <button
+          onClick={() => handleSubmit(mode)}
+          disabled={!canSubmit}
+          className={canSubmit ? 'btn-primary' : 'btn'}
+        >
+          {loading ? 'Starting...' : mode === 'sample' ? 'Submit for free review' : 'Generate spec'}
+        </button>
+        <p className="helper-copy">You’ll get a live view of the progress and a downloadable spec when it’s ready.</p>
+      </div>
+    </>
+  )
 
   return (
     <main className="page-frame">
@@ -76,61 +138,7 @@ export default function UploadPage() {
               Upload a mobile app recording, name the product that inspired it, and Spectr will turn what it sees into a detailed blueprint your agents can read, share, and build from.
             </p>
 
-            <div className="mt-8">
-              <UploadZone onFile={setMp4File} file={mp4File} />
-            </div>
-
-            <div className="mt-8 grid gap-5 sm:grid-cols-2">
-              <div>
-                <label className="field-label">
-                  Reference app <span style={{ color: 'var(--error)' }}>*</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="DoorDash, Duolingo, Notion..."
-                  value={referenceApp}
-                  onChange={e => setReferenceApp(e.target.value)}
-                  className="input"
-                />
-                <p className="mt-2 helper-copy">Use the real product name so the blueprint stays grounded in the app you captured.</p>
-              </div>
-              <div>
-                <label className="field-label">Your app name</label>
-                <input
-                  type="text"
-                  placeholder={referenceApp.trim() || 'Same as reference app'}
-                  value={yourAppName}
-                  onChange={e => setYourAppName(e.target.value)}
-                  className="input"
-                />
-                <p className="mt-2 helper-copy">Leave this blank if you want the blueprint to keep the original name.</p>
-              </div>
-            </div>
-
-            <BrandingForm
-              onColors={setBrandColors}
-              showBundleId={false}
-            />
-
-            {error && (
-              <div
-                className="mt-5 rounded-xl px-4 py-3 text-sm"
-                style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.24)', color: 'var(--error)' }}
-              >
-                {error}
-              </div>
-            )}
-
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-              <button
-                onClick={handleSubmit}
-                disabled={!canSubmit}
-                className={canSubmit ? 'btn-primary' : 'btn'}
-              >
-                {loading ? 'Starting...' : 'Create my blueprint'}
-              </button>
-              <p className="helper-copy">You’ll get a live view of the progress and a downloadable spec when it’s ready.</p>
-            </div>
+            <BillingCTA renderUploader={renderUploader} />
           </div>
 
           <aside className="space-y-4">
