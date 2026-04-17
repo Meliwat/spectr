@@ -72,6 +72,9 @@ export const metadata: Metadata = {
     apple: '/icon.png',
   },
   category: 'technology',
+  verification: {
+    google: 'MPPIJJTM8bPdz-CpatPhEcmgPxTyt0PlItnnFUuR1to',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
