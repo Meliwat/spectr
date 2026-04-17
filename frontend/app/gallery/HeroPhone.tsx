@@ -81,10 +81,10 @@ export default function HeroPhone({
       phone.style.transform =
         `translate(-50%, calc(-50% + ${ty}px)) rotateX(${rotX}deg) scale(${scale})`
 
-      // Copy fades and lifts during the first ~65% of scroll
-      const copyP = Math.min(1, p * 1.55)
+      // Copy fades and lifts during the first ~32% of scroll
+      const copyP = Math.min(1, p * 3.1)
       copy.style.opacity = String(1 - copyP)
-      copy.style.transform = `translate3d(0, ${-copyP * 22}px, 0)`
+      copy.style.transform = `translate3d(0, ${-copyP * 30}px, 0)`
     }
     const onScroll = () => {
       if (raf) return
