@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { makeSupabaseServer } from '@/lib/supabase-server'
 import { createSupabaseServerClient } from '@/lib/supabase-ssr'
@@ -7,6 +8,11 @@ import { Project } from '@/lib/types'
 import ProjectClient from '@/app/app/projects/[id]/ProjectClient'
 
 export const dynamic = 'force-dynamic'
+
+export const metadata: Metadata = {
+  title: 'Your blueprint',
+  robots: { index: false, follow: false, nocache: true },
+}
 
 /**
  * Public progress view — the destination URL we hand back from the

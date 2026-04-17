@@ -1,7 +1,13 @@
+import type { Metadata } from 'next'
 import AdminTable, { AdminRow } from './AdminTable'
 import PendingSamplesTable from '@/components/PendingSamplesTable'
 
 export const dynamic = 'force-dynamic'
+
+export const metadata: Metadata = {
+  title: 'Admin',
+  robots: { index: false, follow: false, nocache: true },
+}
 
 // getEnv uses a variable key so SWC cannot replace it at build time
 function getEnv(key: string): string {

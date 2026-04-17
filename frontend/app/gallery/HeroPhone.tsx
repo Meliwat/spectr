@@ -142,12 +142,11 @@ export default function HeroPhone({
         .hero-section {
           position: relative;
           height: 220vh;
-          margin-top: -56px;
         }
         .hero-sticky {
           position: sticky;
-          top: 0;
-          height: 100vh;
+          top: 72px;
+          height: calc(100vh - 72px);
           perspective: 1800px;
           perspective-origin: 50% 50%;
         }

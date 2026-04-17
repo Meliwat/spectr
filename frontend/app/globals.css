@@ -270,6 +270,26 @@ body:has(.landing-frame)::-webkit-scrollbar {
   gap: 4px;
 }
 
+.nav-text-link {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 6px;
+  color: rgba(255,255,255,0.55);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  transition: color 0.18s ease, background 0.18s ease;
+  flex-shrink: 0;
+}
+
+.nav-text-link:hover {
+  color: rgba(255,255,255,0.9);
+  background: rgba(255,255,255,0.05);
+}
+
 .nav-icon-link {
   display: inline-flex;
   align-items: center;

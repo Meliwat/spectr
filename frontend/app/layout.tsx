@@ -13,9 +13,65 @@ const inter = Inter({
   variable: '--font-inter',
 })
 
+const SITE_URL = (process.env.SITE_URL || 'https://www.spectr.to').replace(/\/$/, '')
+
 export const metadata: Metadata = {
-  title: 'Spectr — See an app. Ship an app.',
-  description: 'Upload a mobile app recording and receive a beautifully structured product blueprint with screens, flow, and design language.',
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: 'Spectr — See an app. Ship an app.',
+    template: '%s — Spectr',
+  },
+  description:
+    'Upload a mobile app recording and receive a beautifully structured product blueprint with screens, flow, and design language — ready for your AI coding agent.',
+  applicationName: 'Spectr',
+  keywords: [
+    'app blueprint',
+    'app spec generator',
+    'screen recording to spec',
+    'React Native scaffold',
+    'Expo app generator',
+    'AI coding agent',
+    'Claude Code',
+    'product design spec',
+    'mobile app clone',
+    'UI reverse engineering',
+  ],
+  authors: [{ name: 'Spectr' }],
+  creator: 'Spectr',
+  publisher: 'Spectr',
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    type: 'website',
+    siteName: 'Spectr',
+    url: SITE_URL,
+    title: 'Spectr — See an app. Ship an app.',
+    description:
+      'Record any mobile app. Spectr turns it into a production-ready blueprint your AI coding agent can build from.',
+    locale: 'en_US',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Spectr — See an app. Ship an app.',
+    description:
+      'Record any mobile app. Spectr turns it into a production-ready blueprint your AI coding agent can build from.',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  icons: {
+    icon: '/icon.png',
+    apple: '/icon.png',
+  },
+  category: 'technology',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -39,6 +95,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <span className="brand-neon-text" aria-hidden="true">Spectr</span>
               </Link>
               <div className="site-nav-links">
+                <Link href="/" className="nav-text-link">
+                  Home
+                </Link>
+                <Link href="/gallery" className="nav-text-link">
+                  Gallery
+                </Link>
+                <span className="nav-icon-sep" aria-hidden="true" />
                 <a
                   href="#"
                   className="nav-icon-link"

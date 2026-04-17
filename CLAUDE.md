@@ -152,6 +152,45 @@ Do not break this abstraction. Do not add SDK-specific or CLI-specific logic out
 - `/app` — Upload form. UploadZone + BrandingForm + submission to `/api/projects`.
 - `/app/projects` — Project list. Server-rendered, last 50 projects.
 - `/app/projects/[id]` — Project detail. Realtime status, log polling, download links.
+- `/gallery` — Public showcase of example specs. Plain grid of 8 app cards; each card links to `/gallery/[slug]`. No hero on this page.
+- `/gallery/[slug]` — Per-app detail page: MacBook-scroll–style hero phone reveal, then app description and links. All 8 slugs pre-rendered via `generateStaticParams`.
+
+### Gallery Architecture
+
+The gallery is a public marketing page, not behind auth. Key files:
+
+- `app/gallery/page.tsx` — main gallery page; plain grid of app cards, no scroll hero
+- `app/gallery/apps.ts` — data file listing all gallery apps (slug, name, description, iframe URL, etc.)
+- `app/gallery/HeroPhone.tsx` — the scroll-driven phone reveal component; parameterized with `eyebrow`, `title`, `subtitle` props; uses `position: sticky` to pin while the container scrolls past, creating a MacBook-style reveal
+- `app/gallery/[slug]/page.tsx` — dynamic route for individual gallery entries; renders the HeroPhone reveal + rich body copy (tagline H2, blurb, pitch, 6 screens documented, 4 info cards, GitHub link); full per-page SEO metadata + JSON-LD; uses `overflow-x: clip` on `.gal-page` so sticky elements work
+
+The hero phone reveal requires `overflow-x: clip` on the outer scroll container — see "What Not To Do" for why `overflow: hidden` breaks it. The hero lives on `/gallery/[slug]`, not `/gallery`.
+
+**Two-phase reveal animation** (implemented in `HeroPhone.tsx`):
+- Phase 1 (scroll progress 0→0.55): phone rotates from `rotateX(44deg)` to flat; scales 0.78→1.0. Copy text fades out and lifts during the first ~32% of scroll (`p * 3.1`).
+- Phase 2 (scroll progress 0.55→1): phone continues scaling 1.0→1.32 — feels like it surges toward the viewer. `easeOut` is applied independently to each phase so each has its own acceleration curve.
+- `.hero-section` height is `220vh` to provide enough scroll travel for both phases.
+
+**Nav clearance**: `.hero-sticky` uses `top: 72px` and `height: calc(100vh - 72px)` so the sticky viewport sits below the nav bar. Without this offset, the phone bleeds into the nav as it scales past 1.0 in phase 2. If the nav height ever changes from 72px, update both values in `HeroPhone.tsx`.
+
+### SEO Architecture
+
+SEO is implemented via Next.js App Router `metadata` exports and `generateMetadata`. Decisions:
+
+**Indexed routes**: `/`, `/gallery`, and all 8 `/gallery/[slug]` pages (airbnb, cal-ai, doordash, duolingo, instagram, spotify, tiktok, uber). Each has full OG tags, canonical URL, per-app title/description/keywords (5 per page), and appears in `sitemap.ts`. Gallery detail pages also have JSON-LD `CreativeWork` + `BreadcrumbList` structured data and rich body copy (tagline H2, blurb, pitch paragraph, 6 screens documented, 4 info cards).
+
+**Noindexed routes**: `/app/*` (authenticated user area), `/login`, `/admin`, `/p/[id]` (public project view by token — unlisted, not crawled). Noindex is applied via a shared `app/app/layout.tsx` for the entire `/app/*` subtree, and per-page `metadata` exports on the others.
+
+**New SEO files**:
+- `app/sitemap.ts` — exports all 10 URLs: `/`, `/gallery`, and the 8 gallery detail slugs
+- `app/robots.ts` — disallows `/api`, `/app`, `/admin`, `/login`, `/p`, `/auth`, `/spectr-enter`
+- `app/opengraph-image.tsx` — dynamic 1200×630 OG image (Next.js image generation)
+
+The root `app/layout.tsx` sets `metadataBase`, global OG defaults, Twitter card meta, and site-wide keywords. Individual pages override OG title/description as needed.
+
+**JSON-LD**: `app/page.tsx` injects two `<script type="application/ld+json">` blocks — a `SoftwareApplication` schema (name, price $19, category, URL) and an `Organization` schema. These enable Google rich results. Do not remove them when editing the landing page.
+
+**Google Search Console**: Not yet configured as of 2026-04-17. The sitemap at `/sitemap.xml` has not been submitted. Next step: verify the domain in GSC and submit `https://www.spectr.to/sitemap.xml` to trigger indexing of all 10 URLs. Without this, Googlebot discovers the pages only via crawl — submit the sitemap to accelerate.
 
 ### Progress Tracking
 
@@ -353,34 +392,9 @@ This helper is already applied in `lib/supabase.ts` (for `NEXT_PUBLIC_SUPABASE_U
 
 ## Pre-Launch Waitlist Gate
 
-Before the Supabase auth check, `middleware.ts` enforces an invite-only gate via a `spectr_access` cookie. This prevents non-invited traffic from ever reaching the product — they land on `/waitlist` instead.
+**Removed.** The `spectr_access` cookie gate has been fully removed from `middleware.ts`. The middleware now only guards `/app/*` with Supabase auth — all other routes (`/`, `/waitlist`, `/gallery`, `/p/*`, `/admin`, `/auth/callback`, `/api/*`) are public. Crawlers and unauthenticated visitors reach the real landing page directly.
 
-### How it works
-
-1. Middleware checks for `request.cookies.get('spectr_access')?.value === 'v2'`
-2. If the cookie is absent → redirect to `/waitlist`
-3. If the cookie is present → proceed to the Supabase auth check (for `/app/*` routes)
-
-### Granting access
-
-`GET /spectr-enter?to=<path>` (`app/spectr-enter/route.ts`) sets the cookie and redirects to `<path>` (defaults to `/app`). Share this URL with invited users. The cookie is `httpOnly`, `sameSite: lax`, secure in production, and expires after 30 days.
-
-```
-https://www.spectr.to/spectr-enter?to=/app
-```
-
-After deployment, hit this URL in every browser you want to grant access to — including your own.
-
-### Ungated paths
-
-These bypass both the waitlist gate and the auth check:
-
-- `/waitlist` — public sign-up page
-- `/spectr-enter` — cookie setter (must stay ungated or you can't grant access)
-- `/admin` — admin dashboard
-- `/auth/callback` — Supabase magic-link exchange
-- `/api/*` — all API routes
-- `/_next/*` and static assets — Next.js internals
+The `app/spectr-enter/route.ts` cookie-setter route may still exist but is vestigial — it no longer does anything meaningful for access control.
 
 ---
 
@@ -569,7 +583,7 @@ Before merging this redesign to `master` (which auto-deploys via Vercel), confir
 - [x] **Stripe webhook end-to-end verification.** Verified 2026-04-16 with a real $19 purchase — project flipped `awaiting_payment → extracting` in 32 seconds. Stripe signing secret matches, customer-email-to-user resolution works, credit upsert succeeded, worker triggered correctly.
 - [ ] **Supabase Auth "Confirm email" flow** — the anon webhook calls `admin.createUser({ email, email_confirm: true })`. Verify this still works when Auth > Providers > Email has "Confirm email" enabled. The flag on `createUser` marks the user as pre-confirmed, so magic-link sign-in should succeed without a separate confirmation click, but test once against a real email before enabling paid flow in prod.
 - [x] **`SITE_URL` env var set in Vercel (all environments).** Confirmed set 2026-04-16. Read by `app/api/billing/checkout/route.ts`, `app/api/billing/webhook/route.ts`, and `app/api/projects/anon/route.ts`. **Note:** the variable name is `SITE_URL`, not `SITE` — earlier docs were wrong.
-- [ ] **`spectr_access` cookie is now vestigial.** With the waitlist page becoming the main app, the invite-only gate in `middleware.ts` no longer has a useful job. Existing cookies on invited browsers are harmless. Safe to remove the gate entirely in a follow-up — don't need to purge cookies first.
+- [x] **`spectr_access` cookie gate removed.** The invite-only gate has been fully removed from `middleware.ts`. All non-`/app/*` routes are now public. Confirmed 2026-04-17.
 
 ---
 
@@ -660,6 +674,15 @@ Vercel's `vercel.json` `"env"` section hardcodes values that are embedded at dep
 
 **Do not make the bucket copy in `app/api/projects/anon/route.ts` non-idempotent.**
 The anon route copies the uploaded MP4 from `waitlist-videos` to `spectr-uploads` before creating a project row. On retry (user pays again after a prior failure), the destination object already exists and the copy call errors. Treat a "already exists" / duplicate error from `storage.copy()` as success, not failure — the file is already where it needs to be. Fixed in commit `a179c15`.
+
+**Do not use `overflow: hidden` on a scroll container when `position: sticky` is needed inside it.**
+`overflow: hidden` creates a new scroll containment context — sticky-positioned children pin to the hidden container's bounds, not the viewport. The symptom is that `position: sticky; top: 0` has no visible effect (the element just scrolls away). Fix: replace with `overflow-x: clip`. `clip` prevents horizontal overflow bleed without establishing a scroll container, so sticky elements pin correctly. Confirmed in `frontend/app/gallery/page.tsx` (`.gal-page` class). See commit `fcac9cb`.
+
+**Do not use container query length units (`cqw`, `cqi`, etc.) as arguments to `transform: scale()`.**
+`scale()` requires a unitless scalar. `calc(100cqw / 390)` evaluates to a length (px), not a number — the browser silently sets the transform to `none`. The iframe renders at its natural 390px width with only the top-left corner visible. Fix: use a unitless division via CSS custom properties or compute the scale in JavaScript. In `frontend/app/gallery/page.tsx`, iframe scaling was fixed in commit `f48e47f`.
+
+**Do not use JSX string interpolation for inline `<style>` tags that contain special CSS values.**
+React serializes JSX differently on server vs client, producing hydration mismatches when a `<style>` tag contains a `background-image: url("data:...")` or CSS `content: ''` (empty string with quotes). Both cases cause React to escape the string differently during SSR vs hydration. Fix: use `dangerouslySetInnerHTML={{ __html: cssString }}` on the `<style>` element so the string is emitted verbatim and matches exactly on hydration. Applied in `SpectrBackground.tsx` (commit `0410df6`) and gallery SEO styles (commit `8d63ac4`).
 
 ---
 

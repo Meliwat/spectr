@@ -1,8 +1,14 @@
+import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { createSupabaseServerClient } from '@/lib/supabase-ssr'
 import LoginClient from './LoginClient'
 
 export const dynamic = 'force-dynamic'
+
+export const metadata: Metadata = {
+  title: 'Sign in',
+  robots: { index: false, follow: false },
+}
 
 export default async function LoginPage({
   searchParams,

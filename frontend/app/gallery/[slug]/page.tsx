@@ -350,21 +350,25 @@ export default async function GalleryAppPage({ params }: { params: Params }) {
           margin: 0 0 16px;
           max-width: 64ch;
         }
-        .ga-topcrumbs {
+        .ga-topback {
           position: relative;
           z-index: 4;
           max-width: 1180px;
           margin: 0 auto;
           padding: 18px 8px 0;
-          font-size: 11px;
-          letter-spacing: 0.16em;
-          text-transform: uppercase;
-          color: rgba(170,180,220,0.55);
         }
-        .ga-topcrumbs a { color: rgba(200,210,240,0.8); text-decoration: none; }
-        .ga-topcrumbs a:hover { color: #fff; }
-        .ga-topcrumbs .sep { margin: 0 8px; opacity: 0.5; }
-        .ga-topcrumbs .current { color: rgba(230,235,255,0.9); }
+        .ga-topback a {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 12px;
+          letter-spacing: 0.08em;
+          color: rgba(200,210,240,0.7);
+          text-decoration: none;
+          transition: color 0.18s ease;
+        }
+        .ga-topback a:hover { color: #fff; }
+        .ga-topback .arr { font-size: 14px; line-height: 1; }
         .ga-sector {
           display: inline-block;
           font-size: 10.5px;
@@ -456,13 +460,11 @@ export default async function GalleryAppPage({ params }: { params: Params }) {
       <main className="ga-page">
         <SpectrBackground />
 
-        <nav className="ga-topcrumbs" aria-label="Breadcrumb">
-          <Link href="/">Home</Link>
-          <span className="sep">/</span>
-          <Link href="/gallery">Gallery</Link>
-          <span className="sep">/</span>
-          <span className="current">{name}</span>
-        </nav>
+        <div className="ga-topback">
+          <Link href="/gallery" prefetch={false}>
+            <span className="arr">←</span> Back to Gallery
+          </Link>
+        </div>
 
         <HeroPhone
           doc={doc ?? ''}
