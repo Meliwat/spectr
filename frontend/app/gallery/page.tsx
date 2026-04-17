@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import SpectrBackground from '../SpectrBackground'
+import HeroPhone from './HeroPhone'
 import { extractPhoneDocument } from '@/lib/extract-phone'
 
 export const metadata: Metadata = {
@@ -59,7 +60,7 @@ export default async function GalleryPage() {
         .gal-page {
           position: relative;
           min-height: calc(100dvh - 72px);
-          overflow: hidden;
+          overflow-x: clip;
           background: radial-gradient(ellipse 180% 100% at 50% -20%,
             #0d0e18 0%, #07080f 40%, #010102 100%);
           padding: 56px 24px 96px;
@@ -223,16 +224,14 @@ export default async function GalleryPage() {
       <main className="gal-page">
         <SpectrBackground />
 
-        <div className="gal-inner">
-          <div className="gal-head">
-            <span className="gal-eyebrow">Gallery</span>
-            <h1 className="gal-title">Live app previews</h1>
-            <p className="gal-sub">
-              Each phone below is a live rendering of a design blueprint Spectr
-              produced from a real iOS app.
-            </p>
-          </div>
+        {(() => {
+          const hero = previews.find((p) => p.slug === 'cal-ai') ?? previews[0]
+          return hero ? (
+            <HeroPhone doc={hero.doc ?? ''} name={hero.name} href={hero.href} />
+          ) : null
+        })()}
 
+        <div className="gal-inner">
           <div className="gal-grid">
             {previews.map(({ slug, name, doc, href }) => (
               <a
