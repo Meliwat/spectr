@@ -1,14 +1,57 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, RefObject } from 'react'
+
+function PhoneBody({
+  doc,
+  name,
+  phoneRef,
+}: {
+  doc: string
+  name: string
+  phoneRef: RefObject<HTMLDivElement>
+}) {
+  return (
+    <div className="hero-phone" ref={phoneRef}>
+      <div className="hero-phone-frame">
+        <div className="hero-phone-glow" aria-hidden="true" />
+        <div className="hero-viewport">
+          {doc ? (
+            <iframe
+              className="hero-iframe"
+              srcDoc={doc}
+              sandbox="allow-same-origin"
+              scrolling="no"
+              title={`${name} phone preview`}
+              loading="eager"
+              aria-hidden="true"
+            />
+          ) : (
+            <div className="hero-iframe-skeleton">Preview unavailable</div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 type Props = {
   doc: string
   name: string
-  href: string
+  eyebrow?: string
+  title?: string
+  subtitle?: string
+  href?: string
 }
 
-export default function HeroPhone({ doc, name, href }: Props) {
+export default function HeroPhone({
+  doc,
+  name,
+  eyebrow = 'Gallery',
+  title = 'Live app previews',
+  subtitle = 'Each phone below is a live rendering of a design blueprint Spectr produced from a real iOS app.',
+  href,
+}: Props) {
   const sectionRef = useRef<HTMLDivElement>(null)
   const phoneRef = useRef<HTMLDivElement>(null)
   const copyRef = useRef<HTMLDivElement>(null)
@@ -56,43 +99,27 @@ export default function HeroPhone({ doc, name, href }: Props) {
     <section ref={sectionRef} className="hero-section">
       <div className="hero-sticky">
         <div className="hero-copy" ref={copyRef}>
-          <span className="gal-eyebrow">Gallery</span>
-          <h1 className="gal-title">Live app previews</h1>
-          <p className="gal-sub">
-            Each phone below is a live rendering of a design blueprint Spectr
-            produced from a real iOS app.
-          </p>
+          <span className="hero-eyebrow">{eyebrow}</span>
+          <h1 className="hero-title">{title}</h1>
+          <p className="hero-sub">{subtitle}</p>
         </div>
 
         <div className="hero-stage">
-          <a
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hero-phone-link"
-            aria-label={`${name} — view spec`}
-          >
-            <div className="hero-phone" ref={phoneRef}>
-              <div className="hero-phone-frame">
-                <div className="hero-phone-glow" aria-hidden="true" />
-                <div className="hero-viewport">
-                  {doc ? (
-                    <iframe
-                      className="hero-iframe"
-                      srcDoc={doc}
-                      sandbox="allow-same-origin"
-                      scrolling="no"
-                      title={`${name} phone preview`}
-                      loading="eager"
-                      aria-hidden="true"
-                    />
-                  ) : (
-                    <div className="hero-iframe-skeleton">Preview unavailable</div>
-                  )}
-                </div>
-              </div>
+          {href ? (
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hero-phone-link"
+              aria-label={`${name} — view spec`}
+            >
+              <PhoneBody doc={doc} name={name} phoneRef={phoneRef} />
+            </a>
+          ) : (
+            <div className="hero-phone-link">
+              <PhoneBody doc={doc} name={name} phoneRef={phoneRef} />
             </div>
-          </a>
+          )}
         </div>
       </div>
 
@@ -119,6 +146,32 @@ export default function HeroPhone({ doc, name, href }: Props) {
           text-align: center;
           max-width: 640px;
           will-change: transform, opacity;
+        }
+        .hero-eyebrow {
+          display: inline-block;
+          font-size: 11px;
+          letter-spacing: 0.24em;
+          text-transform: uppercase;
+          color: rgba(160,170,255,0.75);
+          margin-bottom: 14px;
+        }
+        .hero-title {
+          font-size: clamp(36px, 5.2vw, 64px);
+          font-weight: 520;
+          line-height: 1.03;
+          letter-spacing: -0.032em;
+          color: #f7f8f8;
+          margin: 0 0 12px;
+          text-shadow:
+            0 0 60px rgba(113,112,255,0.20),
+            0 0 120px rgba(113,112,255,0.08);
+        }
+        .hero-sub {
+          font-size: 15px;
+          line-height: 1.55;
+          color: rgba(208,214,224,0.72);
+          max-width: 560px;
+          margin: 0 auto;
         }
         .hero-stage {
           position: relative;

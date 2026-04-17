@@ -1,47 +1,19 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import SpectrBackground from '../SpectrBackground'
-import HeroPhone from './HeroPhone'
-import { extractPhoneDocument } from '@/lib/extract-phone'
+import { APPS, TITLES, fetchPhone } from './apps'
 
 export const metadata: Metadata = {
-  title: 'Gallery — Spectr',
-  description: 'Live phone previews of design blueprints generated from real iOS apps.',
-}
-
-const APPS = [
-  'airbnb',
-  'cal-ai',
-  'doordash',
-  'duolingo',
-  'instagram',
-  'spotify',
-  'tiktok',
-  'uber',
-] as const
-
-const TITLES: Record<(typeof APPS)[number], string> = {
-  airbnb: 'Airbnb',
-  'cal-ai': 'Cal AI',
-  doordash: 'DoorDash',
-  duolingo: 'Duolingo',
-  instagram: 'Instagram',
-  spotify: 'Spotify',
-  tiktok: 'TikTok',
-  uber: 'Uber',
-}
-
-async function fetchPhone(slug: string): Promise<string | null> {
-  try {
-    const res = await fetch(
-      `https://raw.githubusercontent.com/Meliwat/awesome-ios-design-md/main/design-md/${slug}/preview-dark.html`,
-      { next: { revalidate: 86400 } },
-    )
-    if (!res.ok) return null
-    const raw = await res.text()
-    return extractPhoneDocument(raw)
-  } catch {
-    return null
-  }
+  title: 'Gallery',
+  description:
+    'Live phone previews of design blueprints generated from real iOS apps — Airbnb, DoorDash, Duolingo, Instagram, Spotify, TikTok, Uber, Cal AI.',
+  alternates: { canonical: '/gallery' },
+  openGraph: {
+    title: 'Gallery — Spectr',
+    description:
+      'Live phone previews of design blueprints generated from real iOS apps.',
+    url: '/gallery',
+  },
 }
 
 export default async function GalleryPage() {
@@ -50,7 +22,6 @@ export default async function GalleryPage() {
       slug,
       name: TITLES[slug],
       doc: await fetchPhone(slug),
-      href: `https://github.com/Meliwat/awesome-ios-design-md/tree/main/design-md/${slug}`,
     })),
   )
 
@@ -224,22 +195,23 @@ export default async function GalleryPage() {
       <main className="gal-page">
         <SpectrBackground />
 
-        {(() => {
-          const hero = previews.find((p) => p.slug === 'cal-ai') ?? previews[0]
-          return hero ? (
-            <HeroPhone doc={hero.doc ?? ''} name={hero.name} href={hero.href} />
-          ) : null
-        })()}
-
         <div className="gal-inner">
+          <div className="gal-head">
+            <span className="gal-eyebrow">Gallery</span>
+            <h1 className="gal-title">Live app previews</h1>
+            <p className="gal-sub">
+              Each phone below is a live rendering of a design blueprint Spectr
+              produced from a real iOS app. Tap one to open it.
+            </p>
+          </div>
+
           <div className="gal-grid">
-            {previews.map(({ slug, name, doc, href }) => (
-              <a
+            {previews.map(({ slug, name, doc }) => (
+              <Link
                 key={slug}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={`/gallery/${slug}`}
                 className="gal-card"
+                prefetch={false}
               >
                 <div className="gal-phone-frame">
                   <div className="gal-phone-glow" aria-hidden="true" />
@@ -261,9 +233,9 @@ export default async function GalleryPage() {
                 </div>
                 <div className="gal-caption">
                   <p className="gal-name">{name}</p>
-                  <span className="gal-meta">View spec →</span>
+                  <span className="gal-meta">Open →</span>
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
         </div>
