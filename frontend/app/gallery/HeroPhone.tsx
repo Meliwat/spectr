@@ -44,6 +44,8 @@ type Props = {
   href?: string
 }
 
+const easeOut = (t: number) => 1 - Math.pow(1 - t, 2)
+
 export default function HeroPhone({
   doc,
   name,
@@ -70,16 +72,19 @@ export default function HeroPhone({
       const scrollable = Math.max(1, rect.height - vh)
       const raw = -rect.top / scrollable
       const p = Math.max(0, Math.min(1, raw))
+      const e = easeOut(p)
 
-      const rotX = 58 * (1 - p)
-      const scale = 0.7 + 0.3 * p
-      const ty = (1 - p) * 40
+      // Phone is absolutely centered; translate deltas sit on top of -50%/-50%
+      const rotX = 44 * (1 - e)
+      const scale = 0.78 + 0.22 * e
+      const ty = (1 - e) * 28
       phone.style.transform =
-        `translate3d(0, ${ty}px, 0) rotateX(${rotX}deg) scale(${scale})`
+        `translate(-50%, calc(-50% + ${ty}px)) rotateX(${rotX}deg) scale(${scale})`
 
-      const copyP = Math.min(1, p * 1.4)
+      // Copy fades and lifts during the first ~65% of scroll
+      const copyP = Math.min(1, p * 1.55)
       copy.style.opacity = String(1 - copyP)
-      copy.style.transform = `translate3d(0, ${-copyP * 26}px, 0)`
+      copy.style.transform = `translate3d(0, ${-copyP * 22}px, 0)`
     }
     const onScroll = () => {
       if (raf) return
@@ -98,10 +103,12 @@ export default function HeroPhone({
   return (
     <section ref={sectionRef} className="hero-section">
       <div className="hero-sticky">
-        <div className="hero-copy" ref={copyRef}>
-          <span className="hero-eyebrow">{eyebrow}</span>
-          <h1 className="hero-title">{title}</h1>
-          <p className="hero-sub">{subtitle}</p>
+        <div className="hero-copy-wrap">
+          <div className="hero-copy" ref={copyRef}>
+            <span className="hero-eyebrow">{eyebrow}</span>
+            <h1 className="hero-title">{title}</h1>
+            <p className="hero-sub">{subtitle}</p>
+          </div>
         </div>
 
         <div className="hero-stage">
@@ -126,26 +133,29 @@ export default function HeroPhone({
       <style>{`
         .hero-section {
           position: relative;
-          height: 260vh;
+          height: 220vh;
           margin-top: -56px;
         }
         .hero-sticky {
           position: sticky;
           top: 0;
           height: 100vh;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: flex-start;
-          padding: 72px 24px 0;
-          perspective: 1600px;
-          perspective-origin: 50% 30%;
-          overflow: hidden;
+          perspective: 1800px;
+          perspective-origin: 50% 50%;
+        }
+        .hero-copy-wrap {
+          position: absolute;
+          top: clamp(90px, 14vh, 180px);
+          left: 50%;
+          transform: translateX(-50%);
+          width: min(640px, calc(100% - 48px));
+          text-align: center;
+          z-index: 2;
+          pointer-events: none;
         }
         .hero-copy {
-          text-align: center;
-          max-width: 640px;
           will-change: transform, opacity;
+          pointer-events: auto;
         }
         .hero-eyebrow {
           display: inline-block;
@@ -174,27 +184,31 @@ export default function HeroPhone({
           margin: 0 auto;
         }
         .hero-stage {
-          position: relative;
-          margin-top: 40px;
-          flex: 1 1 auto;
-          display: flex;
-          align-items: flex-start;
-          justify-content: center;
-          width: 100%;
+          position: absolute;
+          inset: 0;
           transform-style: preserve-3d;
+          pointer-events: none;
         }
         .hero-phone-link {
           display: block;
           text-decoration: none;
           color: inherit;
           transform-style: preserve-3d;
+          pointer-events: auto;
+          position: absolute;
+          top: 0; left: 0;
+          width: 100%;
+          height: 100%;
         }
         .hero-phone {
-          width: clamp(280px, 34vmin, 420px);
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          height: min(72vh, 700px);
           aspect-ratio: 390 / 844;
           will-change: transform;
-          transform-origin: 50% 30%;
-          transform: translate3d(0, 40px, 0) rotateX(58deg) scale(0.7);
+          transform-origin: 50% 50%;
+          transform: translate(-50%, calc(-50% + 28px)) rotateX(44deg) scale(0.78);
           transform-style: preserve-3d;
         }
         .hero-phone-frame {
@@ -255,9 +269,12 @@ export default function HeroPhone({
 
         @media (prefers-reduced-motion: reduce) {
           .hero-section { height: auto; }
-          .hero-sticky { position: relative; height: auto; padding-bottom: 64px; }
-          .hero-phone { transform: none !important; }
+          .hero-sticky { position: relative; height: auto; padding: 72px 24px 48px; }
+          .hero-stage { position: relative; inset: auto; height: auto; margin-top: 32px; display: flex; justify-content: center; }
+          .hero-phone-link { position: static; width: auto; height: auto; }
+          .hero-phone { position: relative; top: auto; left: auto; transform: none !important; }
           .hero-copy { opacity: 1 !important; transform: none !important; }
+          .hero-copy-wrap { position: relative; top: auto; transform: none; }
         }
       `}</style>
     </section>
