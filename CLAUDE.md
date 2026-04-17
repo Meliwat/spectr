@@ -190,7 +190,9 @@ The root `app/layout.tsx` sets `metadataBase`, global OG defaults, Twitter card 
 
 **JSON-LD**: `app/page.tsx` injects two `<script type="application/ld+json">` blocks — a `SoftwareApplication` schema (name, price $19, category, URL) and an `Organization` schema. These enable Google rich results. Do not remove them when editing the landing page.
 
-**Google Search Console**: Not yet configured as of 2026-04-17. The sitemap at `/sitemap.xml` has not been submitted. Next step: verify the domain in GSC and submit `https://www.spectr.to/sitemap.xml` to trigger indexing of all 10 URLs. Without this, Googlebot discovers the pages only via crawl — submit the sitemap to accelerate.
+**Google Search Console**: Verified 2026-04-17 via HTML meta tag (`google-site-verification` token lives in `app/layout.tsx` `metadata.verification.google`). Sitemap submitted and fetched successfully — all 10 URLs discovered. Status in GSC: `Success`. Do not remove the verification meta tag or GSC loses ownership.
+
+Note: `@next/third-parties/google` injects `gtag.js` outside `<head>`, so GSC's "Google Analytics" verification method does NOT work for this site — only HTML file, HTML meta tag, or DNS TXT. Use the meta tag approach for any re-verification.
 
 ### Progress Tracking
 
@@ -286,7 +288,7 @@ The frontend `StatusTracker` component handles both the legacy 3-stage set and t
 | `SUPABASE_SERVICE_KEY` | Yes | Server-side API routes (full access) |
 | `WORKER_URL` | Yes | Worker endpoint for triggering runs |
 | `WORKER_WEBHOOK_SECRET` | Yes | Shared secret for worker requests |
-| `NEXT_PUBLIC_GA_ID` | No | Google Analytics 4 measurement ID (e.g. `G-XXXXXXXXXX`). When unset, `app/layout.tsx` skips rendering `<GoogleAnalytics />` — intentional so local `npm run dev` doesn't pollute prod GA data. Uses `@next/third-parties/google` (App Router-native; handles route changes automatically, no `useEffect` wiring required). |
+| `NEXT_PUBLIC_GA_ID` | No | Google Analytics 4 measurement ID. Production value: `G-Q1B6PXH52F`. When unset, `app/layout.tsx` skips rendering `<GoogleAnalytics />` — intentional so local `npm run dev` doesn't pollute prod GA data. Uses `@next/third-parties/google` (App Router-native; handles route changes automatically, no `useEffect` wiring required). |
 
 ---
 
