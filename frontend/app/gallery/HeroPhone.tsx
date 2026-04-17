@@ -72,12 +72,20 @@ export default function HeroPhone({
       const scrollable = Math.max(1, rect.height - vh)
       const raw = -rect.top / scrollable
       const p = Math.max(0, Math.min(1, raw))
-      const e = easeOut(p)
 
-      // Phone is absolutely centered; translate deltas sit on top of -50%/-50%
-      const rotX = 44 * (1 - e)
-      const scale = 0.78 + 0.22 * e
-      const ty = (1 - e) * 28
+      // Two-phase reveal:
+      //   Phase 1 (0 → 0.55): phone rotates flat and scales 0.78 → 1.0
+      //   Phase 2 (0.55 → 1):  phone keeps growing 1.0 → 1.32, feels like it
+      //                        comes toward the viewer and out of the frame
+      const OPEN_END = 0.55
+      const p1 = Math.min(1, p / OPEN_END)
+      const p2 = Math.max(0, (p - OPEN_END) / (1 - OPEN_END))
+      const e1 = easeOut(p1)
+      const e2 = easeOut(p2)
+
+      const rotX = 44 * (1 - e1)
+      const scale = 0.78 + 0.22 * e1 + 0.32 * e2
+      const ty = (1 - e1) * 28 - e2 * 4
       phone.style.transform =
         `translate(-50%, calc(-50% + ${ty}px)) rotateX(${rotX}deg) scale(${scale})`
 
