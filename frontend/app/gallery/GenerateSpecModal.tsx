@@ -30,6 +30,9 @@ export default function GenerateSpecModal({
   const [uploadStage, setUploadStage] = useState<'idle' | 'uploading' | 'submitting'>('idle')
   const fileRef = useRef<HTMLInputElement | null>(null)
 
+  // Shared: email is required for Stripe + user creation on webhook
+  const [email, setEmail] = useState('')
+
   // Reset when opened
   useEffect(() => {
     if (!open) return
@@ -40,6 +43,7 @@ export default function GenerateSpecModal({
     setAppStoreUrl('')
     setFile(null)
     setReferenceApp(defaultReferenceApp ?? '')
+    setEmail('')
   }, [open, defaultReferenceApp])
 
   // Close on Escape
@@ -55,6 +59,8 @@ export default function GenerateSpecModal({
   const submitAppStore = useCallback(async () => {
     setError(null)
     const url = appStoreUrl.trim()
+    const mail = email.trim()
+    if (!mail.includes('@')) { setError('Enter a valid email.'); return }
     if (!url) { setError('Paste an App Store URL.'); return }
     if (!/id\d+/.test(url) && !/^\d+$/.test(url)) {
       setError('That doesn\u2019t look like an App Store URL.')
@@ -65,7 +71,7 @@ export default function GenerateSpecModal({
       const res = await fetch('/api/projects/gallery', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'appstore', appStoreUrl: url }),
+        body: JSON.stringify({ mode: 'appstore', appStoreUrl: url, email: mail }),
       })
       const json = await res.json().catch(() => ({}))
       if (!res.ok || !json?.projectId) {
@@ -73,16 +79,22 @@ export default function GenerateSpecModal({
         setBusy(false)
         return
       }
-      const { projectId, accessToken } = json
-      router.push(`/p/${projectId}?t=${encodeURIComponent(accessToken)}`)
+      const { checkoutUrl, projectId, accessToken } = json
+      if (checkoutUrl) {
+        window.location.href = checkoutUrl
+      } else {
+        router.push(`/p/${projectId}?t=${encodeURIComponent(accessToken)}`)
+      }
     } catch {
       setError('Network error \u2014 please try again.')
       setBusy(false)
     }
-  }, [appStoreUrl, router])
+  }, [appStoreUrl, email, router])
 
   const submitRecording = useCallback(async () => {
     setError(null)
+    const mail = email.trim()
+    if (!mail.includes('@')) { setError('Enter a valid email.'); return }
     if (!file) { setError('Pick an .mp4 to upload.'); return }
     if (!file.name.toLowerCase().endsWith('.mp4')) {
       setError('Only .mp4 files are supported.')
@@ -120,7 +132,7 @@ export default function GenerateSpecModal({
       }
       setUploadPct(100)
 
-      // Step 3 \u2014 create project + trigger worker
+      // Step 3 \u2014 create project + start Stripe Checkout
       setUploadStage('submitting')
       const res = await fetch('/api/projects/gallery', {
         method: 'POST',
@@ -130,6 +142,7 @@ export default function GenerateSpecModal({
           video_s3_key: key,
           video_filename: file.name,
           reference_app: referenceApp.trim(),
+          email: mail,
         }),
       })
       const json = await res.json().catch(() => ({}))
@@ -137,13 +150,17 @@ export default function GenerateSpecModal({
         setError(json?.error || 'Could not create project.')
         setBusy(false); setUploadStage('idle'); return
       }
-      const { projectId, accessToken } = json
-      router.push(`/p/${projectId}?t=${encodeURIComponent(accessToken)}`)
+      const { checkoutUrl, projectId, accessToken } = json
+      if (checkoutUrl) {
+        window.location.href = checkoutUrl
+      } else {
+        router.push(`/p/${projectId}?t=${encodeURIComponent(accessToken)}`)
+      }
     } catch {
       setError('Network error \u2014 please try again.')
       setBusy(false); setUploadStage('idle')
     }
-  }, [file, referenceApp, router])
+  }, [file, referenceApp, email, router])
 
   if (!open) return null
 
@@ -323,7 +340,8 @@ export default function GenerateSpecModal({
           <h3 id="gsm-title" className="gsm-title">Generate your own spec</h3>
           <p className="gsm-sub">
             Drop an App Store URL or an MP4 screen recording. We produce a full
-            design blueprint you can hand to Claude Code.
+            design blueprint you can hand to Claude Code.{' '}
+            <strong style={{ color: '#e8ebff' }}>$19 per spec.</strong>
           </p>
 
           <div className="gsm-tabs" role="tablist">
@@ -364,10 +382,22 @@ export default function GenerateSpecModal({
                   autoFocus
                 />
                 <p className="gsm-hint">
-                  We fetch the preview screenshots from the App Store and build
-                  a spec from them. Coverage depends on how many screens the
-                  listing shows (usually 5–10).
+                  Faster + cheaper — we pull preview screenshots directly from
+                  the App Store listing (usually 5–10 shots). Thinner coverage
+                  than a real screen recording.
                 </p>
+              </div>
+              <div className="gsm-field">
+                <label className="gsm-label" htmlFor="gsm-email-a">Email (for delivery)</label>
+                <input
+                  id="gsm-email-a"
+                  className="gsm-input"
+                  type="email"
+                  placeholder="you@domain.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={busy}
+                />
               </div>
               <button
                 type="button"
@@ -375,7 +405,7 @@ export default function GenerateSpecModal({
                 disabled={busy}
                 onClick={submitAppStore}
               >
-                {busy ? 'Starting…' : 'Generate spec'}
+                {busy ? 'Starting…' : 'Continue to checkout — $19'}
               </button>
             </>
           ) : (
@@ -401,6 +431,10 @@ export default function GenerateSpecModal({
                     <div className="gsm-progress-bar" style={{ width: `${uploadPct}%` }} />
                   </div>
                 ) : null}
+                <p className="gsm-hint">
+                  More comprehensive — covers empty states, loading, and deeper
+                  navigation the App Store listing doesn&apos;t show.
+                </p>
               </div>
               <div className="gsm-field">
                 <label className="gsm-label" htmlFor="gsm-ref">Reference app name</label>
@@ -414,6 +448,18 @@ export default function GenerateSpecModal({
                   disabled={busy}
                 />
               </div>
+              <div className="gsm-field">
+                <label className="gsm-label" htmlFor="gsm-email-r">Email (for delivery)</label>
+                <input
+                  id="gsm-email-r"
+                  className="gsm-input"
+                  type="email"
+                  placeholder="you@domain.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={busy}
+                />
+              </div>
               <button
                 type="button"
                 className="gsm-submit"
@@ -424,7 +470,7 @@ export default function GenerateSpecModal({
                   ? 'Uploading…'
                   : uploadStage === 'submitting'
                     ? 'Starting…'
-                    : 'Generate spec'}
+                    : 'Continue to checkout — $19'}
               </button>
             </>
           )}

@@ -44,7 +44,9 @@ type Props = {
   href?: string
 }
 
-const easeOut = (t: number) => 1 - Math.pow(1 - t, 2)
+const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3)
+const easeInOutCubic = (t: number) =>
+  t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
 
 export default function HeroPhone({
   doc,
@@ -60,28 +62,44 @@ export default function HeroPhone({
 
   useEffect(() => {
     let raf = 0
-    const update = () => {
-      raf = 0
-      const section = sectionRef.current
-      const phone = phoneRef.current
-      const copy = copyRef.current
-      if (!section || !phone || !copy) return
+    let running = false
+    let targetP = 0
+    let currentP = 0
+    const SMOOTHING = 0.2
 
+    const computeTarget = () => {
+      const section = sectionRef.current
+      if (!section) return 0
       const rect = section.getBoundingClientRect()
       const vh = window.innerHeight
       const scrollable = Math.max(1, rect.height - vh)
       const raw = -rect.top / scrollable
-      const p = Math.max(0, Math.min(1, raw))
+      return Math.max(0, Math.min(1, raw))
+    }
 
-      // Two-phase reveal:
-      //   Phase 1 (0 → 0.55): phone rotates flat and scales 0.78 → 1.0
-      //   Phase 2 (0.55 → 1):  phone keeps growing 1.0 → 1.32, feels like it
-      //                        comes toward the viewer and out of the frame
+    const tick = () => {
+      const phone = phoneRef.current
+      const copy = copyRef.current
+      if (!phone || !copy) {
+        running = false
+        return
+      }
+
+      targetP = computeTarget()
+      currentP += (targetP - currentP) * SMOOTHING
+      const p = currentP
+
+      // Two-phase reveal with C1-continuous handoff at p=0.55:
+      //   Phase 1 (0 → 0.55): phone rotates flat and scales 0.78 → 1.0.
+      //     easeOutCubic ends with zero velocity.
+      //   Phase 2 (0.55 → 1):  phone keeps growing 1.0 → 1.32, coming
+      //     toward the viewer. easeInOutCubic starts with zero velocity,
+      //     so scale velocity is continuous across the boundary.
       const OPEN_END = 0.55
       const p1 = Math.min(1, p / OPEN_END)
       const p2 = Math.max(0, (p - OPEN_END) / (1 - OPEN_END))
-      const e1 = easeOut(p1)
-      const e2 = easeOut(p2)
+      const e1 = easeOutCubic(p1)
+      const e2 = easeInOutCubic(p2)
 
       const rotX = 44 * (1 - e1)
       const scale = 0.78 + 0.22 * e1 + 0.32 * e2
@@ -89,22 +107,39 @@ export default function HeroPhone({
       phone.style.transform =
         `translate(-50%, calc(-50% + ${ty}px)) rotateX(${rotX}deg) scale(${scale})`
 
-      // Copy fades and lifts during the first ~32% of scroll
+      // Copy fades and lifts during the first ~32% of scroll, eased.
       const copyP = Math.min(1, p * 3.1)
-      copy.style.opacity = String(1 - copyP)
-      copy.style.transform = `translate3d(0, ${-copyP * 30}px, 0)`
+      const copyE = easeInOutCubic(copyP)
+      copy.style.opacity = String(1 - copyE)
+      copy.style.transform = `translate3d(0, ${-copyE * 30}px, 0)`
+
+      // Keep ticking until we've settled on the target, so the smoothing
+      // filter has frames to converge after each scroll event.
+      if (Math.abs(targetP - currentP) > 0.0004) {
+        raf = requestAnimationFrame(tick)
+      } else {
+        currentP = targetP
+        running = false
+      }
     }
-    const onScroll = () => {
-      if (raf) return
-      raf = requestAnimationFrame(update)
+
+    const kick = () => {
+      if (running) return
+      running = true
+      raf = requestAnimationFrame(tick)
     }
-    update()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', onScroll, { passive: true })
+
+    // Initialize without smoothing so the first paint matches scroll position.
+    currentP = targetP = computeTarget()
+    running = true
+    raf = requestAnimationFrame(tick)
+
+    window.addEventListener('scroll', kick, { passive: true })
+    window.addEventListener('resize', kick, { passive: true })
     return () => {
       if (raf) cancelAnimationFrame(raf)
-      window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', onScroll)
+      window.removeEventListener('scroll', kick)
+      window.removeEventListener('resize', kick)
     }
   }, [])
 

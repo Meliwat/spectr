@@ -1,30 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { makeSupabaseServer } from '@/lib/supabase-server'
 import { generateAccessToken } from '@/lib/access-token'
-import { triggerWorker } from '@/lib/trigger-worker'
+import { getStripe } from '@/lib/stripe'
+import { getEnv } from '@/lib/env'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
-// App Store screenshot download can be slow on large listings; give it room.
+// App Store screenshot download can take ~5–15s for 10 parallel fetches
+// before we hand the user off to Stripe. Keep headroom.
 export const maxDuration = 60
 
 /**
- * Public, no-paywall entry point used by the gallery "Generate your own spec"
- * modal. Two modes:
+ * Gallery "Generate your own spec" entry point — called by the modal on
+ * every /gallery/[slug] page. Two modes:
  *
  *  - `mode: 'appstore'`   → parse an App Store URL, pull preview screenshots
- *                            from the iTunes lookup API, store them in
- *                            spectr-uploads/<project_id>/screenshots/, create
- *                            a project row with processing_mode='gallery',
- *                            trigger the worker.
+ *                            from the iTunes lookup API in parallel, store
+ *                            them in spectr-uploads/<project_id>/screenshots/,
+ *                            create a project with processing_mode='gallery'.
  *
  *  - `mode: 'recording'`  → accepts an MP4 already uploaded to
  *                            waitlist-videos (via /api/waitlist/upload), copies
  *                            it into spectr-uploads, creates a pending project
  *                            with processing_mode='auto' (reuses the existing
- *                            MP4 pipeline), triggers the worker.
+ *                            MP4 pipeline).
  *
- * Bypasses auth and billing entirely — this is the free demo path.
+ * Both modes create the project in status `awaiting_payment`, then hand back
+ * a Stripe Checkout URL using the shared $19 STRIPE_PRICE_ID. The existing
+ * `checkout.session.completed` webhook (/api/billing/webhook → handleAnonProject)
+ * resolves the user by email, mints a consumed credit, flips the project to
+ * `pending`, and triggers the worker. That path works verbatim for both
+ * processing modes — the worker dispatches on processing_mode internally.
  */
 export async function POST(req: NextRequest) {
   let body: any
@@ -41,26 +47,64 @@ export async function POST(req: NextRequest) {
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// App Store URL → preview screenshots → project
+// Shared: create a Stripe Checkout session for an already-inserted project row
+// ───────────────────────────────────────────────────────────────────────────
+
+function createCheckoutSession(opts: {
+  projectId: string
+  accessToken: string
+  email: string
+}) {
+  const priceId = getEnv('STRIPE_PRICE_ID')
+  if (!priceId) throw new Error('STRIPE_PRICE_ID not set')
+  const siteUrl = getEnv('SITE_URL') || 'https://www.spectr.to'
+
+  const stripe = getStripe()
+  return stripe.checkout.sessions.create({
+    mode: 'payment',
+    line_items: [{ price: priceId, quantity: 1 }],
+    customer_email: opts.email,
+    client_reference_id: opts.projectId,
+    // flow='anon_project' matches the branch in /api/billing/webhook, so the
+    // existing fulfilment logic (user resolve → credit → flip → trigger worker)
+    // handles both gallery paths without duplication.
+    metadata: {
+      flow: 'anon_project',
+      project_id: opts.projectId,
+    },
+    success_url: `${siteUrl}/p/${opts.projectId}?t=${encodeURIComponent(opts.accessToken)}&purchased=1`,
+    cancel_url: `${siteUrl}/p/${opts.projectId}?t=${encodeURIComponent(opts.accessToken)}&canceled=1`,
+  })
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// App Store URL → preview screenshots → project (awaiting_payment → Stripe)
 // ───────────────────────────────────────────────────────────────────────────
 
 async function handleAppStore(body: any) {
   const rawUrl = typeof body?.appStoreUrl === 'string' ? body.appStoreUrl.trim() : ''
+  const email = typeof body?.email === 'string' ? body.email.trim().toLowerCase() : ''
+
+  if (!email || !email.includes('@')) {
+    return NextResponse.json({ error: 'Enter a valid email.' }, { status: 400 })
+  }
   if (!rawUrl) {
-    return NextResponse.json({ error: 'Missing appStoreUrl' }, { status: 400 })
+    return NextResponse.json({ error: 'Paste an App Store URL.' }, { status: 400 })
   }
 
-  // App IDs show up in URLs like .../id123456789 or as a bare integer.
+  // Accept `.../id123456` URLs, or a bare integer app ID.
   const match = rawUrl.match(/id(\d+)/) || rawUrl.match(/^(\d+)$/)
   if (!match) {
-    return NextResponse.json({ error: 'That does not look like an App Store URL.' }, { status: 400 })
+    return NextResponse.json(
+      { error: 'That does not look like an App Store URL.' },
+      { status: 400 }
+    )
   }
   const appId = match[1]
-
-  // Country code — default to us, honour any /xx/ prefix in the URL.
   const countryMatch = rawUrl.match(/apps\.apple\.com\/([a-z]{2})\//i)
   const country = countryMatch ? countryMatch[1].toLowerCase() : 'us'
 
+  // ── iTunes lookup (fast; fail early before creating a project row) ──
   let lookup: any
   try {
     const lookupRes = await fetch(
@@ -81,8 +125,6 @@ async function handleAppStore(body: any) {
     return NextResponse.json({ error: 'App not found on the App Store.' }, { status: 404 })
   }
 
-  // iTunes returns `screenshotUrls` (iPhone). Cap the list so we don't run up
-  // the vision-API bill on a listing with 20 shots.
   const screenshotUrls: string[] = Array.isArray(app.screenshotUrls)
     ? app.screenshotUrls.slice(0, 20)
     : []
@@ -93,23 +135,24 @@ async function handleAppStore(body: any) {
     )
   }
 
-  const appName: string = typeof app.trackName === 'string' && app.trackName.trim()
-    ? app.trackName.trim()
-    : 'Unknown App'
+  const appName: string =
+    typeof app.trackName === 'string' && app.trackName.trim()
+      ? app.trackName.trim()
+      : 'Unknown App'
 
   const admin = makeSupabaseServer()
   const accessToken = generateAccessToken()
 
-  // Create the project row first so we have a canonical id to use as the
-  // storage prefix. Status stays `pending` — the worker flips it to
-  // `extracting` when it picks the job up.
+  // Create project in awaiting_payment — the Stripe webhook flips it to
+  // `pending` and triggers the worker once the checkout session completes.
   const { data: inserted, error: insertErr } = await admin
     .from('projects')
     .insert({
-      status: 'pending',
+      status: 'awaiting_payment',
       processing_mode: 'gallery',
       reference_app: appName,
       your_app_name: appName,
+      email,
       access_token: accessToken,
     })
     .select('id')
@@ -121,17 +164,14 @@ async function handleAppStore(body: any) {
   }
   const projectId: string = inserted.id
 
-  // Download each screenshot and push it into spectr-uploads. We deliberately
-  // fetch sequentially — parallel fetches against Apple's CDN are unreliable
-  // and 10 images is fast enough to do in order.
-  let uploadedCount = 0
-  for (let i = 0; i < screenshotUrls.length; i++) {
-    const url = screenshotUrls[i]
-    try {
+  // ── Fetch + upload screenshots in parallel ──
+  // Apple's CDN is reliable enough that parallel fetches save ~10s vs serial.
+  // Individual failures don't abort the batch — we just skip that shot.
+  const uploads = await Promise.allSettled(
+    screenshotUrls.map(async (url, i) => {
       const imgRes = await fetch(url, { cache: 'no-store' })
       if (!imgRes.ok) {
-        console.warn(`[projects/gallery] screenshot ${i} fetch non-2xx: ${imgRes.status}`)
-        continue
+        throw new Error(`non-2xx: ${imgRes.status}`)
       }
       const buf = Buffer.from(await imgRes.arrayBuffer())
       const contentType = imgRes.headers.get('content-type') || 'image/jpeg'
@@ -140,14 +180,16 @@ async function handleAppStore(body: any) {
       const { error: upErr } = await admin.storage
         .from('spectr-uploads')
         .upload(key, buf, { contentType, upsert: true })
-      if (upErr) {
-        console.warn(`[projects/gallery] screenshot ${i} upload failed: ${upErr.message}`)
-        continue
-      }
-      uploadedCount++
-    } catch (e: any) {
-      console.warn(`[projects/gallery] screenshot ${i} error: ${e?.message}`)
-    }
+      if (upErr) throw new Error(`upload: ${upErr.message}`)
+      return i
+    })
+  )
+  const uploadedCount = uploads.filter((r) => r.status === 'fulfilled').length
+  const failedCount = uploads.filter((r) => r.status === 'rejected').length
+  if (failedCount > 0) {
+    console.warn(
+      `[projects/gallery] ${failedCount}/${screenshotUrls.length} screenshots failed for ${projectId}`
+    )
   }
 
   if (uploadedCount === 0) {
@@ -158,29 +200,36 @@ async function handleAppStore(body: any) {
     return NextResponse.json({ error: 'Could not store any screenshots.' }, { status: 502 })
   }
 
-  await admin
-    .from('projects')
-    .update({ frame_count: uploadedCount })
-    .eq('id', projectId)
+  await admin.from('projects').update({ frame_count: uploadedCount }).eq('id', projectId)
 
-  // Fire-and-await so a failure here surfaces before we return. triggerWorker
-  // handles its own logging + \n-stripping; see lib/trigger-worker.ts.
-  await triggerWorker(projectId)
-
-  return NextResponse.json({ projectId, accessToken, screenshotCount: uploadedCount })
+  try {
+    const session = await createCheckoutSession({ projectId, accessToken, email })
+    return NextResponse.json({
+      projectId,
+      accessToken,
+      checkoutUrl: session.url,
+      screenshotCount: uploadedCount,
+    })
+  } catch (err: any) {
+    console.error('[projects/gallery] stripe failed:', err?.message)
+    return NextResponse.json({ error: 'checkout_failed' }, { status: 502 })
+  }
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// MP4 recording → existing pipeline, no paywall
+// Screen recording → existing MP4 pipeline (awaiting_payment → Stripe)
 // ───────────────────────────────────────────────────────────────────────────
 
 async function handleRecording(body: any) {
-  const video_s3_key: string = typeof body?.video_s3_key === 'string' ? body.video_s3_key : ''
-  const video_filename: string | null =
-    typeof body?.video_filename === 'string' ? body.video_filename : null
+  const email = typeof body?.email === 'string' ? body.email.trim().toLowerCase() : ''
+  const video_s3_key: string =
+    typeof body?.video_s3_key === 'string' ? body.video_s3_key : ''
   const reference_app: string =
     typeof body?.reference_app === 'string' ? body.reference_app.trim() : ''
 
+  if (!email || !email.includes('@')) {
+    return NextResponse.json({ error: 'Enter a valid email.' }, { status: 400 })
+  }
   if (!video_s3_key) {
     return NextResponse.json({ error: 'Missing video key' }, { status: 400 })
   }
@@ -211,11 +260,12 @@ async function handleRecording(body: any) {
   const { data: inserted, error: insertErr } = await admin
     .from('projects')
     .insert({
-      status: 'pending',
+      status: 'awaiting_payment',
       processing_mode: 'auto',
       mp4_s3_key: video_s3_key,
       reference_app,
       your_app_name: reference_app,
+      email,
       access_token: accessToken,
     })
     .select('id')
@@ -227,7 +277,15 @@ async function handleRecording(body: any) {
   }
   const projectId: string = inserted.id
 
-  await triggerWorker(projectId)
-
-  return NextResponse.json({ projectId, accessToken, videoFilename: video_filename })
+  try {
+    const session = await createCheckoutSession({ projectId, accessToken, email })
+    return NextResponse.json({
+      projectId,
+      accessToken,
+      checkoutUrl: session.url,
+    })
+  } catch (err: any) {
+    console.error('[projects/gallery] stripe failed:', err?.message)
+    return NextResponse.json({ error: 'checkout_failed' }, { status: 502 })
+  }
 }

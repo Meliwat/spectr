@@ -160,18 +160,44 @@ Do not break this abstraction. Do not add SDK-specific or CLI-specific logic out
 The gallery is a public marketing page, not behind auth. Key files:
 
 - `app/gallery/page.tsx` — main gallery page; plain grid of app cards, no scroll hero
-- `app/gallery/apps.ts` — data file listing all gallery apps (slug, name, description, iframe URL, etc.)
+- `app/gallery/apps.ts` — data file listing all gallery apps (slug, name, description, iframe URL, etc.). The iframe URL for each app is fetched from the external GitHub repo `Meliwat/awesome-ios-design-md` at `https://raw.githubusercontent.com/Meliwat/awesome-ios-design-md/main/design-md/<slug>/preview-dark.html`. All 8 `preview-dark.html` files were restored to `main` in commit `9cce122` (2026-04-20) — gallery iframes are live in production. Vercel revalidates these fetches every 24h (`revalidate: 86400` in `fetchPhone`), so a fresh deploy is not needed for content updates to the HTML previews. Note: Next.js fetch cache (`.next/cache/fetch-cache/`) can mask stale state locally — if a preview appears broken, clear the cache or check the raw GitHub URL directly.
 - `app/gallery/HeroPhone.tsx` — the scroll-driven phone reveal component; parameterized with `eyebrow`, `title`, `subtitle` props; uses `position: sticky` to pin while the container scrolls past, creating a MacBook-style reveal
 - `app/gallery/[slug]/page.tsx` — dynamic route for individual gallery entries; renders the HeroPhone reveal + rich body copy (tagline H2, blurb, pitch, 6 screens documented, 4 info cards, GitHub link); full per-page SEO metadata + JSON-LD; uses `overflow-x: clip` on `.gal-page` so sticky elements work
 
 The hero phone reveal requires `overflow-x: clip` on the outer scroll container — see "What Not To Do" for why `overflow: hidden` breaks it. The hero lives on `/gallery/[slug]`, not `/gallery`.
 
 **Two-phase reveal animation** (implemented in `HeroPhone.tsx`):
-- Phase 1 (scroll progress 0→0.55): phone rotates from `rotateX(44deg)` to flat; scales 0.78→1.0. Copy text fades out and lifts during the first ~32% of scroll (`p * 3.1`).
-- Phase 2 (scroll progress 0.55→1): phone continues scaling 1.0→1.32 — feels like it surges toward the viewer. `easeOut` is applied independently to each phase so each has its own acceleration curve.
+- Phase 1 (scroll progress 0→0.55): phone rotates from `rotateX(44deg)` to flat; scales 0.78→1.0. Copy text fades out and lifts during the first ~32% of scroll (`p * 3.1`), eased with the same cubic curve.
+- Phase 2 (scroll progress 0.55→1): phone continues scaling 1.0→1.32 — feels like it surges toward the viewer.
+- **Easing**: Phase 1 uses `easeOutCubic` (`1 - (1-t)³`); phase 2 uses `easeInOutCubic`. Both curves have zero derivative at the shared boundary (t=1 for phase 1, t=0 for phase 2), making the handoff at p=0.55 C1-continuous (no velocity jolt). Copy fade also uses `easeInOutCubic`.
+- **Scroll smoothing**: an exponential low-pass filter (`SMOOTHING = 0.2`) runs in a `requestAnimationFrame` loop, smoothing raw scroll progress before feeding the easing functions. Soaks up scroll-wheel jitter; rAF keeps ticking until the filter converges.
 - `.hero-section` height is `220vh` to provide enough scroll travel for both phases.
 
 **Nav clearance**: `.hero-sticky` uses `top: 72px` and `height: calc(100vh - 72px)` so the sticky viewport sits below the nav bar. Without this offset, the phone bleeds into the nav as it scales past 1.0 in phase 2. If the nav height ever changes from 72px, update both values in `HeroPhone.tsx`.
+
+### Generate-Your-Own-Spec Flow (gallery modal)
+
+Every `/gallery/[slug]` page has a gradient CTA **"Generate your own spec"** next to the GitHub spec link. Clicking it opens `GenerateSpecModal` — a client component with two tabs:
+
+- **App Store URL** — paste any `apps.apple.com/.../id123456789` link. Backend parses the app ID, hits the iTunes lookup API (`https://itunes.apple.com/lookup?id=<id>&country=<cc>`), downloads the preview screenshots in parallel, and uploads them to `spectr-uploads/<project_id>/screenshots/NNN.jpg`. Faster + cheaper path (5–10 shots), thinner coverage than a real recording.
+- **Screen recording** — reuses the existing signed-upload flow (`/api/waitlist/upload` → `waitlist-videos` bucket), then the same gallery endpoint copies the MP4 to `spectr-uploads` and creates a project with `processing_mode='auto'` so the existing MP4 pipeline handles it. More comprehensive coverage than the App Store path.
+
+Both paths:
+1. Require an email (for Stripe + user creation via webhook).
+2. Create the project row in `status='awaiting_payment'`.
+3. Return a Stripe Checkout URL using the shared `STRIPE_PRICE_ID` ($19).
+4. Frontend `window.location.href = checkoutUrl`.
+5. On `checkout.session.completed`, the existing `/api/billing/webhook`'s `handleAnonProject()` branch resolves the user by email, mints a consumed credit, flips the project to `pending`, and triggers the worker — works verbatim for both processing modes because the worker dispatches on `processing_mode` internally.
+
+Files:
+- `frontend/app/gallery/GenerateSpecModal.tsx` — tabbed modal, email + inputs, redirects to Stripe.
+- `frontend/app/gallery/GenerateSpecButton.tsx` — thin client wrapper holding modal open-state so the server-rendered detail page can host a button without converting itself to a client component.
+- `frontend/app/api/projects/gallery/route.ts` — `POST { mode: 'appstore' | 'recording', ... }`; same response shape as `/api/projects/anon` (`{ projectId, accessToken, checkoutUrl }`). `maxDuration = 60` because parallel screenshot fetches can take 5–15s before Stripe redirect.
+- `worker/local_worker.py` — new `process_project_from_screenshots()` function lists `spectr-uploads/<project_id>/screenshots/`, downloads each file, resizes via existing `_resize_frame_for_api()` path in `run_vision_batches()`, and feeds them straight into Stage 2 + Stage 3 (no ffmpeg). `process_project()` now dispatches: `processing_mode='gallery'` → screenshots flow, else MP4 flow.
+
+**`processing_mode` values in use:** `'auto'` (paid MP4 pipeline), `'manual'` (free sample, founder-processed MP4), `'gallery'` (paid App Store screenshots). New values must be added to the worker dispatcher in `process_project()` inside `local_worker.py`.
+
+**Railway deploy required for new processing modes.** Any change to the worker's `process_project()` dispatcher or to `process_project_from_screenshots()` needs a Railway redeploy of the `worker/` service before gallery-path projects will process. Railway auto-deploys on push to master when the service is linked to the GitHub repo — confirm in the Railway dashboard after any worker change.
 
 ### SEO Architecture
 
