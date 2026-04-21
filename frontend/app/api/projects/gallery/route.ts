@@ -1,36 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { makeSupabaseServer } from '@/lib/supabase-server'
 import { generateAccessToken } from '@/lib/access-token'
+import { triggerWorker } from '@/lib/trigger-worker'
 import { getStripe } from '@/lib/stripe'
-import { getEnv } from '@/lib/env'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
-// App Store screenshot download can take ~5–15s for 10 parallel fetches
-// before we hand the user off to Stripe. Keep headroom.
+// Parallel App Store screenshot fetches can run ~5–15s. Give headroom.
 export const maxDuration = 60
 
 /**
- * Gallery "Generate your own spec" entry point — called by the modal on
- * every /gallery/[slug] page. Two modes:
+ * Gallery submission endpoint — step 2 of the pre-pay flow.
  *
- *  - `mode: 'appstore'`   → parse an App Store URL, pull preview screenshots
- *                            from the iTunes lookup API in parallel, store
- *                            them in spectr-uploads/<project_id>/screenshots/,
- *                            create a project with processing_mode='gallery'.
+ * Called AFTER the user has paid via /api/gallery/checkout. Requires a
+ * `session_id` that we verify against Stripe (must be `payment_status=paid`).
+ * The session_id itself gates access to spec generation and is de-duped via
+ * the spec_credits table's unique `stripe_session_id` index so a single
+ * payment can only produce a single project.
  *
- *  - `mode: 'recording'`  → accepts an MP4 already uploaded to
- *                            waitlist-videos (via /api/waitlist/upload), copies
- *                            it into spectr-uploads, creates a pending project
- *                            with processing_mode='auto' (reuses the existing
- *                            MP4 pipeline).
+ * Two modes:
+ *  - `mode: 'appstore'`   → parse App Store URL, pull iTunes preview screenshots
+ *                            in parallel, upload to
+ *                            spectr-uploads/<project_id>/screenshots/NNN.jpg,
+ *                            create project with processing_mode='gallery'.
+ *  - `mode: 'recording'`  → MP4 already uploaded to waitlist-videos via the
+ *                            existing signed-upload path; we copy it over and
+ *                            create a project with processing_mode='auto'.
  *
- * Both modes create the project in status `awaiting_payment`, then hand back
- * a Stripe Checkout URL using the shared $19 STRIPE_PRICE_ID. The existing
- * `checkout.session.completed` webhook (/api/billing/webhook → handleAnonProject)
- * resolves the user by email, mints a consumed credit, flips the project to
- * `pending`, and triggers the worker. That path works verbatim for both
- * processing modes — the worker dispatches on processing_mode internally.
+ * Both then trigger the worker directly — no payment webhook in the critical
+ * path, so the flow works regardless of webhook timing.
  */
 export async function POST(req: NextRequest) {
   let body: any
@@ -40,61 +38,129 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
+  const session_id = typeof body?.session_id === 'string' ? body.session_id.trim() : ''
+  if (!session_id) {
+    return NextResponse.json({ error: 'Missing session_id' }, { status: 400 })
+  }
+
+  // ── 1. Verify Stripe session is paid ──────────────────────────────────────
+  let session: any
+  try {
+    const stripe = getStripe()
+    session = await stripe.checkout.sessions.retrieve(session_id)
+  } catch (err: any) {
+    console.error('[projects/gallery] session retrieve failed:', err?.message)
+    return NextResponse.json({ error: 'invalid_session' }, { status: 400 })
+  }
+
+  if (session.payment_status !== 'paid') {
+    return NextResponse.json(
+      { error: 'Payment not confirmed on this session.' },
+      { status: 402 }
+    )
+  }
+
+  const email: string = (session.customer_email || session.customer_details?.email || '')
+    .toString()
+    .trim()
+    .toLowerCase()
+  if (!email) {
+    return NextResponse.json({ error: 'No email on session' }, { status: 400 })
+  }
+
+  const admin = makeSupabaseServer()
+
+  // ── 2. Resolve or create the auth user by email ───────────────────────────
+  let userId: string
+  try {
+    const { data: existing, error: listErr } = await admin.auth.admin.listUsers({
+      page: 1,
+      perPage: 200,
+    })
+    if (listErr) throw listErr
+    const found = existing.users.find(
+      (u) => (u.email ?? '').toLowerCase() === email
+    )
+    if (found) {
+      userId = found.id
+    } else {
+      const { data: created, error: createErr } = await admin.auth.admin.createUser({
+        email,
+        email_confirm: true,
+      })
+      if (createErr || !created.user) throw createErr ?? new Error('no user returned')
+      userId = created.user.id
+    }
+  } catch (err: any) {
+    console.error('[projects/gallery] user resolve failed:', err?.message ?? err)
+    return NextResponse.json({ error: 'user_resolve_failed' }, { status: 500 })
+  }
+
+  // ── 3. De-dup: claim the session_id via spec_credits (unique index) ──────
+  // If this insert errors with a unique violation, another submit already
+  // consumed this session → reject, one spec per payment.
+  const { data: credit, error: creditErr } = await admin
+    .from('spec_credits')
+    .insert({
+      user_id: userId,
+      stripe_session_id: session_id,
+      stripe_payment_id:
+        typeof session.payment_intent === 'string'
+          ? session.payment_intent
+          : (session.payment_intent?.id ?? null),
+      amount_cents: session.amount_total,
+      status: 'consumed',
+      source: 'stripe',
+      consumed_at: new Date().toISOString(),
+    })
+    .select('id')
+    .single()
+
+  if (creditErr) {
+    if ((creditErr as any).code === '23505') {
+      return NextResponse.json(
+        { error: 'This payment was already used. Check your email for the project link.' },
+        { status: 409 }
+      )
+    }
+    console.error('[projects/gallery] credit insert failed:', creditErr.message)
+    return NextResponse.json({ error: 'credit_failed' }, { status: 500 })
+  }
+
+  // ── 4. Dispatch based on mode ────────────────────────────────────────────
   const mode = body?.mode
-  if (mode === 'appstore') return handleAppStore(body)
-  if (mode === 'recording') return handleRecording(body)
+  if (mode === 'appstore') {
+    return handleAppStore(admin, body, { userId, email, sessionId: session_id, creditId: credit!.id })
+  }
+  if (mode === 'recording') {
+    return handleRecording(admin, body, { userId, email, sessionId: session_id, creditId: credit!.id })
+  }
+
+  // Unknown mode — roll back the credit so the user can retry.
+  await admin.from('spec_credits').delete().eq('id', credit!.id)
   return NextResponse.json({ error: 'Invalid mode' }, { status: 400 })
 }
 
-// ───────────────────────────────────────────────────────────────────────────
-// Shared: create a Stripe Checkout session for an already-inserted project row
-// ───────────────────────────────────────────────────────────────────────────
-
-function createCheckoutSession(opts: {
-  projectId: string
-  accessToken: string
+type SubmitCtx = {
+  userId: string
   email: string
-}) {
-  const priceId = getEnv('STRIPE_PRICE_ID')
-  if (!priceId) throw new Error('STRIPE_PRICE_ID not set')
-  const siteUrl = getEnv('SITE_URL') || 'https://www.spectr.to'
-
-  const stripe = getStripe()
-  return stripe.checkout.sessions.create({
-    mode: 'payment',
-    line_items: [{ price: priceId, quantity: 1 }],
-    customer_email: opts.email,
-    client_reference_id: opts.projectId,
-    // flow='anon_project' matches the branch in /api/billing/webhook, so the
-    // existing fulfilment logic (user resolve → credit → flip → trigger worker)
-    // handles both gallery paths without duplication.
-    metadata: {
-      flow: 'anon_project',
-      project_id: opts.projectId,
-    },
-    success_url: `${siteUrl}/p/${opts.projectId}?t=${encodeURIComponent(opts.accessToken)}&purchased=1`,
-    cancel_url: `${siteUrl}/p/${opts.projectId}?t=${encodeURIComponent(opts.accessToken)}&canceled=1`,
-  })
+  sessionId: string
+  creditId: string
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// App Store URL → preview screenshots → project (awaiting_payment → Stripe)
+// App Store URL → preview screenshots → project
 // ───────────────────────────────────────────────────────────────────────────
 
-async function handleAppStore(body: any) {
+async function handleAppStore(admin: any, body: any, ctx: SubmitCtx) {
   const rawUrl = typeof body?.appStoreUrl === 'string' ? body.appStoreUrl.trim() : ''
-  const email = typeof body?.email === 'string' ? body.email.trim().toLowerCase() : ''
-
-  if (!email || !email.includes('@')) {
-    return NextResponse.json({ error: 'Enter a valid email.' }, { status: 400 })
-  }
   if (!rawUrl) {
+    await rollbackCredit(admin, ctx.creditId)
     return NextResponse.json({ error: 'Paste an App Store URL.' }, { status: 400 })
   }
-
-  // Accept `.../id123456` URLs, or a bare integer app ID.
   const match = rawUrl.match(/id(\d+)/) || rawUrl.match(/^(\d+)$/)
   if (!match) {
+    await rollbackCredit(admin, ctx.creditId)
     return NextResponse.json(
       { error: 'That does not look like an App Store URL.' },
       { status: 400 }
@@ -104,24 +170,23 @@ async function handleAppStore(body: any) {
   const countryMatch = rawUrl.match(/apps\.apple\.com\/([a-z]{2})\//i)
   const country = countryMatch ? countryMatch[1].toLowerCase() : 'us'
 
-  // ── iTunes lookup (fast; fail early before creating a project row) ──
   let lookup: any
   try {
     const lookupRes = await fetch(
       `https://itunes.apple.com/lookup?id=${appId}&country=${country}`,
       { cache: 'no-store' }
     )
-    if (!lookupRes.ok) {
-      return NextResponse.json({ error: 'iTunes lookup failed' }, { status: 502 })
-    }
+    if (!lookupRes.ok) throw new Error(`HTTP ${lookupRes.status}`)
     lookup = await lookupRes.json()
   } catch (e: any) {
     console.error('[projects/gallery] itunes fetch failed:', e?.message)
+    await rollbackCredit(admin, ctx.creditId)
     return NextResponse.json({ error: 'iTunes lookup failed' }, { status: 502 })
   }
 
   const app = lookup?.results?.[0]
   if (!app) {
+    await rollbackCredit(admin, ctx.creditId)
     return NextResponse.json({ error: 'App not found on the App Store.' }, { status: 404 })
   }
 
@@ -129,6 +194,7 @@ async function handleAppStore(body: any) {
     ? app.screenshotUrls.slice(0, 20)
     : []
   if (screenshotUrls.length === 0) {
+    await rollbackCredit(admin, ctx.creditId)
     return NextResponse.json(
       { error: 'This app has no iPhone preview screenshots available.' },
       { status: 422 }
@@ -140,19 +206,19 @@ async function handleAppStore(body: any) {
       ? app.trackName.trim()
       : 'Unknown App'
 
-  const admin = makeSupabaseServer()
   const accessToken = generateAccessToken()
 
-  // Create project in awaiting_payment — the Stripe webhook flips it to
-  // `pending` and triggers the worker once the checkout session completes.
+  // Create project in `pending` — webhook isn't in the loop anymore, we kick
+  // the worker ourselves.
   const { data: inserted, error: insertErr } = await admin
     .from('projects')
     .insert({
-      status: 'awaiting_payment',
+      status: 'pending',
       processing_mode: 'gallery',
       reference_app: appName,
       your_app_name: appName,
-      email,
+      email: ctx.email,
+      user_id: ctx.userId,
       access_token: accessToken,
     })
     .select('id')
@@ -164,15 +230,14 @@ async function handleAppStore(body: any) {
   }
   const projectId: string = inserted.id
 
-  // ── Fetch + upload screenshots in parallel ──
-  // Apple's CDN is reliable enough that parallel fetches save ~10s vs serial.
-  // Individual failures don't abort the batch — we just skip that shot.
+  // Link the credit to this project for audit.
+  await admin.from('spec_credits').update({ project_id: projectId }).eq('id', ctx.creditId)
+
+  // Fetch + upload screenshots in parallel.
   const uploads = await Promise.allSettled(
     screenshotUrls.map(async (url, i) => {
       const imgRes = await fetch(url, { cache: 'no-store' })
-      if (!imgRes.ok) {
-        throw new Error(`non-2xx: ${imgRes.status}`)
-      }
+      if (!imgRes.ok) throw new Error(`non-2xx: ${imgRes.status}`)
       const buf = Buffer.from(await imgRes.arrayBuffer())
       const contentType = imgRes.headers.get('content-type') || 'image/jpeg'
       const ext = contentType.includes('png') ? 'png' : 'jpg'
@@ -185,12 +250,6 @@ async function handleAppStore(body: any) {
     })
   )
   const uploadedCount = uploads.filter((r) => r.status === 'fulfilled').length
-  const failedCount = uploads.filter((r) => r.status === 'rejected').length
-  if (failedCount > 0) {
-    console.warn(
-      `[projects/gallery] ${failedCount}/${screenshotUrls.length} screenshots failed for ${projectId}`
-    )
-  }
 
   if (uploadedCount === 0) {
     await admin
@@ -202,46 +261,35 @@ async function handleAppStore(body: any) {
 
   await admin.from('projects').update({ frame_count: uploadedCount }).eq('id', projectId)
 
-  try {
-    const session = await createCheckoutSession({ projectId, accessToken, email })
-    return NextResponse.json({
-      projectId,
-      accessToken,
-      checkoutUrl: session.url,
-      screenshotCount: uploadedCount,
-    })
-  } catch (err: any) {
-    console.error('[projects/gallery] stripe failed:', err?.message)
-    return NextResponse.json({ error: 'checkout_failed' }, { status: 502 })
-  }
+  await triggerWorker(projectId)
+
+  return NextResponse.json({
+    projectId,
+    accessToken,
+    screenshotCount: uploadedCount,
+  })
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// Screen recording → existing MP4 pipeline (awaiting_payment → Stripe)
+// Screen recording → existing MP4 pipeline
 // ───────────────────────────────────────────────────────────────────────────
 
-async function handleRecording(body: any) {
-  const email = typeof body?.email === 'string' ? body.email.trim().toLowerCase() : ''
+async function handleRecording(admin: any, body: any, ctx: SubmitCtx) {
   const video_s3_key: string =
     typeof body?.video_s3_key === 'string' ? body.video_s3_key : ''
   const reference_app: string =
     typeof body?.reference_app === 'string' ? body.reference_app.trim() : ''
 
-  if (!email || !email.includes('@')) {
-    return NextResponse.json({ error: 'Enter a valid email.' }, { status: 400 })
-  }
   if (!video_s3_key) {
+    await rollbackCredit(admin, ctx.creditId)
     return NextResponse.json({ error: 'Missing video key' }, { status: 400 })
   }
   if (!reference_app) {
+    await rollbackCredit(admin, ctx.creditId)
     return NextResponse.json({ error: 'Missing reference app' }, { status: 400 })
   }
 
-  const admin = makeSupabaseServer()
-  const accessToken = generateAccessToken()
-
-  // Mirror the waitlist-videos → spectr-uploads copy dance used by
-  // /api/projects/anon. The worker hardcodes BUCKET='spectr-uploads'.
+  // Copy waitlist-videos → spectr-uploads; idempotent on retry.
   const copyRes = await admin.storage
     .from('waitlist-videos')
     .copy(video_s3_key, video_s3_key, { destinationBucket: 'spectr-uploads' })
@@ -257,15 +305,18 @@ async function handleRecording(body: any) {
     }
   }
 
+  const accessToken = generateAccessToken()
+
   const { data: inserted, error: insertErr } = await admin
     .from('projects')
     .insert({
-      status: 'awaiting_payment',
+      status: 'pending',
       processing_mode: 'auto',
       mp4_s3_key: video_s3_key,
       reference_app,
       your_app_name: reference_app,
-      email,
+      email: ctx.email,
+      user_id: ctx.userId,
       access_token: accessToken,
     })
     .select('id')
@@ -277,15 +328,13 @@ async function handleRecording(body: any) {
   }
   const projectId: string = inserted.id
 
-  try {
-    const session = await createCheckoutSession({ projectId, accessToken, email })
-    return NextResponse.json({
-      projectId,
-      accessToken,
-      checkoutUrl: session.url,
-    })
-  } catch (err: any) {
-    console.error('[projects/gallery] stripe failed:', err?.message)
-    return NextResponse.json({ error: 'checkout_failed' }, { status: 502 })
-  }
+  await admin.from('spec_credits').update({ project_id: projectId }).eq('id', ctx.creditId)
+
+  await triggerWorker(projectId)
+
+  return NextResponse.json({ projectId, accessToken })
+}
+
+async function rollbackCredit(admin: any, creditId: string) {
+  await admin.from('spec_credits').delete().eq('id', creditId)
 }

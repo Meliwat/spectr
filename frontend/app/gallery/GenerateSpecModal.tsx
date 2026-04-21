@@ -6,34 +6,40 @@ import { supabase } from '@/lib/supabase'
 
 type Tab = 'appstore' | 'recording'
 
+/**
+ * Two states:
+ *  - Pre-payment: just email + "Continue to checkout — $19". On submit we POST
+ *    to /api/gallery/checkout and redirect to Stripe.
+ *  - Post-payment (paidSessionId set): two-tab submission form — App Store URL
+ *    or MP4 upload. On submit we POST to /api/projects/gallery with the
+ *    session_id so the server verifies and creates the project.
+ */
 export default function GenerateSpecModal({
   open,
   onClose,
   defaultReferenceApp,
+  paidSessionId,
 }: {
   open: boolean
   onClose: () => void
   defaultReferenceApp?: string
+  paidSessionId?: string | null
 }) {
   const router = useRouter()
+  const isPaid = !!paidSessionId
+
   const [tab, setTab] = useState<Tab>('appstore')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // App Store tab state
+  // Post-pay state
   const [appStoreUrl, setAppStoreUrl] = useState('')
-
-  // Recording tab state
   const [file, setFile] = useState<File | null>(null)
   const [referenceApp, setReferenceApp] = useState(defaultReferenceApp ?? '')
   const [uploadPct, setUploadPct] = useState(0)
   const [uploadStage, setUploadStage] = useState<'idle' | 'uploading' | 'submitting'>('idle')
   const fileRef = useRef<HTMLInputElement | null>(null)
 
-  // Shared: email is required for Stripe + user creation on webhook
-  const [email, setEmail] = useState('')
-
-  // Reset when opened
   useEffect(() => {
     if (!open) return
     setError(null)
@@ -43,10 +49,8 @@ export default function GenerateSpecModal({
     setAppStoreUrl('')
     setFile(null)
     setReferenceApp(defaultReferenceApp ?? '')
-    setEmail('')
   }, [open, defaultReferenceApp])
 
-  // Close on Escape
   useEffect(() => {
     if (!open) return
     const onKey = (e: KeyboardEvent) => {
@@ -56,11 +60,35 @@ export default function GenerateSpecModal({
     return () => window.removeEventListener('keydown', onKey)
   }, [open, busy, onClose])
 
+  // ── Pre-pay: send to Stripe Checkout (Stripe collects email) ─────────────
+  const submitCheckout = useCallback(async () => {
+    setError(null)
+    setBusy(true)
+    try {
+      const returnPath = typeof window !== 'undefined' ? window.location.pathname : '/'
+      const res = await fetch('/api/gallery/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ returnPath }),
+      })
+      const json = await res.json().catch(() => ({}))
+      if (!res.ok || !json?.checkoutUrl) {
+        setError(json?.error || 'Could not start checkout.')
+        setBusy(false)
+        return
+      }
+      window.location.href = json.checkoutUrl
+    } catch {
+      setError('Network error \u2014 please try again.')
+      setBusy(false)
+    }
+  }, [])
+
+  // ── Post-pay: App Store URL → project ─────────────────────────────────────
   const submitAppStore = useCallback(async () => {
     setError(null)
+    if (!paidSessionId) { setError('Missing payment session.'); return }
     const url = appStoreUrl.trim()
-    const mail = email.trim()
-    if (!mail.includes('@')) { setError('Enter a valid email.'); return }
     if (!url) { setError('Paste an App Store URL.'); return }
     if (!/id\d+/.test(url) && !/^\d+$/.test(url)) {
       setError('That doesn\u2019t look like an App Store URL.')
@@ -71,7 +99,11 @@ export default function GenerateSpecModal({
       const res = await fetch('/api/projects/gallery', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'appstore', appStoreUrl: url, email: mail }),
+        body: JSON.stringify({
+          session_id: paidSessionId,
+          mode: 'appstore',
+          appStoreUrl: url,
+        }),
       })
       const json = await res.json().catch(() => ({}))
       if (!res.ok || !json?.projectId) {
@@ -79,22 +111,17 @@ export default function GenerateSpecModal({
         setBusy(false)
         return
       }
-      const { checkoutUrl, projectId, accessToken } = json
-      if (checkoutUrl) {
-        window.location.href = checkoutUrl
-      } else {
-        router.push(`/p/${projectId}?t=${encodeURIComponent(accessToken)}`)
-      }
+      router.push(`/p/${json.projectId}?t=${encodeURIComponent(json.accessToken)}`)
     } catch {
       setError('Network error \u2014 please try again.')
       setBusy(false)
     }
-  }, [appStoreUrl, email, router])
+  }, [paidSessionId, appStoreUrl, router])
 
+  // ── Post-pay: MP4 upload → project ────────────────────────────────────────
   const submitRecording = useCallback(async () => {
     setError(null)
-    const mail = email.trim()
-    if (!mail.includes('@')) { setError('Enter a valid email.'); return }
+    if (!paidSessionId) { setError('Missing payment session.'); return }
     if (!file) { setError('Pick an .mp4 to upload.'); return }
     if (!file.name.toLowerCase().endsWith('.mp4')) {
       setError('Only .mp4 files are supported.')
@@ -107,7 +134,6 @@ export default function GenerateSpecModal({
     setBusy(true)
 
     try {
-      // Step 1 \u2014 mint a signed upload URL
       setUploadStage('uploading')
       const signRes = await fetch('/api/waitlist/upload', {
         method: 'POST',
@@ -121,7 +147,6 @@ export default function GenerateSpecModal({
       }
       const { key, token } = await signRes.json()
 
-      // Step 2 \u2014 upload the file directly to Supabase Storage
       setUploadPct(10)
       const { error: uploadErr } = await supabase.storage
         .from('waitlist-videos')
@@ -132,17 +157,16 @@ export default function GenerateSpecModal({
       }
       setUploadPct(100)
 
-      // Step 3 \u2014 create project + start Stripe Checkout
       setUploadStage('submitting')
       const res = await fetch('/api/projects/gallery', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          session_id: paidSessionId,
           mode: 'recording',
           video_s3_key: key,
           video_filename: file.name,
           reference_app: referenceApp.trim(),
-          email: mail,
         }),
       })
       const json = await res.json().catch(() => ({}))
@@ -150,17 +174,12 @@ export default function GenerateSpecModal({
         setError(json?.error || 'Could not create project.')
         setBusy(false); setUploadStage('idle'); return
       }
-      const { checkoutUrl, projectId, accessToken } = json
-      if (checkoutUrl) {
-        window.location.href = checkoutUrl
-      } else {
-        router.push(`/p/${projectId}?t=${encodeURIComponent(accessToken)}`)
-      }
+      router.push(`/p/${json.projectId}?t=${encodeURIComponent(json.accessToken)}`)
     } catch {
       setError('Network error \u2014 please try again.')
       setBusy(false); setUploadStage('idle')
     }
-  }, [file, referenceApp, email, router])
+  }, [paidSessionId, file, referenceApp, router])
 
   if (!open) return null
 
@@ -199,6 +218,7 @@ export default function GenerateSpecModal({
           cursor: pointer;
           display: flex; align-items: center; justify-content: center;
           transition: background 0.15s ease;
+          font-family: inherit;
         }
         .gsm-close:hover { background: rgba(255,255,255,0.12); }
         .gsm-title {
@@ -207,7 +227,17 @@ export default function GenerateSpecModal({
         }
         .gsm-sub {
           font-size: 13px; color: rgba(200,210,240,0.66);
-          margin: 0 0 18px;
+          margin: 0 0 18px; line-height: 1.55;
+        }
+        .gsm-paid-badge {
+          display: inline-flex; align-items: center; gap: 6px;
+          padding: 4px 10px;
+          font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+          font-weight: 600;
+          color: #0a0b14;
+          background: linear-gradient(135deg, #8fe3a0, #b9e78a);
+          border-radius: 999px;
+          margin: 0 0 14px;
         }
         .gsm-tabs {
           display: grid; grid-template-columns: 1fr 1fr;
@@ -224,6 +254,7 @@ export default function GenerateSpecModal({
           color: rgba(210,218,240,0.7);
           cursor: pointer;
           transition: all 0.15s ease;
+          font-family: inherit;
         }
         .gsm-tab.active {
           background: linear-gradient(135deg, #7a6cff 0%, #a88bff 100%);
@@ -245,6 +276,7 @@ export default function GenerateSpecModal({
           border: 1px solid rgba(255,255,255,0.09);
           border-radius: 10px;
           outline: none;
+          font-family: inherit;
           transition: border-color 0.15s ease, background 0.15s ease;
         }
         .gsm-input:focus {
@@ -289,6 +321,7 @@ export default function GenerateSpecModal({
           background: linear-gradient(135deg, #7a6cff 0%, #a88bff 100%);
           color: #0a0b14;
           cursor: pointer;
+          font-family: inherit;
           box-shadow: 0 10px 28px rgba(122,108,255,0.32);
           transition: transform 0.1s ease, box-shadow 0.15s ease;
         }
@@ -317,6 +350,11 @@ export default function GenerateSpecModal({
         }
         .gsm-field { margin-bottom: 14px; }
         .gsm-field:last-of-type { margin-bottom: 0; }
+        .gsm-paid-dot {
+          width: 6px; height: 6px; border-radius: 999px;
+          background: #0a0b14;
+          box-shadow: 0 0 6px rgba(10,11,20,0.5);
+        }
       `}} />
 
       <div
@@ -337,141 +375,147 @@ export default function GenerateSpecModal({
             ×
           </button>
 
-          <h3 id="gsm-title" className="gsm-title">Generate your own spec</h3>
-          <p className="gsm-sub">
-            Drop an App Store URL or an MP4 screen recording. We produce a full
-            design blueprint you can hand to Claude Code.{' '}
-            <strong style={{ color: '#e8ebff' }}>$19 per spec.</strong>
-          </p>
-
-          <div className="gsm-tabs" role="tablist">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={tab === 'appstore'}
-              className={`gsm-tab ${tab === 'appstore' ? 'active' : ''}`}
-              onClick={() => setTab('appstore')}
-              disabled={busy}
-            >
-              App Store URL
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={tab === 'recording'}
-              className={`gsm-tab ${tab === 'recording' ? 'active' : ''}`}
-              onClick={() => setTab('recording')}
-              disabled={busy}
-            >
-              Screen recording
-            </button>
-          </div>
-
-          {tab === 'appstore' ? (
+          {isPaid ? (
+            // ── Post-payment: show the two-tab submission form ─────────────
             <>
-              <div className="gsm-field">
-                <label className="gsm-label" htmlFor="gsm-url">App Store URL</label>
-                <input
-                  id="gsm-url"
-                  className="gsm-input"
-                  type="url"
-                  placeholder="https://apps.apple.com/us/app/.../id123456789"
-                  value={appStoreUrl}
-                  onChange={(e) => setAppStoreUrl(e.target.value)}
-                  disabled={busy}
-                  autoFocus
-                />
-                <p className="gsm-hint">
-                  Faster + cheaper — we pull preview screenshots directly from
-                  the App Store listing (usually 5–10 shots). Thinner coverage
-                  than a real screen recording.
-                </p>
+              <div className="gsm-paid-badge">
+                <span className="gsm-paid-dot" /> Payment received
               </div>
-              <div className="gsm-field">
-                <label className="gsm-label" htmlFor="gsm-email-a">Email (for delivery)</label>
-                <input
-                  id="gsm-email-a"
-                  className="gsm-input"
-                  type="email"
-                  placeholder="you@domain.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+              <h3 id="gsm-title" className="gsm-title">Generate your spec</h3>
+              <p className="gsm-sub">
+                Pick how you want to reference the app. Output is a full design
+                blueprint you can hand to Claude Code.
+              </p>
+
+              <div className="gsm-tabs" role="tablist">
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={tab === 'appstore'}
+                  className={`gsm-tab ${tab === 'appstore' ? 'active' : ''}`}
+                  onClick={() => setTab('appstore')}
                   disabled={busy}
-                />
+                >
+                  App Store URL
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={tab === 'recording'}
+                  className={`gsm-tab ${tab === 'recording' ? 'active' : ''}`}
+                  onClick={() => setTab('recording')}
+                  disabled={busy}
+                >
+                  Screen recording
+                </button>
               </div>
-              <button
-                type="button"
-                className="gsm-submit"
-                disabled={busy}
-                onClick={submitAppStore}
-              >
-                {busy ? 'Starting…' : 'Continue to checkout — $19'}
-              </button>
+
+              {tab === 'appstore' ? (
+                <>
+                  <div className="gsm-field">
+                    <label className="gsm-label" htmlFor="gsm-url">App Store URL</label>
+                    <input
+                      id="gsm-url"
+                      className="gsm-input"
+                      type="url"
+                      placeholder="https://apps.apple.com/us/app/.../id123456789"
+                      value={appStoreUrl}
+                      onChange={(e) => setAppStoreUrl(e.target.value)}
+                      disabled={busy}
+                      autoFocus
+                    />
+                    <p className="gsm-hint">
+                      Faster + cheaper — we pull preview screenshots directly
+                      from the App Store listing (usually 5–10 shots).
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    className="gsm-submit"
+                    disabled={busy}
+                    onClick={submitAppStore}
+                  >
+                    {busy ? 'Starting…' : 'Generate spec'}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className="gsm-field">
+                    <label className="gsm-label">Screen recording (.mp4)</label>
+                    <label
+                      className={`gsm-file ${file ? 'has-file' : ''}`}
+                      onClick={() => !busy && fileRef.current?.click()}
+                    >
+                      {file ? file.name : 'Click to choose an .mp4'}
+                    </label>
+                    <input
+                      ref={fileRef}
+                      type="file"
+                      accept="video/mp4,.mp4"
+                      hidden
+                      onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                      disabled={busy}
+                    />
+                    {uploadStage === 'uploading' ? (
+                      <div className="gsm-progress">
+                        <div className="gsm-progress-bar" style={{ width: `${uploadPct}%` }} />
+                      </div>
+                    ) : null}
+                    <p className="gsm-hint">
+                      More comprehensive — covers empty states, loading, and
+                      deeper navigation the App Store listing doesn&apos;t show.
+                    </p>
+                  </div>
+                  <div className="gsm-field">
+                    <label className="gsm-label" htmlFor="gsm-ref">Reference app name</label>
+                    <input
+                      id="gsm-ref"
+                      className="gsm-input"
+                      type="text"
+                      placeholder="e.g. Airbnb"
+                      value={referenceApp}
+                      onChange={(e) => setReferenceApp(e.target.value)}
+                      disabled={busy}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    className="gsm-submit"
+                    disabled={busy}
+                    onClick={submitRecording}
+                  >
+                    {uploadStage === 'uploading'
+                      ? 'Uploading…'
+                      : uploadStage === 'submitting'
+                        ? 'Starting…'
+                        : 'Generate spec'}
+                  </button>
+                </>
+              )}
             </>
           ) : (
+            // ── Pre-payment: one-click to Stripe Checkout ──────────────────
             <>
-              <div className="gsm-field">
-                <label className="gsm-label">Screen recording (.mp4)</label>
-                <label
-                  className={`gsm-file ${file ? 'has-file' : ''}`}
-                  onClick={() => !busy && fileRef.current?.click()}
-                >
-                  {file ? file.name : 'Click to choose an .mp4'}
-                </label>
-                <input
-                  ref={fileRef}
-                  type="file"
-                  accept="video/mp4,.mp4"
-                  hidden
-                  onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-                  disabled={busy}
-                />
-                {uploadStage === 'uploading' ? (
-                  <div className="gsm-progress">
-                    <div className="gsm-progress-bar" style={{ width: `${uploadPct}%` }} />
-                  </div>
-                ) : null}
-                <p className="gsm-hint">
-                  More comprehensive — covers empty states, loading, and deeper
-                  navigation the App Store listing doesn&apos;t show.
-                </p>
-              </div>
-              <div className="gsm-field">
-                <label className="gsm-label" htmlFor="gsm-ref">Reference app name</label>
-                <input
-                  id="gsm-ref"
-                  className="gsm-input"
-                  type="text"
-                  placeholder="e.g. Airbnb"
-                  value={referenceApp}
-                  onChange={(e) => setReferenceApp(e.target.value)}
-                  disabled={busy}
-                />
-              </div>
-              <div className="gsm-field">
-                <label className="gsm-label" htmlFor="gsm-email-r">Email (for delivery)</label>
-                <input
-                  id="gsm-email-r"
-                  className="gsm-input"
-                  type="email"
-                  placeholder="you@domain.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={busy}
-                />
-              </div>
+              <h3 id="gsm-title" className="gsm-title">Generate your own spec</h3>
+              <p className="gsm-sub">
+                <strong style={{ color: '#e8ebff' }}>$19 per spec.</strong>{' '}
+                Pay first, then choose either an App Store URL or upload an MP4
+                screen recording. You&apos;ll get a production-ready design
+                blueprint you can hand to Claude Code.
+              </p>
               <button
                 type="button"
                 className="gsm-submit"
                 disabled={busy}
-                onClick={submitRecording}
+                onClick={submitCheckout}
+                autoFocus
               >
-                {uploadStage === 'uploading'
-                  ? 'Uploading…'
-                  : uploadStage === 'submitting'
-                    ? 'Starting…'
-                    : 'Continue to checkout — $19'}
+                {busy ? 'Redirecting to Stripe…' : 'Continue to checkout — $19'}
               </button>
+              <p className="gsm-hint" style={{ textAlign: 'center', marginTop: 12 }}>
+                Secure checkout via Stripe. Card details stay on Stripe&apos;s
+                servers — we never see them.
+              </p>
             </>
           )}
 

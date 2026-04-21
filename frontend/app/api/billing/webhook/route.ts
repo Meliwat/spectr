@@ -41,6 +41,14 @@ export async function POST(req: NextRequest) {
     return handleAnonProject(session)
   }
 
+  // The gallery pre-pay flow (/api/gallery/checkout) is fulfilled synchronously
+  // by /api/projects/gallery using stripe.checkout.sessions.retrieve() +
+  // spec_credits unique index. The webhook is just a safety net here — reply
+  // 200 so Stripe doesn't retry.
+  if (flow === 'gallery_prepay') {
+    return new NextResponse('ok (gallery_prepay handled synchronously)', { status: 200 })
+  }
+
   // ── Legacy / authenticated path ──────────────────────────────────────────
   return handleAuthenticated(session)
 }
