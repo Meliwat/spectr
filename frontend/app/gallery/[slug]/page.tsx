@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import SpectrBackground from '../../SpectrBackground'
+import GenerateSpecButton from '../GenerateSpecButton'
 import HeroPhone from '../HeroPhone'
 import {
   APPS,
@@ -949,7 +950,14 @@ export default async function GalleryAppPage({ params }: { params: Params }) {
           background: linear-gradient(135deg, #7a6cff 0%, #a88bff 100%);
           color: #0a0b14; font-weight: 600; font-size: 14px;
           text-decoration: none;
+          border: 0; cursor: pointer;
+          font-family: inherit;
           box-shadow: 0 8px 24px rgba(113,112,255,0.35);
+          transition: transform 0.1s ease, box-shadow 0.15s ease;
+        }
+        .ga-cta-primary:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 10px 28px rgba(113,112,255,0.42);
         }
         .ga-cta-ghost {
           display: inline-flex; align-items: center; gap: 8px;
@@ -958,6 +966,8 @@ export default async function GalleryAppPage({ params }: { params: Params }) {
           text-decoration: none;
           border: 1px solid rgba(255,255,255,0.14);
           background: rgba(255,255,255,0.02);
+          font-family: inherit;
+          cursor: pointer;
         }
         .ga-cta-ghost:hover { background: rgba(255,255,255,0.06); }
       `}} />
@@ -985,18 +995,22 @@ export default async function GalleryAppPage({ params }: { params: Params }) {
           <p>{copy.blurb}</p>
           <p>{copy.pitch}</p>
 
-          {specUrl ? (
-            <div className="ga-ctas">
-              <a
-                href={specUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="ga-cta-ghost"
-              >
-                View full {name} spec on GitHub ↗
-              </a>
-            </div>
-          ) : null}
+          <div className="ga-ctas">
+            <GenerateSpecButton
+              defaultReferenceApp={name}
+              className="ga-cta-primary"
+            >
+              Generate your own spec ↗
+            </GenerateSpecButton>
+            <a
+              href={specUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ga-cta-ghost"
+            >
+              View full {name} spec on GitHub ↗
+            </a>
+          </div>
 
           <h3>Screens documented</h3>
           <ul className="ga-screens">
@@ -1043,16 +1057,14 @@ export default async function GalleryAppPage({ params }: { params: Params }) {
           <Link href="/" className="ga-link" prefetch={false}>
             ← Back to gallery
           </Link>
-          {specUrl ? (
-            <a
-              href={specUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="ga-link"
-            >
-              View spec on GitHub ↗
-            </a>
-          ) : null}
+          <a
+            href={specUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ga-link"
+          >
+            View spec on GitHub ↗
+          </a>
         </nav>
       </main>
     </>

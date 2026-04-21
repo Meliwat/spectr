@@ -877,7 +877,169 @@ def process_project_spec(project_id: str):
         shutil.rmtree(tmpdir, ignore_errors=True)
 
 
+def process_project_from_screenshots(project_id: str):
+    """Gallery path: the API already uploaded App Store preview screenshots into
+    spectr-uploads/<project_id>/screenshots/. Skip ffmpeg extraction, feed the
+    files straight into Stage 2 (vision analysis) + Stage 3 (spec gen).
+
+    Intentionally duplicates the Stage 2/3 flow from process_project_spec
+    rather than refactoring — the two flows are likely to diverge as we tune
+    the prompt set for the screenshot-only path (coverage is thinner, so the
+    spec-gen prompt may need different guidance)."""
+    client = get_db()
+    reset_project_logs(project_id)
+    project_log(project_id, f"[gallery] Starting project {project_id}")
+    project = (
+        client.table("projects")
+        .select("reference_app, your_app_name, brand_colors, frontend_spec")
+        .eq("id", project_id)
+        .single()
+        .execute()
+        .data
+    )
+
+    reference_app = project["reference_app"]
+    your_app_name = project.get("your_app_name") or reference_app
+    brand_colors = project.get("brand_colors") or {}
+    stored_frontend_spec = project.get("frontend_spec")
+
+    tmpdir = tempfile.mkdtemp(prefix=f"spectr_gallery_{project_id[:8]}_")
+    try:
+        if stored_frontend_spec:
+            frontend_spec = stored_frontend_spec
+            project_log(project_id, "  [1-2/3] Resuming from stored frontend analysis")
+        else:
+            update_project(project_id, {"status": STATUS_EXTRACTING})
+            project_log(project_id, "  [1/3] Downloading App Store screenshots from Supabase Storage...")
+
+            prefix = f"{project_id}/screenshots"
+            try:
+                listed = client.storage.from_(BUCKET).list(prefix)
+            except Exception as e:
+                raise RuntimeError(f"Could not list screenshots: {e}") from e
+            if not listed:
+                raise RuntimeError("No screenshots found at {}/{}".format(BUCKET, prefix))
+
+            frames_dir = Path(tmpdir) / "frames"
+            frames_dir.mkdir()
+            frame_paths: list[str] = []
+            # Sort so order mirrors the upload order (000.jpg, 001.jpg, ...)
+            for i, item in enumerate(sorted(listed, key=lambda x: x.get("name", ""))):
+                name = item.get("name")
+                if not name:
+                    continue
+                key = f"{prefix}/{name}"
+                data = client.storage.from_(BUCKET).download(key)
+                suffix = Path(name).suffix or ".jpg"
+                fpath = frames_dir / f"{i:03d}{suffix}"
+                fpath.write_bytes(data)
+                frame_paths.append(str(fpath))
+
+            if not frame_paths:
+                raise RuntimeError("Downloaded zero screenshot bytes")
+
+            update_project(project_id, {"frame_count": len(frame_paths)})
+            project_log(project_id, f"        {len(frame_paths)} screenshots downloaded")
+
+            update_project(project_id, {"status": STATUS_ANALYZING_FRONTEND})
+            project_log(project_id, "  [2/3] Analyzing UI with Claude vision...")
+
+            batches = [frame_paths[i:i + BATCH_SIZE] for i in range(0, len(frame_paths), BATCH_SIZE)]
+            project_log(
+                project_id,
+                f"        running screen analysis and design-token extraction with {SPEC_ANALYSIS_WORKERS} concurrent pass(es)",
+            )
+            with ThreadPoolExecutor(max_workers=SPEC_ANALYSIS_WORKERS) as pool:
+                screen_future = pool.submit(
+                    run_vision_batches,
+                    batches,
+                    prompt_template=PROMPT_1_USER,
+                    system_prompt=PROMPT_1_SYSTEM,
+                    reference_app=reference_app,
+                    pass_name="screen analysis",
+                    project_id=project_id,
+                )
+                design_future = pool.submit(
+                    run_vision_batches,
+                    batches,
+                    prompt_template=PROMPT_1B_USER,
+                    system_prompt=PROMPT_1B_SYSTEM,
+                    reference_app=reference_app,
+                    pass_name="design token extraction",
+                    project_id=project_id,
+                )
+                screen_specs = screen_future.result()
+                design_token_specs = design_future.result()
+
+            frontend_spec = (
+                "\n\n---\n\n".join(screen_specs)
+                + "\n\n---\n## DESIGN TOKENS\n---\n\n"
+                + "\n\n---\n\n".join(design_token_specs)
+            )
+            update_project(project_id, {"frontend_spec": frontend_spec})
+            project_log(
+                project_id,
+                f"        {len(screen_specs)} screen batch(es) analyzed and "
+                f"{len(design_token_specs)} design-token batch(es) extracted",
+            )
+
+        update_project(project_id, {"status": STATUS_STITCHING})
+        project_log(project_id, "  [3/3] Writing spec.md...")
+        clean_spec = generate_sectioned_spec(
+            reference_app=reference_app,
+            your_app_name=your_app_name,
+            brand_colors=brand_colors,
+            frontend_spec=frontend_spec,
+            project_id=project_id,
+            output_dir=Path(tmpdir) / "spec_sections",
+        )
+
+        spec_key = f"{project_id}/spec.md"
+        client.storage.from_(BUCKET).upload(
+            path=spec_key,
+            file=clean_spec.encode("utf-8"),
+            file_options={"content-type": "text/markdown", "upsert": "true"},
+        )
+
+        update_project(project_id, {
+            "status": STATUS_COMPLETE,
+            "spec_md_s3_key": spec_key,
+            "spec_md_text": clean_spec,
+            "bundle_s3_key": None,
+            "backend_spec": None,
+        })
+        project_log(project_id, "  \u2713 Done \u2014 spec.md uploaded to Storage")
+        maybe_send_manual_completion_email(get_db(), project_id)
+
+    except Exception as e:
+        update_project(project_id, {"status": STATUS_FAILED, "error_text": str(e)})
+        refund_credit_for_failed_project(get_db(), project_id)
+        project_log(project_id, f"  \u2717 Failed: {e}")
+        raise
+
+    finally:
+        shutil.rmtree(tmpdir, ignore_errors=True)
+
+
 def process_project(project_id: str):
+    """Dispatch based on processing_mode. The gallery path uses pre-extracted
+    App Store screenshots; everything else runs the MP4 pipeline."""
+    try:
+        client = get_db()
+        row = (
+            client.table("projects")
+            .select("processing_mode")
+            .eq("id", project_id)
+            .single()
+            .execute()
+            .data
+        )
+        mode = (row or {}).get("processing_mode") or "auto"
+    except Exception as e:
+        log.warning("process_project: could not read processing_mode for %s: %s", project_id, e)
+        mode = "auto"
+    if mode == "gallery":
+        return process_project_from_screenshots(project_id)
     return process_project_spec(project_id)
 
 
