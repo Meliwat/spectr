@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Facebook iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #F0F2F5;
+    --card: #FFFFFF;
+    --surface-tint: #F7F8FA;
+    --divider: #E4E6EB;
+    --separator: #CED0D4;
+    --text: #050505;
+    --text-secondary: #65676B;
+    --text-tertiary: #8A8D91;
+    --fb-blue: #1877F2;
+    --blue-pressed: #0A5FC8;
+    --blue-light: #E7F3FF;
+    --love-pink: #F3425F;
+    --warm-yellow: #F7B928;
+    --angry-orange: #E9710F;
+    --live-red: #FA3E3E;
+    --success-green: #42B72A;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #D8DADF; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; }
+  .page-chip { background: var(--fb-blue); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #1a1a1a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.6), 0 0 0 2px rgba(0,0,0,0.08) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 5; }
+
+  /* Top nav */
+  .top-nav { height: 56px; padding: 48px 12px 0; background: var(--card); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--divider); }
+  .fb-logo { width: 32px; height: 32px; border-radius: 8px; background: var(--fb-blue); color: #fff; font-weight: 900; font-size: 22px; display: flex; align-items: center; justify-content: center; font-family: Georgia, serif; }
+  .fb-name { font-size: 22px; font-weight: 700; color: var(--fb-blue); flex: 1; letter-spacing: -0.5px; }
+  .top-btn { width: 34px; height: 34px; border-radius: 50%; background: var(--divider); display: flex; align-items: center; justify-content: center; color: var(--text); }
+  .top-btn svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  .feed-scroll { flex: 1; overflow: hidden; padding: 8px 8px 0; background: var(--canvas); }
+
+  /* Card */
+  .fb-card { background: var(--card); border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
+
+  /* Post */
+  .post-head { display: flex; align-items: center; padding: 12px; gap: 10px; }
+  .post-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #FFD6C9, #FFE29A); }
+  .post-meta { flex: 1; }
+  .post-name { font-size: 14px; font-weight: 600; color: var(--text); }
+  .post-stamp { font-size: 12px; color: var(--text-secondary); display: flex; align-items: center; gap: 4px; }
+  .post-stamp .globe { font-size: 10px; }
+  .post-dots { color: var(--text-secondary); font-size: 20px; }
+  .post-text { padding: 0 12px 12px; font-size: 14px; color: var(--text); line-height: 1.35; }
+  .post-img { aspect-ratio: 16/10; background: linear-gradient(135deg, #F5A623 0%, #D0021B 50%, #5B3C6F 100%); position: relative; overflow: hidden; }
+  .post-img::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.25), transparent 55%); }
+
+  .reaction-summary { display: flex; align-items: center; padding: 10px 12px; gap: 8px; font-size: 12px; color: var(--text-secondary); }
+  .reaction-stack { display: flex; }
+  .reaction-stack .ro { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 2px solid var(--card); margin-left: -4px; }
+  .reaction-stack .ro:first-child { margin-left: 0; background: var(--fb-blue); color: #fff; }
+  .reaction-stack .ro:nth-child(2) { background: var(--love-pink); color: #fff; }
+  .reaction-stack .ro:nth-child(3) { background: var(--warm-yellow); }
+
+  .card-divider { height: 1px; background: var(--divider); margin: 0 12px; }
+
+  .action-row { display: flex; padding: 4px 0; }
+  .action-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 0; font-size: 14px; font-weight: 600; color: var(--text-secondary); }
+  .action-btn svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+  .action-btn.liked { color: var(--fb-blue); }
+  .action-btn.liked svg { fill: currentColor; stroke: currentColor; }
+
+  /* Tab bar */
+  .tab-bar { height: 54px; background: var(--card); display: flex; align-items: center; justify-content: space-around; padding: 4px 8px 10px; border-top: 1px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--text-secondary); font-size: 10px; font-weight: 500; position: relative; }
+  .tab.active { color: var(--fb-blue); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+  .tab .badge { position: absolute; top: -4px; right: 6px; background: var(--live-red); color: #fff; font-size: 9px; font-weight: 700; min-width: 14px; height: 14px; border-radius: 7px; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+
+  /* Token sections */
+  .section { background: var(--card); border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 16px; min-height: 90px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #000; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 210px; flex-shrink: 0; }
+  .type-sample { flex: 1; }
+  .t-logo { font-size: 24px; font-weight: 900; color: var(--fb-blue); font-family: Georgia, serif; }
+  .t-24 { font-size: 24px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-20 { font-size: 20px; font-weight: 700; letter-spacing: -0.1px; }
+  .t-17 { font-size: 17px; font-weight: 600; }
+  .t-15s { font-size: 15px; font-weight: 600; }
+  .t-15 { font-size: 15px; font-weight: 400; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 500; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 15px; font-weight: 600; padding: 10px 20px; border: none; cursor: pointer; border-radius: 8px; }
+  .btn-primary { background: var(--fb-blue); color: #fff; font-size: 17px; padding: 12px 24px; }
+  .btn-primary:active { background: var(--blue-pressed); transform: scale(0.98); }
+  .btn-green { background: var(--success-green); color: #fff; border-radius: 500px; }
+  .btn-friends { background: var(--divider); color: var(--text); font-size: 15px; border-radius: 6px; padding: 8px 16px; }
+  .btn-addfriend { background: var(--fb-blue); color: #fff; font-size: 15px; border-radius: 6px; padding: 8px 16px; }
+  .chip { padding: 8px 14px; background: var(--divider); color: var(--text); font-size: 14px; font-weight: 600; border-radius: 500px; }
+
+  /* Reactions Popover */
+  .popover-wrap { padding: 20px; display: flex; justify-content: center; }
+  .reaction-pop { display: inline-flex; background: var(--card); border-radius: 500px; padding: 8px 12px; gap: 6px; box-shadow: 0 6px 20px rgba(0,0,0,0.18); border: 1px solid var(--divider); }
+  .rxn { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; line-height: 1; transition: transform 0.2s; background: transparent; }
+  .rxn:hover { transform: scale(1.35); }
+  .rxn.like { background: var(--fb-blue); color: #fff; font-size: 22px; }
+  .rxn.love { background: var(--love-pink); }
+  .rxn.care { background: var(--warm-yellow); }
+  .rxn.haha { background: var(--warm-yellow); }
+  .rxn.wow { background: var(--warm-yellow); }
+  .rxn.sad { background: var(--warm-yellow); }
+  .rxn.angry { background: var(--angry-orange); }
+  .rxn-labels { display: flex; justify-content: center; gap: 6px; font-size: 10px; color: var(--text-secondary); margin-top: 8px; padding: 0 12px; }
+  .rxn-labels span { width: 40px; text-align: center; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--fb-blue); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Facebook iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">Soft-gray canvas (#F0F2F5) with white card-based feed, Facebook Blue anchoring the brand. The Reactions popover is the signature interaction — seven emoji in a floating pill.</p>
+
+  <div class="grid">
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="top-nav">
+            <div class="fb-logo">f</div>
+            <div class="fb-name">facebook</div>
+            <div class="top-btn"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg></div>
+            <div class="top-btn"><svg viewBox="0 0 24 24"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+          </div>
+          <div class="feed-scroll">
+            <div class="fb-card">
+              <div class="post-head">
+                <div class="post-avatar"></div>
+                <div class="post-meta">
+                  <div class="post-name">Sarah Johnson</div>
+                  <div class="post-stamp">2h · <span class="globe">🌍</span></div>
+                </div>
+                <div class="post-dots">⋯</div>
+              </div>
+              <div class="post-text">Golden hour on the walk home. Can't believe we almost didn't go outside today.</div>
+              <div class="post-img"></div>
+              <div class="reaction-summary">
+                <div class="reaction-stack">
+                  <div class="ro">👍</div>
+                  <div class="ro">❤</div>
+                  <div class="ro">😂</div>
+                </div>
+                <span>You, Maya and 1.2K others</span>
+                <span style="margin-left: auto;">84 comments</span>
+              </div>
+              <div class="card-divider"></div>
+              <div class="action-row">
+                <div class="action-btn liked"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 10h3V4a1 1 0 0 1 1-1 3 3 0 0 1 3 3v4h5a2 2 0 0 1 2 2v2a9 9 0 0 1-2 5H7z"/><rect x="3" y="10" width="4" height="11" fill="none" stroke="currentColor"/></svg>Like</div>
+                <div class="action-btn"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Comment</div>
+                <div class="action-btn"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16,6 12,2 8,6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share</div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><polygon points="10,9 10,15 15,12" fill="currentColor"/></svg><span>Video</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M3 4h2l2.4 12.8A2 2 0 0 0 9.36 18H18a2 2 0 0 0 2-1.6L22 7H6"/></svg><span>Market</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span>Alerts</span><span class="badge">9</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg><span>Menu</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette — Light</div>
+        <div class="swatches">
+          <div class="swatch light" style="background:#F0F2F5;"><div class="name">Canvas</div>#F0F2F5</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Card White</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#F7F8FA;"><div class="name">Surface Tint</div>#F7F8FA</div>
+          <div class="swatch light" style="background:#E4E6EB;"><div class="name">Divider</div>#E4E6EB</div>
+          <div class="swatch" style="background:#050505;"><div class="name">Text Primary</div>#050505</div>
+          <div class="swatch" style="background:#65676B;"><div class="name">Text Secondary</div>#65676B</div>
+          <div class="swatch" style="background:#1877F2;"><div class="name">Facebook Blue</div>#1877F2</div>
+          <div class="swatch" style="background:#0A5FC8;"><div class="name">Blue Pressed</div>#0A5FC8</div>
+          <div class="swatch" style="background:#F3425F;"><div class="name">Love Pink</div>#F3425F</div>
+          <div class="swatch" style="background:#F7B928;"><div class="name">Haha/Wow Yellow</div>#F7B928</div>
+          <div class="swatch" style="background:#E9710F;"><div class="name">Angry Orange</div>#E9710F</div>
+          <div class="swatch" style="background:#42B72A;"><div class="name">Success Green</div>#42B72A</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — SF Pro (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">f Logo · 22pt · 900</div><div class="type-sample"><span class="t-logo">f</span></div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 24pt · 700</div><div class="type-sample t-24">Home</div></div>
+        <div class="type-row"><div class="type-meta">Section Header · 20pt · 700</div><div class="type-sample t-20">Your Memories</div></div>
+        <div class="type-row"><div class="type-meta">CTA · 17pt · 600</div><div class="type-sample t-17">Log In</div></div>
+        <div class="type-row"><div class="type-meta">Display Name · 15pt · 600</div><div class="type-sample t-15s">Sarah Johnson</div></div>
+        <div class="type-row"><div class="type-meta">Post Body · 15pt · 400</div><div class="type-sample t-15">Golden hour on the walk home.</div></div>
+        <div class="type-row"><div class="type-meta">Timestamp · 13pt · 400</div><div class="type-sample t-13">2 hrs · Public</div></div>
+        <div class="type-row"><div class="type-meta">Tab Label · 11pt · 500</div><div class="type-sample t-11">HOME · VIDEO · MARKET</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Log In</button>
+          <button class="btn btn-green">Create Post</button>
+          <button class="btn btn-addfriend">Add Friend</button>
+          <button class="btn btn-friends">Friends ✓</button>
+          <div class="chip">Like</div>
+          <div class="chip">Comment</div>
+          <div class="chip">Share</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Reactions Popover (Long-press Like)</div>
+        <div class="popover-wrap">
+          <div class="reaction-pop">
+            <div class="rxn like">👍</div>
+            <div class="rxn love">❤️</div>
+            <div class="rxn care">🤗</div>
+            <div class="rxn haha">😂</div>
+            <div class="rxn wow">😮</div>
+            <div class="rxn sad">😢</div>
+            <div class="rxn angry">😠</div>
+          </div>
+        </div>
+        <div class="rxn-labels">
+          <span>Like</span><span>Love</span><span>Care</span><span>Haha</span><span>Wow</span><span>Sad</span><span>Angry</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

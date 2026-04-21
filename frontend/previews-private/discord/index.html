@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Discord iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --rail: #1E1F22;
+    --list: #2B2D31;
+    --chat: #313338;
+    --surface-2: #383A40;
+    --hover: #404249;
+    --divider: #3F4147;
+    --text: #F2F3F5;
+    --text-secondary: #B5BAC1;
+    --text-muted: #949BA4;
+    --text-disabled: #5D6069;
+    --link: #00A8FC;
+    --blurple: #5865F2;
+    --blurple-hover: #4752C4;
+    --online: #23A55A;
+    --idle: #F0B232;
+    --dnd: #F23F43;
+    --offline: #80848E;
+    --streaming: #593695;
+    --danger: #DA373C;
+    --boost: #EB459E;
+    --nitro-a: #5865F2;
+    --nitro-b: #EB459E;
+    --admin-red: #ED4245;
+    --mod-pink: #F47B67;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #111214; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; color-scheme: dark; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; color: var(--text); }
+  .page-chip { background: var(--blurple); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--chat); position: relative; display: flex; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  /* Left server rail */
+  .rail { width: 56px; background: var(--rail); display: flex; flex-direction: column; align-items: center; padding: 44px 0 10px; gap: 8px; overflow: hidden; }
+  .rail-icon { width: 40px; height: 40px; border-radius: 14px; background: var(--list); display: flex; align-items: center; justify-content: center; color: var(--text); font-size: 13px; font-weight: 700; position: relative; flex-shrink: 0; cursor: pointer; }
+  .rail-icon.active { border-radius: 10px; background: var(--blurple); color: #fff; }
+  .rail-icon.home { background: linear-gradient(135deg, var(--blurple), #7A83F5); border-radius: 10px; }
+  .rail-icon.home svg { width: 22px; height: 22px; fill: #fff; }
+  .rail-icon.image { background: linear-gradient(135deg, #8EC5FC, #E0C3FC); color: #1E1F22; }
+  .rail-icon.image-2 { background: linear-gradient(135deg, #FAD961, #F76B1C); color: #fff; }
+  .rail-icon.image-3 { background: linear-gradient(135deg, #11998E, #38EF7D); color: #fff; }
+  .rail-icon.add { background: var(--list); color: var(--online); font-size: 22px; font-weight: 400; }
+  .rail-divider { width: 32px; height: 2px; background: var(--divider); border-radius: 1px; margin: 2px 0; }
+  .rail-icon .mark { position: absolute; left: -11px; top: 50%; transform: translateY(-50%); width: 4px; border-radius: 0 4px 4px 0; background: #fff; transition: height 150ms; }
+  .rail-icon .mark.active { height: 32px; }
+  .rail-icon .mark.unread { height: 8px; }
+  .rail-icon .ping { position: absolute; bottom: -4px; right: -4px; min-width: 18px; height: 16px; background: var(--dnd); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; padding: 0 4px; border: 2px solid var(--rail); }
+
+  /* Right column */
+  .right-col { flex: 1; display: flex; flex-direction: column; background: var(--chat); overflow: hidden; }
+
+  .chan-nav { height: 48px; background: var(--chat); border-bottom: 1px solid var(--divider); padding: 44px 12px 6px; display: flex; align-items: center; gap: 8px; }
+  .hash { color: var(--text-muted); font-size: 18px; font-weight: 600; }
+  .chan-name { font-size: 15px; font-weight: 600; color: var(--text); flex: 1; letter-spacing: -0.1px; }
+  .chan-icons { display: flex; gap: 12px; color: var(--text-secondary); }
+  .chan-icons svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Messages */
+  .msgs { flex: 1; padding: 12px 12px 4px; display: flex; flex-direction: column; gap: 12px; overflow: hidden; }
+
+  .msg { display: flex; gap: 10px; }
+  .avatar { width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0; position: relative; background: linear-gradient(135deg, #657786, #26303A); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; font-weight: 700; }
+  .avatar.a1 { background: linear-gradient(135deg, #FF9966, #FF5E62); }
+  .avatar.a2 { background: linear-gradient(135deg, #4776E6, #8E54E9); }
+  .avatar.a3 { background: linear-gradient(135deg, #56CCF2, #2F80ED); }
+  .avatar.a4 { background: linear-gradient(135deg, #F093FB, #F5576C); }
+  .avatar .dot { position: absolute; bottom: -1px; right: -1px; width: 12px; height: 12px; border-radius: 50%; border: 2.5px solid var(--chat); }
+  .dot.online { background: var(--online); }
+  .dot.idle { background: var(--idle); }
+  .dot.dnd { background: var(--dnd); }
+  .dot.offline { background: var(--offline); }
+
+  .msg-body { flex: 1; min-width: 0; }
+  .msg-head { display: flex; align-items: baseline; gap: 6px; margin-bottom: 2px; }
+  .msg-name { font-size: 14px; font-weight: 600; letter-spacing: -0.1px; }
+  .msg-name.admin { color: var(--admin-red); }
+  .msg-name.mod { color: var(--mod-pink); }
+  .msg-name.bot { color: var(--blurple); }
+  .msg-name.vip { color: #FEE75C; }
+  .msg-bot-tag { background: var(--blurple); color: #fff; font-size: 9px; font-weight: 700; padding: 2px 5px 1px; border-radius: 3px; letter-spacing: 0.3px; }
+  .msg-time { font-size: 10.5px; color: var(--text-muted); }
+  .msg-text { font-size: 14px; color: var(--text); line-height: 1.4; word-break: break-word; }
+  .msg-text code { background: rgba(88,101,242,0.15); padding: 1px 5px; border-radius: 3px; font-family: 'SF Mono', Menlo, monospace; font-size: 12.5px; }
+  .mention { background: rgba(88,101,242,0.22); color: #C9CDFB; padding: 0 2px; border-radius: 3px; font-weight: 500; }
+
+  .reactions { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+  .rxn { background: var(--list); border: 1px solid var(--divider); border-radius: 8px; padding: 2px 7px 2px 5px; display: flex; align-items: center; gap: 4px; font-size: 11.5px; color: var(--text-secondary); font-weight: 500; }
+  .rxn.you { background: rgba(88,101,242,0.15); border-color: var(--blurple); color: #C9CDFB; }
+
+  /* Compose */
+  .compose { padding: 8px 10px 10px; background: var(--chat); }
+  .compose-bar { background: var(--surface-2); border-radius: 22px; padding: 8px 10px; display: flex; align-items: center; gap: 8px; }
+  .c-plus { width: 26px; height: 26px; border-radius: 50%; background: var(--text-secondary); display: flex; align-items: center; justify-content: center; color: var(--chat); font-size: 18px; font-weight: 400; flex-shrink: 0; }
+  .c-input { flex: 1; color: var(--text-muted); font-size: 13px; }
+  .c-icons { display: flex; gap: 8px; color: var(--text-secondary); }
+  .c-icons svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Token sections */
+  .section { background: var(--list); border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 14px; min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #1E1F22; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 210px; flex-shrink: 0; }
+  .type-sample { flex: 1; }
+  .t-20 { font-size: 20px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-16-s { font-size: 16px; font-weight: 600; letter-spacing: -0.1px; }
+  .t-16 { font-size: 16px; font-weight: 400; letter-spacing: -0.1px; line-height: 1.375; }
+  .t-14 { font-size: 14px; font-weight: 500; letter-spacing: -0.1px; }
+  .t-12 { font-size: 12px; font-weight: 500; color: var(--text-muted); }
+  .t-mono { font-family: 'SF Mono', Menlo, monospace; font-size: 14px; background: var(--chat); border: 1px solid var(--divider); border-radius: 6px; padding: 8px 10px; display: inline-block; }
+  .t-11 { font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-muted); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 14px; font-weight: 500; padding: 9px 18px; border-radius: 8px; border: none; cursor: pointer; letter-spacing: 0; color: #fff; }
+  .btn-primary { background: var(--blurple); }
+  .btn-primary:active { background: var(--blurple-hover); transform: scale(0.98); }
+  .btn-secondary { background: #4E5058; }
+  .btn-destructive { background: var(--danger); }
+  .btn-ghost { background: transparent; color: var(--blurple); }
+  .btn-nitro { background: linear-gradient(135deg, var(--nitro-a), var(--nitro-b)); }
+  .send-demo { width: 32px; height: 32px; border-radius: 50%; background: var(--blurple); display: inline-flex; align-items: center; justify-content: center; }
+  .send-demo svg { width: 16px; height: 16px; fill: #fff; }
+
+  /* Distinctive: presence dots */
+  .presence { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .pr-col { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .pr-avatar { width: 64px; height: 64px; border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 20px; font-weight: 700; }
+  .pr-avatar.p1 { background: linear-gradient(135deg, #FF9966, #FF5E62); }
+  .pr-avatar.p2 { background: linear-gradient(135deg, #4776E6, #8E54E9); }
+  .pr-avatar.p3 { background: linear-gradient(135deg, #F093FB, #F5576C); }
+  .pr-avatar.p4 { background: linear-gradient(135deg, #657786, #26303A); }
+  .pr-avatar .pr-dot { position: absolute; bottom: 0; right: 0; width: 20px; height: 20px; border-radius: 50%; border: 4px solid var(--list); }
+  .pr-dot.online { background: var(--online); }
+  .pr-dot.idle { background: var(--idle); }
+  .pr-dot.dnd { background: var(--dnd); display: flex; align-items: center; justify-content: center; }
+  .pr-dot.dnd::after { content: ''; width: 8px; height: 2.5px; background: var(--list); border-radius: 1px; }
+  .pr-dot.offline { background: var(--offline); }
+  .pr-dot.offline::after { content: ''; width: 6px; height: 6px; background: var(--list); border-radius: 50%; }
+  .pr-label { font-size: 12px; font-weight: 600; color: var(--text); }
+  .pr-sub { font-size: 11px; color: var(--text-muted); font-family: 'SF Mono', Menlo, monospace; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 68px; height: 68px; background: var(--blurple); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Discord iOS &mdash; Design Tokens</div>
+    <div class="page-chip">Dark</div>
+  </div>
+  <p class="page-subtitle">Three-gray surface system (#1E1F22 rail &rarr; #2B2D31 list &rarr; #313338 chat) with Blurple as the single accent. Presence dots, role colors, and reaction chips everywhere.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="rail">
+            <div class="rail-icon home"><svg viewBox="0 0 24 24"><path d="M20.32 4.91A19.8 19.8 0 0 0 15.73 3.5l-.22.39c1.71.41 3.34 1.08 4.85 1.99A17.8 17.8 0 0 0 12 4.5c-2.82 0-5.6.44-8.36 1.38 1.51-.91 3.14-1.58 4.85-1.99L8.27 3.5a19.8 19.8 0 0 0-4.59 1.41C1.23 9.33.45 13.7.94 17.99a19.9 19.9 0 0 0 6.04 3.02l.48-.65a12.5 12.5 0 0 1-3.17-1.5c.26-.19.52-.39.78-.58a14 14 0 0 0 13.86 0c.26.19.52.39.78.58-.99.59-2.05 1.1-3.17 1.5l.48.65a19.9 19.9 0 0 0 6.04-3.02c.58-4.96-.85-9.27-3.74-13.08zM8.52 15.52c-1.19 0-2.17-1.08-2.17-2.42s.98-2.42 2.17-2.42 2.17 1.08 2.17 2.42-.98 2.42-2.17 2.42zm6.96 0c-1.19 0-2.17-1.08-2.17-2.42s.98-2.42 2.17-2.42 2.17 1.08 2.17 2.42-.98 2.42-2.17 2.42z"/></svg></div>
+            <div class="rail-divider"></div>
+            <div class="rail-icon active">
+              <div class="mark active"></div>
+              <span>DS</span>
+            </div>
+            <div class="rail-icon image">
+              <div class="mark unread"></div>
+              <span>G</span>
+            </div>
+            <div class="rail-icon image-2">
+              <span>IX</span>
+              <div class="ping">3</div>
+            </div>
+            <div class="rail-icon image-3"><span>FM</span></div>
+            <div class="rail-icon add">+</div>
+          </div>
+
+          <div class="right-col">
+            <div class="chan-nav">
+              <span class="hash">#</span>
+              <div class="chan-name">general</div>
+              <div class="chan-icons">
+                <svg viewBox="0 0 24 24"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14l-2-7a5 5 0 0 0-10 0z"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+              </div>
+            </div>
+
+            <div class="msgs">
+              <div class="msg">
+                <div class="avatar a1">AD<div class="dot online"></div></div>
+                <div class="msg-body">
+                  <div class="msg-head"><span class="msg-name admin">Aria</span><span class="msg-time">Today at 10:18 AM</span></div>
+                  <div class="msg-text">Pushing the build tag now <code>v4.2.0-rc1</code> &mdash; pls test the dark canvas.</div>
+                  <div class="reactions">
+                    <div class="rxn you">&#128293; 3</div>
+                    <div class="rxn">&#128512; 2</div>
+                    <div class="rxn">&#128077; 5</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="msg">
+                <div class="avatar a3">BT<div class="dot idle"></div></div>
+                <div class="msg-body">
+                  <div class="msg-head"><span class="msg-name bot">statbot</span><span class="msg-bot-tag">BOT</span><span class="msg-time">10:19 AM</span></div>
+                  <div class="msg-text">Build <code>rc1</code> deployed to staging. <span class="mention">@aria</span> run smoke tests when ready.</div>
+                </div>
+              </div>
+
+              <div class="msg">
+                <div class="avatar a2">JN<div class="dot dnd"></div></div>
+                <div class="msg-body">
+                  <div class="msg-head"><span class="msg-name mod">Jules</span><span class="msg-time">10:21 AM</span></div>
+                  <div class="msg-text">on it &mdash; deploying preview now.</div>
+                  <div class="reactions">
+                    <div class="rxn">&#128640; 4</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="msg">
+                <div class="avatar a4">MK<div class="dot online"></div></div>
+                <div class="msg-body">
+                  <div class="msg-head"><span class="msg-name">makenzie</span><span class="msg-time">10:23 AM</span></div>
+                  <div class="msg-text">the presence dots look so clean on this canvas 😌</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="compose">
+              <div class="compose-bar">
+                <div class="c-plus">+</div>
+                <div class="c-input">Message #general</div>
+                <div class="c-icons">
+                  <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><polyline points="21,15 16,10 5,21"/></svg>
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#5865F2;"><div class="name">Blurple</div>#5865F2</div>
+          <div class="swatch" style="background:#4752C4;"><div class="name">Blurple Pressed</div>#4752C4</div>
+          <div class="swatch" style="background:linear-gradient(135deg,#5865F2,#EB459E);"><div class="name">Nitro Gradient</div>#5865F2</div>
+          <div class="swatch" style="background:#1E1F22;"><div class="name">Server Rail</div>#1E1F22</div>
+          <div class="swatch" style="background:#2B2D31;"><div class="name">Channel List</div>#2B2D31</div>
+          <div class="swatch" style="background:#313338;"><div class="name">Chat Canvas</div>#313338</div>
+          <div class="swatch" style="background:#383A40;"><div class="name">Surface 2</div>#383A40</div>
+          <div class="swatch" style="background:#23A55A;"><div class="name">Online Green</div>#23A55A</div>
+          <div class="swatch" style="background:#F0B232; color:#1E1F22;"><div class="name">Idle Yellow</div>#F0B232</div>
+          <div class="swatch" style="background:#F23F43;"><div class="name">DND Red</div>#F23F43</div>
+          <div class="swatch light" style="background:#F2F3F5;"><div class="name">Text Primary</div>#F2F3F5</div>
+          <div class="swatch" style="background:#949BA4;"><div class="name">Text Muted</div>#949BA4</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography &mdash; gg sans</div>
+        <div class="type-row"><div class="type-meta">Screen Title &middot; 20pt &middot; 700</div><div class="type-sample t-20">General</div></div>
+        <div class="type-row"><div class="type-meta">Username &middot; 16pt &middot; 600</div><div class="type-sample t-16-s" style="color:var(--admin-red);">aria_dev</div></div>
+        <div class="type-row"><div class="type-meta">Message Body &middot; 16pt &middot; 400</div><div class="type-sample t-16">pushing the build tag now, please test the dark canvas</div></div>
+        <div class="type-row"><div class="type-meta">Member List &middot; 14pt &middot; 500</div><div class="type-sample t-14">jules_k (mod)</div></div>
+        <div class="type-row"><div class="type-meta">Timestamp &middot; 12pt &middot; 500</div><div class="type-sample t-12">Today at 10:23 AM</div></div>
+        <div class="type-row"><div class="type-meta">Code &middot; gg mono 14pt</div><div class="type-sample"><span class="t-mono">npm run dev</span></div></div>
+        <div class="type-row"><div class="type-meta">Section Label &middot; 12pt &middot; 700 UP</div><div class="type-sample t-11">Announcements</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Continue</button>
+          <button class="btn btn-secondary">Cancel</button>
+          <button class="btn btn-destructive">Leave Server</button>
+          <button class="btn btn-ghost">Maybe Later</button>
+          <button class="btn btn-nitro">Get Nitro</button>
+          <div class="send-demo"><svg viewBox="0 0 24 24"><path d="M2 12 l20-8 l-8 20 l-4-8 z"/></svg></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive &mdash; Presence Dots</div>
+        <div class="presence">
+          <div class="pr-col">
+            <div class="pr-avatar p1">A<div class="pr-dot online"></div></div>
+            <div class="pr-label">Online</div>
+            <div class="pr-sub">#23A55A</div>
+          </div>
+          <div class="pr-col">
+            <div class="pr-avatar p2">J<div class="pr-dot idle"></div></div>
+            <div class="pr-label">Idle</div>
+            <div class="pr-sub">#F0B232</div>
+          </div>
+          <div class="pr-col">
+            <div class="pr-avatar p3">M<div class="pr-dot dnd"></div></div>
+            <div class="pr-label">DND</div>
+            <div class="pr-sub">#F23F43</div>
+          </div>
+          <div class="pr-col">
+            <div class="pr-avatar p4">R<div class="pr-dot offline"></div></div>
+            <div class="pr-label">Offline</div>
+            <div class="pr-sub">#80848E</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

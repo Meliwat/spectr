@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by X (Twitter) iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: dark;
+    --canvas: #000000;
+    --surface-1: #16181C;
+    --surface-2: #1E2024;
+    --divider: #2F3336;
+    --dim-canvas: #15202B;
+    --text: #E7E9EA;
+    --text-secondary: #71767B;
+    --x-blue: #1D9BF0;
+    --blue-pressed: #1A8CD8;
+    --repost-green: #00BA7C;
+    --like-pink: #F91880;
+    --verified-gold: #EAB308;
+    --error: #F4212E;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #0A0A0A; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; }
+  .page-chip { background: var(--text); color: #000; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 5; }
+
+  .top-nav { padding: 48px 16px 0; display: flex; align-items: center; justify-content: space-between; }
+  .top-avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #4A90E2, #2B5CB8); }
+  .x-logo { font-size: 22px; font-weight: 700; color: var(--text); font-family: Georgia, serif; transform: scaleX(0.9); }
+  .top-spark { color: var(--text); font-size: 18px; }
+
+  .filter-bar { display: flex; padding: 10px 0 0; border-bottom: 1px solid var(--divider); }
+  .filter-tab { flex: 1; text-align: center; padding: 12px 0; font-size: 14px; font-weight: 700; color: var(--text-secondary); position: relative; }
+  .filter-tab.active { color: var(--text); }
+  .filter-tab.active::after { content: ''; position: absolute; bottom: -1px; left: 50%; transform: translateX(-50%); width: 40px; height: 4px; background: var(--x-blue); border-radius: 2px; }
+
+  .post-scroll { flex: 1; overflow: hidden; }
+
+  .post { display: flex; padding: 12px 16px; gap: 12px; border-bottom: 1px solid var(--divider); }
+  .post-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #F5A623, #D0021B); flex-shrink: 0; }
+  .post-body { flex: 1; min-width: 0; }
+  .post-head { display: flex; align-items: center; gap: 4px; font-size: 14px; }
+  .post-head .name { font-weight: 700; color: var(--text); }
+  .post-head .verified { color: var(--x-blue); font-size: 14px; }
+  .post-head .handle, .post-head .dot, .post-head .time { color: var(--text-secondary); font-weight: 400; }
+  .post-head .more { margin-left: auto; color: var(--text-secondary); font-size: 18px; }
+  .post-text { font-size: 15px; color: var(--text); margin: 2px 0 10px; line-height: 1.33; }
+  .post-text .link { color: var(--x-blue); }
+  .post-media { aspect-ratio: 16/10; border-radius: 16px; background: linear-gradient(135deg, #1E3A5F 0%, #2B5CB8 50%, #6B9FD1 100%); margin-bottom: 10px; position: relative; overflow: hidden; }
+  .post-media::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 70% 20%, rgba(255,220,128,0.2), transparent 55%); }
+
+  .post-actions { display: flex; justify-content: space-between; color: var(--text-secondary); font-size: 12px; margin-top: 6px; }
+  .post-action { display: flex; align-items: center; gap: 4px; }
+  .post-action svg { width: 17px; height: 17px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+  .post-action.liked { color: var(--like-pink); }
+  .post-action.liked svg { fill: currentColor; stroke: currentColor; }
+
+  /* FAB */
+  .fab { position: absolute; right: 16px; bottom: 66px; width: 52px; height: 52px; border-radius: 50%; background: var(--text); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.5); z-index: 4; }
+  .fab svg { width: 22px; height: 22px; stroke: #000; stroke-width: 2; fill: none; }
+
+  /* Tab bar */
+  .tab-bar { height: 54px; background: rgba(0,0,0,0.9); backdrop-filter: saturate(180%) blur(20px); display: flex; align-items: center; justify-content: space-around; padding: 0 8px 8px; border-top: 1px solid var(--divider); }
+  .tab { display: flex; align-items: center; justify-content: center; color: var(--text-secondary); }
+  .tab.active { color: var(--text); }
+  .tab svg { width: 24px; height: 24px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 16px; min-height: 90px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #000; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 210px; flex-shrink: 0; }
+  .type-sample { flex: 1; }
+  .t-20 { font-size: 20px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-17 { font-size: 17px; font-weight: 700; letter-spacing: -0.1px; }
+  .t-15b { font-size: 15px; font-weight: 700; }
+  .t-15 { font-size: 15px; font-weight: 400; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 400; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 15px; font-weight: 700; padding: 8px 20px; border-radius: 500px; border: none; cursor: pointer; }
+  .btn-post { background: var(--text); color: #000; }
+  .btn-post:active { opacity: 0.9; }
+  .btn-following { background: transparent; color: var(--text); border: 1px solid var(--text-secondary); font-size: 14px; padding: 8px 16px; }
+  .btn-blue { background: var(--x-blue); color: #fff; font-size: 14px; padding: 7px 16px; }
+  .fab-demo { width: 56px; height: 56px; border-radius: 50%; background: var(--text); border: none; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+  .fab-demo svg { width: 24px; height: 24px; stroke: #000; stroke-width: 2; fill: none; }
+  .chip { padding: 8px 16px; background: var(--surface-2); color: var(--text); font-size: 14px; font-weight: 500; border-radius: 500px; }
+  .chip.active { background: transparent; color: var(--text); font-weight: 700; border-bottom: 3px solid var(--x-blue); border-radius: 0; padding: 8px 12px; }
+
+  /* Timeline rows */
+  .tl-row { display: flex; padding: 12px 0; gap: 12px; border-bottom: 1px solid var(--divider); }
+  .tl-row:last-child { border-bottom: none; }
+  .tl-avatar { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; }
+  .tl-a1 { background: linear-gradient(135deg, #F5A623, #D0021B); }
+  .tl-a2 { background: linear-gradient(135deg, #4A90E2, #2B5CB8); }
+  .tl-a3 { background: linear-gradient(135deg, #50E3C2, #1DB954); }
+  .tl-info { flex: 1; min-width: 0; }
+  .tl-head { display: flex; align-items: center; gap: 4px; font-size: 14px; }
+  .tl-head .name { font-weight: 700; color: var(--text); }
+  .tl-head .verified { color: var(--x-blue); }
+  .tl-head .handle { color: var(--text-secondary); font-weight: 400; }
+  .tl-text { font-size: 14px; color: var(--text); margin-top: 2px; line-height: 1.33; }
+  .tl-actions { display: flex; justify-content: space-between; max-width: 300px; margin-top: 8px; color: var(--text-secondary); font-size: 12px; }
+  .tl-act { display: flex; align-items: center; gap: 4px; }
+  .tl-act svg { width: 15px; height: 15px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+  .tl-act.liked { color: var(--like-pink); }
+  .tl-act.liked svg { fill: currentColor; }
+  .tl-act.reposted { color: var(--repost-green); }
+  .tl-act.reposted svg { fill: currentColor; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--x-blue); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">X (Twitter) iOS — Design Tokens</div>
+    <div class="page-chip">Dark</div>
+  </div>
+  <p class="page-subtitle">Pure-black OLED canvas (#000000), Twitter Blue as the structural accent with per-action role colors (green repost, pink like). Hairlines replace cards — a flat river of posts.</p>
+
+  <div class="grid">
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="top-nav">
+            <div class="top-avatar"></div>
+            <div class="x-logo">𝕏</div>
+            <div class="top-spark">✦</div>
+          </div>
+          <div class="filter-bar">
+            <div class="filter-tab active">For you</div>
+            <div class="filter-tab">Following</div>
+          </div>
+          <div class="post-scroll">
+            <div class="post">
+              <div class="post-avatar"></div>
+              <div class="post-body">
+                <div class="post-head">
+                  <span class="name">Nova Palmer</span>
+                  <span class="verified"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 2L17 3l1 2.6 2.6 1L19 9l.4 2.6-2.4 1 .4 2.6-2.6-.4-1 2.4L11 15l-2.6 1.6-1-2.4L5 14.6l.4-2.6L3 11l1.6-2.4L3 6l2.6-1L6 2.4 8.4 4z"/><polyline points="8,12 11,15 16,9" stroke="#000" stroke-width="2" fill="none"/></svg></span>
+                  <span class="handle">@novapalmer</span>
+                  <span class="dot">·</span>
+                  <span class="time">2h</span>
+                  <span class="more">⋯</span>
+                </div>
+                <div class="post-text">Just shipped a new feature. Feedback welcome. <span class="link">#shipit</span></div>
+                <div class="post-media"></div>
+                <div class="post-actions">
+                  <div class="post-action"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>24</span></div>
+                  <div class="post-action reposted"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 2l3 3-3 3"/><path d="M4 9V7a2 2 0 0 1 2-2h14"/><path d="M7 22l-3-3 3-3"/><path d="M20 15v2a2 2 0 0 1-2 2H4"/></svg><span>148</span></div>
+                  <div class="post-action liked"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span>1.2K</span></div>
+                  <div class="post-action"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><polyline points="7,14 11,10 15,13 21,7"/></svg><span>24K</span></div>
+                  <div class="post-action"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16,6 12,2 8,6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="fab"><svg viewBox="0 0 24 24"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg></div>
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="8" cy="8" r="3"/><circle cx="16" cy="8" r="3"/><path d="M2 21v-1a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v1"/><path d="M14 21v-1a5 5 0 0 1 5-5h0"/></svg></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette — Dark</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#000000;"><div class="name">Canvas Black</div>#000000</div>
+          <div class="swatch" style="background:#16181C;"><div class="name">Surface 1</div>#16181C</div>
+          <div class="swatch" style="background:#1E2024;"><div class="name">Surface 2</div>#1E2024</div>
+          <div class="swatch" style="background:#2F3336;"><div class="name">Divider</div>#2F3336</div>
+          <div class="swatch" style="background:#15202B;"><div class="name">Dim Canvas</div>#15202B</div>
+          <div class="swatch light" style="background:#E7E9EA;"><div class="name">Text Primary</div>#E7E9EA</div>
+          <div class="swatch" style="background:#71767B;"><div class="name">Text Secondary</div>#71767B</div>
+          <div class="swatch" style="background:#1D9BF0;"><div class="name">Twitter Blue</div>#1D9BF0</div>
+          <div class="swatch" style="background:#1A8CD8;"><div class="name">Blue Pressed</div>#1A8CD8</div>
+          <div class="swatch" style="background:#00BA7C;"><div class="name">Repost Green</div>#00BA7C</div>
+          <div class="swatch" style="background:#F91880;"><div class="name">Like Pink</div>#F91880</div>
+          <div class="swatch" style="background:#F4212E;"><div class="name">Error Red</div>#F4212E</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Chirp (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 20pt · 700</div><div class="type-sample t-20">Home</div></div>
+        <div class="type-row"><div class="type-meta">Section Header · 17pt · 700</div><div class="type-sample t-17">What's happening</div></div>
+        <div class="type-row"><div class="type-meta">Display Name · 15pt · 700</div><div class="type-sample t-15b">Nova Palmer</div></div>
+        <div class="type-row"><div class="type-meta">Post Body · 15pt · 400</div><div class="type-sample t-15">Just shipped a new feature. Feedback welcome.</div></div>
+        <div class="type-row"><div class="type-meta">@Handle · 15pt · 400</div><div class="type-sample t-14" style="color: var(--text-secondary);">@novapalmer · 2h</div></div>
+        <div class="type-row"><div class="type-meta">Action Count · 13pt · 400</div><div class="type-sample t-13">1.2K · 148 · 24</div></div>
+        <div class="type-row"><div class="type-meta">DM Timestamp · 11pt · 400</div><div class="type-sample t-11">YESTERDAY, 3:42 PM</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="fab-demo"><svg viewBox="0 0 24 24"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg></button>
+          <button class="btn btn-post">Post</button>
+          <button class="btn btn-following">Following</button>
+          <button class="btn btn-blue">Subscribe</button>
+          <div class="chip active">For you</div>
+          <div class="chip">Following</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Timeline Rows</div>
+        <div class="tl-row">
+          <div class="tl-avatar tl-a1"></div>
+          <div class="tl-info">
+            <div class="tl-head"><span class="name">Nova Palmer</span><span class="verified"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="8,12 11,15 16,9" stroke="#000" stroke-width="2.5" fill="none"/></svg></span><span class="handle">@novapalmer · 2h</span></div>
+            <div class="tl-text">Morning pages before coffee. It's the only way the ideas come out clean.</div>
+            <div class="tl-actions">
+              <div class="tl-act"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>12</span></div>
+              <div class="tl-act"><svg viewBox="0 0 24 24"><path d="M17 2l3 3-3 3"/><path d="M4 9V7a2 2 0 0 1 2-2h14"/><path d="M7 22l-3-3 3-3"/><path d="M20 15v2a2 2 0 0 1-2 2H4"/></svg><span>8</span></div>
+              <div class="tl-act liked"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span>247</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="tl-row">
+          <div class="tl-avatar tl-a2"></div>
+          <div class="tl-info">
+            <div class="tl-head"><span class="name">Kellen Voss</span><span class="handle">@kellenv · 4h</span></div>
+            <div class="tl-text">New city, old neighborhood feeling. The coffee shop downstairs knows my order on day three.</div>
+            <div class="tl-actions">
+              <div class="tl-act"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>3</span></div>
+              <div class="tl-act reposted"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 2l3 3-3 3"/><path d="M4 9V7a2 2 0 0 1 2-2h14"/><path d="M7 22l-3-3 3-3"/><path d="M20 15v2a2 2 0 0 1-2 2H4"/></svg><span>42</span></div>
+              <div class="tl-act"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span>89</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="tl-row">
+          <div class="tl-avatar tl-a3"></div>
+          <div class="tl-info">
+            <div class="tl-head"><span class="name">Hana Ruiz</span><span class="handle">@hanaruiz · 6h</span></div>
+            <div class="tl-text">Shipping is a muscle. You don't train by reading — you train by shipping.</div>
+            <div class="tl-actions">
+              <div class="tl-act"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>89</span></div>
+              <div class="tl-act"><svg viewBox="0 0 24 24"><path d="M17 2l3 3-3 3"/><path d="M4 9V7a2 2 0 0 1 2-2h14"/><path d="M7 22l-3-3 3-3"/><path d="M20 15v2a2 2 0 0 1-2 2H4"/></svg><span>156</span></div>
+              <div class="tl-act"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span>2.4K</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Notion iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --surface-1: #F7F6F3;
+    --surface-2: #F1F1EF;
+    --divider: #EBEBEA;
+    --text: #37352F;
+    --text-secondary: rgba(55,53,47,0.65);
+    --text-tertiary: rgba(55,53,47,0.45);
+    --link: #2E75CC;
+    --co-default: #F1F1EF;
+    --co-brown: #F4EEEE;
+    --co-orange: #FAEBDD;
+    --co-yellow: #FBF3DB;
+    --co-green: #EDF3EC;
+    --co-blue: #E7F3F8;
+    --co-purple: #F6F3F9;
+    --co-pink: #FAF1F5;
+    --co-red: #FDEBEC;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+    --mono: 'SF Mono', Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #E5E5E3; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; color: var(--text); }
+  .page-chip { background: var(--text); color: #fff; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 4px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.55; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.5), 0 0 0 2px rgba(0,0,0,0.08) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 5; }
+
+  /* Header */
+  .top-nav { padding: 50px 14px 8px; display: flex; align-items: center; justify-content: space-between; color: var(--text-secondary); }
+  .top-nav svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+  .top-title { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+
+  /* Doc area */
+  .doc { flex: 1; overflow: hidden; position: relative; }
+  .cover { height: 32px; background: linear-gradient(90deg, #B5735D 0%, #D4A67A 50%, #7A8E66 100%); }
+  .doc-inner { padding: 6px 16px; }
+  .emoji { font-size: 44px; line-height: 1; margin-top: -22px; display: inline-block; background: var(--canvas); border-radius: 4px; padding: 0 2px; }
+  .doc-title { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; color: var(--text); margin: 8px 0 4px; line-height: 1.15; }
+  .doc-meta { font-size: 11px; color: var(--text-tertiary); margin-bottom: 14px; }
+  .block { padding: 2px 0; font-size: 14px; color: var(--text); line-height: 1.55; display: flex; gap: 6px; align-items: flex-start; }
+  .b-h1 { font-size: 20px; font-weight: 700; margin: 12px 0 4px; letter-spacing: -0.2px; }
+  .bullet { color: var(--text); flex-shrink: 0; width: 14px; text-align: center; }
+  .toggle { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--text); padding: 3px 0; }
+  .toggle .tri { font-size: 10px; color: var(--text-secondary); width: 14px; text-align: center; }
+  .callout { background: var(--co-yellow); border-radius: 4px; padding: 12px 14px; font-size: 13px; color: var(--text); margin: 8px 0; display: flex; gap: 10px; align-items: flex-start; line-height: 1.5; }
+  .callout .c-emoji { font-size: 16px; flex-shrink: 0; }
+  .code { background: var(--surface-1); border-radius: 4px; padding: 10px 12px; font-family: var(--mono); font-size: 12px; color: var(--text); margin: 8px 0; line-height: 1.5; border: 1px solid var(--divider); }
+  .code .kw { color: #CB1A55; }
+  .code .str { color: #0D7A5E; }
+  .slash { margin-top: 14px; padding: 4px 0; font-size: 14px; color: var(--text-tertiary); display: flex; align-items: center; gap: 6px; }
+  .slash .caret { width: 2px; height: 16px; background: var(--text); animation: blink 1s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* Bottom bar (Notion mobile) */
+  .bottom-bar { height: 52px; background: var(--canvas); border-top: 1px solid var(--divider); display: flex; align-items: center; justify-content: space-around; padding: 0 8px; }
+  .bb { width: 36px; height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); }
+  .bb.active { color: var(--text); background: var(--surface-1); }
+  .bb svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+
+  /* Sections */
+  .section { background: var(--canvas); border: 1px solid var(--divider); border-radius: 6px; padding: 24px; margin-bottom: 20px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 4px; padding: 14px; min-height: 90px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: var(--mono); border: 1px solid var(--divider); color: var(--text); }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.dark { color: #fff; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: var(--mono); font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); }
+  .t-32 { font-size: 32px; font-weight: 700; letter-spacing: -0.4px; }
+  .t-22 { font-size: 22px; font-weight: 600; }
+  .t-16 { font-size: 16px; font-weight: 500; }
+  .t-14 { font-size: 14px; font-weight: 400; line-height: 1.55; }
+  .t-13 { font-size: 13px; color: var(--text-secondary); }
+  .t-serif { font-family: Georgia, 'Lora', serif; font-size: 16px; }
+  .t-mono { font-family: var(--mono); font-size: 13px; background: var(--surface-1); padding: 2px 6px; border-radius: 3px; }
+
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 500; cursor: pointer; border: none; font-size: 14px; }
+  .btn-primary { background: var(--text); color: #fff; padding: 7px 14px; border-radius: 4px; font-weight: 500; }
+  .btn-ghost { background: var(--surface-1); color: var(--text); border: 1px solid var(--divider); padding: 6px 14px; border-radius: 4px; font-weight: 500; }
+  .btn-text { background: transparent; color: var(--text-secondary); padding: 6px 10px; border: none; }
+
+  /* Block handles demo */
+  .block-handles { background: var(--canvas); border: 1px solid var(--divider); border-radius: 4px; padding: 14px; }
+  .bh-row { display: flex; align-items: flex-start; gap: 4px; padding: 6px 0; position: relative; }
+  .bh-grip { display: flex; gap: 2px; color: var(--text-tertiary); padding: 3px 2px; border-radius: 3px; cursor: grab; }
+  .bh-grip svg { width: 14px; height: 14px; fill: currentColor; }
+  .bh-plus { color: var(--text-tertiary); padding: 3px 4px; border-radius: 3px; font-size: 16px; line-height: 1; }
+  .bh-body { flex: 1; font-size: 14px; color: var(--text); padding: 2px 0; }
+  .bh-body.h1 { font-size: 20px; font-weight: 700; }
+  .bh-body .tag { color: var(--link); text-decoration: underline; }
+
+  .slash-menu { margin-top: 14px; border: 1px solid var(--divider); border-radius: 6px; overflow: hidden; background: var(--canvas); box-shadow: 0 8px 24px rgba(15,15,15,0.08); max-width: 280px; }
+  .sm-title { padding: 8px 12px; font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+  .sm-item { display: flex; align-items: center; gap: 10px; padding: 6px 10px; font-size: 13px; color: var(--text); }
+  .sm-item:hover, .sm-item.active { background: var(--surface-1); }
+  .sm-ic { width: 28px; height: 28px; border-radius: 4px; background: var(--surface-2); display: flex; align-items: center; justify-content: center; font-size: 14px; border: 1px solid var(--divider); }
+  .sm-desc { font-size: 11px; color: var(--text-secondary); margin-left: auto; }
+
+  /* Callout palette */
+  .co-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .co-box { padding: 10px 12px; border-radius: 4px; font-size: 12px; color: var(--text); display: flex; align-items: center; gap: 8px; }
+  .co-box .c-label { font-family: var(--mono); font-size: 10px; color: var(--text-secondary); margin-left: auto; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--text); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-3 { border-radius: 3px; }
+  .r-4 { border-radius: 4px; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Notion iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">White canvas (#FFFFFF), near-black ink (#37352F), and nine pastel callout backgrounds. Typography mixes Inter (sans), Lora (serif), and IBM Plex Mono for the three writing moods.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="top-nav">
+            <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+            <div class="top-title">Workspace / Planning</div>
+            <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="19" cy="12" r="1.5" fill="currentColor"/></svg>
+          </div>
+
+          <div class="doc">
+            <div class="cover"></div>
+            <div class="doc-inner">
+              <span class="emoji">🚀</span>
+              <h1 class="doc-title">Q2 Planning</h1>
+              <div class="doc-meta">Edited just now · 4 collaborators</div>
+
+              <div class="b-h1 block">Goals</div>
+              <div class="block"><span class="bullet">•</span><span>Ship design-token v2 across iOS + web</span></div>
+              <div class="block"><span class="bullet">•</span><span>Launch mobile onboarding rewrite</span></div>
+              <div class="block"><span class="bullet">•</span><span>Publish 2024 retrospective</span></div>
+
+              <div class="toggle"><span class="tri">▸</span><span>2024 Strategy Doc</span></div>
+
+              <div class="callout">
+                <span class="c-emoji">💡</span>
+                <span>Key insight: Mobile-first drove 40% more engagement across new-user cohorts.</span>
+              </div>
+
+              <div class="code"><span class="kw">const</span> goal = <span class="str">"ship v2"</span>;<br>goal.status = <span class="str">"in-review"</span>;</div>
+
+              <div class="slash">/<span class="caret"></span>Type to add a block…</div>
+            </div>
+          </div>
+
+          <div class="bottom-bar">
+            <div class="bb"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg></div>
+            <div class="bb active"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg></div>
+            <div class="bb"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg></div>
+            <div class="bb"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M12 8v8M8 12h8"/></svg></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette — Canvas & Text</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#FFFFFF;"><div class="name">Canvas (Light)</div>#FFFFFF</div>
+          <div class="swatch dark" style="background:#191919;"><div class="name">Canvas (Dark)</div>#191919</div>
+          <div class="swatch" style="background:#F7F6F3;"><div class="name">Surface 1</div>#F7F6F3</div>
+          <div class="swatch" style="background:#EBEBEA;"><div class="name">Divider</div>#EBEBEA</div>
+          <div class="swatch dark" style="background:#37352F;"><div class="name">Text Primary</div>#37352F</div>
+          <div class="swatch dark" style="background:#2E75CC;"><div class="name">Link</div>#2E75CC</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Color Palette — 9 Callout Pastels</div>
+        <div class="co-row">
+          <div class="co-box" style="background:#F1F1EF;">⚪ Default<span class="c-label">#F1F1EF</span></div>
+          <div class="co-box" style="background:#F4EEEE;">🟤 Brown<span class="c-label">#F4EEEE</span></div>
+          <div class="co-box" style="background:#FAEBDD;">🟠 Orange<span class="c-label">#FAEBDD</span></div>
+          <div class="co-box" style="background:#FBF3DB;">🟡 Yellow<span class="c-label">#FBF3DB</span></div>
+          <div class="co-box" style="background:#EDF3EC;">🟢 Green<span class="c-label">#EDF3EC</span></div>
+          <div class="co-box" style="background:#E7F3F8;">🔵 Blue<span class="c-label">#E7F3F8</span></div>
+          <div class="co-box" style="background:#F6F3F9;">🟣 Purple<span class="c-label">#F6F3F9</span></div>
+          <div class="co-box" style="background:#FAF1F5;">🩷 Pink<span class="c-label">#FAF1F5</span></div>
+          <div class="co-box" style="background:#FDEBEC;">🔴 Red<span class="c-label">#FDEBEC</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter / Lora / IBM Plex Mono</div>
+        <div class="type-row"><div class="type-meta">Page Title · Inter · 32pt · 700</div><div class="type-sample t-32">Q2 Planning</div></div>
+        <div class="type-row"><div class="type-meta">Heading 1 · Inter · 22pt · 600</div><div class="type-sample t-22">Goals</div></div>
+        <div class="type-row"><div class="type-meta">Heading 2 · Inter · 16pt · 500</div><div class="type-sample t-16">Q2 deliverables</div></div>
+        <div class="type-row"><div class="type-meta">Body · Inter · 14pt · 400</div><div class="type-sample t-14">Capture a thought, tag a teammate, ship an idea. Every block is a little Lego.</div></div>
+        <div class="type-row"><div class="type-meta">Body (Serif) · Lora · 16pt</div><div class="type-sample t-serif">The quiet part said out loud.</div></div>
+        <div class="type-row"><div class="type-meta">Code · IBM Plex Mono · 13pt</div><div class="type-sample"><span class="t-mono">const status = "shipping";</span></div></div>
+        <div class="type-row"><div class="type-meta">Caption · Inter · 13pt · 400</div><div class="type-sample t-13">Edited just now · 4 collaborators</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Share</button>
+          <button class="btn btn-ghost">Duplicate</button>
+          <button class="btn btn-text">Move to Trash</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive — Block Handles & Slash Menu</div>
+        <div class="block-handles">
+          <div class="bh-row">
+            <span class="bh-plus">+</span>
+            <span class="bh-grip"><svg viewBox="0 0 10 16"><circle cx="3" cy="3" r="1.5"/><circle cx="7" cy="3" r="1.5"/><circle cx="3" cy="8" r="1.5"/><circle cx="7" cy="8" r="1.5"/><circle cx="3" cy="13" r="1.5"/><circle cx="7" cy="13" r="1.5"/></svg></span>
+            <div class="bh-body h1">Goals</div>
+          </div>
+          <div class="bh-row">
+            <span class="bh-plus">+</span>
+            <span class="bh-grip"><svg viewBox="0 0 10 16"><circle cx="3" cy="3" r="1.5"/><circle cx="7" cy="3" r="1.5"/><circle cx="3" cy="8" r="1.5"/><circle cx="7" cy="8" r="1.5"/><circle cx="3" cy="13" r="1.5"/><circle cx="7" cy="13" r="1.5"/></svg></span>
+            <div class="bh-body">Ship <span class="tag">@design-tokens</span> v2 across platforms.</div>
+          </div>
+          <div class="bh-row">
+            <span class="bh-plus">+</span>
+            <span class="bh-grip"><svg viewBox="0 0 10 16"><circle cx="3" cy="3" r="1.5"/><circle cx="7" cy="3" r="1.5"/><circle cx="3" cy="8" r="1.5"/><circle cx="7" cy="8" r="1.5"/><circle cx="3" cy="13" r="1.5"/><circle cx="7" cy="13" r="1.5"/></svg></span>
+            <div class="bh-body">Draft the retrospective post.</div>
+          </div>
+        </div>
+        <div class="slash-menu">
+          <div class="sm-title">Basic Blocks</div>
+          <div class="sm-item active"><div class="sm-ic">T</div>Text<span class="sm-desc">Just start writing</span></div>
+          <div class="sm-item"><div class="sm-ic">H1</div>Heading 1<span class="sm-desc">Big section heading</span></div>
+          <div class="sm-item"><div class="sm-ic">H2</div>Heading 2<span class="sm-desc">Medium section heading</span></div>
+          <div class="sm-item"><div class="sm-ic">•</div>Bulleted list<span class="sm-desc">Simple bullets</span></div>
+          <div class="sm-item"><div class="sm-ic">☐</div>To-do list<span class="sm-desc">Track tasks</span></div>
+          <div class="sm-item"><div class="sm-ic">▸</div>Toggle list<span class="sm-desc">Hide content inside</span></div>
+          <div class="sm-item"><div class="sm-ic">💡</div>Callout<span class="sm-desc">Make writing stand out</span></div>
+          <div class="sm-item"><div class="sm-ic">❝</div>Quote<span class="sm-desc">Capture a quote</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-3">3</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

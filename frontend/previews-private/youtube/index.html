@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by YouTube iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: dark;
+    --canvas: #0F0F0F;
+    --surface-1: #1F1F1F;
+    --surface-2: #272727;
+    --surface-3: #3F3F3F;
+    --divider: #303030;
+    --text: #FFFFFF;
+    --text-secondary: #AAAAAA;
+    --text-tertiary: #717171;
+    --red: #FF0000;
+    --red-pressed: #CC0000;
+    --blue: #3EA6FF;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; }
+  .page-chip { background: var(--red); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 4px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 680px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Top app bar */
+  .top-bar { padding: 48px 12px 10px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .logo { display: flex; align-items: center; gap: 6px; }
+  .logo-mark { width: 28px; height: 20px; background: var(--red); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+  .logo-mark svg { width: 10px; height: 10px; fill: #fff; }
+  .logo-word { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; color: var(--text); }
+  .top-icons { display: flex; align-items: center; gap: 14px; color: var(--text); }
+  .top-icons svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .avatar-mini { width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg, #7BB8E0, #2F6FA8); }
+
+  /* Chips */
+  .chip-row { display: flex; gap: 8px; padding: 6px 12px 10px; overflow: hidden; }
+  .tc { padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 500; background: var(--surface-2); color: var(--text); white-space: nowrap; }
+  .tc.active { background: var(--text); color: var(--canvas); }
+
+  /* Feed */
+  .feed { flex: 1; overflow: hidden; }
+  .vcard { margin-bottom: 12px; }
+  .thumb { width: 100%; height: 130px; position: relative; }
+  .thumb.t1 { background: linear-gradient(135deg, #4A2D5F, #C24D4D); }
+  .thumb.t2 { background: linear-gradient(135deg, #2F6FA8, #0F3A6E); }
+  .duration { position: absolute; right: 6px; bottom: 6px; background: rgba(0,0,0,0.75); color: #fff; font-size: 10px; font-weight: 500; padding: 2px 6px; border-radius: 4px; }
+  .vmeta { display: flex; padding: 10px 12px 0; gap: 10px; }
+  .ch-av { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; }
+  .ch-av.a1 { background: linear-gradient(135deg, #E7C77A, #B5862E); }
+  .ch-av.a2 { background: linear-gradient(135deg, #9EE0A8, #3E8050); }
+  .vtext { flex: 1; min-width: 0; }
+  .vtitle { font-size: 13px; font-weight: 500; color: var(--text); line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 3px; }
+  .vsub { font-size: 11px; font-weight: 400; color: var(--text-secondary); }
+  .more-dot { color: var(--text-secondary); font-size: 16px; padding-top: 2px; }
+
+  /* Shorts row */
+  .shorts { padding: 8px 12px; border-top: 1px solid var(--divider); border-bottom: 1px solid var(--divider); }
+  .shorts-header { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+  .shorts-icon { width: 18px; height: 18px; background: var(--red); border-radius: 4px; position: relative; }
+  .shorts-icon::after { content: ''; position: absolute; top: 3px; left: 5px; width: 0; height: 0; border-left: 6px solid #fff; border-top: 4px solid transparent; border-bottom: 4px solid transparent; }
+  .shorts-label { font-size: 13px; font-weight: 700; color: var(--text); }
+  .shorts-row { display: flex; gap: 6px; }
+  .short-tile { width: 72px; height: 110px; border-radius: 8px; flex-shrink: 0; position: relative; }
+  .short-tile.s1 { background: linear-gradient(135deg, #FE2C55, #7D1848); }
+  .short-tile.s2 { background: linear-gradient(135deg, #3EA6FF, #1E4E8A); }
+  .short-tile.s3 { background: linear-gradient(135deg, #F5D85C, #B5862E); }
+  .short-tile.s4 { background: linear-gradient(135deg, #4B8A3E, #1E3F1E); }
+  .short-cap { position: absolute; bottom: 4px; left: 4px; right: 4px; font-size: 9px; font-weight: 500; color: #fff; line-height: 1.2; }
+
+  /* Tab bar */
+  .tab-bar { height: 58px; background: var(--canvas); border-top: 1px solid var(--divider); display: flex; align-items: center; justify-content: space-around; padding: 4px 4px 10px; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--text-secondary); font-size: 9px; font-weight: 500; width: 52px; }
+  .tab.active { color: var(--text); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+  .tab.shorts-tab svg { width: 22px; height: 22px; fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 16px; min-height: 90px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #000; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; }
+  .t-20 { font-size: 20px; font-weight: 700; letter-spacing: -0.1px; }
+  .t-18 { font-size: 18px; font-weight: 600; letter-spacing: -0.1px; }
+  .t-16 { font-size: 16px; font-weight: 500; }
+  .t-14 { font-size: 14px; font-weight: 500; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 500; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 13px; font-weight: 500; padding: 8px 16px; border-radius: 18px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+  .btn-sub { background: var(--red); color: #fff; }
+  .btn-subbed { background: var(--surface-2); color: var(--text); }
+  .btn-subbed svg { width: 14px; height: 14px; fill: currentColor; }
+  .btn-action { background: var(--surface-2); color: var(--text); padding: 8px 14px; }
+  .btn-action svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .filter-chip { padding: 6px 12px; background: var(--surface-2); color: var(--text); font-size: 13px; font-weight: 400; border-radius: 999px; }
+  .filter-chip.active { background: var(--text); color: var(--canvas); }
+
+  /* Distinctive — Subscribe states */
+  .sub-states { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; padding: 10px 0; }
+  .sub-state-lbl { font-size: 11px; color: var(--text-secondary); margin-top: 4px; text-align: center; font-family: 'SF Mono', Menlo, monospace; }
+  .sub-state { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--red); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-18 { border-radius: 18px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">YouTube iOS — Design Tokens</div>
+    <div class="page-chip">Dark</div>
+  </div>
+  <p class="page-subtitle">Near-black canvas (#0F0F0F), YouTube Red reserved for Subscribe, the LIVE badge, and the logomark. Hard-edge 16:9 thumbnails are the load-bearing aesthetic.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="top-bar">
+            <div class="logo">
+              <div class="logo-mark"><svg viewBox="0 0 10 10"><polygon points="2,1 9,5 2,9"/></svg></div>
+              <div class="logo-word">YouTube</div>
+            </div>
+            <div class="top-icons">
+              <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10a6 6 0 0 1 6 6"/><circle cx="4" cy="18" r="1" fill="currentColor"/></svg>
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+              <div class="avatar-mini"></div>
+            </div>
+          </div>
+          <div class="chip-row">
+            <div class="tc active">All</div>
+            <div class="tc">Music</div>
+            <div class="tc">Gaming</div>
+            <div class="tc">Podcasts</div>
+          </div>
+          <div class="feed">
+            <div class="vcard">
+              <div class="thumb t1"><div class="duration">12:34</div></div>
+              <div class="vmeta">
+                <div class="ch-av a1"></div>
+                <div class="vtext">
+                  <div class="vtitle">Golden hour film workflow — shooting on a 40-year-old lens</div>
+                  <div class="vsub">Amber Leaf · 142K views · 2 hours ago</div>
+                </div>
+                <div class="more-dot">⋮</div>
+              </div>
+            </div>
+            <div class="vcard">
+              <div class="thumb t2"><div class="duration">8:02</div></div>
+              <div class="vmeta">
+                <div class="ch-av a2"></div>
+                <div class="vtext">
+                  <div class="vtitle">Building a tiny CLI that actually ships</div>
+                  <div class="vsub">PlantNook Dev · 1.2M views · 3 days ago</div>
+                </div>
+                <div class="more-dot">⋮</div>
+              </div>
+            </div>
+            <div class="shorts">
+              <div class="shorts-header">
+                <div class="shorts-icon"></div>
+                <div class="shorts-label">Shorts</div>
+              </div>
+              <div class="shorts-row">
+                <div class="short-tile s1"><div class="short-cap">60-sec soup</div></div>
+                <div class="short-tile s2"><div class="short-cap">Lens test</div></div>
+                <div class="short-tile s3"><div class="short-cap">Cabin vlog</div></div>
+                <div class="short-tile s4"><div class="short-cap">Garden</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab shorts-tab"><svg viewBox="0 0 24 24"><path d="M17 5L9 9v10l8-4v-10zM7 9v10l-4-2V11z"/></svg><span>Shorts</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><span>Create</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><polygon points="10,9 16,12 10,15" fill="currentColor" stroke="none"/></svg><span>Subs</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg><span>You</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#FF0000;"><div class="name">YouTube Red</div>#FF0000</div>
+          <div class="swatch" style="background:#CC0000;"><div class="name">Red Pressed</div>#CC0000</div>
+          <div class="swatch" style="background:#E60000;"><div class="name">Red Hover</div>#E60000</div>
+          <div class="swatch" style="background:#0F0F0F;"><div class="name">Canvas Dark</div>#0F0F0F</div>
+          <div class="swatch" style="background:#1F1F1F;"><div class="name">Surface 1</div>#1F1F1F</div>
+          <div class="swatch" style="background:#272727;"><div class="name">Surface 2</div>#272727</div>
+          <div class="swatch" style="background:#3F3F3F;"><div class="name">Surface 3</div>#3F3F3F</div>
+          <div class="swatch" style="background:#303030;"><div class="name">Divider Dark</div>#303030</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Canvas Light</div>#FFFFFF</div>
+          <div class="swatch" style="background:#AAAAAA; color:#000;"><div class="name">Text Secondary</div>#AAAAAA</div>
+          <div class="swatch" style="background:#717171;"><div class="name">Text Tertiary</div>#717171</div>
+          <div class="swatch" style="background:#3EA6FF; color:#000;"><div class="name">Info Blue</div>#3EA6FF</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — YouTube Sans + Roboto</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 20pt · 700</div><div class="type-sample t-20">Subscriptions</div></div>
+        <div class="type-row"><div class="type-meta">Video Detail · 18pt · 600</div><div class="type-sample t-18">Building a tiny CLI that actually ships</div></div>
+        <div class="type-row"><div class="type-meta">Feed Title · 16pt · 500</div><div class="type-sample t-16">Golden hour film workflow on a 40-year-old lens</div></div>
+        <div class="type-row"><div class="type-meta">Channel Name · 14pt · 500</div><div class="type-sample t-14">Amber Leaf</div></div>
+        <div class="type-row"><div class="type-meta">Metadata · 13pt · 400</div><div class="type-sample t-13">1.2M views · 3 days ago</div></div>
+        <div class="type-row"><div class="type-meta">Duration · 11pt · 500</div><div class="type-sample t-11">12:34</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-sub">Subscribe</button>
+          <button class="btn btn-subbed">Subscribed</button>
+          <button class="btn btn-action"><svg viewBox="0 0 24 24"><path d="M7 10v11h10V10M2 10h20V7H2z"/></svg>Like 1.2K</button>
+          <button class="btn btn-action"><svg viewBox="0 0 24 24"><path d="M4 12v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M12 3v13M6 9l6-6 6 6"/></svg>Share</button>
+          <div class="filter-chip active">All</div>
+          <div class="filter-chip">Music</div>
+          <div class="filter-chip">Gaming</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive — Subscribe Button States</div>
+        <div class="sub-states">
+          <div class="sub-state">
+            <button class="btn btn-sub">Subscribe</button>
+            <div class="sub-state-lbl">default / red</div>
+          </div>
+          <div class="sub-state">
+            <button class="btn btn-subbed"><svg viewBox="0 0 24 24"><path d="M18 16v-5a6 6 0 0 0-12 0v5l-2 2v1h16v-1z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>Subscribed</button>
+            <div class="sub-state-lbl">subscribed + bell</div>
+          </div>
+          <div class="sub-state">
+            <button class="btn btn-subbed"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M18 16v-5a6 6 0 0 0-12 0v5l-2 2v1h16v-1z"/><path d="M10 20a2 2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="2"/></svg>Subscribed · ON</button>
+            <div class="sub-state-lbl">notifications on</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-18">18</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

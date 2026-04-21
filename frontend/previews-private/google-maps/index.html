@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Google Maps iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --surface-muted: #F1F3F4;
+    --divider: #DADCE0;
+    --text: #202124;
+    --text-secondary: #5F6368;
+    --text-tertiary: #80868B;
+    --blue: #4285F4;
+    --blue-pressed: #1A73E8;
+    --blue-dark: #174EA6;
+    --red: #EA4335;
+    --yellow: #FBBC04;
+    --green: #34A853;
+    --orange: #FB8C00;
+    --purple: #8E44AD;
+    --map-road: #FFFFFF;
+    --map-highway: #FDF6E3;
+    --map-water: #AADAFF;
+    --map-park: #C8E6C9;
+    --map-land: #F5F1E8;
+    --map-building: #F0F0F0;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #ECEFF1; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; color: var(--text); }
+  .page-chip { background: var(--blue); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.5), 0 0 0 2px rgba(0,0,0,0.08) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Map canvas */
+  .map {
+    position: absolute; inset: 0 0 60px 0;
+    background: var(--map-land);
+    overflow: hidden;
+  }
+  /* Park patches */
+  .park { position: absolute; background: var(--map-park); border-radius: 40%; }
+  .park.p1 { top: 8%; left: -8%; width: 130px; height: 100px; transform: rotate(-14deg); }
+  .park.p2 { top: 46%; right: -6%; width: 110px; height: 90px; border-radius: 30% 60% 40% 50%; }
+  .park.p3 { bottom: 18%; left: 38%; width: 90px; height: 80px; border-radius: 50% 30% 60% 40%; }
+  /* Water */
+  .water { position: absolute; top: 30%; left: -10%; width: 140%; height: 60px; background: var(--map-water); transform: rotate(4deg); }
+  .water::after { content: ''; position: absolute; inset: 20px 0 0 0; height: 30px; background: var(--map-water); opacity: 0.7; }
+  /* Highway shield */
+  .highway { position: absolute; top: 18%; left: -10%; width: 130%; height: 14px; background: var(--map-highway); transform: rotate(-6deg); border-top: 1px solid #E6D9B5; border-bottom: 1px solid #E6D9B5; }
+  /* Roads */
+  .road { position: absolute; background: var(--map-road); box-shadow: 0 0 0 1px #E0E0E0; }
+  .road.r1 { top: 42%; left: -10%; width: 130%; height: 7px; transform: rotate(3deg); }
+  .road.r2 { top: 62%; left: -10%; width: 130%; height: 5px; transform: rotate(-2deg); }
+  .road.r3 { top: -5%; left: 22%; width: 6px; height: 80%; transform: rotate(14deg); }
+  .road.r4 { top: 10%; right: 18%; width: 5px; height: 70%; transform: rotate(-10deg); }
+  /* Buildings */
+  .bldg { position: absolute; background: var(--map-building); border: 1px solid #E0E0E0; }
+  .bldg.b1 { top: 52%; left: 10%; width: 26px; height: 22px; }
+  .bldg.b2 { top: 55%; left: 38%; width: 32px; height: 28px; }
+  .bldg.b3 { top: 50%; right: 30%; width: 24px; height: 20px; }
+
+  /* Accuracy + location dot */
+  .accuracy { position: absolute; top: 58%; left: 32%; width: 110px; height: 110px; border-radius: 50%; background: rgba(66,133,244,0.18); border: 1px solid rgba(66,133,244,0.4); transform: translate(-50%, -50%); }
+  .loc-dot { position: absolute; top: 58%; left: 32%; width: 14px; height: 14px; border-radius: 50%; background: var(--blue); border: 3px solid #fff; transform: translate(-50%, -50%); box-shadow: 0 1px 4px rgba(0,0,0,0.3); z-index: 3; }
+
+  /* Red pin center */
+  .pin-hero { position: absolute; top: 44%; left: 54%; transform: translate(-50%, -100%); z-index: 3; }
+  .pin-hero .body { width: 26px; height: 26px; background: var(--red); border-radius: 50% 50% 50% 0; transform: rotate(-45deg); box-shadow: 0 4px 8px rgba(0,0,0,0.3); position: relative; }
+  .pin-hero .body::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 8px; height: 8px; background: #fff; border-radius: 50%; }
+
+  /* Top floating search bar */
+  .search-bar { position: absolute; top: 48px; left: 12px; right: 12px; height: 44px; background: #fff; border-radius: 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); display: flex; align-items: center; padding: 0 10px; gap: 10px; z-index: 5; }
+  .search-icon { width: 18px; height: 18px; color: var(--text-secondary); flex-shrink: 0; }
+  .search-icon svg { width: 100%; height: 100%; stroke: currentColor; stroke-width: 2; fill: none; }
+  .search-ph { flex: 1; font-size: 14px; color: var(--text-secondary); font-weight: 400; }
+  .search-avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #E8B572, #C26B27); flex-shrink: 0; color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+
+  /* Directions FAB */
+  .fab { position: absolute; right: 14px; bottom: 200px; width: 48px; height: 48px; border-radius: 50%; background: var(--blue); box-shadow: 0 4px 12px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; z-index: 5; }
+  .fab svg { width: 22px; height: 22px; fill: #fff; }
+
+  /* Bottom sheet */
+  .sheet { position: absolute; bottom: 60px; left: 0; right: 0; background: #fff; border-radius: 16px 16px 0 0; padding: 6px 14px 14px; box-shadow: 0 -4px 20px rgba(0,0,0,0.12); z-index: 4; }
+  .grabber { width: 32px; height: 4px; background: var(--divider); border-radius: 2px; margin: 0 auto 10px; }
+  .place-row { display: flex; gap: 10px; align-items: flex-start; }
+  .place-photo { width: 52px; height: 52px; border-radius: 8px; background: linear-gradient(135deg, #D4A373, #976D42); flex-shrink: 0; position: relative; overflow: hidden; }
+  .place-photo::after { content: '☕'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+  .place-info { flex: 1; min-width: 0; }
+  .place-title { font-size: 15px; font-weight: 500; color: var(--text); letter-spacing: -0.1px; }
+  .place-rating { display: flex; align-items: center; gap: 3px; font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .rating-num { color: var(--text); font-weight: 500; margin-right: 3px; }
+  .stars { color: var(--yellow); font-size: 11px; letter-spacing: -1px; }
+  .place-meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .place-meta .open { color: var(--green); font-weight: 500; }
+  .sheet-actions { display: flex; gap: 8px; margin-top: 10px; }
+  .sheet-btn { flex: 1; height: 34px; border-radius: 17px; font-size: 12px; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 4px; }
+  .sheet-btn.primary { background: var(--blue); color: #fff; }
+  .sheet-btn.secondary { background: transparent; border: 1px solid var(--divider); color: var(--blue); }
+  .sheet-btn svg { width: 13px; height: 13px; }
+
+  /* Tab bar */
+  .tab-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 60px; background: #fff; border-top: 0.5px solid var(--divider); display: flex; align-items: center; justify-content: space-around; padding: 4px 6px 14px; z-index: 5; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--text-secondary); font-size: 9px; font-weight: 500; }
+  .tab.active { color: var(--blue); }
+  .tab svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: #fff; border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 14px; min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 500; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--text); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); }
+  .t-28 { font-size: 28px; font-weight: 500; letter-spacing: -0.3px; }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-20 { font-size: 20px; font-weight: 500; letter-spacing: -0.2px; }
+  .t-16 { font-size: 16px; font-weight: 500; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+  .t-11 { font-size: 11px; font-weight: 500; letter-spacing: 0.2px; color: var(--text-secondary); text-transform: uppercase; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 15px; font-weight: 500; padding: 11px 24px; border-radius: 22px; border: none; cursor: pointer; }
+  .btn-primary { background: var(--blue); color: #fff; }
+  .btn-outline { background: transparent; color: var(--blue); border: 1px solid var(--divider); padding: 10px 20px; font-size: 13px; }
+  .fab-demo { width: 56px; height: 56px; border-radius: 50%; background: var(--blue); box-shadow: 0 4px 12px rgba(0,0,0,0.2); display: inline-flex; align-items: center; justify-content: center; border: none; }
+  .fab-demo svg { width: 24px; height: 24px; fill: #fff; }
+  .chip { padding: 8px 14px; background: #fff; border: 1px solid var(--divider); color: var(--text); font-size: 14px; font-weight: 500; border-radius: 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); display: inline-flex; align-items: center; gap: 6px; }
+  .chip.active { background: #E8F0FE; border-color: var(--blue); color: #1967D2; }
+  .chip .dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  /* Pin legend (distinctive) */
+  .pin-legend { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; text-align: center; }
+  .pin-card { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 12px 8px; border-radius: 10px; background: var(--map-land); border: 1px solid var(--divider); }
+  .pin-shape { width: 36px; height: 36px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+  .pin-shape::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 12px; height: 12px; background: #fff; border-radius: 50%; }
+  .pin-red { background: var(--red); }
+  .pin-green { background: var(--green); }
+  .pin-blue { background: var(--blue); }
+  .pin-orange { background: var(--orange); }
+  .pin-purple { background: var(--purple); }
+  .pin-label { font-size: 11px; font-weight: 500; color: var(--text); text-align: center; line-height: 1.2; }
+  .pin-hex { font-family: 'SF Mono', Menlo, monospace; font-size: 10px; color: var(--text-secondary); }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--blue); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px 16px 0 0; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Google Maps iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">Map as the hero — 60%+ of every viewport. Google's four logo colors each have one job: Blue (route/FAB/location), Red (default pin), Green (saved), Yellow (rating/alert). Floating pill search bar, bottom sheet place cards with 16pt top radius.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="map">
+            <div class="park p1"></div>
+            <div class="park p2"></div>
+            <div class="park p3"></div>
+            <div class="water"></div>
+            <div class="highway"></div>
+            <div class="road r1"></div>
+            <div class="road r2"></div>
+            <div class="road r3"></div>
+            <div class="road r4"></div>
+            <div class="bldg b1"></div>
+            <div class="bldg b2"></div>
+            <div class="bldg b3"></div>
+            <div class="accuracy"></div>
+            <div class="loc-dot"></div>
+            <div class="pin-hero"><div class="body"></div></div>
+          </div>
+
+          <div class="search-bar">
+            <div class="search-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg></div>
+            <div class="search-ph">Search here</div>
+            <div class="search-avatar">M</div>
+          </div>
+
+          <div class="fab">
+            <svg viewBox="0 0 24 24"><path d="M21.71 11.29l-9-9a1 1 0 0 0-1.42 0l-9 9a1 1 0 0 0 0 1.42l9 9a1 1 0 0 0 1.42 0l9-9a1 1 0 0 0 0-1.42zM14 14.5V12h-4v3H8v-4a1 1 0 0 1 1-1h5V7.5L17.5 11z"/></svg>
+          </div>
+
+          <div class="sheet">
+            <div class="grabber"></div>
+            <div class="place-row">
+              <div class="place-photo"></div>
+              <div class="place-info">
+                <div class="place-title">Sanborn's Café</div>
+                <div class="place-rating">
+                  <span class="rating-num">4.6</span>
+                  <span class="stars">★★★★★</span>
+                  <span>(142)</span>
+                </div>
+                <div class="place-meta">Coffee shop · <span class="open">Open</span> · 0.3 mi</div>
+              </div>
+            </div>
+            <div class="sheet-actions">
+              <div class="sheet-btn primary">
+                <svg viewBox="0 0 24 24" fill="#fff"><path d="M21.71 11.29l-9-9a1 1 0 0 0-1.42 0l-9 9a1 1 0 0 0 0 1.42l9 9a1 1 0 0 0 1.42 0l9-9a1 1 0 0 0 0-1.42z"/></svg>
+                Directions
+              </div>
+              <div class="sheet-btn secondary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7l.6 2.6a2 2 0 0 1-.5 2L8 9.8a16 16 0 0 0 6 6l1.4-1.4a2 2 0 0 1 2.1-.5l2.6.6a2 2 0 0 1 1.7 2z"/></svg>
+                Call
+              </div>
+              <div class="sheet-btn secondary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10l6 6v10a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+                Save
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="currentColor"/></svg><span>Explore</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 13h18M6 17l6 4 6-4"/><path d="M3 9h18"/></svg><span>Go</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span>Saved</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><span>Contribute</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span>Updates</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#4285F4;"><div class="name">Google Blue</div>#4285F4</div>
+          <div class="swatch" style="background:#EA4335;"><div class="name">Google Red</div>#EA4335</div>
+          <div class="swatch light" style="background:#FBBC04;"><div class="name">Google Yellow</div>#FBBC04</div>
+          <div class="swatch" style="background:#34A853;"><div class="name">Google Green</div>#34A853</div>
+          <div class="swatch" style="background:#FB8C00;"><div class="name">Category Orange</div>#FB8C00</div>
+          <div class="swatch" style="background:#1A73E8;"><div class="name">Blue Pressed</div>#1A73E8</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Canvas</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#F1F3F4;"><div class="name">Surface Muted</div>#F1F3F4</div>
+          <div class="swatch light" style="background:#DADCE0;"><div class="name">Divider</div>#DADCE0</div>
+          <div class="swatch" style="background:#202124;"><div class="name">Text / Dark Canvas</div>#202124</div>
+          <div class="swatch" style="background:#5F6368;"><div class="name">Text Secondary</div>#5F6368</div>
+          <div class="swatch light" style="background:#AADAFF;"><div class="name">Map Water</div>#AADAFF</div>
+          <div class="swatch light" style="background:#C8E6C9;"><div class="name">Map Park</div>#C8E6C9</div>
+          <div class="swatch light" style="background:#FDF6E3;"><div class="name">Map Highway</div>#FDF6E3</div>
+          <div class="swatch light" style="background:#F0F0F0;"><div class="name">Map Building</div>#F0F0F0</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Google Sans + Roboto</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 28pt · 500</div><div class="type-sample t-28">Your places</div></div>
+        <div class="type-row"><div class="type-meta">Turn Card · 22pt · 700</div><div class="type-sample t-22">Turn right onto Main St</div></div>
+        <div class="type-row"><div class="type-meta">Place Title · 20pt · 500</div><div class="type-sample t-20">Sanborn's Café</div></div>
+        <div class="type-row"><div class="type-meta">Row Title · 16pt · 500</div><div class="type-sample t-16">Blue Bottle Coffee</div></div>
+        <div class="type-row"><div class="type-meta">Body / Address · 14pt · 400</div><div class="type-sample t-14">123 Market St, San Francisco</div></div>
+        <div class="type-row"><div class="type-meta">Distance · 13pt · 400 tnum</div><div class="type-sample t-13">1.2 mi · 4 min · Open now</div></div>
+        <div class="type-row"><div class="type-meta">Tab Label · 11pt · 500</div><div class="type-sample t-11">Explore</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Directions</button>
+          <button class="btn btn-outline">Call</button>
+          <button class="fab-demo"><svg viewBox="0 0 24 24"><path d="M21.71 11.29l-9-9a1 1 0 0 0-1.42 0l-9 9a1 1 0 0 0 0 1.42l9 9a1 1 0 0 0 1.42 0l9-9a1 1 0 0 0 0-1.42zM14 14.5V12h-4v3H8v-4a1 1 0 0 1 1-1h5V7.5L17.5 11z"/></svg></button>
+        </div>
+        <div class="btn-row" style="margin-top: 14px;">
+          <div class="chip active"><span class="dot" style="background:#FB8C00;"></span>Restaurants</div>
+          <div class="chip"><span class="dot" style="background:#FB8C00;"></span>Coffee</div>
+          <div class="chip"><span class="dot" style="background:#1A73E8;"></span>Hotels</div>
+          <div class="chip"><span class="dot" style="background:#34A853;"></span>Things to do</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Pin Color Legend — 5 pins, 5 jobs</div>
+        <div class="pin-legend">
+          <div class="pin-card">
+            <div class="pin-shape pin-red"></div>
+            <div class="pin-label">Default</div>
+            <div class="pin-hex">#EA4335</div>
+          </div>
+          <div class="pin-card">
+            <div class="pin-shape pin-green"></div>
+            <div class="pin-label">Saved</div>
+            <div class="pin-hex">#34A853</div>
+          </div>
+          <div class="pin-card">
+            <div class="pin-shape pin-blue"></div>
+            <div class="pin-label">Home / Work</div>
+            <div class="pin-hex">#4285F4</div>
+          </div>
+          <div class="pin-card">
+            <div class="pin-shape pin-orange"></div>
+            <div class="pin-label">Category</div>
+            <div class="pin-hex">#FB8C00</div>
+          </div>
+          <div class="pin-card">
+            <div class="pin-shape pin-purple"></div>
+            <div class="pin-label">Shared</div>
+            <div class="pin-hex">#8E44AD</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16 top</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

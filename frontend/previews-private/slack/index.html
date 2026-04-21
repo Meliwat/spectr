@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Slack iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --aubergine: #4A154B;
+    --aubergine-dark: #3F0E40;
+    --aubergine-hover: #350D36;
+    --slack-yellow: #ECB22E;
+    --slack-pink: #E01E5A;
+    --slack-blue: #36C5F0;
+    --slack-green: #2EB67D;
+    --canvas: #FFFFFF;
+    --canvas-dark: #1A1D21;
+    --text: #1D1C1D;
+    --text-secondary: #616061;
+    --text-tertiary: #868686;
+    --divider: #E8E8E8;
+    --sidebar-text: #FFFFFF;
+    --channel-name: #CFC3CF;
+    --mention-red: #CD2553;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Lato', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #E5E5E5; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 900; letter-spacing: -0.6px; color: var(--text); }
+  .page-chip { background: var(--aubergine); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 4px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.55; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.5), 0 0 0 2px rgba(0,0,0,0.08) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 5; }
+
+  /* Two-col split body */
+  .body-split { flex: 1; display: flex; padding-top: 46px; min-height: 0; }
+
+  /* Aubergine sidebar */
+  .sidebar { width: 110px; background: var(--aubergine); color: var(--sidebar-text); padding: 8px 6px; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+  .ws-head { display: flex; align-items: center; gap: 6px; }
+  .ws-icon { width: 28px; height: 28px; border-radius: 6px; background: linear-gradient(135deg, var(--slack-pink), var(--slack-yellow)); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 900; font-size: 13px; flex-shrink: 0; }
+  .ws-name { font-size: 11px; font-weight: 700; line-height: 1.1; }
+  .sb-section { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: var(--channel-name); margin-top: 6px; }
+  .ch-list { display: flex; flex-direction: column; gap: 3px; }
+  .ch-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--channel-name); padding: 3px 4px; border-radius: 4px; position: relative; }
+  .ch-item.unread { color: #fff; font-weight: 700; }
+  .ch-item.active { background: #1164A3; color: #fff; font-weight: 700; }
+  .ch-hash { font-size: 12px; width: 10px; text-align: center; flex-shrink: 0; }
+  .ch-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ch-badge { background: var(--mention-red); color: #fff; font-size: 9px; font-weight: 700; border-radius: 8px; padding: 1px 5px; }
+  .dm-item { display: flex; align-items: center; gap: 5px; font-size: 12px; padding: 3px 4px; color: var(--channel-name); }
+  .dm-status { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; border: 1px solid var(--aubergine); }
+  .dm-status.online { background: var(--slack-green); }
+  .dm-status.away { background: transparent; border-color: var(--channel-name); }
+
+  /* Main panel */
+  .main { flex: 1; display: flex; flex-direction: column; min-width: 0; background: var(--canvas); }
+  .ch-header { padding: 8px 12px; border-bottom: 1px solid var(--divider); }
+  .ch-title { font-size: 14px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 4px; }
+  .ch-members { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+  .msg-list { flex: 1; padding: 6px 10px; overflow: hidden; }
+  .msg { display: flex; gap: 8px; padding: 6px 0; }
+  .msg-av { width: 30px; height: 30px; border-radius: 4px; flex-shrink: 0; }
+  .av-1 { background: linear-gradient(135deg, #E01E5A, #ECB22E); }
+  .av-2 { background: linear-gradient(135deg, #2EB67D, #36C5F0); }
+  .av-3 { background: linear-gradient(135deg, #4A154B, #E01E5A); }
+  .msg-body { flex: 1; min-width: 0; font-size: 13px; color: var(--text); line-height: 1.45; }
+  .msg-head { display: flex; align-items: baseline; gap: 6px; }
+  .msg-user { font-size: 13px; font-weight: 700; color: var(--text); }
+  .msg-time { font-size: 10px; color: var(--text-tertiary); }
+  .msg-text { font-size: 13px; color: var(--text); }
+  .reaction-row { display: flex; gap: 4px; margin-top: 5px; flex-wrap: wrap; }
+  .rxn { background: #F8F8F8; border: 1px solid var(--divider); border-radius: 12px; padding: 1px 7px; font-size: 11px; display: flex; align-items: center; gap: 3px; color: var(--text-secondary); font-weight: 600; }
+  .rxn.mine { background: #E8F5FF; border-color: #B6DDFF; color: #1164A3; }
+
+  /* Compose */
+  .compose { border-top: 1px solid var(--divider); padding: 8px 10px; background: var(--canvas); }
+  .compose-input { border: 1px solid var(--divider); border-radius: 6px; padding: 8px 10px; font-size: 12px; color: var(--text-tertiary); }
+  .compose-tools { display: flex; align-items: center; gap: 10px; padding: 6px 2px 0; color: var(--text-secondary); }
+  .compose-tools svg { width: 15px; height: 15px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .compose-tools .send { margin-left: auto; width: 26px; height: 26px; border-radius: 4px; background: var(--aubergine); display: flex; align-items: center; justify-content: center; }
+  .compose-tools .send svg { stroke: #fff; }
+
+  /* Tab bar */
+  .tab-bar { height: 56px; background: var(--canvas); border-top: 0.5px solid var(--divider); display: flex; align-items: flex-start; justify-content: space-around; padding: 6px 0 10px; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--text-tertiary); font-size: 10px; font-weight: 600; flex: 1; }
+  .tab.active { color: var(--text); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+  .tab.active svg { fill: currentColor; }
+
+  /* Sections */
+  .section { background: var(--canvas); border: 1px solid var(--divider); border-radius: 8px; padding: 24px; margin-bottom: 20px; }
+  .section-title { font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 8px; padding: 14px; min-height: 92px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 700; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--text); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); }
+  .t-24 { font-size: 24px; font-weight: 900; letter-spacing: -0.4px; }
+  .t-18 { font-size: 18px; font-weight: 900; }
+  .t-15b { font-size: 15px; font-weight: 700; }
+  .t-15 { font-size: 15px; font-weight: 400; line-height: 1.5; }
+  .t-13 { font-size: 13px; color: var(--text-secondary); }
+  .t-mono { font-family: 'SF Mono', Menlo, monospace; font-size: 12px; background: #F8F8F8; border: 1px solid var(--divider); padding: 2px 6px; border-radius: 3px; color: var(--text); }
+
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; font-size: 14px; }
+  .btn-primary { background: #007A5A; color: #fff; padding: 8px 18px; border-radius: 4px; }
+  .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--divider); padding: 7px 18px; border-radius: 4px; }
+  .btn-destructive { background: #E01E5A; color: #fff; padding: 8px 18px; border-radius: 4px; }
+
+  /* Workspace customization */
+  .ws-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .ws-demo { border-radius: 10px; overflow: hidden; display: flex; padding: 8px; height: 160px; }
+  .ws-demo .mini-side { width: 48%; padding: 8px; border-radius: 6px; color: #fff; display: flex; flex-direction: column; gap: 6px; }
+  .ws-demo .mini-name { font-size: 11px; font-weight: 700; }
+  .ws-demo .mini-ch { font-size: 10px; opacity: 0.8; }
+  .ws-demo .mini-main { flex: 1; background: #fff; margin-left: 6px; border-radius: 6px; padding: 8px; font-size: 10px; color: var(--text-secondary); }
+  .ws-aub .mini-side { background: var(--aubergine); }
+  .ws-navy .mini-side { background: #002A47; }
+  .ws-emerald .mini-side { background: #004737; }
+  .ws-crimson .mini-side { background: #5A0F19; }
+  .ws-label { font-size: 11px; font-weight: 700; color: var(--text-secondary); margin-top: 6px; text-align: center; font-family: 'SF Mono', Menlo, monospace; }
+  .ws-wrap { background: #F5F5F5; border-radius: 10px; padding: 4px; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--aubergine); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Slack iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">White content on the classic Aubergine (#4A154B) sidebar. The Slack 4-color logomark anchors brand accents; workspace themes let teams repaint the sidebar without touching the main column.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="body-split">
+            <div class="sidebar">
+              <div class="ws-head">
+                <div class="ws-icon">AX</div>
+                <div class="ws-name">Acme<br>HQ</div>
+              </div>
+              <div class="sb-section">Channels</div>
+              <div class="ch-list">
+                <div class="ch-item active"><span class="ch-hash">#</span><span class="ch-name">general</span></div>
+                <div class="ch-item unread"><span class="ch-hash">#</span><span class="ch-name">design</span><span class="ch-badge">3</span></div>
+                <div class="ch-item"><span class="ch-hash">#</span><span class="ch-name">random</span></div>
+                <div class="ch-item"><span class="ch-hash">🔒</span><span class="ch-name">leadership</span></div>
+              </div>
+              <div class="sb-section">Direct</div>
+              <div class="ch-list">
+                <div class="dm-item"><span class="dm-status online"></span><span class="ch-name">Sofia</span></div>
+                <div class="dm-item"><span class="dm-status away"></span><span class="ch-name">Marcus</span></div>
+                <div class="dm-item"><span class="dm-status online"></span><span class="ch-name">Amelia</span></div>
+              </div>
+            </div>
+
+            <div class="main">
+              <div class="ch-header">
+                <div class="ch-title"># general</div>
+                <div class="ch-members">42 members · Company-wide</div>
+              </div>
+              <div class="msg-list">
+                <div class="msg">
+                  <div class="msg-av av-1"></div>
+                  <div class="msg-body">
+                    <div class="msg-head"><span class="msg-user">Sofia Reyes</span><span class="msg-time">9:41 AM</span></div>
+                    <div class="msg-text">Design-tokens v2 is in review! 🎉</div>
+                    <div class="reaction-row">
+                      <div class="rxn mine">🎉 <span>4</span></div>
+                      <div class="rxn">🚀 <span>2</span></div>
+                      <div class="rxn">❤️ <span>1</span></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="msg">
+                  <div class="msg-av av-2"></div>
+                  <div class="msg-body">
+                    <div class="msg-head"><span class="msg-user">Marcus H.</span><span class="msg-time">9:43 AM</span></div>
+                    <div class="msg-text">Big lift. Going to send the iOS swift-ui port by Friday.</div>
+                  </div>
+                </div>
+                <div class="msg">
+                  <div class="msg-av av-3"></div>
+                  <div class="msg-body">
+                    <div class="msg-head"><span class="msg-user">Amelia Park</span><span class="msg-time">9:44 AM</span></div>
+                    <div class="msg-text">Amazing team — drinks on me 🍻</div>
+                  </div>
+                </div>
+              </div>
+              <div class="compose">
+                <div class="compose-input">Message #general</div>
+                <div class="compose-tools">
+                  <svg viewBox="0 0 24 24"><path d="M6 4v16M10 8h8M10 12h8M10 16h5"/></svg>
+                  <svg viewBox="0 0 24 24"><path d="M8 6v12M14 6v12M4 9h5M15 9h5M4 15h5M15 15h5"/></svg>
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="10" r="1" fill="currentColor"/><circle cx="15" cy="10" r="1" fill="currentColor"/></svg>
+                  <svg viewBox="0 0 24 24"><path d="M21 11.5a8 8 0 1 1-16 0C5 7 9 3 13 3"/><path d="M14 3h7v7"/></svg>
+                  <div class="send"><svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.8 7L4 21l1.5-4A8 8 0 1 1 21 12z"/></svg><span>DMs</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9zM10 21a2 2 0 0 0 4 0"/></svg><span>Activity</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Later</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#4A154B;"><div class="name">Aubergine</div>#4A154B</div>
+          <div class="swatch" style="background:#3F0E40;"><div class="name">Dark Aubergine</div>#3F0E40</div>
+          <div class="swatch" style="background:#ECB22E; color:#1D1C1D;"><div class="name">Slack Yellow</div>#ECB22E</div>
+          <div class="swatch" style="background:#E01E5A;"><div class="name">Slack Pink</div>#E01E5A</div>
+          <div class="swatch" style="background:#36C5F0; color:#1D1C1D;"><div class="name">Slack Blue</div>#36C5F0</div>
+          <div class="swatch" style="background:#2EB67D;"><div class="name">Slack Green</div>#2EB67D</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Canvas Light</div>#FFFFFF</div>
+          <div class="swatch" style="background:#1A1D21;"><div class="name">Canvas Dark</div>#1A1D21</div>
+          <div class="swatch" style="background:#1D1C1D;"><div class="name">Text Primary</div>#1D1C1D</div>
+          <div class="swatch" style="background:#616061;"><div class="name">Text Secondary</div>#616061</div>
+          <div class="swatch" style="background:#CFC3CF; color:#4A154B;"><div class="name">Channel Name</div>#CFC3CF</div>
+          <div class="swatch" style="background:#1164A3;"><div class="name">Active Channel</div>#1164A3</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Slack Lato (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Channel Header · 24pt · 900</div><div class="type-sample t-24"># general</div></div>
+        <div class="type-row"><div class="type-meta">Section · 18pt · 900</div><div class="type-sample t-18">Threads</div></div>
+        <div class="type-row"><div class="type-meta">Username · 15pt · 700</div><div class="type-sample t-15b">Sofia Reyes</div></div>
+        <div class="type-row"><div class="type-meta">Message · 15pt · 400</div><div class="type-sample t-15">Design-tokens v2 is in review! We'll land Friday.</div></div>
+        <div class="type-row"><div class="type-meta">Code (inline) · 12pt mono</div><div class="type-sample"><span class="t-mono">npm run tokens:build</span></div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 400</div><div class="type-sample t-13">9:41 AM · 42 members</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Join channel</button>
+          <button class="btn btn-outline">Cancel</button>
+          <button class="btn btn-destructive">Leave</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive — Workspace Customization</div>
+        <div class="ws-grid">
+          <div>
+            <div class="ws-wrap">
+              <div class="ws-demo ws-aub">
+                <div class="mini-side"><div class="mini-name">Acme HQ</div><div class="mini-ch"># general</div><div class="mini-ch"># design</div></div>
+                <div class="mini-main">Sofia: v2 shipping Friday 🚀</div>
+              </div>
+            </div>
+            <div class="ws-label">Aubergine · #4A154B</div>
+          </div>
+          <div>
+            <div class="ws-wrap">
+              <div class="ws-demo ws-navy">
+                <div class="mini-side"><div class="mini-name">Blueprint</div><div class="mini-ch"># launches</div><div class="mini-ch"># engineering</div></div>
+                <div class="mini-main">Marcus: PR queue clearing up.</div>
+              </div>
+            </div>
+            <div class="ws-label">Navy · #002A47</div>
+          </div>
+          <div>
+            <div class="ws-wrap">
+              <div class="ws-demo ws-emerald">
+                <div class="mini-side"><div class="mini-name">Greenhouse</div><div class="mini-ch"># farm</div><div class="mini-ch"># harvest</div></div>
+                <div class="mini-main">Amelia: tomato yields up.</div>
+              </div>
+            </div>
+            <div class="ws-label">Emerald · #004737</div>
+          </div>
+          <div>
+            <div class="ws-wrap">
+              <div class="ws-demo ws-crimson">
+                <div class="mini-side"><div class="mini-name">Firehouse</div><div class="mini-ch"># ops</div><div class="mini-ch"># oncall</div></div>
+                <div class="mini-main">Jamie: all clear — green board.</div>
+              </div>
+            </div>
+            <div class="ws-label">Crimson · #5A0F19</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Venmo iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --surface-muted: #F7F7F7;
+    --divider: #F2F2F2;
+    --divider-strong: #E0E0E0;
+    --text: #2F3033;
+    --text-secondary: #6B6E76;
+    --text-tertiary: #9AA0A8;
+    --blue: #008CFF;
+    --blue-light: #3D95CE;
+    --blue-deep: #0078DE;
+    --blue-tint: #E6F4FF;
+    --green: #4BB543;
+    --red: #D32E2E;
+    --orange: #F5A623;
+    --grad: linear-gradient(135deg, #008CFF 0%, #0078DE 100%);
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Source Sans Pro', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #E8ECEF; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; color: var(--text); }
+  .page-chip { background: var(--blue); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.5), 0 0 0 2px rgba(0,0,0,0.08) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Top bar */
+  .top-bar { padding: 50px 18px 10px; display: flex; align-items: center; justify-content: space-between; background: #fff; flex-shrink: 0; }
+  .venmo-wm { font-size: 24px; font-weight: 800; color: var(--blue); letter-spacing: -0.5px; font-style: italic; }
+  .top-icon { color: var(--text); }
+  .top-icon svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Balance card */
+  .balance-card {
+    margin: 8px 14px 10px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: var(--grad);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 12px rgba(0,140,255,0.25);
+    flex-shrink: 0;
+  }
+  .bal-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.9; }
+  .bal-amount { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; font-variant-numeric: tabular-nums; margin-top: 2px; }
+  .bal-add { font-size: 12px; font-weight: 600; background: rgba(255,255,255,0.22); padding: 6px 12px; border-radius: 999px; }
+
+  /* Feed */
+  .feed { flex: 1; overflow: hidden; padding: 0 14px; position: relative; }
+  .feed-header { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-secondary); padding: 6px 0 8px; }
+
+  .txn {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--divider);
+    display: flex;
+    gap: 10px;
+  }
+  .txn:last-child { border-bottom: none; }
+  .avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 700; font-size: 14px;
+  }
+  .av-1 { background: linear-gradient(135deg, #FF8E72, #D4522A); }
+  .av-2 { background: linear-gradient(135deg, #6FCF97, #27AE60); }
+  .av-3 { background: linear-gradient(135deg, #8E94F2, #5A5FDB); position: relative; }
+  .av-3::after {
+    content: '';
+    position: absolute; top: -2px; right: -2px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--orange);
+    border: 2px solid #fff;
+  }
+
+  .txn-body { flex: 1; min-width: 0; }
+  .txn-line { font-size: 14px; color: var(--text); line-height: 1.4; }
+  .txn-line .name { font-weight: 700; }
+  .txn-line .verb { color: var(--text-secondary); font-weight: 400; }
+  .txn-line .verb.charged { color: var(--orange); font-weight: 600; }
+  .txn-memo { font-size: 14px; color: var(--text); margin-top: 3px; line-height: 1.35; }
+  .txn-meta { font-size: 12px; color: var(--text-tertiary); margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+  .txn-meta svg { width: 11px; height: 11px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .txn-actions { display: flex; gap: 14px; margin-top: 6px; }
+  .txn-action { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text-secondary); font-weight: 500; }
+  .txn-action svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .txn-action.liked { color: var(--red); }
+  .txn-action.liked svg { fill: currentColor; stroke: none; }
+
+  /* Tab bar with split pill */
+  .tab-bar {
+    height: 64px;
+    background: #fff;
+    border-top: 0.5px solid var(--divider-strong);
+    display: flex; align-items: center; justify-content: space-around;
+    padding: 4px 8px 14px;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--text-tertiary); font-size: 9px; font-weight: 600; }
+  .tab.active { color: var(--blue); }
+  .tab svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  .center-pill {
+    width: 64px; height: 42px;
+    border-radius: 999px;
+    background: var(--grad);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0,140,255,0.35);
+    margin-top: -14px;
+  }
+  .center-pill svg { width: 22px; height: 22px; stroke: #fff; stroke-width: 2.5; fill: none; }
+
+  /* Token sections */
+  .section { background: #fff; border: 1px solid var(--divider-strong); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 14px; min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 500; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider-strong); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--text); }
+  .swatch.grad-sw { background: var(--grad); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); }
+  .t-balance { font-size: 44px; font-weight: 800; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
+  .t-28 { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-17 { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.1px; }
+  .t-15 { font-size: 15px; font-weight: 400; }
+  .t-feed { font-size: 15px; font-weight: 400; }
+  .t-feed .nm { font-weight: 600; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 600; letter-spacing: 0.1px; color: var(--text-secondary); text-transform: uppercase; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 16px; font-weight: 700; padding: 14px 28px; border-radius: 999px; border: none; cursor: pointer; letter-spacing: 0.2px; }
+  .btn-primary { background: var(--grad); color: #fff; }
+  .btn-outline { background: transparent; color: var(--text); border: 1.5px solid var(--divider-strong); padding: 12.5px 26.5px; font-weight: 600; font-size: 15px; }
+
+  /* Distinctive — Pay/Request Split Pill */
+  .split-pill-demo {
+    padding: 24px;
+    background: var(--surface-muted);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .split-pill {
+    display: flex;
+    width: 280px;
+    height: 54px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--grad);
+    box-shadow: 0 6px 20px rgba(0,140,255,0.35);
+  }
+  .split-half {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+  }
+  .split-half svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2.5; fill: none; }
+  .split-divider {
+    width: 1px;
+    background: rgba(255,255,255,0.35);
+    margin: 10px 0;
+  }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--blue); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Venmo iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">Fintech that feels like a social network. Venmo Blue `#008CFF` is the single brand color. Feed-first, emoji-rich memos, like/comment on every transaction, and a Pay/Request split pill at the center of the tab bar.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="top-bar">
+            <div class="venmo-wm">venmo</div>
+            <div class="top-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg></div>
+          </div>
+
+          <div class="balance-card">
+            <div>
+              <div class="bal-label">Balance</div>
+              <div class="bal-amount">$342.18</div>
+            </div>
+            <div class="bal-add">+ Add money</div>
+          </div>
+
+          <div class="feed">
+            <div class="feed-header">Friends</div>
+
+            <div class="txn">
+              <div class="avatar av-1">SC</div>
+              <div class="txn-body">
+                <div class="txn-line">
+                  <span class="name">Sarah Chen</span>
+                  <span class="verb">paid</span>
+                  <span class="name">Alex Rivera</span>
+                </div>
+                <div class="txn-memo">🍕🍺 Pizza Friday</div>
+                <div class="txn-meta">
+                  2h · <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Brooklyn
+                </div>
+                <div class="txn-actions">
+                  <div class="txn-action liked">
+                    <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    3
+                  </div>
+                  <div class="txn-action">
+                    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    1
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="txn">
+              <div class="avatar av-2">JM</div>
+              <div class="txn-body">
+                <div class="txn-line">
+                  <span class="name">Jordan Miller</span>
+                  <span class="verb">paid</span>
+                  <span class="name">You</span>
+                </div>
+                <div class="txn-memo">🚗 Uber split</div>
+                <div class="txn-meta">4h · Yesterday</div>
+                <div class="txn-actions">
+                  <div class="txn-action">
+                    <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                  </div>
+                  <div class="txn-action">
+                    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="txn">
+              <div class="avatar av-3">TP</div>
+              <div class="txn-body">
+                <div class="txn-line">
+                  <span class="name">Taylor Park</span>
+                  <span class="verb charged">charged</span>
+                  <span class="name">Riley Novak</span>
+                </div>
+                <div class="txn-memo">🏠☕ Rent + coffee run</div>
+                <div class="txn-meta">6h · Manhattan</div>
+                <div class="txn-actions">
+                  <div class="txn-action">
+                    <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                  </div>
+                  <div class="txn-action">
+                    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    2
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="14" rx="2"/><line x1="2" y1="11" x2="22" y2="11"/></svg><span>Cards</span></div>
+            <div class="center-pill"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><text x="12" y="16" text-anchor="middle" font-size="11" fill="currentColor" font-weight="700" stroke="none">₿</text></svg><span>Crypto</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><span>Me</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#008CFF;"><div class="name">Venmo Blue</div>#008CFF</div>
+          <div class="swatch" style="background:#3D95CE;"><div class="name">Lighter Blue</div>#3D95CE</div>
+          <div class="swatch" style="background:#0078DE;"><div class="name">Deep Blue</div>#0078DE</div>
+          <div class="swatch grad-sw"><div class="name">Blue Gradient</div>#008CFF → #0078DE</div>
+          <div class="swatch light" style="background:#E6F4FF;"><div class="name">Blue Tint</div>#E6F4FF</div>
+          <div class="swatch" style="background:#4BB543;"><div class="name">Received Green</div>#4BB543</div>
+          <div class="swatch" style="background:#D32E2E;"><div class="name">Charge Red</div>#D32E2E</div>
+          <div class="swatch light" style="background:#F5A623;"><div class="name">Pending Orange</div>#F5A623</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Canvas</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#F7F7F7;"><div class="name">Surface Muted</div>#F7F7F7</div>
+          <div class="swatch light" style="background:#F2F2F2;"><div class="name">Divider</div>#F2F2F2</div>
+          <div class="swatch" style="background:#1A1A1A;"><div class="name">Canvas Dark</div>#1A1A1A</div>
+          <div class="swatch" style="background:#2F3033;"><div class="name">Text Primary</div>#2F3033</div>
+          <div class="swatch" style="background:#6B6E76;"><div class="name">Text Secondary</div>#6B6E76</div>
+          <div class="swatch" style="background:#9AA0A8;"><div class="name">Text Tertiary</div>#9AA0A8</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Venmo Sans (Source Sans Lineage)</div>
+        <div class="type-row"><div class="type-meta">Balance Display · 44pt · 800</div><div class="type-sample t-balance">$342.18</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 28pt · 700</div><div class="type-sample t-28">Activity</div></div>
+        <div class="type-row"><div class="type-meta">Sheet Title · 22pt · 700</div><div class="type-sample t-22">Pay or Request</div></div>
+        <div class="type-row"><div class="type-meta">Amount · 17pt · 700 tnum</div><div class="type-sample t-17" style="color: var(--green);">+$24.50</div></div>
+        <div class="type-row"><div class="type-meta">Feed Line · 15pt mixed weights</div><div class="type-sample t-feed"><span class="nm">Sarah Chen</span> paid <span class="nm">Alex Rivera</span></div></div>
+        <div class="type-row"><div class="type-meta">Feed Memo · 15pt · 400</div><div class="type-sample t-15">🍕🍺 Pizza Friday</div></div>
+        <div class="type-row"><div class="type-meta">Timestamp · 13pt · 400</div><div class="type-sample t-13">2h · Brooklyn</div></div>
+        <div class="type-row"><div class="type-meta">Tab Label · 11pt · 600</div><div class="type-sample t-11">Home</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Pay</button>
+          <button class="btn btn-primary">Request</button>
+          <button class="btn btn-outline">Cancel</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive — Pay / Request Split Pill</div>
+        <div class="split-pill-demo">
+          <div class="split-pill">
+            <div class="split-half">
+              <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+              Pay
+            </div>
+            <div class="split-divider"></div>
+            <div class="split-half">
+              <svg viewBox="0 0 24 24"><line x1="17" y1="7" x2="7" y2="17"/><polyline points="17 17 7 17 7 7"/></svg>
+              Request
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Apple Music iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: dark;
+    --canvas: #000000;
+    --surface-1: #1C1C1E;
+    --surface-2: #2C2C2E;
+    --surface-3: #3A3A3C;
+    --divider: #38383A;
+    --input: #1C1C1E;
+    --text: #FFFFFF;
+    --text-secondary: rgba(235,235,245,0.60);
+    --text-tertiary: rgba(235,235,245,0.30);
+    --red: #FA2D48;
+    --red-coral: #FC3C44;
+    --red-pressed: #D4213B;
+    --gold: #D4A857;
+    --silver: #8E8E93;
+    --blue: #007AFF;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; }
+  .page-chip { background: var(--red); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 680px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Now Playing gradient */
+  .np-gradient { position: absolute; inset: 0; background: linear-gradient(180deg, #4D1E2E 0%, #2B1422 40%, #0A0609 80%, var(--canvas) 100%); }
+
+  /* Top breadcrumb */
+  .np-top { position: relative; z-index: 2; padding: 52px 16px 0; display: flex; align-items: center; justify-content: center; }
+  .np-crumb { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.7); letter-spacing: 0.3px; text-transform: uppercase; }
+  .np-crumb-wrap { display: flex; align-items: center; gap: 6px; }
+  .np-handle { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); width: 36px; height: 5px; background: rgba(255,255,255,0.3); border-radius: 3px; }
+
+  /* Album art */
+  .np-art-wrap { position: relative; z-index: 2; padding: 24px 30px 16px; display: flex; justify-content: center; }
+  .album-art { width: 240px; height: 240px; border-radius: 12px; background: linear-gradient(135deg, #FA2D48 0%, #B4213A 45%, #3A1020 100%); box-shadow: 0 20px 50px rgba(0,0,0,0.6); position: relative; overflow: hidden; }
+  .album-art::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 30% 25%, rgba(255,255,255,0.3), transparent 50%), radial-gradient(circle at 80% 90%, rgba(0,0,0,0.4), transparent 60%); }
+
+  /* Track info */
+  .np-info { position: relative; z-index: 2; padding: 0 24px; text-align: left; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .np-text { flex: 1; min-width: 0; }
+  .np-title { font-size: 18px; font-weight: 700; color: var(--text); letter-spacing: -0.2px; margin-bottom: 2px; }
+  .np-artist { font-size: 14px; font-weight: 400; color: rgba(255,255,255,0.7); letter-spacing: -0.1px; }
+  .np-more { color: rgba(255,255,255,0.7); font-size: 18px; margin-top: 4px; }
+  .atmos-pill { display: inline-flex; align-items: center; margin-top: 6px; background: var(--gold); color: #fff; font-size: 9px; font-weight: 600; padding: 2px 8px; border-radius: 999px; box-shadow: 0 0 8px rgba(212,168,87,0.4); }
+
+  /* Scrubber */
+  .scrub { position: relative; z-index: 2; padding: 16px 24px 0; }
+  .scrub-track { height: 4px; border-radius: 2px; background: rgba(255,255,255,0.15); position: relative; }
+  .scrub-fill { height: 100%; width: 42%; background: var(--red); border-radius: 2px; position: relative; }
+  .scrub-thumb { position: absolute; right: -6px; top: 50%; transform: translateY(-50%); width: 12px; height: 12px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+  .scrub-times { display: flex; justify-content: space-between; margin-top: 6px; font-size: 10px; font-weight: 500; color: rgba(255,255,255,0.6); font-variant-numeric: tabular-nums; }
+
+  /* Controls */
+  .np-controls { position: relative; z-index: 2; padding: 20px 24px 0; display: flex; align-items: center; justify-content: space-between; }
+  .ctl-icon { color: var(--text); display: flex; align-items: center; justify-content: center; width: 50px; height: 50px; }
+  .ctl-icon svg { width: 30px; height: 30px; fill: currentColor; }
+  .play-circle { width: 56px; height: 56px; border-radius: 50%; background: var(--red); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(250,45,72,0.4); }
+  .play-circle svg { width: 22px; height: 22px; fill: #fff; }
+
+  /* Bottom actions */
+  .np-bottom { position: relative; z-index: 2; padding: 22px 24px 0; display: flex; align-items: center; justify-content: space-between; color: rgba(255,255,255,0.7); }
+  .np-bottom svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+  .np-bottom .vol-slider { flex: 1; height: 4px; margin: 0 14px; background: rgba(255,255,255,0.15); border-radius: 2px; position: relative; }
+  .np-bottom .vol-slider::after { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 60%; background: rgba(255,255,255,0.7); border-radius: 2px; }
+
+  /* Tab bar */
+  .tab-bar { position: relative; z-index: 2; margin-top: auto; height: 58px; background: rgba(0,0,0,0.6); backdrop-filter: saturate(180%) blur(20px); display: flex; align-items: center; justify-content: space-around; padding: 4px 4px 10px; border-top: 1px solid rgba(255,255,255,0.08); }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--text-secondary); font-size: 9px; font-weight: 500; width: 52px; }
+  .tab.active { color: var(--red); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 16px; min-height: 90px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #000; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; }
+  .t-34 { font-size: 34px; font-weight: 700; letter-spacing: 0.37px; }
+  .t-28 { font-size: 28px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.26px; }
+  .t-18 { font-size: 18px; font-weight: 600; letter-spacing: -0.1px; }
+  .t-17 { font-size: 17px; font-weight: 600; letter-spacing: -0.43px; }
+  .t-15 { font-size: 15px; font-weight: 400; letter-spacing: -0.24px; color: var(--text-secondary); }
+  .t-13 { font-size: 13px; font-weight: 400; letter-spacing: -0.08px; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 400; letter-spacing: 0.07px; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 17px; font-weight: 600; padding: 10px 24px; border-radius: 8px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+  .btn-play-pill { background: var(--red); color: #fff; }
+  .btn-play-pill svg { width: 15px; height: 15px; fill: #fff; }
+  .btn-shuffle { background: var(--surface-2); color: var(--text); font-size: 15px; font-weight: 500; }
+  .btn-shuffle svg { width: 15px; height: 15px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .btn-join { background: var(--blue); color: #fff; }
+  .play-circle-demo { width: 64px; height: 64px; border-radius: 50%; background: var(--red); display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; box-shadow: 0 6px 20px rgba(250,45,72,0.35); }
+  .play-circle-demo svg { width: 26px; height: 26px; fill: #fff; }
+  .badge-atmos { background: var(--gold); color: #fff; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 999px; box-shadow: 0 0 8px rgba(212,168,87,0.5); }
+  .badge-lossless { background: var(--silver); color: #fff; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 999px; }
+
+  /* Distinctive — Lyrics */
+  .lyrics { background: linear-gradient(160deg, #4D1E2E 0%, #2B1422 100%); border-radius: 16px; padding: 28px 24px; display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
+  .lyr { font-family: var(--font); letter-spacing: -0.2px; line-height: 1.2; }
+  .lyr.past { font-size: 20px; font-weight: 600; color: rgba(255,255,255,0.4); }
+  .lyr.current { font-size: 26px; font-weight: 700; color: #fff; }
+  .lyr.upcoming { font-size: 20px; font-weight: 600; color: rgba(255,255,255,0.5); }
+  .lyr.upcoming-2 { font-size: 20px; font-weight: 600; color: rgba(255,255,255,0.35); }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--red); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-8 { border-radius: 8px; }
+  .r-10 { border-radius: 10px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Apple Music iOS — Design Tokens</div>
+    <div class="page-chip">Dark</div>
+  </div>
+  <p class="page-subtitle">True-black canvas (#000000), Apple Music Red for the Play button, scrubber, and active tab. SF Pro throughout, album-art gradient on Now Playing, time-synced lyrics are the signature moment.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="np-gradient"></div>
+          <div class="island"></div>
+          <div class="np-handle"></div>
+          <div class="np-top"><div class="np-crumb-wrap"><div class="np-crumb">Listen Now</div></div></div>
+          <div class="np-art-wrap"><div class="album-art"></div></div>
+          <div class="np-info">
+            <div class="np-text">
+              <div class="np-title">Midnight Frequency</div>
+              <div class="np-artist">Nova Palmer</div>
+              <div class="atmos-pill">Dolby Atmos</div>
+            </div>
+            <div class="np-more">⋯</div>
+          </div>
+          <div class="scrub">
+            <div class="scrub-track"><div class="scrub-fill"><div class="scrub-thumb"></div></div></div>
+            <div class="scrub-times"><span>1:24</span><span>-1:56</span></div>
+          </div>
+          <div class="np-controls">
+            <div class="ctl-icon"><svg viewBox="0 0 24 24"><polygon points="19,20 9,12 19,4"/><rect x="5" y="4" width="2" height="16"/></svg></div>
+            <div class="play-circle"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></div>
+            <div class="ctl-icon"><svg viewBox="0 0 24 24"><polygon points="5,4 15,12 5,20"/><rect x="17" y="4" width="2" height="16"/></svg></div>
+          </div>
+          <div class="np-bottom">
+            <svg viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5z"/></svg>
+            <div class="vol-slider"></div>
+            <svg viewBox="0 0 24 24"><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+          </div>
+          <div class="np-bottom">
+            <svg viewBox="0 0 24 24"><path d="M4 6h10M4 12h10M4 18h6"/><path d="M17 14v7l4-3.5z" fill="currentColor"/></svg>
+            <span style="font-size:10px;font-weight:600;letter-spacing:0.3px;">LYRICS · AIRPLAY · QUEUE</span>
+            <svg viewBox="0 0 24 24"><path d="M4 6h10M4 12h7M4 18h10"/></svg>
+          </div>
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M9 18V10l10-3v8"/><circle cx="7" cy="18" r="2.5"/><circle cx="17" cy="15" r="2.5"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M12 3l1.9 5.9L20 10l-4.5 3.9L17 20l-5-3-5 3 1.5-6.1L4 10l6.1-1.1z"/></svg><span>New</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M8 8a5.6 5.6 0 0 0 0 8M16 8a5.6 5.6 0 0 1 0 8M5 5a10 10 0 0 0 0 14M19 5a10 10 0 0 1 0 14"/></svg><span>Radio</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/></svg><span>Library</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#FA2D48;"><div class="name">Apple Music Red</div>#FA2D48</div>
+          <div class="swatch" style="background:#FC3C44;"><div class="name">Coral</div>#FC3C44</div>
+          <div class="swatch" style="background:#D4213B;"><div class="name">Red Pressed</div>#D4213B</div>
+          <div class="swatch" style="background:#000000;"><div class="name">Canvas Dark</div>#000000</div>
+          <div class="swatch" style="background:#1C1C1E;"><div class="name">Surface 1 Dark</div>#1C1C1E</div>
+          <div class="swatch" style="background:#2C2C2E;"><div class="name">Surface 2 Dark</div>#2C2C2E</div>
+          <div class="swatch" style="background:#3A3A3C;"><div class="name">Surface 3 Dark</div>#3A3A3C</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Canvas Light</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#F2F2F7;"><div class="name">Surface 1 Light</div>#F2F2F7</div>
+          <div class="swatch" style="background:#D4A857;"><div class="name">Dolby Atmos Gold</div>#D4A857</div>
+          <div class="swatch" style="background:#8E8E93;"><div class="name">Lossless Silver</div>#8E8E93</div>
+          <div class="swatch" style="background:#007AFF;"><div class="name">iOS System Blue</div>#007AFF</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — SF Pro</div>
+        <div class="type-row"><div class="type-meta">Large Title · 34pt · 700</div><div class="type-sample t-34">Listen Now</div></div>
+        <div class="type-row"><div class="type-meta">Hero / Lyrics Current · 28pt · 700</div><div class="type-sample t-28">Midnight Frequency</div></div>
+        <div class="type-row"><div class="type-meta">Title 2 · 22pt · 700</div><div class="type-sample t-22">Recently Played</div></div>
+        <div class="type-row"><div class="type-meta">Now Playing Title · 18pt · 600</div><div class="type-sample t-18">Midnight Frequency</div></div>
+        <div class="type-row"><div class="type-meta">Headline · 17pt · 600</div><div class="type-sample t-17">Slow Amber</div></div>
+        <div class="type-row"><div class="type-meta">Subheadline · 15pt · 400</div><div class="type-sample t-15">Nova Palmer — 2024</div></div>
+        <div class="type-row"><div class="type-meta">Footnote · 13pt · 400</div><div class="type-sample t-13">Album · 2024 · Apple Digital Master</div></div>
+        <div class="type-row"><div class="type-meta">Caption 2 · 11pt · 400</div><div class="type-sample t-11">Dolby Atmos</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons & Badges</div>
+        <div class="btn-row">
+          <button class="play-circle-demo"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></button>
+          <button class="btn btn-play-pill"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg>Play</button>
+          <button class="btn btn-shuffle"><svg viewBox="0 0 24 24"><polyline points="16,3 21,3 21,8"/><path d="M4 20l17-17"/><polyline points="21,16 21,21 16,21"/><path d="M15 15l6 6M4 4l5 5"/></svg>Shuffle</button>
+          <button class="btn btn-join">Join Apple Music</button>
+          <div class="badge-atmos">Dolby Atmos</div>
+          <div class="badge-lossless">Lossless</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive — Time-Synced Lyrics</div>
+        <div class="lyrics">
+          <div class="lyr past">Static on the wire, the signal fades</div>
+          <div class="lyr current">Tuning through the midnight frequency</div>
+          <div class="lyr upcoming">Your voice comes drifting through the waves</div>
+          <div class="lyr upcoming-2">Like a radio from 1983</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -99,9 +99,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </Link>
               <div className="site-nav-links">
                 <Link href="/" className="nav-text-link">
-                  Home
-                </Link>
-                <Link href="/gallery" className="nav-text-link">
                   Gallery
                 </Link>
                 <span className="nav-icon-sep" aria-hidden="true" />

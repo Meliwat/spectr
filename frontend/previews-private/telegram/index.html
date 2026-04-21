@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Telegram iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --chat-bg: #DBE7F4;
+    --surface-1: #F7F7F7;
+    --surface-2: #EFEFF4;
+    --divider: #E5E5E5;
+    --text: #000000;
+    --text-secondary: #707579;
+    --text-tertiary: #A0A6AD;
+    --tg-blue: #0088CC;
+    --tg-sky: #40A7E3;
+    --tg-bubble: #2B86FD;
+    --tg-bubble-hi: #61B3FF;
+    --tg-pressed: #0071B0;
+    --online: #4DD364;
+    --error: #E53935;
+    --premium-a: #AE6FFD;
+    --premium-b: #CE6BFF;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #C5D3E2; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; color: #0D2340; }
+  .page-chip { background: var(--tg-blue); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: #425266; font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.5), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; position: relative; display: flex; flex-direction: column; background:
+    linear-gradient(180deg, #AED7F6 0%, #C8E2F3 35%, #DEEAF2 70%, #EAE8D7 100%); }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 5; }
+
+  /* Nav */
+  .chat-nav { position: relative; z-index: 2; padding: 44px 12px 8px; display: flex; align-items: center; gap: 8px; background: rgba(247,247,247,0.82); backdrop-filter: saturate(180%) blur(20px); border-bottom: 0.5px solid var(--divider); }
+  .nav-back { color: var(--tg-blue); display: flex; align-items: center; font-size: 15px; font-weight: 400; gap: 2px; }
+  .nav-back svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2.5; fill: none; }
+  .nav-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #FFC163, #FA790F); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; flex-shrink: 0; }
+  .nav-info { flex: 1; line-height: 1.1; }
+  .nav-name { font-size: 15px; font-weight: 600; letter-spacing: -0.2px; color: #000; }
+  .nav-sub { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+  .nav-actions { color: var(--tg-blue); display: flex; gap: 4px; }
+  .nav-actions svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Pinned banner */
+  .pinned { position: relative; z-index: 2; background: rgba(255,255,255,0.85); backdrop-filter: blur(20px); padding: 6px 14px; display: flex; gap: 10px; align-items: center; border-bottom: 0.5px solid var(--divider); }
+  .pin-bar { width: 3px; height: 28px; background: var(--tg-blue); border-radius: 2px; }
+  .pin-text { flex: 1; line-height: 1.2; }
+  .pin-label { font-size: 11px; color: var(--tg-blue); font-weight: 600; }
+  .pin-body { font-size: 12px; color: var(--text); margin-top: 1px; }
+  .pin-icon { color: var(--text-tertiary); }
+  .pin-icon svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Chat body */
+  .chat-body { flex: 1; padding: 10px 10px 8px; overflow: hidden; position: relative; z-index: 2; display: flex; flex-direction: column; gap: 3px; }
+
+  .bubble { max-width: 78%; padding: 7px 11px 6px; font-size: 13.5px; line-height: 1.3; position: relative; word-wrap: break-word; }
+  .bubble .time { font-size: 10px; opacity: 0.7; margin-left: 6px; display: inline-flex; align-items: center; gap: 3px; vertical-align: middle; }
+  .bubble.incoming { background: #fff; border-radius: 14px 14px 14px 6px; align-self: flex-start; color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+  .bubble.outgoing { background: var(--tg-bubble); background: linear-gradient(180deg, var(--tg-bubble), var(--tg-bubble-hi)); color: #fff; border-radius: 14px 14px 6px 14px; align-self: flex-end; }
+  .bubble.outgoing .time { color: rgba(255,255,255,0.85); }
+  .bubble .ticks { display: inline-flex; color: inherit; }
+  .bubble .ticks svg { width: 12px; height: 8px; fill: none; }
+
+  /* Sticker bubble */
+  .sticker { align-self: flex-start; max-width: 110px; padding: 0; background: transparent; }
+  .duck { width: 100px; height: 100px; position: relative; }
+  .duck-body { position: absolute; inset: 14% 10% 6% 10%; background: radial-gradient(circle at 45% 40%, #FFE89B, #FFD147 55%, #EDA421); border-radius: 50%; }
+  .duck-head { position: absolute; width: 50px; height: 50px; top: 0; right: 4px; background: radial-gradient(circle at 45% 40%, #FFE89B, #FFCF3E 55%, #E9A115); border-radius: 50%; }
+  .duck-eye { position: absolute; width: 9px; height: 9px; top: 16px; right: 12px; background: #111; border-radius: 50%; box-shadow: inset -2px -2px 0 rgba(255,255,255,0.5); }
+  .duck-beak { position: absolute; width: 18px; height: 10px; top: 26px; right: -4px; background: #F47C2C; border-radius: 50% 50% 35% 35%; transform: rotate(8deg); }
+  .duck-wing { position: absolute; width: 30px; height: 24px; bottom: 20%; left: 24%; background: #E49411; border-radius: 50% 50% 60% 40%; }
+  .sticker-meta { text-align: right; font-size: 10px; color: var(--text-secondary); padding: 2px 4px 0; }
+
+  /* Voice bubble */
+  .bubble.voice { display: flex; align-items: center; gap: 8px; min-width: 200px; padding: 8px 10px 6px; }
+  .voice-play { width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.25); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .voice-play svg { width: 12px; height: 12px; fill: #fff; }
+  .wave { display: flex; align-items: center; gap: 2px; height: 20px; flex: 1; }
+  .wave span { width: 2px; background: rgba(255,255,255,0.85); border-radius: 1px; }
+  .wave span.off { background: rgba(255,255,255,0.45); }
+  .voice-speaker { color: rgba(255,255,255,0.85); }
+  .voice-speaker svg { width: 14px; height: 14px; fill: currentColor; }
+  .voice-meta { font-size: 10px; color: rgba(255,255,255,0.8); }
+
+  /* Input bar */
+  .input-bar { background: rgba(247,247,247,0.95); backdrop-filter: blur(20px); padding: 7px 8px 9px; display: flex; align-items: center; gap: 4px; position: relative; z-index: 2; border-top: 0.5px solid var(--divider); }
+  .input-icon { color: var(--text-tertiary); padding: 6px; display: flex; }
+  .input-icon svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .input-field { flex: 1; font-size: 13px; color: var(--text-tertiary); padding: 8px 4px; }
+  .send-paper { color: var(--tg-blue); padding: 6px; }
+  .send-paper svg { width: 22px; height: 22px; fill: currentColor; }
+
+  /* Tab bar */
+  .tab-bar { height: 52px; background: rgba(247,247,247,0.95); backdrop-filter: saturate(180%) blur(20px); display: flex; align-items: center; justify-content: space-around; padding: 4px 4px 10px; border-top: 0.5px solid var(--divider); position: relative; z-index: 2; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; color: #8D8E93; font-size: 10px; font-weight: 500; flex: 1; }
+  .tab.active { color: var(--tg-blue); }
+  .tab svg { width: 24px; height: 24px; stroke: currentColor; stroke-width: 1.6; fill: none; }
+
+  /* Token sections */
+  .section { background: #fff; border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 14px; min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #000; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 210px; flex-shrink: 0; }
+  .type-sample { flex: 1; }
+  .t-34 { font-size: 34px; font-weight: 700; letter-spacing: -0.6px; }
+  .t-17-s { font-size: 17px; font-weight: 600; letter-spacing: -0.4px; }
+  .t-17 { font-size: 17px; font-weight: 400; letter-spacing: -0.4px; }
+  .t-15 { font-size: 15px; font-weight: 400; color: var(--text-secondary); }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 15px; font-weight: 600; padding: 12px 22px; border-radius: 10px; border: none; cursor: pointer; letter-spacing: -0.2px; }
+  .btn-primary { background: var(--tg-blue); color: #fff; }
+  .btn-primary:active { background: var(--tg-pressed); transform: scale(0.98); }
+  .btn-ghost { background: transparent; color: var(--tg-blue); font-size: 15px; font-weight: 500; padding: 12px 14px; }
+  .btn-destructive { background: transparent; color: var(--error); font-size: 15px; font-weight: 500; padding: 12px 14px; }
+  .btn-premium { background: linear-gradient(135deg, var(--premium-a), var(--premium-b)); color: #fff; }
+  .send-demo { color: var(--tg-blue); display: inline-flex; align-items: center; padding: 10px; }
+  .send-demo svg { width: 26px; height: 26px; fill: currentColor; }
+
+  /* Accent strip */
+  .accents { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+  .accent-col { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .accent-swatch { width: 100%; aspect-ratio: 1; border-radius: 12px; }
+  .accent-btn { font-size: 11px; font-weight: 600; padding: 6px 10px; border-radius: 18px; color: #fff; border: none; width: 100%; text-align: center; }
+  .accent-label { font-size: 11px; color: var(--text-secondary); font-weight: 500; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 68px; height: 68px; background: var(--tg-blue); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-6 { border-radius: 6px; }
+  .r-10 { border-radius: 10px; }
+  .r-14 { border-radius: 14px; }
+  .r-17 { border-radius: 17px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Telegram iOS &mdash; Design Tokens</div>
+    <div class="page-chip">Light / Themeable</div>
+  </div>
+  <p class="page-subtitle">Sky Blue (#0088CC) default accent over white canvas. The accent is a single variable &mdash; every user can pick a custom hex and the whole app repaints.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="chat-nav">
+            <div class="nav-back">
+              <svg viewBox="0 0 24 24"><polyline points="15,6 9,12 15,18"/></svg>
+              <span>Back</span>
+            </div>
+            <div class="nav-avatar">OP</div>
+            <div class="nav-info">
+              <div class="nav-name">Olivia Park</div>
+              <div class="nav-sub">last seen recently</div>
+            </div>
+            <div class="nav-actions">
+              <svg viewBox="0 0 24 24"><polygon points="17,8 22,5 22,19 17,16"/><rect x="2" y="6" width="15" height="12" rx="2"/></svg>
+            </div>
+          </div>
+
+          <div class="pinned">
+            <div class="pin-bar"></div>
+            <div class="pin-text">
+              <div class="pin-label">Pinned Message</div>
+              <div class="pin-body">Demo day Friday &mdash; bring a laptop.</div>
+            </div>
+            <div class="pin-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14l-2-7a5 5 0 0 0-10 0z"/></svg></div>
+          </div>
+
+          <div class="chat-body">
+            <div class="bubble incoming">Ok quick update &mdash; the gradient prototype is running. <span class="time">10:21</span></div>
+            <div class="bubble outgoing">Amazing, want me to test on the old iPhone? <span class="time">10:22 <span class="ticks"><svg viewBox="0 0 16 10"><path d="M1 5 l3 3 l7-7" stroke="#fff" stroke-width="1.8" fill="none"/><path d="M5 5 l3 3 l7-7" stroke="#fff" stroke-width="1.8" fill="none"/></svg></span></span></div>
+
+            <div class="sticker">
+              <div class="duck">
+                <div class="duck-body"></div>
+                <div class="duck-head"></div>
+                <div class="duck-beak"></div>
+                <div class="duck-eye"></div>
+                <div class="duck-wing"></div>
+              </div>
+              <div class="sticker-meta">10:22</div>
+            </div>
+
+            <div class="bubble incoming">yes pls 🙏 <span class="time">10:23</span></div>
+
+            <div class="bubble outgoing voice">
+              <div class="voice-play"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></div>
+              <div class="wave">
+                <span style="height:40%"></span><span style="height:65%"></span><span style="height:50%"></span><span style="height:85%"></span><span style="height:60%"></span><span style="height:75%"></span><span style="height:45%"></span><span style="height:90%"></span><span style="height:55%"></span><span style="height:70%"></span>
+                <span class="off" style="height:40%"></span><span class="off" style="height:55%"></span><span class="off" style="height:30%"></span><span class="off" style="height:70%"></span><span class="off" style="height:45%"></span><span class="off" style="height:60%"></span><span class="off" style="height:50%"></span><span class="off" style="height:35%"></span>
+              </div>
+              <div class="voice-speaker"><svg viewBox="0 0 24 24"><polygon points="11,5 6,9 2,9 2,15 6,15 11,19"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14" stroke="currentColor" stroke-width="2" fill="none"/></svg></div>
+              <div class="voice-meta">0:18</div>
+              <span class="time" style="font-size:10px; color:rgba(255,255,255,0.8); margin-left:2px;">10:24 <span class="ticks"><svg viewBox="0 0 16 10"><path d="M1 5 l3 3 l7-7" stroke="#fff" stroke-width="1.8" fill="none"/><path d="M5 5 l3 3 l7-7" stroke="#fff" stroke-width="1.8" fill="none"/></svg></span></span>
+            </div>
+
+            <div class="bubble incoming">perfect, on it <span class="time">10:26</span></div>
+          </div>
+
+          <div class="input-bar">
+            <div class="input-icon"><svg viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></div>
+            <div class="input-field">Message</div>
+            <div class="input-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
+            <div class="send-paper"><svg viewBox="0 0 24 24"><path d="M2 12 L22 2 L16 22 L12 14 L4 12 Z"/></svg></div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><span>Contacts</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.72 2.8a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.28-1.28a2 2 0 0 1 2.11-.45c.9.35 1.84.59 2.8.72A2 2 0 0 1 22 16.92z"/></svg><span>Calls</span></div>
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Chats</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0088CC;"><div class="name">Telegram Blue</div>#0088CC</div>
+          <div class="swatch" style="background:#40A7E3;"><div class="name">Sky Blue</div>#40A7E3</div>
+          <div class="swatch" style="background:#2B86FD;"><div class="name">Bubble Outgoing</div>#2B86FD</div>
+          <div class="swatch" style="background:#0071B0;"><div class="name">Pressed Deep</div>#0071B0</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Canvas Light</div>#FFFFFF</div>
+          <div class="swatch" style="background:#212121;"><div class="name">Canvas Dark</div>#212121</div>
+          <div class="swatch" style="background:#000000;"><div class="name">OLED Canvas</div>#000000</div>
+          <div class="swatch light" style="background:#F7F7F7;"><div class="name">Surface 1</div>#F7F7F7</div>
+          <div class="swatch light" style="background:#DBE7F4;"><div class="name">Chat BG Default</div>#DBE7F4</div>
+          <div class="swatch" style="background:#4DD364;"><div class="name">Online Green</div>#4DD364</div>
+          <div class="swatch" style="background:#E53935;"><div class="name">Error Red</div>#E53935</div>
+          <div class="swatch" style="background:linear-gradient(135deg,#AE6FFD,#CE6BFF);"><div class="name">Premium Gradient</div>#AE6FFD</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography &mdash; SF Pro</div>
+        <div class="type-row"><div class="type-meta">Large Title &middot; 34pt &middot; 700</div><div class="type-sample t-34">Chats</div></div>
+        <div class="type-row"><div class="type-meta">Contact Name &middot; 17pt &middot; 600</div><div class="type-sample t-17-s">Olivia Park</div></div>
+        <div class="type-row"><div class="type-meta">Bubble Body &middot; 17pt &middot; 400</div><div class="type-sample t-17">Gradient prototype is running</div></div>
+        <div class="type-row"><div class="type-meta">Message Preview &middot; 15pt &middot; 400</div><div class="type-sample t-15">last seen recently</div></div>
+        <div class="type-row"><div class="type-meta">Timestamp / List &middot; 13pt &middot; 400</div><div class="type-sample t-13">10:24 &middot; Yesterday</div></div>
+        <div class="type-row"><div class="type-meta">Section Header &middot; 11pt &middot; 600 UP</div><div class="type-sample t-11">Recent</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <div class="send-demo"><svg viewBox="0 0 24 24"><path d="M2 12 L22 2 L16 22 L12 14 L4 12 Z"/></svg></div>
+          <button class="btn btn-primary">Continue</button>
+          <button class="btn-ghost">Skip</button>
+          <button class="btn-destructive">Delete Chat</button>
+          <button class="btn btn-premium">Get Premium</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive &mdash; Themeable Accents</div>
+        <div class="accents">
+          <div class="accent-col">
+            <div class="accent-swatch" style="background:#0088CC;"></div>
+            <button class="accent-btn" style="background:#0088CC;">Blue</button>
+            <div class="accent-label">#0088CC</div>
+          </div>
+          <div class="accent-col">
+            <div class="accent-swatch" style="background:#2AAFBA;"></div>
+            <button class="accent-btn" style="background:#2AAFBA;">Teal</button>
+            <div class="accent-label">#2AAFBA</div>
+          </div>
+          <div class="accent-col">
+            <div class="accent-swatch" style="background:#6F7BF7;"></div>
+            <button class="accent-btn" style="background:#6F7BF7;">Purple</button>
+            <div class="accent-label">#6F7BF7</div>
+          </div>
+          <div class="accent-col">
+            <div class="accent-swatch" style="background:#FF5C77;"></div>
+            <button class="accent-btn" style="background:#FF5C77;">Pink</button>
+            <div class="accent-label">#FF5C77</div>
+          </div>
+          <div class="accent-col">
+            <div class="accent-swatch" style="background:#FB8C4A;"></div>
+            <button class="accent-btn" style="background:#FB8C4A;">Orange</button>
+            <div class="accent-label">#FB8C4A</div>
+          </div>
+          <div class="accent-col">
+            <div class="accent-swatch" style="background:#E53935;"></div>
+            <button class="accent-btn" style="background:#E53935;">Red</button>
+            <div class="accent-label">#E53935</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-17">17</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

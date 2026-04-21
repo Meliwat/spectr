@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by LinkedIn iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --li-blue: #0A66C2;
+    --li-blue-pressed: #004182;
+    --li-blue-subtle: #E7F3FF;
+    --navy: #00396B;
+    --canvas: #F3F2EF;
+    --card: #FFFFFF;
+    --elevated: #F9F9F9;
+    --divider: #E0DFDC;
+    --divider-subtle: #EDEDED;
+    --text-primary: rgba(0,0,0,0.9);
+    --text-secondary: rgba(0,0,0,0.6);
+    --text-tertiary: rgba(0,0,0,0.4);
+    --otw-green: #057642;
+    --premium-gold: #915907;
+    --premium-gold-hi: #C37D16;
+    --like-blue: #0A66C2;
+    --celebrate: #F5BB00;
+    --support: #B24020;
+    --love: #DF704D;
+    --insightful: #E7A33E;
+    --funny: #00A0DC;
+    --error: #CC1016;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #E8E8E5; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; color: var(--text-primary); }
+  .page-chip { background: var(--li-blue); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 4px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.55; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.45), 0 0 0 2px rgba(0,0,0,0.08) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 5; }
+
+  /* Top nav */
+  .top-nav { padding: 52px 12px 10px; display: flex; align-items: center; gap: 10px; background: var(--card); border-bottom: 0.5px solid var(--divider); }
+  .nav-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #6BA3D9, #3872B3); flex-shrink: 0; }
+  .nav-search { flex: 1; height: 32px; background: var(--li-blue-subtle); border-radius: 4px; display: flex; align-items: center; padding: 0 10px; gap: 8px; color: var(--text-secondary); font-size: 13px; }
+  .nav-search svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .nav-msg { color: var(--text-primary); padding: 4px; }
+  .nav-msg svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+
+  /* Feed */
+  .feed { flex: 1; padding: 6px 0; overflow: hidden; background: var(--canvas); }
+  .post { background: var(--card); border-radius: 8px; margin: 6px 8px; border: 0.5px solid var(--divider); }
+  .post-head { display: flex; padding: 12px; gap: 10px; }
+  .avatar-ring { width: 56px; height: 56px; border-radius: 50%; padding: 2px; background: var(--otw-green); flex-shrink: 0; position: relative; }
+  .avatar-ring::after { content: '#OPEN TO WORK'; position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%); font-size: 6px; font-weight: 700; background: var(--otw-green); color: #fff; padding: 1px 3px; border-radius: 2px; letter-spacing: 0.2px; white-space: nowrap; }
+  .avatar-inner { width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg, #D5A278, #8C5A2E); border: 2px solid #fff; }
+  .post-meta { flex: 1; min-width: 0; }
+  .post-name { font-size: 14px; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 4px; }
+  .conn-badge { font-size: 11px; color: var(--text-secondary); font-weight: 400; }
+  .post-title { font-size: 12px; color: var(--text-secondary); line-height: 1.3; margin-top: 1px; }
+  .post-time { font-size: 11px; color: var(--text-secondary); margin-top: 2px; display: flex; align-items: center; gap: 4px; }
+  .globe { width: 10px; height: 10px; stroke: currentColor; stroke-width: 1.5; fill: none; }
+  .post-more { color: var(--text-secondary); padding: 4px; }
+  .post-more svg { width: 18px; height: 18px; fill: currentColor; }
+
+  .post-body { padding: 0 12px 10px; font-size: 14px; color: var(--text-primary); line-height: 1.45; }
+  .post-image { height: 100px; margin: 0 0 0 0; background: linear-gradient(135deg, #1E3A5F 0%, #0A66C2 70%, #70B5F9 100%); position: relative; }
+  .post-image::after { content: 'v2.0'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255,255,255,0.95); font-size: 28px; font-weight: 700; letter-spacing: -0.8px; }
+  .reactions-row { display: flex; align-items: center; padding: 8px 12px 6px; gap: 4px; border-top: 0.5px solid var(--divider-subtle); font-size: 11px; color: var(--text-secondary); }
+  .rx-stack { display: flex; margin-right: 4px; }
+  .rx-mini { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid #fff; display: flex; align-items: center; justify-content: center; margin-right: -3px; color: #fff; font-size: 8px; }
+  .rx-mini.like { background: var(--like-blue); }
+  .rx-mini.celebrate { background: var(--celebrate); color: #111; }
+  .rx-mini.insight { background: var(--insightful); color: #111; }
+
+  .action-row { display: flex; justify-content: space-around; padding: 4px 0 6px; border-top: 0.5px solid var(--divider-subtle); }
+  .act { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 4px; color: var(--text-secondary); font-size: 10px; font-weight: 600; }
+  .act svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+
+  /* Tab bar */
+  .tab-bar { height: 56px; background: var(--card); display: flex; align-items: flex-start; justify-content: space-around; padding: 4px 0 10px; border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--text-secondary); font-size: 10px; font-weight: 500; padding: 2px 2px; position: relative; flex: 1; }
+  .tab.active { color: var(--text-primary); }
+  .tab.active::before { content: ''; position: absolute; top: 0; left: 20%; right: 20%; height: 2px; background: var(--text-primary); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+  .tab.active svg { fill: currentColor; }
+
+  /* Sections */
+  .section { background: var(--card); border: 1px solid var(--divider); border-radius: 8px; padding: 24px; margin-bottom: 20px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 6px; padding: 14px; min-height: 92px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--text-primary); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider-subtle); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-24 { font-size: 24px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-16 { font-size: 16px; font-weight: 600; }
+  .t-14n { font-size: 14px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; line-height: 1.5; }
+  .t-12 { font-size: 12px; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; color: var(--text-tertiary); }
+  .t-link { color: var(--li-blue); text-decoration: underline; }
+
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 600; cursor: pointer; border: none; font-size: 14px; }
+  .btn-primary { background: var(--li-blue); color: #fff; padding: 8px 16px; border-radius: 500px; }
+  .btn-primary:active { background: var(--li-blue-pressed); }
+  .btn-outline { background: transparent; color: var(--li-blue); border: 1px solid var(--li-blue); padding: 7px 16px; border-radius: 500px; font-weight: 600; }
+  .btn-ghost { background: transparent; color: var(--text-secondary); border: 1px solid var(--text-tertiary); padding: 7px 16px; border-radius: 500px; }
+  .btn-premium { background: var(--premium-gold); color: #fff; padding: 8px 16px; border-radius: 500px; font-weight: 600; }
+
+  /* Reactions picker */
+  .rx-picker { display: inline-flex; align-items: center; gap: 6px; background: var(--card); border: 1px solid var(--divider); border-radius: 500px; padding: 8px 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .rx-big { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px; font-weight: 700; transition: transform 0.1s; }
+  .rx-big.rx-like { background: var(--like-blue); }
+  .rx-big.rx-cel { background: var(--celebrate); color: #222; }
+  .rx-big.rx-sup { background: var(--support); }
+  .rx-big.rx-lov { background: var(--love); }
+  .rx-big.rx-ins { background: var(--insightful); color: #222; }
+  .rx-big.rx-fun { background: var(--funny); }
+  .rx-label { display: flex; justify-content: space-around; margin-top: 10px; color: var(--text-secondary); font-size: 10px; font-weight: 600; }
+  .rx-label span { width: 40px; text-align: center; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--li-blue); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">LinkedIn iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">Desaturated cream canvas (#F3F2EF) — never pure white — with floating white post cards. LinkedIn Blue (#0A66C2) is reserved strictly for verbs and links; six custom reaction colors carry semantic weight.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="top-nav">
+            <div class="nav-avatar"></div>
+            <div class="nav-search">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+              <span>Search</span>
+            </div>
+            <div class="nav-msg"><svg viewBox="0 0 24 24"><path d="M4 4h16v14H7l-3 3z"/></svg></div>
+          </div>
+
+          <div class="feed">
+            <div class="post">
+              <div class="post-head">
+                <div class="avatar-ring"><div class="avatar-inner"></div></div>
+                <div class="post-meta">
+                  <div class="post-name">Lena Parker <span class="conn-badge">· 1st</span></div>
+                  <div class="post-title">Senior Product Designer at Stripe<br>Design Systems · Fintech</div>
+                  <div class="post-time">2h · <svg class="globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg></div>
+                </div>
+                <div class="post-more"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg></div>
+              </div>
+              <div class="post-body">Big milestone: shipped our design system v2.0 today. 18 months, 140+ components, one team.</div>
+              <div class="post-image"></div>
+              <div class="reactions-row">
+                <div class="rx-stack">
+                  <div class="rx-mini like">👍</div>
+                  <div class="rx-mini celebrate">👏</div>
+                  <div class="rx-mini insight">💡</div>
+                </div>
+                <span>127 reactions · 23 comments</span>
+              </div>
+              <div class="action-row">
+                <div class="act"><svg viewBox="0 0 24 24"><path d="M7 10v10H3V10zm3 0l4-8a2 2 0 0 1 2 2v4h4a2 2 0 0 1 2 2l-2 8a2 2 0 0 1-2 2h-8z"/></svg>Like</div>
+                <div class="act"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.8 7L4 21l1.5-4A8 8 0 1 1 21 12z"/></svg>Comment</div>
+                <div class="act"><svg viewBox="0 0 24 24"><path d="M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3"/></svg>Repost</div>
+                <div class="act"><svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M3 21c0-3 3-5 6-5s6 2 6 5M13 21c0-2 2-3.5 4-3.5s4 1.5 4 3.5"/></svg><span>Network</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M12 8v8M8 12h8" stroke="#fff"/></svg><span>Post</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9zM10 21a2 2 0 0 0 4 0"/></svg><span>Notifs</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg><span>Jobs</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch light" style="background:#F3F2EF;"><div class="name">Canvas Cream</div>#F3F2EF</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Card Surface</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#E0DFDC;"><div class="name">Divider</div>#E0DFDC</div>
+          <div class="swatch" style="background:#0A66C2;"><div class="name">LinkedIn Blue</div>#0A66C2</div>
+          <div class="swatch" style="background:#004182;"><div class="name">Blue Pressed</div>#004182</div>
+          <div class="swatch light" style="background:#E7F3FF;"><div class="name">Blue Subtle</div>#E7F3FF</div>
+          <div class="swatch" style="background:rgba(0,0,0,0.9);"><div class="name">Text Primary</div>90% black</div>
+          <div class="swatch" style="background:rgba(0,0,0,0.6);"><div class="name">Text Secondary</div>60% black</div>
+          <div class="swatch" style="background:#057642;"><div class="name">Open-to-Work</div>#057642</div>
+          <div class="swatch" style="background:#915907;"><div class="name">Premium Gold</div>#915907</div>
+          <div class="swatch" style="background:#00396B;"><div class="name">Deep Navy</div>#00396B</div>
+          <div class="swatch" style="background:#CC1016;"><div class="name">Error</div>#CC1016</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — SF Pro</div>
+        <div class="type-row"><div class="type-meta">Profile Name · 24pt · 700</div><div class="type-sample t-24">Lena Parker</div></div>
+        <div class="type-row"><div class="type-meta">Section · 16pt · 600</div><div class="type-sample t-16">Your network</div></div>
+        <div class="type-row"><div class="type-meta">Post Name · 14pt · 600</div><div class="type-sample t-14n">Marcus Holloway</div></div>
+        <div class="type-row"><div class="type-meta">Body · 14pt · 400</div><div class="type-sample t-14">Big milestone: shipped our design system v2.0 today — <span class="t-link">#designsystems</span> #stripe</div></div>
+        <div class="type-row"><div class="type-meta">Headline/Sub · 12pt · 400</div><div class="type-sample t-12">Senior Product Designer at Stripe</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 11pt · 400</div><div class="type-sample t-11">2h · Public</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Connect</button>
+          <button class="btn btn-outline">Message</button>
+          <button class="btn btn-ghost">Follow</button>
+          <button class="btn btn-premium">Try Premium</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive — Reactions Picker</div>
+        <div class="rx-picker">
+          <div class="rx-big rx-like"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M7 10v10H3V10zm3 0l4-8a2 2 0 0 1 2 2v4h4a2 2 0 0 1 2 2l-2 8a2 2 0 0 1-2 2h-8z"/></svg></div>
+          <div class="rx-big rx-cel">👏</div>
+          <div class="rx-big rx-sup">💗</div>
+          <div class="rx-big rx-lov">❤</div>
+          <div class="rx-big rx-ins">💡</div>
+          <div class="rx-big rx-fun">😂</div>
+        </div>
+        <div class="rx-label">
+          <span>Like</span><span>Celebrate</span><span>Support</span><span>Love</span><span>Insight</span><span>Funny</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -12,12 +12,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 1,
     },
-    {
-      url: `${SITE_URL}/gallery`,
-      lastModified: now,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
     ...APPS.map((slug) => ({
       url: `${SITE_URL}/gallery/${slug}`,
       lastModified: now,

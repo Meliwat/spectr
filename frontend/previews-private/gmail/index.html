@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Gmail iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gmail-red: #D93025;
+    --google-red: #EA4335;
+    --google-yellow: #FBBC04;
+    --google-green: #34A853;
+    --google-blue: #4285F4;
+    --canvas: #FFFFFF;
+    --surface: #F6F8FC;
+    --surface-2: #F1F3F4;
+    --divider: #DADCE0;
+    --text: #202124;
+    --text-secondary: #5F6368;
+    --text-tertiary: #80868B;
+    --unread: #202124;
+    --read: #3C4043;
+    --blue-avatar: #4285F4;
+    --green-avatar: #34A853;
+    --purple-avatar: #9334E6;
+    --orange-avatar: #FA7B17;
+    --teal-avatar: #1E8E9A;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #E4E7ED; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 600; letter-spacing: -0.5px; color: var(--text); }
+  .page-chip { background: var(--gmail-red); color: #fff; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.55; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.5), 0 0 0 2px rgba(0,0,0,0.08) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 5; }
+
+  /* Search */
+  .search-wrap { padding: 52px 14px 10px; background: var(--canvas); }
+  .search-pill { display: flex; align-items: center; height: 48px; border-radius: 500px; background: var(--surface); padding: 0 6px 0 16px; gap: 12px; }
+  .search-pill svg { width: 18px; height: 18px; stroke: var(--text-secondary); stroke-width: 2; fill: none; flex-shrink: 0; }
+  .search-pill .hint { flex: 1; font-size: 14px; color: var(--text-secondary); }
+  .search-avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--google-blue), var(--google-green)); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 600; font-size: 13px; }
+
+  /* Mail list */
+  .mail-list { flex: 1; padding: 4px 0 0; overflow: hidden; background: var(--canvas); position: relative; }
+  .mail-row { display: flex; gap: 12px; padding: 10px 14px; align-items: flex-start; }
+  .mail-row + .mail-row { border-top: 0.5px solid var(--surface-2); }
+  .mail-avatar { width: 36px; height: 36px; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 500; font-size: 15px; flex-shrink: 0; }
+  .av-b { background: var(--blue-avatar); }
+  .av-g { background: var(--green-avatar); }
+  .av-p { background: var(--purple-avatar); }
+  .av-o { background: var(--orange-avatar); }
+  .av-t { background: var(--teal-avatar); }
+  .mail-body { flex: 1; min-width: 0; }
+  .mail-line1 { display: flex; align-items: baseline; gap: 6px; }
+  .mail-from { font-size: 14px; font-weight: 400; color: var(--read); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mail-row.unread .mail-from { font-weight: 700; color: var(--unread); }
+  .mail-time { font-size: 12px; color: var(--text-secondary); flex-shrink: 0; }
+  .mail-row.unread .mail-time { color: var(--unread); font-weight: 600; }
+  .mail-subject { font-size: 13px; color: var(--read); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mail-row.unread .mail-subject { font-weight: 600; color: var(--unread); }
+  .mail-snippet { font-size: 13px; color: var(--text-secondary); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mail-star { color: var(--text-tertiary); padding-top: 10px; }
+  .mail-star svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+  .mail-star.on svg { fill: var(--google-yellow); stroke: var(--google-yellow); }
+
+  /* Smart reply chips */
+  .sr-row { padding: 6px 14px 10px 62px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .sr-chip { border: 1px solid var(--divider); border-radius: 500px; padding: 5px 12px; font-size: 12px; color: var(--google-blue); font-weight: 500; }
+
+  /* FAB */
+  .fab { position: absolute; bottom: 74px; right: 16px; width: 56px; height: 56px; background: var(--gmail-red); border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(217,48,37,0.3), 0 2px 4px rgba(0,0,0,0.15); }
+  .fab svg { width: 22px; height: 22px; fill: #fff; }
+
+  /* Tab bar */
+  .tab-bar { height: 60px; background: var(--canvas); border-top: 0.5px solid var(--surface-2); display: flex; align-items: flex-start; justify-content: space-around; padding: 6px 0 12px; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--text-secondary); font-size: 11px; font-weight: 500; flex: 1; position: relative; padding: 2px; }
+  .tab.active { color: var(--gmail-red); }
+  .tab-iconwrap { padding: 4px 18px; border-radius: 500px; }
+  .tab.active .tab-iconwrap { background: #FBE9E7; }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+  .tab.active svg { fill: currentColor; }
+
+  /* Sections */
+  .section { background: var(--canvas); border: 1px solid var(--divider); border-radius: 16px; padding: 24px; margin-bottom: 20px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 8px; padding: 14px; min-height: 90px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'Roboto Mono', 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--text); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--surface-2); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'Roboto Mono', 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); }
+  .t-28 { font-size: 28px; font-weight: 400; letter-spacing: -0.4px; }
+  .t-22 { font-size: 22px; font-weight: 500; }
+  .t-16 { font-size: 16px; font-weight: 500; }
+  .t-14b { font-size: 14px; font-weight: 700; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--read); }
+  .t-12 { font-size: 12px; color: var(--text-secondary); }
+
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 500; cursor: pointer; border: none; font-size: 14px; }
+  .btn-primary { background: var(--google-blue); color: #fff; padding: 10px 20px; border-radius: 4px; }
+  .btn-text { background: transparent; color: var(--google-blue); padding: 10px 8px; font-weight: 500; }
+  .btn-outline { background: transparent; color: var(--google-blue); border: 1px solid var(--divider); padding: 9px 18px; border-radius: 4px; font-weight: 500; }
+
+  /* FAB states */
+  .fab-row { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; }
+  .fab-demo { position: relative; width: 56px; height: 56px; background: var(--gmail-red); border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(217,48,37,0.3), 0 2px 4px rgba(0,0,0,0.15); }
+  .fab-demo svg { width: 22px; height: 22px; fill: #fff; }
+  .fab-demo.pressed { background: #A52714; transform: scale(0.96); }
+  .fab-expanded { height: 56px; background: var(--gmail-red); border-radius: 28px; display: inline-flex; align-items: center; padding: 0 22px 0 18px; color: #fff; font-weight: 500; gap: 12px; box-shadow: 0 4px 10px rgba(217,48,37,0.3), 0 2px 4px rgba(0,0,0,0.15); }
+  .fab-expanded svg { width: 22px; height: 22px; fill: #fff; }
+  .fab-label { font-size: 14px; font-weight: 500; color: var(--text-secondary); display: block; margin-top: 8px; font-family: 'Roboto Mono', monospace; font-size: 11px; }
+  .fab-col { display: flex; flex-direction: column; align-items: center; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--gmail-red); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Roboto Mono', 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Gmail iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">White canvas with a #F6F8FC search pill. Gmail Red (#D93025) drives the envelope mark and the 16pt-radius Compose FAB. Avatars are initial-tinted circles in the Google 4-color palette.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="search-wrap">
+            <div class="search-pill">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+              <span class="hint">Search in mail</span>
+              <div class="search-avatar">M</div>
+            </div>
+          </div>
+
+          <div class="mail-list">
+            <div class="mail-row unread">
+              <div class="mail-avatar av-b">A</div>
+              <div class="mail-body">
+                <div class="mail-line1"><span class="mail-from">Alex Rivera</span><span class="mail-time">9:42 AM</span></div>
+                <div class="mail-subject">Design review — Friday agenda</div>
+                <div class="mail-snippet">Could we lock the v2 token migration on the agenda? I'd love to…</div>
+              </div>
+              <div class="mail-star"><svg viewBox="0 0 24 24"><polygon points="12,2 15.1,8.4 22,9.3 17,14.1 18.2,21 12,17.8 5.8,21 7,14.1 2,9.3 8.9,8.4"/></svg></div>
+            </div>
+            <div class="mail-row unread">
+              <div class="mail-avatar av-g">M</div>
+              <div class="mail-body">
+                <div class="mail-line1"><span class="mail-from">Maya Chen, Sofia (3)</span><span class="mail-time">8:15 AM</span></div>
+                <div class="mail-subject">Re: Q2 planning doc — almost ready</div>
+                <div class="mail-snippet">Last round of comments folded in. Marking as final unless anyone…</div>
+              </div>
+              <div class="mail-star on"><svg viewBox="0 0 24 24"><polygon points="12,2 15.1,8.4 22,9.3 17,14.1 18.2,21 12,17.8 5.8,21 7,14.1 2,9.3 8.9,8.4"/></svg></div>
+            </div>
+            <div class="sr-row">
+              <div class="sr-chip">Looks good</div>
+              <div class="sr-chip">I'll review</div>
+              <div class="sr-chip">Thanks!</div>
+            </div>
+            <div class="mail-row">
+              <div class="mail-avatar av-p">S</div>
+              <div class="mail-body">
+                <div class="mail-line1"><span class="mail-from">Stripe</span><span class="mail-time">Yesterday</span></div>
+                <div class="mail-subject">Your April payout is on the way</div>
+                <div class="mail-snippet">$1,840.00 will arrive by Apr 24. View the full breakdown in…</div>
+              </div>
+              <div class="mail-star"><svg viewBox="0 0 24 24"><polygon points="12,2 15.1,8.4 22,9.3 17,14.1 18.2,21 12,17.8 5.8,21 7,14.1 2,9.3 8.9,8.4"/></svg></div>
+            </div>
+            <div class="mail-row">
+              <div class="mail-avatar av-o">T</div>
+              <div class="mail-body">
+                <div class="mail-line1"><span class="mail-from">The Verge</span><span class="mail-time">Apr 19</span></div>
+                <div class="mail-subject">Weekend reads: AI, design, and more</div>
+                <div class="mail-snippet">The newsletter for people who take their tech with their coffee…</div>
+              </div>
+              <div class="mail-star"><svg viewBox="0 0 24 24"><polygon points="12,2 15.1,8.4 22,9.3 17,14.1 18.2,21 12,17.8 5.8,21 7,14.1 2,9.3 8.9,8.4"/></svg></div>
+            </div>
+            <div class="mail-row">
+              <div class="mail-avatar av-t">J</div>
+              <div class="mail-body">
+                <div class="mail-line1"><span class="mail-from">Julian Park</span><span class="mail-time">Apr 18</span></div>
+                <div class="mail-subject">Lunch next Tuesday?</div>
+                <div class="mail-snippet">Hey, it's been too long. Free for lunch around 12:30 near the…</div>
+              </div>
+              <div class="mail-star"><svg viewBox="0 0 24 24"><polygon points="12,2 15.1,8.4 22,9.3 17,14.1 18.2,21 12,17.8 5.8,21 7,14.1 2,9.3 8.9,8.4"/></svg></div>
+            </div>
+
+            <div class="fab">
+              <svg viewBox="0 0 24 24"><path d="M20 5l-1-1a2 2 0 0 0-3 0l-9 9-1 4 4-1 9-9a2 2 0 0 0 0-3zM4 20h16"/></svg>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active">
+              <div class="tab-iconwrap"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></div>
+              <span>Mail</span>
+            </div>
+            <div class="tab">
+              <div class="tab-iconwrap"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.8 7L4 21l1.5-4A8 8 0 1 1 21 12z"/></svg></div>
+              <span>Chat</span>
+            </div>
+            <div class="tab">
+              <div class="tab-iconwrap"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M3 21c0-3 3-5 6-5s6 2 6 5M13 21c0-2 2-3.5 4-3.5s4 1.5 4 3.5"/></svg></div>
+              <span>Spaces</span>
+            </div>
+            <div class="tab">
+              <div class="tab-iconwrap"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3"/></svg></div>
+              <span>Meet</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#D93025;"><div class="name">Gmail Red</div>#D93025</div>
+          <div class="swatch" style="background:#EA4335;"><div class="name">Google Red</div>#EA4335</div>
+          <div class="swatch" style="background:#FBBC04; color:#202124;"><div class="name">Google Yellow</div>#FBBC04</div>
+          <div class="swatch" style="background:#34A853;"><div class="name">Google Green</div>#34A853</div>
+          <div class="swatch" style="background:#4285F4;"><div class="name">Google Blue</div>#4285F4</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Canvas</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#F6F8FC;"><div class="name">Surface</div>#F6F8FC</div>
+          <div class="swatch light" style="background:#DADCE0;"><div class="name">Divider</div>#DADCE0</div>
+          <div class="swatch" style="background:#202124;"><div class="name">Text / Dark canvas</div>#202124</div>
+          <div class="swatch" style="background:#5F6368;"><div class="name">Text Secondary</div>#5F6368</div>
+          <div class="swatch light" style="background:#E8EAED;"><div class="name">Dark text</div>#E8EAED</div>
+          <div class="swatch" style="background:#9334E6;"><div class="name">Avatar Purple</div>#9334E6</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Google Sans + Roboto</div>
+        <div class="type-row"><div class="type-meta">Display · Google Sans · 28pt · 400</div><div class="type-sample t-28">Primary</div></div>
+        <div class="type-row"><div class="type-meta">Section · Google Sans · 22pt · 500</div><div class="type-sample t-22">Inbox — Main</div></div>
+        <div class="type-row"><div class="type-meta">Subject Title · Roboto · 16pt · 500</div><div class="type-sample t-16">Design review — Friday agenda</div></div>
+        <div class="type-row"><div class="type-meta">Sender (unread) · Roboto · 14pt · 700</div><div class="type-sample t-14b">Alex Rivera</div></div>
+        <div class="type-row"><div class="type-meta">Body / Snippet · Roboto · 14pt · 400</div><div class="type-sample t-14">Could we lock the v2 token migration on the agenda?</div></div>
+        <div class="type-row"><div class="type-meta">Meta · Roboto · 12pt · 400</div><div class="type-sample t-12">9:42 AM · Primary</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Send</button>
+          <button class="btn btn-outline">Save draft</button>
+          <button class="btn btn-text">Discard</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive — Compose FAB (3 states)</div>
+        <div class="fab-row">
+          <div class="fab-col">
+            <div class="fab-demo"><svg viewBox="0 0 24 24"><path d="M20 5l-1-1a2 2 0 0 0-3 0l-9 9-1 4 4-1 9-9a2 2 0 0 0 0-3zM4 20h16"/></svg></div>
+            <span class="fab-label">idle · 16pt radius</span>
+          </div>
+          <div class="fab-col">
+            <div class="fab-demo pressed"><svg viewBox="0 0 24 24"><path d="M20 5l-1-1a2 2 0 0 0-3 0l-9 9-1 4 4-1 9-9a2 2 0 0 0 0-3zM4 20h16"/></svg></div>
+            <span class="fab-label">pressed · scale 0.96</span>
+          </div>
+          <div class="fab-col">
+            <div class="fab-expanded"><svg viewBox="0 0 24 24"><path d="M20 5l-1-1a2 2 0 0 0-3 0l-9 9-1 4 4-1 9-9a2 2 0 0 0 0-3zM4 20h16"/></svg><span>Compose</span></div>
+            <span class="fab-label">expanded · pill unfurls</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

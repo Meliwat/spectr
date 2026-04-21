@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Pinterest iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --surface-1: #F8F8F8;
+    --input: #EFEFEF;
+    --divider: #E9E9E9;
+    --text: #111111;
+    --text-secondary: #767676;
+    --text-tertiary: #B5B5B5;
+    --red: #E60023;
+    --red-pressed: #AD081B;
+    --dark-canvas: #121212;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #F0F0F0; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; color: var(--text); }
+  .page-chip { background: var(--red); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 680px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.5), 0 0 0 2px rgba(0,0,0,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Floating search */
+  .search-pill { position: absolute; top: 48px; left: 16px; right: 16px; height: 44px; background: var(--canvas); border-radius: 999px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; align-items: center; padding: 0 16px; gap: 10px; z-index: 10; }
+  .search-pill svg { width: 18px; height: 18px; stroke: var(--text); stroke-width: 2; fill: none; }
+  .search-pill .placeholder { font-size: 15px; color: var(--text-secondary); font-weight: 400; }
+
+  /* Feed */
+  .feed { flex: 1; padding: 100px 8px 0; overflow: hidden; }
+  .masonry { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .col { display: flex; flex-direction: column; gap: 8px; }
+  .pin { border-radius: 16px; overflow: hidden; position: relative; background: var(--surface-1); }
+  .pin .img { width: 100%; display: block; border-radius: 16px; }
+  .pin .save { position: absolute; top: 8px; right: 8px; background: var(--red); color: #fff; font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 999px; }
+  .pin .title { font-size: 11px; font-weight: 500; color: var(--text); padding: 4px 4px 0; line-height: 1.3; }
+  .pin .creator { font-size: 10px; font-weight: 400; color: var(--text-secondary); padding: 2px 4px 4px; }
+
+  /* Pin gradients — visually varied */
+  .g1 { height: 150px; background: linear-gradient(135deg, #F4A6A0, #C24D4D); }
+  .g2 { height: 100px; background: linear-gradient(135deg, #7BB8E0, #2F6FA8); }
+  .g3 { height: 130px; background: linear-gradient(135deg, #E7C77A, #B5862E); }
+  .g4 { height: 110px; background: linear-gradient(135deg, #9EE0A8, #3E8050); }
+  .g5 { height: 160px; background: linear-gradient(135deg, #D4B3E2, #6E3F8F); }
+  .g6 { height: 90px; background: linear-gradient(135deg, #F4E1A6, #C99F42); }
+
+  /* Tab bar */
+  .tab-bar { height: 58px; background: var(--canvas); border-top: 1px solid var(--divider); display: flex; align-items: center; justify-content: space-around; padding: 0 4px 8px; }
+  .tab { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-secondary); width: 44px; height: 44px; }
+  .tab.active { color: var(--text); }
+  .tab svg { width: 24px; height: 24px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; }
+  .tab.create { width: 44px; height: 32px; background: var(--red); border-radius: 10px; color: #fff; }
+  .tab.create svg { stroke: #fff; stroke-width: 2.5; width: 20px; height: 20px; }
+
+  /* Token sections */
+  .section { background: #fff; border: 1px solid var(--divider); border-radius: 16px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 90px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #111; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); }
+  .t-28 { font-size: 28px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-24 { font-size: 24px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-20 { font-size: 20px; font-weight: 700; letter-spacing: -0.1px; }
+  .t-17 { font-size: 17px; font-weight: 700; }
+  .t-15 { font-size: 15px; font-weight: 400; }
+  .t-14 { font-size: 14px; font-weight: 500; }
+  .t-12 { font-size: 12px; font-weight: 400; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 16px; font-weight: 700; padding: 10px 20px; border-radius: 999px; border: none; cursor: pointer; }
+  .btn-save { background: var(--red); color: #fff; }
+  .btn-saved { background: var(--text); color: #fff; }
+  .btn-follow { background: var(--red); color: #fff; padding: 12px 24px; }
+  .btn-secondary { background: var(--input); color: var(--text); padding: 12px 24px; font-weight: 600; }
+  .chip { padding: 8px 16px; background: var(--input); color: var(--text); font-size: 14px; font-weight: 600; border-radius: 999px; }
+  .chip.active { background: var(--text); color: #fff; }
+
+  /* Distinctive — mini masonry */
+  .mini-masonry { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-width: 320px; }
+  .mini-col { display: flex; flex-direction: column; gap: 8px; }
+  .mini-pin { border-radius: 16px; position: relative; overflow: hidden; }
+  .mini-save { position: absolute; top: 6px; right: 6px; background: var(--red); color: #fff; font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
+  .mini-save.saved { background: var(--text); }
+  .mp1 { height: 140px; background: linear-gradient(135deg, #F4A6A0, #C24D4D); }
+  .mp2 { height: 90px; background: linear-gradient(135deg, #7BB8E0, #2F6FA8); }
+  .mp3 { height: 100px; background: linear-gradient(135deg, #E7C77A, #B5862E); }
+  .mp4 { height: 150px; background: linear-gradient(135deg, #D4B3E2, #6E3F8F); }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--red); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Pinterest iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">White canvas (#FFFFFF), Pinterest Red reserved for Save. The masonry grid is the app — staggered 2-column layout with variable-height pins lets imagery do all the work.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="search-pill">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+            <div class="placeholder">Search for ideas</div>
+          </div>
+          <div class="feed">
+            <div class="masonry">
+              <div class="col">
+                <div class="pin"><div class="img g1"></div><div class="save">Save</div><div class="title">Cozy rustic kitchen corner inspiration</div><div class="creator">by hanaruiz</div></div>
+                <div class="pin"><div class="img g2"></div><div class="save">Save</div><div class="title">Blue hour street</div><div class="creator">by kvoss</div></div>
+                <div class="pin"><div class="img g3"></div><div class="save">Save</div><div class="title">Golden fall walk</div><div class="creator">by amberleaf</div></div>
+              </div>
+              <div class="col">
+                <div class="pin"><div class="img g4"></div><div class="save">Save</div><div class="title">Tiny garden ideas for small balconies</div><div class="creator">by plantnook</div></div>
+                <div class="pin"><div class="img g5"></div><div class="save">Save</div><div class="title">Purple twilight sky</div><div class="creator">by novap</div></div>
+                <div class="pin"><div class="img g6"></div><div class="save">Save</div><div class="title">Warm breakfast</div><div class="creator">by slowplates</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg></div>
+            <div class="tab create"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M18 16v-5a6 6 0 0 0-12 0v5l-2 2v1h16v-1z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M12 2C7 2 5 6 5 10c0 5 4 8 7 12 3-4 7-7 7-12 0-4-2-8-7-8z"/><circle cx="12" cy="10" r="2.5" fill="#fff"/></svg></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#E60023;"><div class="name">Pinterest Red</div>#E60023</div>
+          <div class="swatch" style="background:#AD081B;"><div class="name">Red Pressed</div>#AD081B</div>
+          <div class="swatch" style="background:#CC0020;"><div class="name">Red Hover</div>#CC0020</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Canvas</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#F8F8F8;"><div class="name">Surface 1</div>#F8F8F8</div>
+          <div class="swatch light" style="background:#EFEFEF;"><div class="name">Input Fill</div>#EFEFEF</div>
+          <div class="swatch" style="background:#121212;"><div class="name">Canvas Dark</div>#121212</div>
+          <div class="swatch" style="background:#111111;"><div class="name">Text Primary</div>#111111</div>
+          <div class="swatch" style="background:#767676;"><div class="name">Text Secondary</div>#767676</div>
+          <div class="swatch light" style="background:#B5B5B5;"><div class="name">Text Tertiary</div>#B5B5B5</div>
+          <div class="swatch light" style="background:#E9E9E9;"><div class="name">Divider</div>#E9E9E9</div>
+          <div class="swatch" style="background:#008A3C;"><div class="name">Success Green</div>#008A3C</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Pinterest Sans</div>
+        <div class="type-row"><div class="type-meta">Pin Detail · 28pt · 700</div><div class="type-sample t-28">Cozy rustic kitchen</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 24pt · 700</div><div class="type-sample t-24">Your boards</div></div>
+        <div class="type-row"><div class="type-meta">Section · 20pt · 700</div><div class="type-sample t-20">More ideas for you</div></div>
+        <div class="type-row"><div class="type-meta">Board Name · 17pt · 700</div><div class="type-sample t-17">Kitchen inspo</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 400</div><div class="type-sample t-15">A warm-toned mid-century galley with natural materials.</div></div>
+        <div class="type-row"><div class="type-meta">Pin Title · 14pt · 500</div><div class="type-sample t-14">Linen drapes over a south-facing window</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 12pt · 400</div><div class="type-sample t-12">3 days ago · 22 pins</div></div>
+        <div class="type-row"><div class="type-meta">Micro Label · 11pt · 700 UP</div><div class="type-sample t-11">IDEA PIN</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-save">Save</button>
+          <button class="btn btn-saved">Saved</button>
+          <button class="btn btn-follow">Follow</button>
+          <button class="btn btn-secondary">Message</button>
+          <div class="chip active">All</div>
+          <div class="chip">Home</div>
+          <div class="chip">Garden</div>
+          <div class="chip">Recipes</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive — Masonry Pins (variable heights, tight 8pt gaps)</div>
+        <div class="mini-masonry">
+          <div class="mini-col">
+            <div class="mini-pin mp1"><div class="mini-save">Save</div></div>
+            <div class="mini-pin mp2"><div class="mini-save saved">Saved</div></div>
+          </div>
+          <div class="mini-col">
+            <div class="mini-pin mp3"><div class="mini-save">Save</div></div>
+            <div class="mini-pin mp4"><div class="mini-save">Save</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

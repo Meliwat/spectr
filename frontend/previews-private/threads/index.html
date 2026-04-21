@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Threads iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: dark;
+    --canvas: #000000;
+    --surface-1: #101010;
+    --surface-2: #181818;
+    --divider: #222222;
+    --thread-line: #333333;
+    --text: #F5F5F5;
+    --text-secondary: #777777;
+    --text-tertiary: #4D4D4D;
+    --link-blue: #2D7FF9;
+    --like-coral: #FE2C55;
+    --error: #ED4956;
+    --verified-blue: #0095F6;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #070707; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; }
+  .page-chip { background: var(--text); color: #000; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 5; }
+
+  /* Top nav */
+  .top-nav { height: 52px; padding: 44px 16px 0; display: flex; align-items: center; justify-content: center; position: relative; }
+  .at-logo { font-size: 28px; font-weight: 700; color: var(--text); line-height: 1; }
+
+  .feed-scroll { flex: 1; overflow: hidden; padding-top: 8px; }
+
+  /* Post */
+  .thread-post { padding: 16px 16px 12px; display: flex; gap: 12px; border-bottom: 1px solid var(--divider); position: relative; }
+  .avatar-col { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #FFD6C9, #FFE29A); }
+  .avatar.a2 { background: linear-gradient(135deg, #C4CEFF, #C6FFE1); }
+  .avatar.a3 { background: linear-gradient(135deg, #FFD9E5, #D6C4FF); }
+  .avatar-small { width: 22px; height: 22px; border-radius: 50%; }
+  .thread-line { width: 1px; background: var(--thread-line); flex: 1; margin: 6px 0 0; min-height: 28px; }
+  .post-body { flex: 1; min-width: 0; padding-bottom: 4px; }
+  .post-head { display: flex; align-items: center; gap: 4px; font-size: 14px; }
+  .post-head .name { font-weight: 600; color: var(--text); font-size: 15px; }
+  .post-head .verified { color: var(--verified-blue); font-size: 12px; }
+  .post-head .time { color: var(--text-secondary); margin-left: auto; font-weight: 400; }
+  .post-text { font-size: 15px; color: var(--text); margin-top: 2px; line-height: 1.4; }
+  .post-media { aspect-ratio: 16/10; border-radius: 12px; background: linear-gradient(135deg, #1A2E2E 0%, #2B5C5C 50%, #A9D6C5 100%); margin-top: 10px; position: relative; overflow: hidden; }
+  .post-media::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 70% 30%, rgba(255,240,200,0.2), transparent 55%); }
+
+  .action-row { display: flex; gap: 20px; margin-top: 10px; color: var(--text); }
+  .action-ico { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--text-secondary); }
+  .action-ico svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+  .action-ico.liked { color: var(--like-coral); }
+  .action-ico.liked svg { fill: currentColor; stroke: currentColor; }
+
+  /* Reply - nested */
+  .reply-row { padding: 4px 16px 12px; display: flex; gap: 12px; border-bottom: 1px solid var(--divider); position: relative; }
+  .reply-row .avatar-col { margin-left: 8px; }
+  .reply-row .avatar { width: 28px; height: 28px; }
+
+  /* Tab bar */
+  .tab-bar { height: 52px; background: rgba(0,0,0,0.92); backdrop-filter: saturate(180%) blur(20px); display: flex; align-items: center; justify-content: space-around; padding: 0 8px 10px; border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; align-items: center; justify-content: center; color: var(--text-secondary); padding: 8px 12px; border-radius: 8px; }
+  .tab.active { color: var(--text); }
+  .tab svg { width: 24px; height: 24px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 16px; min-height: 90px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #000; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 210px; flex-shrink: 0; }
+  .type-sample { flex: 1; }
+  .t-logo { font-size: 28px; font-weight: 700; }
+  .t-17 { font-size: 17px; font-weight: 700; letter-spacing: -0.1px; }
+  .t-15s { font-size: 15px; font-weight: 600; }
+  .t-15 { font-size: 15px; font-weight: 400; line-height: 1.4; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 15px; font-weight: 600; padding: 8px 20px; border-radius: 500px; border: none; cursor: pointer; }
+  .btn-post { background: var(--text); color: #000; }
+  .btn-post:active { opacity: 0.8; }
+  .btn-following { background: transparent; color: var(--text); border: 1px solid var(--text-secondary); font-size: 14px; }
+  .btn-ig-grad { background: linear-gradient(135deg, #F56040 0%, #A020F0 50%, #405DE6 100%); color: #fff; font-weight: 600; padding: 10px 20px; }
+  .chip { padding: 7px 16px; background: transparent; color: var(--text); font-size: 14px; font-weight: 600; border-radius: 500px; border: 1px solid var(--thread-line); }
+  .chip.active { background: var(--text); color: #000; border-color: var(--text); }
+
+  /* Thread-line nesting */
+  .nest-wrap { padding: 0; }
+  .nest-row { display: flex; gap: 12px; padding: 12px 0; position: relative; }
+  .nest-row + .nest-row { border-top: 1px solid var(--divider); }
+  .nest-avatar { width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0; position: relative; z-index: 2; }
+  .nest-avatar.s-sm { width: 28px; height: 28px; }
+  .nest-avatar.s-xs { width: 22px; height: 22px; }
+  .nest-avatar.col1 { background: linear-gradient(135deg, #FFD6C9, #FFE29A); }
+  .nest-avatar.col2 { background: linear-gradient(135deg, #C4CEFF, #C6FFE1); }
+  .nest-avatar.col3 { background: linear-gradient(135deg, #FFD9E5, #D6C4FF); }
+  .nest-col { position: relative; display: flex; flex-direction: column; align-items: center; }
+  .nest-col::after { content: ''; position: absolute; top: 40px; bottom: -16px; width: 1px; background: var(--thread-line); left: 50%; transform: translateX(-50%); }
+  .nest-row.last .nest-col::after { display: none; }
+  .nest-info { flex: 1; min-width: 0; padding-top: 4px; }
+  .nest-head { display: flex; align-items: center; gap: 4px; font-size: 13px; }
+  .nest-head .name { font-weight: 600; font-size: 14px; color: var(--text); }
+  .nest-head .handle { color: var(--text-secondary); }
+  .nest-body { font-size: 14px; color: var(--text); line-height: 1.4; margin-top: 2px; }
+  .nest-indent1 { padding-left: 44px; }
+  .nest-indent2 { padding-left: 88px; }
+  .curve-line { position: absolute; left: 20px; top: -6px; width: 20px; height: 30px; border-left: 1px solid var(--thread-line); border-bottom: 1px solid var(--thread-line); border-bottom-left-radius: 8px; }
+  .curve-line.deep { left: 64px; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--text); color: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Threads iOS — Design Tokens</div>
+    <div class="page-chip">Dark</div>
+  </div>
+  <p class="page-subtitle">True-black canvas (#000000) with roomy 1.4 line height on body — a quieter, text-first Meta app anchored by its signature thread-line that connects author to conversation.</p>
+
+  <div class="grid">
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="top-nav">
+            <div class="at-logo">@</div>
+          </div>
+          <div class="feed-scroll">
+            <div class="thread-post">
+              <div class="avatar-col">
+                <div class="avatar"></div>
+                <div class="thread-line"></div>
+                <div class="avatar avatar-small a2" style="margin-top: 4px;"></div>
+              </div>
+              <div class="post-body">
+                <div class="post-head">
+                  <span class="name">maya_c</span>
+                  <span class="verified"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="8,12 11,15 16,9" stroke="#000" stroke-width="2.5" fill="none"/></svg></span>
+                  <span class="time">2h</span>
+                </div>
+                <div class="post-text">Ran 5 miles before sunrise. The city felt like a secret.</div>
+                <div class="post-media"></div>
+                <div class="action-row">
+                  <div class="action-ico liked"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span>247</span></div>
+                  <div class="action-ico"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>18</span></div>
+                  <div class="action-ico"><svg viewBox="0 0 24 24"><path d="M17 2l3 3-3 3"/><path d="M4 9V7a2 2 0 0 1 2-2h14"/><path d="M7 22l-3-3 3-3"/><path d="M20 15v2a2 2 0 0 1-2 2H4"/></svg><span>12</span></div>
+                  <div class="action-ico"><svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg></div>
+                </div>
+              </div>
+            </div>
+            <div class="reply-row">
+              <div class="avatar-col">
+                <div class="avatar avatar-small a2"></div>
+              </div>
+              <div class="post-body">
+                <div class="post-head">
+                  <span class="name" style="font-size: 14px;">jordanp</span>
+                  <span class="time">1h</span>
+                </div>
+                <div class="post-text" style="font-size: 14px;">Same trail? I've been running that loop all month — it's unreal at 5am.</div>
+                <div class="action-row" style="gap: 18px; margin-top: 8px;">
+                  <div class="action-ico"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span>42</span></div>
+                  <div class="action-ico"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>3</span></div>
+                  <div class="action-ico"><svg viewBox="0 0 24 24"><path d="M17 2l3 3-3 3"/><path d="M4 9V7a2 2 0 0 1 2-2h14"/><path d="M7 22l-3-3 3-3"/><path d="M20 15v2a2 2 0 0 1-2 2H4"/></svg></div>
+                  <div class="action-ico"><svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M12 8v8M8 12h8"/></svg></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette — Dark</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#000000;"><div class="name">Canvas Black</div>#000000</div>
+          <div class="swatch" style="background:#101010;"><div class="name">Surface 1</div>#101010</div>
+          <div class="swatch" style="background:#181818;"><div class="name">Surface 2</div>#181818</div>
+          <div class="swatch" style="background:#222222;"><div class="name">Divider</div>#222222</div>
+          <div class="swatch" style="background:#333333;"><div class="name">Thread Line</div>#333333</div>
+          <div class="swatch light" style="background:#F5F5F5;"><div class="name">Text Primary</div>#F5F5F5</div>
+          <div class="swatch" style="background:#777777;"><div class="name">Text Secondary</div>#777777</div>
+          <div class="swatch" style="background:#4D4D4D;"><div class="name">Text Tertiary</div>#4D4D4D</div>
+          <div class="swatch" style="background:#2D7FF9;"><div class="name">Link Blue</div>#2D7FF9</div>
+          <div class="swatch" style="background:#FE2C55;"><div class="name">Like Coral</div>#FE2C55</div>
+          <div class="swatch" style="background:#0095F6;"><div class="name">IG Verified</div>#0095F6</div>
+          <div class="swatch" style="background:#ED4956;"><div class="name">Error Red</div>#ED4956</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Instagram Sans (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Logo Glyph · 28pt · 700</div><div class="type-sample t-logo">@</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 17pt · 700</div><div class="type-sample t-17">Activity</div></div>
+        <div class="type-row"><div class="type-meta">Display Name · 15pt · 600</div><div class="type-sample t-15s">maya_c</div></div>
+        <div class="type-row"><div class="type-meta">Post Body · 15pt · 400 / 1.4</div><div class="type-sample t-15">Ran 5 miles before sunrise. The city felt like a secret.</div></div>
+        <div class="type-row"><div class="type-meta">@Handle / Timestamp · 14pt</div><div class="type-sample t-14">@maya_c · 2h</div></div>
+        <div class="type-row"><div class="type-meta">Action Count · 13pt · 400</div><div class="type-sample t-13">247 likes · 18 replies</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-post">Post</button>
+          <button class="btn btn-following">Following</button>
+          <button class="btn btn-ig-grad">Connect with Instagram</button>
+          <div class="chip active">All</div>
+          <div class="chip">Replies</div>
+          <div class="chip">Mentions</div>
+          <div class="chip">Quotes</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Thread-Line Nesting</div>
+        <div class="nest-wrap">
+          <div class="nest-row">
+            <div class="nest-col">
+              <div class="nest-avatar col1"></div>
+            </div>
+            <div class="nest-info">
+              <div class="nest-head"><span class="name">maya_c</span><span class="handle">@maya_c · 2h</span></div>
+              <div class="nest-body">Ran 5 miles before sunrise. The city felt like a secret.</div>
+            </div>
+          </div>
+          <div class="nest-row" style="padding-left: 44px; border-top: none; position: relative;">
+            <div class="curve-line"></div>
+            <div class="nest-col">
+              <div class="nest-avatar s-sm col2"></div>
+            </div>
+            <div class="nest-info">
+              <div class="nest-head"><span class="name">jordanp</span><span class="handle">@jordanp · 1h</span></div>
+              <div class="nest-body">Same trail? I've been running that loop all month.</div>
+            </div>
+          </div>
+          <div class="nest-row last" style="padding-left: 88px; border-top: none; position: relative;">
+            <div class="curve-line deep"></div>
+            <div class="nest-col">
+              <div class="nest-avatar s-xs col3"></div>
+            </div>
+            <div class="nest-info">
+              <div class="nest-head"><span class="name">_alex</span><span class="handle">@_alex · 40m</span></div>
+              <div class="nest-body">That loop is everything. Nothing like empty streets at 5am.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

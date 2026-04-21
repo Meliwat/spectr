@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Reddit iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #F6F7F8;
+    --card: #FFFFFF;
+    --surface-2: #F2F3F5;
+    --divider: #EDEFF1;
+    --text: #1A1A1B;
+    --text-secondary: #7C7C7C;
+    --text-tertiary: #AFAFAF;
+    --muted: #878A8C;
+    --rd-orange: #FF4500;
+    --rd-orange-pressed: #CC3700;
+    --rd-red: #FF585B;
+    --upvote: #FF8717;
+    --downvote: #7193FF;
+    --link: #0079D3;
+    --success: #46D160;
+    --gold: #FFB000;
+    --nsfw: #F3B200;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #D0D4D8; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; color: var(--text); }
+  .page-chip { background: var(--rd-orange); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.5), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 5; }
+
+  /* Top nav with search */
+  .top-nav { padding: 44px 12px 8px; background: var(--card); border-bottom: 1px solid var(--divider); display: flex; align-items: center; gap: 10px; position: relative; z-index: 2; }
+  .profile-av { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--rd-orange), #F47B20); color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .search-bar { flex: 1; background: var(--surface-2); border-radius: 20px; padding: 7px 12px; display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; }
+  .search-bar svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2; fill: none; flex-shrink: 0; }
+  .right-av { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #6EC8B5, #238D74); color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+  /* Feed */
+  .feed { flex: 1; padding: 12px 10px; display: flex; flex-direction: column; gap: 8px; overflow: hidden; background: var(--canvas); }
+
+  .card { background: var(--card); border-radius: 12px; padding: 12px; display: flex; gap: 10px; border: 1px solid var(--divider); }
+
+  /* Vote column */
+  .votes { display: flex; flex-direction: column; align-items: center; gap: 2px; flex-shrink: 0; width: 28px; padding-top: 2px; }
+  .arrow { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: var(--muted); cursor: pointer; }
+  .arrow svg { width: 16px; height: 16px; fill: currentColor; }
+  .arrow.up.active { color: var(--upvote); }
+  .arrow.down.active { color: var(--downvote); }
+  .karma { font-size: 11.5px; font-weight: 700; color: var(--muted); text-align: center; font-variant-numeric: tabular-nums; }
+  .karma.up { color: var(--upvote); }
+  .karma.down { color: var(--downvote); }
+
+  /* Post body */
+  .post { flex: 1; min-width: 0; }
+  .post-meta { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
+  .sub-av { width: 16px; height: 16px; border-radius: 50%; background: linear-gradient(135deg, #5BACDC, #1F6BA0); color: #fff; font-size: 8px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .sub-name { font-weight: 700; color: var(--text); font-size: 11.5px; }
+  .dot { width: 2px; height: 2px; border-radius: 50%; background: var(--muted); display: inline-block; }
+  .post-title { font-size: 14.5px; font-weight: 600; line-height: 1.3; letter-spacing: -0.1px; margin-bottom: 6px; color: var(--text); }
+  .flair { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; letter-spacing: 0.2px; margin-bottom: 6px; }
+  .flair.discussion { background: #E0EEF8; color: #0079D3; }
+  .flair.nsfw { background: var(--nsfw); color: #000; }
+  .flair.oc { background: var(--success); color: #fff; }
+
+  .post-img { width: 100%; height: 110px; border-radius: 8px; background: linear-gradient(135deg, #2E5C7B 0%, #4B7DA8 40%, #1C2B3A 100%); margin-bottom: 8px; position: relative; overflow: hidden; }
+  .post-img::after { content: ''; position: absolute; inset: 0; background:
+    radial-gradient(circle at 22% 70%, rgba(255,255,255,0.25) 2px, transparent 3px),
+    radial-gradient(circle at 72% 40%, rgba(255,255,255,0.2) 1.5px, transparent 3px),
+    radial-gradient(circle at 50% 60%, rgba(255,255,255,0.22) 2px, transparent 3px),
+    radial-gradient(circle at 85% 80%, rgba(255,255,255,0.18) 1.5px, transparent 3px); }
+  .crow { position: absolute; top: 32px; left: 30%; width: 36px; height: 22px; }
+  .crow::before { content: ''; position: absolute; inset: 0; background: #0E0E10; clip-path: polygon(0 60%, 15% 40%, 30% 30%, 55% 20%, 72% 35%, 85% 40%, 100% 55%, 85% 60%, 70% 70%, 40% 75%, 15% 80%); }
+
+  .actions { display: flex; align-items: center; gap: 14px; margin-top: 4px; color: var(--muted); }
+  .action { display: flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 600; }
+  .action svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Tab bar */
+  .tab-bar { height: 52px; background: var(--card); border-top: 1px solid var(--divider); display: flex; align-items: center; justify-content: space-around; padding: 4px 4px 10px; position: relative; z-index: 2; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--muted); font-size: 10px; font-weight: 500; flex: 1; }
+  .tab.active { color: var(--text); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+  .tab .plus-btn { width: 28px; height: 28px; border-radius: 50%; background: var(--text); color: var(--card); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 300; margin-bottom: 0; }
+  .tab.active .plus-btn { background: var(--text); color: var(--card); }
+
+  /* Token sections */
+  .section { background: #fff; border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 14px; min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #1A1A1B; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 210px; flex-shrink: 0; }
+  .type-sample { flex: 1; }
+  .t-24 { font-size: 24px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-18 { font-size: 18px; font-weight: 600; letter-spacing: -0.2px; }
+  .t-14 { font-size: 14px; font-weight: 400; line-height: 1.5; }
+  .t-12-m { font-size: 12px; font-weight: 500; }
+  .t-12 { font-size: 12px; font-weight: 400; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 600; letter-spacing: 0.2px; }
+  .t-section { font-size: 13px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 14px; font-weight: 600; padding: 8px 20px; border-radius: 24px; border: none; cursor: pointer; letter-spacing: 0; }
+  .btn-primary { background: var(--rd-orange); color: #fff; }
+  .btn-primary:active { background: var(--rd-orange-pressed); transform: scale(0.97); }
+  .btn-join { background: var(--rd-orange); color: #fff; }
+  .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--divider); }
+  .btn-ghost { background: transparent; color: var(--link); font-weight: 500; }
+  .flair-chip { padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; letter-spacing: 0.2px; }
+  .flair-chip.news { background: #E0EEF8; color: #0079D3; }
+  .flair-chip.nsfw { background: var(--nsfw); color: #000; }
+  .flair-chip.spoiler { background: #000; color: #fff; }
+  .flair-chip.oc { background: var(--success); color: #fff; }
+
+  /* Distinctive: vote column showcase */
+  .votes-show { display: flex; gap: 12px; flex-direction: column; }
+  .vote-demo-card { display: flex; gap: 12px; padding: 12px; background: #fff; border: 1px solid var(--divider); border-radius: 12px; }
+  .vote-demo-body { flex: 1; }
+  .vote-demo-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .vote-demo-sub { font-size: 11px; color: var(--text-secondary); }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 68px; height: 68px; background: var(--rd-orange); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Reddit iOS &mdash; Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">Card-based feed organized around the upvote/downvote column. Orange (#FF8717) and blue-purple (#7193FF) are complementary, semantic, and never both light up at once.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="top-nav">
+            <div class="profile-av">MS</div>
+            <div class="search-bar">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+              <span>Search Reddit</span>
+            </div>
+            <div class="right-av">AV</div>
+          </div>
+
+          <div class="feed">
+            <div class="card">
+              <div class="votes">
+                <div class="arrow up active"><svg viewBox="0 0 16 16"><polygon points="8,2 14,9 10,9 10,14 6,14 6,9 2,9"/></svg></div>
+                <div class="karma up">4.2k</div>
+                <div class="arrow down"><svg viewBox="0 0 16 16"><polygon points="8,14 2,7 6,7 6,2 10,2 10,7 14,7"/></svg></div>
+              </div>
+              <div class="post">
+                <div class="post-meta">
+                  <div class="sub-av">d</div>
+                  <span class="sub-name">r/dataisbeautiful</span>
+                  <span class="dot"></span>
+                  <span>3h</span>
+                </div>
+                <div class="flair discussion">OC</div>
+                <div class="post-title">Why crow populations dropped in North American cities over the last 30 years</div>
+                <div class="post-img">
+                  <div class="crow"></div>
+                </div>
+                <div class="actions">
+                  <div class="action"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><span>342</span></div>
+                  <div class="action"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"/><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"/></svg><span>Share</span></div>
+                  <div class="action"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span>Save</span></div>
+                  <div class="action" style="margin-left:auto;"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="votes">
+                <div class="arrow up"><svg viewBox="0 0 16 16"><polygon points="8,2 14,9 10,9 10,14 6,14 6,9 2,9"/></svg></div>
+                <div class="karma">892</div>
+                <div class="arrow down"><svg viewBox="0 0 16 16"><polygon points="8,14 2,7 6,7 6,2 10,2 10,7 14,7"/></svg></div>
+              </div>
+              <div class="post">
+                <div class="post-meta">
+                  <div class="sub-av" style="background:linear-gradient(135deg,#F58A42,#D04818);">a</div>
+                  <span class="sub-name">r/AskReddit</span>
+                  <span class="dot"></span>
+                  <span>5h</span>
+                </div>
+                <div class="post-title">What's a skill you picked up that you thought would be useless, but completely changed your life?</div>
+                <div class="actions">
+                  <div class="action"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><span>1.2k</span></div>
+                  <div class="action"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"/><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"/></svg><span>Share</span></div>
+                  <div class="action"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span>Save</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><span>Popular</span></div>
+            <div class="tab"><div class="plus-btn">+</div><span>Create</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Chat</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span>Inbox</span></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#FF4500;"><div class="name">Reddit Orange-Red</div>#FF4500</div>
+          <div class="swatch" style="background:#FF8717;"><div class="name">Upvote Orange</div>#FF8717</div>
+          <div class="swatch" style="background:#7193FF;"><div class="name">Downvote Blue-P</div>#7193FF</div>
+          <div class="swatch light" style="background:#F6F7F8;"><div class="name">Canvas Light</div>#F6F7F8</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Card Surface</div>#FFFFFF</div>
+          <div class="swatch" style="background:#1A1A1B;"><div class="name">Canvas Dark</div>#1A1A1B</div>
+          <div class="swatch" style="background:#272729;"><div class="name">Card Dark</div>#272729</div>
+          <div class="swatch" style="background:#1A1A1B;"><div class="name">Text Primary</div>#1A1A1B</div>
+          <div class="swatch" style="background:#7C7C7C;"><div class="name">Text Secondary</div>#7C7C7C</div>
+          <div class="swatch" style="background:#878A8C;"><div class="name">Vote Inactive</div>#878A8C</div>
+          <div class="swatch" style="background:#0079D3;"><div class="name">Link Blue</div>#0079D3</div>
+          <div class="swatch" style="background:#46D160;"><div class="name">Success Green</div>#46D160</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography &mdash; Reddit Sans</div>
+        <div class="type-row"><div class="type-meta">Large Title &middot; 24pt &middot; 700</div><div class="type-sample t-24">Home</div></div>
+        <div class="type-row"><div class="type-meta">Post Title &middot; 18pt &middot; 600</div><div class="type-sample t-18">Why crow populations dropped in cities</div></div>
+        <div class="type-row"><div class="type-meta">Body &middot; 14pt &middot; 400</div><div class="type-sample t-14">Post body text. Long-form reading at a chat-like density.</div></div>
+        <div class="type-row"><div class="type-meta">Subreddit Pill &middot; 12pt &middot; 600</div><div class="type-sample t-12-m">r/dataisbeautiful</div></div>
+        <div class="type-row"><div class="type-meta">Metadata &middot; 12pt &middot; 400</div><div class="type-sample t-12">3h ago &middot; 342 comments</div></div>
+        <div class="type-row"><div class="type-meta">Karma &middot; 12pt &middot; 700</div><div class="type-sample"><span style="font-size:12px; font-weight:700; color:var(--upvote);">4.2k</span></div></div>
+        <div class="type-row"><div class="type-meta">Section Header &middot; 13pt &middot; 700 UP</div><div class="type-sample t-section">Community Info</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons &amp; Flair Pills</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Create Post</button>
+          <button class="btn btn-join">+ Join</button>
+          <button class="btn btn-outline">Joined</button>
+          <button class="btn-ghost">See More</button>
+          <span class="flair-chip news">News</span>
+          <span class="flair-chip oc">OC</span>
+          <span class="flair-chip nsfw">NSFW</span>
+          <span class="flair-chip spoiler">SPOILER</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive &mdash; Vote Column</div>
+        <div class="votes-show">
+          <div class="vote-demo-card">
+            <div class="votes">
+              <div class="arrow up active"><svg viewBox="0 0 16 16"><polygon points="8,2 14,9 10,9 10,14 6,14 6,9 2,9"/></svg></div>
+              <div class="karma up">3.8k</div>
+              <div class="arrow down"><svg viewBox="0 0 16 16"><polygon points="8,14 2,7 6,7 6,2 10,2 10,7 14,7"/></svg></div>
+            </div>
+            <div class="vote-demo-body">
+              <div class="vote-demo-title">Upvoted &mdash; orange arrow + karma</div>
+              <div class="vote-demo-sub">State: active up. Color #FF8717 applied to both top arrow and karma number.</div>
+            </div>
+          </div>
+          <div class="vote-demo-card">
+            <div class="votes">
+              <div class="arrow up"><svg viewBox="0 0 16 16"><polygon points="8,2 14,9 10,9 10,14 6,14 6,9 2,9"/></svg></div>
+              <div class="karma">1.1k</div>
+              <div class="arrow down"><svg viewBox="0 0 16 16"><polygon points="8,14 2,7 6,7 6,2 10,2 10,7 14,7"/></svg></div>
+            </div>
+            <div class="vote-demo-body">
+              <div class="vote-demo-title">Neutral &mdash; gray arrows</div>
+              <div class="vote-demo-sub">State: no vote. Color #878A8C on both arrows and karma.</div>
+            </div>
+          </div>
+          <div class="vote-demo-card">
+            <div class="votes">
+              <div class="arrow up"><svg viewBox="0 0 16 16"><polygon points="8,2 14,9 10,9 10,14 6,14 6,9 2,9"/></svg></div>
+              <div class="karma down">-42</div>
+              <div class="arrow down active"><svg viewBox="0 0 16 16"><polygon points="8,14 2,7 6,7 6,2 10,2 10,7 14,7"/></svg></div>
+            </div>
+            <div class="vote-demo-body">
+              <div class="vote-demo-title">Downvoted &mdash; blue-purple arrow + karma</div>
+              <div class="vote-demo-sub">State: active down. Color #7193FF applied to bottom arrow and karma number.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

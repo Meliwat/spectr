@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Tinder iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: dark;
+    --canvas: #121212;
+    --surface-1: #1D1D1D;
+    --surface-2: #2A2A2A;
+    --divider: #3A3A3A;
+    --text: #FFFFFF;
+    --text-secondary: #AFAFAF;
+    --text-tertiary: #737373;
+    --pink: #FD267A;
+    --orange: #FF6036;
+    --like: #4DCC97;
+    --nope: #EC5E6F;
+    --super: #5D8DF1;
+    --boost: #A952FF;
+    --rewind: #FFBD3B;
+    --match-green: #00D68F;
+    --grad: linear-gradient(90deg, #FD267A 0%, #FF6036 100%);
+    --grad-v: linear-gradient(180deg, #FD267A 0%, #FF6036 100%);
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; background: var(--grad); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .page-chip { background: var(--grad); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Top nav */
+  .app-top { padding: 50px 18px 6px; display: flex; align-items: center; justify-content: space-between; }
+  .flame {
+    width: 32px; height: 32px;
+    background: var(--grad-v);
+    clip-path: polygon(50% 0%, 70% 20%, 75% 45%, 85% 60%, 75% 85%, 50% 100%, 25% 85%, 15% 60%, 25% 45%, 30% 20%);
+  }
+  .top-filter {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--surface-1);
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--divider);
+  }
+  .top-filter svg { width: 16px; height: 16px; stroke: var(--text); stroke-width: 2; fill: none; }
+
+  /* Card stack area */
+  .card-area { flex: 1; padding: 8px 16px 0; position: relative; display: flex; flex-direction: column; align-items: center; }
+  .swipe-card {
+    width: 100%;
+    height: 380px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #4A3A5A 0%, #2E2A3E 100%);
+    position: relative;
+    overflow: hidden;
+    transform: rotate(-8deg);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+  }
+  .swipe-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 30% 25%, rgba(253,38,122,0.25), transparent 50%),
+      radial-gradient(circle at 70% 60%, rgba(255,96,54,0.2), transparent 50%);
+  }
+  /* Portrait silhouette */
+  .portrait {
+    position: absolute;
+    left: 50%; top: 40%;
+    transform: translateX(-50%);
+    width: 180px; height: 180px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.15);
+  }
+  .portrait::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 50%;
+    transform: translateX(-50%);
+    width: 200px; height: 100px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 100px 100px 0 0;
+  }
+
+  .card-gradient {
+    position: absolute; inset: auto 0 0 0;
+    height: 40%;
+    background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.8) 100%);
+  }
+
+  .card-info {
+    position: absolute;
+    bottom: 16px; left: 16px; right: 16px;
+    display: flex; align-items: flex-end; justify-content: space-between;
+    z-index: 3;
+  }
+  .card-name-row { display: flex; align-items: baseline; gap: 4px; flex-wrap: wrap; }
+  .card-name { color: #fff; font-size: 24px; font-weight: 700; letter-spacing: -0.4px; line-height: 1.1; }
+  .card-age { color: #fff; font-size: 20px; font-weight: 400; letter-spacing: 0; }
+  .card-meta { color: rgba(255,255,255,0.85); font-size: 13px; margin-top: 2px; font-weight: 400; }
+  .info-btn {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.4);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 14px; font-weight: 600; font-style: italic;
+    border: 1px solid rgba(255,255,255,0.3);
+    flex-shrink: 0;
+  }
+
+  /* NOPE stamp */
+  .nope-stamp {
+    position: absolute;
+    top: 30px; left: 16px;
+    color: var(--nope);
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    padding: 6px 12px;
+    border: 3px solid var(--nope);
+    border-radius: 6px;
+    transform: rotate(12deg);
+    z-index: 4;
+    background: rgba(0,0,0,0.3);
+  }
+
+  /* Background card peek */
+  .bg-card {
+    position: absolute;
+    top: 8px; left: 20px; right: 20px;
+    height: 380px;
+    border-radius: 12px;
+    background: #2A2A2A;
+    z-index: -1;
+    transform: rotate(3deg);
+  }
+
+  /* Action bar */
+  .actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 18px 16px 8px;
+  }
+  .act-btn {
+    border-radius: 50%;
+    background: var(--surface-1);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    border: 1px solid var(--divider);
+  }
+  .act-btn.a-rewind { width: 42px; height: 42px; color: var(--rewind); }
+  .act-btn.a-nope { width: 52px; height: 52px; color: var(--nope); }
+  .act-btn.a-super { width: 42px; height: 42px; color: var(--super); }
+  .act-btn.a-like { width: 58px; height: 58px; color: var(--like); }
+  .act-btn.a-boost { width: 42px; height: 42px; color: var(--boost); }
+  .act-btn svg { stroke: currentColor; stroke-width: 2.5; fill: none; }
+  .act-btn.a-rewind svg { width: 20px; height: 20px; }
+  .act-btn.a-nope svg { width: 22px; height: 22px; }
+  .act-btn.a-super svg { width: 20px; height: 20px; fill: currentColor; stroke: none; }
+  .act-btn.a-like svg { width: 26px; height: 26px; fill: currentColor; stroke: none; }
+  .act-btn.a-boost svg { width: 20px; height: 20px; fill: currentColor; stroke: none; }
+
+  /* Tab bar */
+  .tab-bar { height: 56px; background: var(--canvas); border-top: 0.5px solid var(--divider); display: flex; align-items: center; justify-content: space-around; padding: 4px 18px 12px; }
+  .tab { color: var(--text-tertiary); display: flex; align-items: center; justify-content: center; }
+  .tab.active { color: var(--text); }
+  .tab.flame-tab.active { background: var(--grad); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+  .tab.flame-tab.active svg { fill: url(#tinder-grad); }
+  .tab svg { width: 26px; height: 26px; fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 16px; min-height: 90px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #000; }
+  .swatch.grad-swatch { background: var(--grad); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); }
+  .t-match { font-size: 34px; font-weight: 800; font-style: italic; letter-spacing: -0.6px; background: var(--grad); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .t-28 { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; }
+  .t-name { font-size: 24px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-20 { font-size: 20px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-16 { font-size: 16px; font-weight: 700; letter-spacing: 0.2px; }
+  .t-15 { font-size: 15px; font-weight: 400; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 500; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 15px; font-weight: 700; padding: 14px 28px; border-radius: 500px; border: none; cursor: pointer; letter-spacing: 0.2px; }
+  .btn-grad { background: var(--grad); color: #fff; }
+  .btn-outline { background: transparent; color: var(--text); border: 2px solid var(--text); padding: 12px 26px; }
+  .btn-gold { background: linear-gradient(90deg, #FFBD3B, #FFD76B); color: #2E1C00; }
+
+  .action-demo {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  }
+  .action-demo .act-btn { box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+
+  /* Swipe stamps distinctive */
+  .stamps-row {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 0;
+    flex-wrap: wrap;
+  }
+  .stamp {
+    font-size: 32px;
+    font-weight: 800;
+    font-style: italic;
+    letter-spacing: 3px;
+    padding: 8px 18px;
+    border: 4px solid currentColor;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .stamp-like { color: var(--like); transform: rotate(-20deg); }
+  .stamp-nope { color: var(--nope); transform: rotate(20deg); }
+  .stamp-super { color: var(--super); font-size: 24px; padding: 6px 14px; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--grad); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-6 { border-radius: 6px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-24 { border-radius: 24px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute;">
+  <defs>
+    <linearGradient id="tinder-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FD267A"/>
+      <stop offset="100%" stop-color="#FF6036"/>
+    </linearGradient>
+  </defs>
+</svg>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Tinder iOS — Design Tokens</div>
+    <div class="page-chip">Dark</div>
+  </div>
+  <p class="page-subtitle">The swipe is the product. Pink-to-orange brand gradient (`#FD267A → #FF6036`) for Match screens and premium. Five action verbs as five colors: Rewind Gold, Nope Red, Super Like Blue, Like Green, Boost Purple.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="app-top">
+            <div class="flame"></div>
+            <div class="top-filter"><svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="10" y2="18"/><circle cx="17" cy="6" r="2" fill="currentColor"/><circle cx="11" cy="12" r="2" fill="currentColor"/><circle cx="7" cy="18" r="2" fill="currentColor"/></svg></div>
+          </div>
+
+          <div class="card-area">
+            <div class="bg-card"></div>
+            <div class="swipe-card">
+              <div class="portrait"></div>
+              <div class="nope-stamp">NOPE</div>
+              <div class="card-gradient"></div>
+              <div class="card-info">
+                <div>
+                  <div class="card-name-row">
+                    <div class="card-name">Maya,</div>
+                    <div class="card-age">27</div>
+                  </div>
+                  <div class="card-meta">📍 3 mi away · Designer</div>
+                </div>
+                <div class="info-btn">i</div>
+              </div>
+            </div>
+
+            <div class="actions">
+              <div class="act-btn a-rewind">
+                <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 1 9 9"/><polyline points="3 5 3 12 10 12"/></svg>
+              </div>
+              <div class="act-btn a-nope">
+                <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+              </div>
+              <div class="act-btn a-super">
+                <svg viewBox="0 0 24 24"><polygon points="12,2 14.5,9 22,9 16,13.5 18.5,21 12,17 5.5,21 8,13.5 2,9 9.5,9"/></svg>
+              </div>
+              <div class="act-btn a-like">
+                <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+              </div>
+              <div class="act-btn a-boost">
+                <svg viewBox="0 0 24 24"><polygon points="13,2 4,14 12,14 11,22 20,10 12,10"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab flame-tab active"><svg viewBox="0 0 24 24"><path fill="url(#tinder-grad)" d="M12 2c3 4 5 6.5 5 10.5a5 5 0 0 1-10 0c0-1.5.5-2.8 1.5-4C8 7 9 4 12 2z"/></svg></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><polygon points="12,2 14.5,9 22,9 16,13.5 18.5,21 12,17 5.5,21 8,13.5 2,9 9.5,9"/></svg></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch grad-swatch"><div class="name">Brand Gradient</div>#FD267A → #FF6036</div>
+          <div class="swatch" style="background:#FD267A;"><div class="name">Tinder Pink</div>#FD267A</div>
+          <div class="swatch" style="background:#FF6036;"><div class="name">Tinder Orange</div>#FF6036</div>
+          <div class="swatch" style="background:#4DCC97;"><div class="name">Like Green</div>#4DCC97</div>
+          <div class="swatch" style="background:#EC5E6F;"><div class="name">Nope Red</div>#EC5E6F</div>
+          <div class="swatch" style="background:#5D8DF1;"><div class="name">Super Like Blue</div>#5D8DF1</div>
+          <div class="swatch" style="background:#A952FF;"><div class="name">Boost Purple</div>#A952FF</div>
+          <div class="swatch light" style="background:#FFBD3B;"><div class="name">Rewind Gold</div>#FFBD3B</div>
+          <div class="swatch" style="background:#00D68F;"><div class="name">Match Glow</div>#00D68F</div>
+          <div class="swatch" style="background:#121212;"><div class="name">Canvas Dark</div>#121212</div>
+          <div class="swatch" style="background:#1D1D1D;"><div class="name">Surface 1</div>#1D1D1D</div>
+          <div class="swatch" style="background:#2A2A2A;"><div class="name">Surface 2</div>#2A2A2A</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Text Primary</div>#FFFFFF</div>
+          <div class="swatch" style="background:#AFAFAF; color:#000;"><div class="name">Text Secondary</div>#AFAFAF</div>
+          <div class="swatch" style="background:#3A3A3A;"><div class="name">Divider</div>#3A3A3A</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Tinder Sans (Proxima Nova Legacy)</div>
+        <div class="type-row"><div class="type-meta">Match Hero · 34pt · 800 italic</div><div class="type-sample t-match">It's a Match!</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 28pt · 700</div><div class="type-sample t-28">Matches</div></div>
+        <div class="type-row"><div class="type-meta">Card Name · 24pt · 700</div><div class="type-sample t-name">Maya, <span style="font-weight:400; font-size:20px;">27</span></div></div>
+        <div class="type-row"><div class="type-meta">Section Header · 20pt · 700</div><div class="type-sample t-20">About me</div></div>
+        <div class="type-row"><div class="type-meta">Button · 16pt · 700</div><div class="type-sample t-16">GET TINDER GOLD</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 400</div><div class="type-sample t-15">Tap the info icon to read my bio.</div></div>
+        <div class="type-row"><div class="type-meta">Card Meta · 14pt · 400</div><div class="type-sample t-14">3 miles away · Designer</div></div>
+        <div class="type-row"><div class="type-meta">Timestamp · 11pt · 500</div><div class="type-sample t-11">2 hours ago</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-grad">Get Tinder Gold</button>
+          <button class="btn btn-outline">Send Message</button>
+          <button class="btn btn-gold">Boost Me</button>
+        </div>
+        <div class="action-demo" style="margin-top: 18px;">
+          <div class="act-btn a-rewind"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 1 9 9"/><polyline points="3 5 3 12 10 12"/></svg></div>
+          <div class="act-btn a-nope"><svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></div>
+          <div class="act-btn a-super"><svg viewBox="0 0 24 24"><polygon points="12,2 14.5,9 22,9 16,13.5 18.5,21 12,17 5.5,21 8,13.5 2,9 9.5,9"/></svg></div>
+          <div class="act-btn a-like"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></div>
+          <div class="act-btn a-boost"><svg viewBox="0 0 24 24"><polygon points="13,2 4,14 12,14 11,22 20,10 12,10"/></svg></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive — Swipe Stamps</div>
+        <div class="stamps-row">
+          <div class="stamp stamp-like">LIKE</div>
+          <div class="stamp stamp-super"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 14.5,9 22,9 16,13.5 18.5,21 12,17 5.5,21 8,13.5 2,9 9.5,9"/></svg>SUPER LIKE</div>
+          <div class="stamp stamp-nope">NOPE</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-24">24</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

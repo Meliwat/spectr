@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by WhatsApp iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --wallpaper: #EDE6DE;
+    --surface-1: #F7F8FA;
+    --surface-2: #F0F2F5;
+    --divider: #E9EDEF;
+    --text: #111B21;
+    --text-secondary: #667781;
+    --text-tertiary: #8696A0;
+    --wa-green: #25D366;
+    --wa-green-pressed: #1EBE5D;
+    --wa-teal: #075E54;
+    --wa-mid-teal: #128C7E;
+    --wa-dark-teal: #054D44;
+    --bubble-out-light: #D9FDD3;
+    --bubble-out-dark: #005C4B;
+    --bubble-in-light: #FFFFFF;
+    --read-blue: #53BDEB;
+    --error: #F15C6D;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #D5CEC3; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; color: var(--text); }
+  .page-chip { background: var(--wa-green); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.6), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--wallpaper); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 5; }
+
+  /* Doodle wallpaper texture */
+  .wall { position: absolute; inset: 0; background:
+    radial-gradient(circle at 18% 22%, rgba(7,94,84,0.06) 2px, transparent 3px),
+    radial-gradient(circle at 76% 38%, rgba(7,94,84,0.05) 2px, transparent 3px),
+    radial-gradient(circle at 42% 66%, rgba(7,94,84,0.06) 2px, transparent 3px),
+    radial-gradient(circle at 88% 82%, rgba(7,94,84,0.05) 2px, transparent 3px),
+    radial-gradient(circle at 8% 88%, rgba(7,94,84,0.05) 2px, transparent 3px);
+    background-size: 160px 160px; }
+
+  /* Top chat nav */
+  .chat-nav { position: relative; z-index: 2; padding: 44px 10px 8px; display: flex; align-items: center; gap: 8px; background: var(--surface-2); border-bottom: 0.5px solid var(--divider); }
+  .nav-back { color: var(--wa-green); display: flex; align-items: center; }
+  .nav-back svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2.5; fill: none; }
+  .nav-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #6EC8B5, #128C7E); flex-shrink: 0; font-size: 13px; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; }
+  .nav-info { flex: 1; line-height: 1.1; }
+  .nav-name { font-size: 15px; font-weight: 600; letter-spacing: -0.2px; color: var(--text); }
+  .nav-sub { font-size: 11px; color: var(--wa-mid-teal); font-weight: 500; margin-top: 2px; }
+  .nav-icons { display: flex; gap: 16px; color: var(--wa-mid-teal); }
+  .nav-icons svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Chat body */
+  .chat-body { flex: 1; padding: 12px 10px 8px; overflow: hidden; position: relative; z-index: 2; display: flex; flex-direction: column; gap: 4px; }
+
+  .e2e-banner { align-self: center; background: #FFF5C4; color: #54636D; font-size: 10.5px; font-weight: 500; padding: 6px 12px; border-radius: 6px; margin-bottom: 8px; max-width: 240px; text-align: center; line-height: 1.3; box-shadow: 0 1px 1px rgba(0,0,0,0.04); }
+
+  .bubble { max-width: 78%; padding: 6px 10px 18px; font-size: 13px; line-height: 1.3; color: var(--text); position: relative; word-wrap: break-word; box-shadow: 0 1px 0.5px rgba(0,0,0,0.08); }
+  .bubble.incoming { background: var(--bubble-in-light); border-radius: 8px 8px 8px 0; align-self: flex-start; }
+  .bubble.outgoing { background: var(--bubble-out-light); border-radius: 8px 8px 0 8px; align-self: flex-end; }
+  .bubble .time { position: absolute; right: 8px; bottom: 3px; font-size: 9.5px; color: var(--text-secondary); display: flex; align-items: center; gap: 2px; }
+  .ticks { display: inline-flex; width: 14px; height: 10px; color: var(--read-blue); }
+  .ticks svg { width: 14px; height: 10px; fill: currentColor; }
+  .ticks.gray { color: var(--text-tertiary); }
+
+  /* Voice bubble */
+  .voice { display: flex; align-items: center; gap: 8px; padding-right: 4px; min-width: 190px; }
+  .voice-play { width: 28px; height: 28px; border-radius: 50%; background: var(--wa-green); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .voice-play svg { width: 12px; height: 12px; fill: #fff; }
+  .wave { display: flex; align-items: center; gap: 1.5px; height: 22px; flex: 1; }
+  .wave span { width: 2px; background: var(--wa-green); border-radius: 1px; display: inline-block; }
+  .wave span.off { background: var(--text-tertiary); }
+  .voice-dur { font-size: 10px; color: var(--text-secondary); font-weight: 500; }
+
+  /* Media bubble */
+  .bubble.media { padding: 4px; width: 180px; }
+  .media-thumb { width: 100%; height: 120px; border-radius: 6px; background: linear-gradient(135deg, #F2A365, #C6542E 55%, #5A2E1A); position: relative; overflow: hidden; }
+  .media-thumb::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.18), transparent 60%); }
+  .media-caption { font-size: 12px; color: var(--text); padding: 4px 6px 14px; }
+
+  /* Input bar */
+  .input-bar { background: var(--surface-2); padding: 6px 8px; display: flex; align-items: center; gap: 8px; position: relative; z-index: 2; }
+  .input-field { flex: 1; background: #fff; border-radius: 22px; padding: 7px 14px; display: flex; align-items: center; gap: 10px; min-height: 34px; }
+  .input-field .emoji { color: var(--text-tertiary); }
+  .input-field .emoji svg, .input-field .attach svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .input-field .ph { flex: 1; color: var(--text-tertiary); font-size: 13px; }
+  .input-field .attach { color: var(--text-tertiary); margin-right: -2px; }
+  .send-circle { width: 34px; height: 34px; border-radius: 50%; background: var(--wa-green); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .send-circle svg { width: 16px; height: 16px; fill: #fff; }
+
+  /* Tab bar */
+  .tab-bar { height: 54px; background: rgba(255,255,255,0.94); backdrop-filter: saturate(180%) blur(20px); display: flex; align-items: center; justify-content: space-around; padding: 4px 4px 10px; border-top: 0.5px solid var(--divider); position: relative; z-index: 2; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--text-tertiary); font-size: 10px; font-weight: 500; flex: 1; }
+  .tab.active { color: var(--wa-green); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: #fff; border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 14px; min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #111B21; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 210px; flex-shrink: 0; }
+  .type-sample { flex: 1; }
+  .t-28 { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; }
+  .t-17-s { font-size: 17px; font-weight: 600; letter-spacing: -0.4px; }
+  .t-17 { font-size: 17px; font-weight: 400; letter-spacing: -0.4px; }
+  .t-15 { font-size: 15px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 400; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 15px; font-weight: 600; padding: 10px 22px; border-radius: 24px; border: none; cursor: pointer; letter-spacing: -0.2px; }
+  .btn-primary { background: var(--wa-green); color: #fff; }
+  .btn-primary:active { background: var(--wa-green-pressed); transform: scale(0.97); }
+  .btn-ghost { background: transparent; color: var(--wa-green); font-size: 15px; font-weight: 500; padding: 10px 14px; border: none; }
+  .btn-destructive { background: transparent; color: var(--error); font-size: 15px; font-weight: 500; padding: 10px 14px; }
+  .send-demo { width: 40px; height: 40px; border-radius: 50%; background: var(--wa-green); display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; }
+  .send-demo svg { width: 18px; height: 18px; fill: #fff; }
+  .answer-demo { width: 52px; height: 52px; border-radius: 50%; background: var(--wa-green); display: inline-flex; align-items: center; justify-content: center; }
+  .answer-demo svg { width: 22px; height: 22px; fill: #fff; }
+  .decline-demo { width: 52px; height: 52px; border-radius: 50%; background: var(--error); display: inline-flex; align-items: center; justify-content: center; }
+  .decline-demo svg { width: 22px; height: 22px; fill: #fff; transform: rotate(135deg); }
+
+  /* Distinctive: bubbles showcase */
+  .bubbles-show { background: var(--wallpaper); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 8px; border: 1px solid var(--divider); position: relative; overflow: hidden; }
+  .bubbles-show::before { content: ''; position: absolute; inset: 0; background:
+    radial-gradient(circle at 20% 25%, rgba(7,94,84,0.06) 2px, transparent 3px),
+    radial-gradient(circle at 75% 70%, rgba(7,94,84,0.06) 2px, transparent 3px);
+    background-size: 100px 100px; pointer-events: none; }
+  .bs-row { display: flex; flex-direction: column; gap: 4px; position: relative; z-index: 1; }
+  .bubble.demo { max-width: 70%; padding: 7px 10px 18px; font-size: 13.5px; }
+  .bubble.demo.incoming { background: #fff; border-radius: 8px 8px 8px 0; align-self: flex-start; box-shadow: 0 1px 0.5px rgba(0,0,0,0.08); }
+  .bubble.demo.outgoing { background: var(--bubble-out-light); border-radius: 8px 8px 0 8px; align-self: flex-end; box-shadow: 0 1px 0.5px rgba(0,0,0,0.08); }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 68px; height: 68px; background: var(--wa-green); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-10 { border-radius: 10px; }
+  .r-12 { border-radius: 12px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">WhatsApp iOS &mdash; Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">Cream doodle wallpaper, mint-leaf outgoing bubbles (#D9FDD3), blue double-check read receipts. The bubble is the hero; the chrome disappears.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="wall"></div>
+          <div class="island"></div>
+
+          <div class="chat-nav">
+            <div class="nav-back">
+              <svg viewBox="0 0 24 24"><polyline points="15,6 9,12 15,18"/></svg>
+            </div>
+            <div class="nav-avatar">MR</div>
+            <div class="nav-info">
+              <div class="nav-name">Maya Rivera</div>
+              <div class="nav-sub">online</div>
+            </div>
+            <div class="nav-icons">
+              <svg viewBox="0 0 24 24"><polygon points="17,8 22,5 22,19 17,16"/><rect x="2" y="6" width="15" height="12" rx="2"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.72 2.8a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.28-1.28a2 2 0 0 1 2.11-.45c.9.35 1.84.59 2.8.72A2 2 0 0 1 22 16.92z"/></svg>
+            </div>
+          </div>
+
+          <div class="chat-body">
+            <div class="e2e-banner">Messages and calls are end-to-end encrypted.</div>
+
+            <div class="bubble incoming">Morning! Did the mockups get sent over last night? <span class="time">10:21</span></div>
+            <div class="bubble outgoing">Yep, the review file dropped in your inbox around 11pm. Look at the last two screens first. <span class="time">10:24<span class="ticks"><svg viewBox="0 0 16 10"><path d="M1 5 l3 3 l7-7" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M5 5 l3 3 l7-7" stroke="currentColor" stroke-width="1.6" fill="none"/></svg></span></span></div>
+
+            <div class="bubble incoming">Amazing, pulling it up now 🎉 <span class="time">10:25</span></div>
+
+            <div class="bubble outgoing voice">
+              <div class="voice-play">
+                <svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg>
+              </div>
+              <div class="wave">
+                <span style="height:30%"></span><span style="height:50%"></span><span style="height:70%"></span><span style="height:45%"></span><span style="height:85%"></span><span style="height:65%"></span><span style="height:40%"></span><span style="height:75%"></span><span style="height:55%"></span><span style="height:90%"></span><span style="height:60%"></span><span style="height:35%"></span><span style="height:70%"></span><span style="height:50%"></span><span style="height:80%"></span>
+                <span class="off" style="height:40%"></span><span class="off" style="height:60%"></span><span class="off" style="height:30%"></span><span class="off" style="height:75%"></span><span class="off" style="height:45%"></span><span class="off" style="height:65%"></span><span class="off" style="height:35%"></span><span class="off" style="height:55%"></span><span class="off" style="height:70%"></span><span class="off" style="height:40%"></span><span class="off" style="height:60%"></span><span class="off" style="height:30%"></span><span class="off" style="height:50%"></span><span class="off" style="height:65%"></span><span class="off" style="height:45%"></span>
+              </div>
+              <div class="voice-dur">0:23</div>
+              <span class="time" style="right:10px; bottom:3px;">10:27<span class="ticks"><svg viewBox="0 0 16 10"><path d="M1 5 l3 3 l7-7" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M5 5 l3 3 l7-7" stroke="currentColor" stroke-width="1.6" fill="none"/></svg></span></span>
+            </div>
+
+            <div class="bubble incoming">This is gorgeous. Calling in 2 <span class="time">10:29</span></div>
+          </div>
+
+          <div class="input-bar">
+            <div class="input-field">
+              <div class="emoji"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
+              <div class="ph">Message</div>
+              <div class="attach"><svg viewBox="0 0 24 24"><path d="M21 15.5V6a4 4 0 0 0-8 0v12a2 2 0 1 0 4 0V8"/></svg></div>
+              <div class="attach"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+            </div>
+            <div class="send-circle">
+              <svg viewBox="0 0 24 24"><path d="M12 1v22m-5-5l5 5 5-5"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" fill="#fff" stroke="none"/><rect x="8" y="3" width="8" height="14" rx="4"/></svg>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 1 10 10c0 5-4 10-10 10a10 10 0 0 1-5-1.3L2 22l1.3-5A10 10 0 0 1 2 12a10 10 0 0 1 10-10z"/></svg><span>Updates</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.72 2.8a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.28-1.28a2 2 0 0 1 2.11-.45c.9.35 1.84.59 2.8.72A2 2 0 0 1 22 16.92z"/></svg><span>Calls</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Communities</span></div>
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Chats</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#25D366;"><div class="name">WhatsApp Green</div>#25D366</div>
+          <div class="swatch" style="background:#1EBE5D;"><div class="name">Green Pressed</div>#1EBE5D</div>
+          <div class="swatch" style="background:#075E54;"><div class="name">Teal (Legacy)</div>#075E54</div>
+          <div class="swatch" style="background:#128C7E;"><div class="name">Mid Teal</div>#128C7E</div>
+          <div class="swatch light" style="background:#D9FDD3;"><div class="name">Outgoing Light</div>#D9FDD3</div>
+          <div class="swatch" style="background:#005C4B;"><div class="name">Outgoing Dark</div>#005C4B</div>
+          <div class="swatch light" style="background:#EDE6DE;"><div class="name">Canvas Cream</div>#EDE6DE</div>
+          <div class="swatch" style="background:#111B21;"><div class="name">Text Primary</div>#111B21</div>
+          <div class="swatch" style="background:#667781;"><div class="name">Text Secondary</div>#667781</div>
+          <div class="swatch" style="background:#53BDEB;"><div class="name">Read Blue</div>#53BDEB</div>
+          <div class="swatch" style="background:#F15C6D;"><div class="name">Error Red</div>#F15C6D</div>
+          <div class="swatch" style="background:#E9EDEF; color:#111B21;"><div class="name">Divider</div>#E9EDEF</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography &mdash; SF Pro</div>
+        <div class="type-row"><div class="type-meta">Large Title &middot; 28pt &middot; 700</div><div class="type-sample t-28">Chats</div></div>
+        <div class="type-row"><div class="type-meta">Contact Name &middot; 17pt &middot; 600</div><div class="type-sample t-17-s">Maya Rivera</div></div>
+        <div class="type-row"><div class="type-meta">Bubble Body &middot; 17pt &middot; 400</div><div class="type-sample t-17">Pulling it up now, looks amazing!</div></div>
+        <div class="type-row"><div class="type-meta">Message Preview &middot; 15pt &middot; 400</div><div class="type-sample t-15">Sent the review file last night</div></div>
+        <div class="type-row"><div class="type-meta">Timestamp &middot; 12pt &middot; 400</div><div class="type-sample t-12">10:24 AM &middot; Today</div></div>
+        <div class="type-row"><div class="type-meta">Section Label &middot; 11pt &middot; 600 UP</div><div class="type-sample t-11">Pinned</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="send-demo"><svg viewBox="0 0 24 24"><path d="M2 12 l20-8 l-8 20 l-4-8 z"/></svg></button>
+          <button class="btn btn-primary">Continue</button>
+          <button class="btn-ghost">Not Now</button>
+          <button class="btn-destructive">Delete Chat</button>
+          <div class="answer-demo"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.72 2.8a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.28-1.28a2 2 0 0 1 2.11-.45c.9.35 1.84.59 2.8.72A2 2 0 0 1 22 16.92z"/></svg></div>
+          <div class="decline-demo"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.72 2.8a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.28-1.28a2 2 0 0 1 2.11-.45c.9.35 1.84.59 2.8.72A2 2 0 0 1 22 16.92z"/></svg></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive &mdash; Message Bubbles</div>
+        <div class="bubbles-show">
+          <div class="bs-row"><div class="bubble demo incoming">Hey! Are we still on for Friday? <span class="time">9:41</span></div></div>
+          <div class="bs-row"><div class="bubble demo outgoing">Definitely &mdash; I'll book the table now <span class="time">9:43<span class="ticks"><svg viewBox="0 0 16 10"><path d="M1 5 l3 3 l7-7" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M5 5 l3 3 l7-7" stroke="currentColor" stroke-width="1.6" fill="none"/></svg></span></span></div></div>
+          <div class="bs-row">
+            <div class="bubble demo outgoing voice" style="max-width:80%;">
+              <div class="voice-play"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></div>
+              <div class="wave">
+                <span style="height:40%"></span><span style="height:70%"></span><span style="height:55%"></span><span style="height:85%"></span><span style="height:45%"></span><span style="height:75%"></span><span style="height:35%"></span><span style="height:65%"></span><span style="height:50%"></span><span style="height:90%"></span>
+                <span class="off" style="height:55%"></span><span class="off" style="height:40%"></span><span class="off" style="height:70%"></span><span class="off" style="height:30%"></span><span class="off" style="height:60%"></span><span class="off" style="height:45%"></span><span class="off" style="height:75%"></span><span class="off" style="height:50%"></span>
+              </div>
+              <div class="voice-dur">0:14</div>
+            </div>
+          </div>
+          <div class="bs-row">
+            <div class="bubble demo outgoing media" style="max-width:70%;">
+              <div class="media-thumb"></div>
+              <div class="media-caption">Table reserved &mdash; 7:30 Friday <span class="time" style="color:var(--text-secondary);">9:45<span class="ticks" style="color:var(--read-blue);"><svg viewBox="0 0 16 10"><path d="M1 5 l3 3 l7-7" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M5 5 l3 3 l7-7" stroke="currentColor" stroke-width="1.6" fill="none"/></svg></span></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

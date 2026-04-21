@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Starbucks iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --warm-white: #F9F9F9;
+    --canvas: #FFFFFF;
+    --surface-muted: #F1F1F1;
+    --divider: #E8E8E8;
+    --text: #000000;
+    --text-secondary: #595959;
+    --text-tertiary: #8E8E8E;
+    --siren-green: #00704A;
+    --green-pressed: #00563A;
+    --house-green: #1E3932;
+    --mint: #D4E9E2;
+    --gold: #CBA258;
+    --gold-alt: #C1A265;
+    --gold-light: #E4C896;
+    --success: #00754A;
+    --red: #DD3333;
+    --info: #006FCF;
+    --amber: #F5A623;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Lato', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #E8E6DF; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; color: var(--siren-green); }
+  .page-chip { background: var(--siren-green); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.5), 0 0 0 2px rgba(0,0,0,0.08) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--warm-white); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Top greeting */
+  .greeting { padding: 48px 18px 8px; display: flex; align-items: center; justify-content: space-between; background: var(--warm-white); flex-shrink: 0; }
+  .greet-text {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.2px;
+  }
+  .greet-text .emoji { font-size: 18px; }
+  .greet-icon { color: var(--text); }
+  .greet-icon svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Scrollable content */
+  .rewards-scroll { flex: 1; overflow: hidden; padding: 4px 16px 0; position: relative; }
+
+  /* Stars ring */
+  .stars-block {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 4px;
+  }
+  .ring {
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: conic-gradient(from -90deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 75%, rgba(203,162,88,0.2) 75%);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .ring-inner {
+    width: 84px; height: 84px;
+    border-radius: 50%;
+    background: var(--warm-white);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .ring-num {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--siren-green);
+    letter-spacing: -0.5px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .ring-lbl {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 1px;
+  }
+  .stars-info {
+    flex: 1;
+  }
+  .stars-until {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .stars-bar {
+    margin-top: 8px;
+    height: 6px;
+    background: var(--surface-muted);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .stars-bar-fill {
+    width: 59%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    border-radius: 3px;
+  }
+  .stars-goal { font-size: 11px; color: var(--text-secondary); margin-top: 5px; font-weight: 600; }
+
+  /* Pay buttons */
+  .pay-row {
+    display: flex;
+    gap: 8px;
+    margin: 10px 0 12px;
+  }
+  .pay-btn {
+    flex: 1;
+    height: 42px;
+    border-radius: 999px;
+    display: flex; align-items: center; justify-content: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .pay-btn.primary {
+    background: var(--house-green);
+    color: #fff;
+  }
+  .pay-btn.secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1.5px solid var(--text);
+  }
+  .pay-btn svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Categories */
+  .cat-header {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    padding: 8px 0 8px;
+  }
+  .cats {
+    display: flex;
+    gap: 10px;
+    overflow: hidden;
+  }
+  .cat {
+    width: 110px;
+    height: 80px;
+    border-radius: 12px;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    padding: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+  .cat-1 { background: linear-gradient(135deg, #8B5E3C 0%, #4A2A12 100%); }
+  .cat-2 { background: linear-gradient(135deg, #D4A373, #8B5E3C); }
+  .cat-3 { background: linear-gradient(135deg, #A3C9E9, #5585B8); }
+  .cat-4 { background: linear-gradient(135deg, #E8A5A5, #C46060); }
+  .cat::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.4) 100%);
+  }
+  .cat-label {
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    z-index: 2;
+    position: relative;
+  }
+
+  /* Order CTA */
+  .order-cta {
+    position: absolute;
+    left: 16px; right: 16px; bottom: 72px;
+    height: 44px;
+    background: var(--siren-green);
+    color: #fff;
+    border-radius: 999px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    box-shadow: 0 4px 12px rgba(0,112,74,0.35);
+  }
+
+  /* Tab bar */
+  .tab-bar { height: 60px; background: #fff; border-top: 0.5px solid var(--divider); display: flex; align-items: center; justify-content: space-around; padding: 4px 6px 14px; flex-shrink: 0; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--text-tertiary); font-size: 9px; font-weight: 600; }
+  .tab.active { color: var(--siren-green); }
+  .tab svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: #fff; border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 14px; min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 500; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--text); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); }
+  .t-stars { font-size: 42px; font-weight: 800; color: var(--siren-green); letter-spacing: -0.6px; font-variant-numeric: tabular-nums; }
+  .t-28 { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; letter-spacing: -0.1px; }
+  .t-16 { font-size: 16px; font-weight: 600; }
+  .t-15 { font-size: 15px; font-weight: 400; line-height: 1.45; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+  .t-11 { font-size: 11px; font-weight: 600; color: var(--text-secondary); letter-spacing: 0.1px; text-transform: uppercase; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 15px; font-weight: 700; padding: 12px 28px; border-radius: 999px; border: none; cursor: pointer; letter-spacing: 0.2px; }
+  .btn-primary { background: var(--siren-green); color: #fff; }
+  .btn-outline { background: transparent; color: var(--text); border: 1.5px solid var(--text); padding: 10.5px 26.5px; }
+  .btn-dark { background: var(--house-green); color: #fff; }
+  .btn-gold { background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%); color: var(--house-green); }
+
+  /* Drink size selector */
+  .size-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 22px;
+    padding: 30px 10px 10px;
+    background: var(--warm-white);
+    border-radius: 12px;
+  }
+  .size-cup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .cup {
+    background: #fff;
+    border: 2px solid var(--text);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    width: 28px;
+    position: relative;
+  }
+  .cup::before {
+    content: '';
+    position: absolute;
+    top: -4px; left: -3px; right: -3px;
+    height: 4px;
+    background: var(--text);
+    border-radius: 3px 3px 0 0;
+  }
+  .cup-s { height: 32px; }
+  .cup-t { height: 42px; width: 30px; }
+  .cup-g { height: 52px; width: 34px; }
+  .cup-v { height: 62px; width: 36px; }
+  .cup-tr { height: 72px; width: 40px; }
+
+  .cup-selected {
+    position: relative;
+  }
+  .cup-selected::after {
+    content: '';
+    position: absolute;
+    top: -6px; left: -10px; right: -10px; bottom: -6px;
+    border: 2.5px solid var(--siren-green);
+    border-radius: 14px 14px 18px 18px;
+    pointer-events: none;
+  }
+
+  .size-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    text-align: center;
+  }
+  .size-label.active { color: var(--siren-green); }
+  .size-oz {
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--siren-green); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Starbucks iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">Warm retail hospitality. Siren Green `#00704A` for CTAs and accents. House Green `#1E3932` — deep forest, not black — for dark moments. Gold gradient for the Stars ring, warm-white canvas so the photography breathes.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="greeting">
+            <div class="greet-text">Good afternoon <span class="emoji">☀️</span></div>
+            <div class="greet-icon"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+          </div>
+
+          <div class="rewards-scroll">
+            <div class="stars-block">
+              <div class="ring">
+                <div class="ring-inner">
+                  <div class="ring-num">237</div>
+                  <div class="ring-lbl">Stars</div>
+                </div>
+              </div>
+              <div class="stars-info">
+                <div class="stars-until"><span style="color: var(--siren-green)">163 Stars</span> until your free drink</div>
+                <div class="stars-bar"><div class="stars-bar-fill"></div></div>
+                <div class="stars-goal">237 / 400</div>
+              </div>
+            </div>
+
+            <div class="pay-row">
+              <div class="pay-btn primary">
+                <svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="7"/><rect x="4" y="13" width="7" height="7"/><rect x="13" y="13" width="7" height="7"/></svg>
+                Scan to pay
+              </div>
+              <div class="pay-btn secondary">
+                <svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                Load $5
+              </div>
+            </div>
+
+            <div class="cat-header">Order your favorites</div>
+            <div class="cats">
+              <div class="cat cat-1"><div class="cat-label">Featured</div></div>
+              <div class="cat cat-2"><div class="cat-label">Hot Coffees</div></div>
+              <div class="cat cat-3"><div class="cat-label">Cold Coffees</div></div>
+              <div class="cat cat-4"><div class="cat-label">Refreshers</div></div>
+            </div>
+          </div>
+
+          <div class="order-cta">Order</div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="7"/><rect x="4" y="13" width="7" height="7"/><rect x="13" y="13" width="7" height="7"/></svg><span>Scan</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M6 2l.75 3.25h10.5L18 2"/><path d="M5 5h14l-1 15a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/></svg><span>Order</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg><span>Gift</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg><span>Offers</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#00704A;"><div class="name">Siren Green</div>#00704A</div>
+          <div class="swatch" style="background:#00563A;"><div class="name">Green Pressed</div>#00563A</div>
+          <div class="swatch" style="background:#1E3932;"><div class="name">House Green</div>#1E3932</div>
+          <div class="swatch light" style="background:#D4E9E2;"><div class="name">Mint Accent</div>#D4E9E2</div>
+          <div class="swatch light" style="background:#CBA258;"><div class="name">Gold Star</div>#CBA258</div>
+          <div class="swatch light" style="background:#C1A265;"><div class="name">Gold Alt</div>#C1A265</div>
+          <div class="swatch light" style="background:#F9F9F9;"><div class="name">Warm White</div>#F9F9F9</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Canvas</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#F1F1F1;"><div class="name">Surface Muted</div>#F1F1F1</div>
+          <div class="swatch light" style="background:#E8E8E8;"><div class="name">Divider</div>#E8E8E8</div>
+          <div class="swatch" style="background:#000000;"><div class="name">Text Primary</div>#000000</div>
+          <div class="swatch" style="background:#595959;"><div class="name">Text Secondary</div>#595959</div>
+          <div class="swatch" style="background:#00754A;"><div class="name">Success</div>#00754A</div>
+          <div class="swatch" style="background:#DD3333;"><div class="name">Alert Red</div>#DD3333</div>
+          <div class="swatch" style="background:#006FCF;"><div class="name">Info Blue</div>#006FCF</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — SoDo Sans</div>
+        <div class="type-row"><div class="type-meta">Stars Hero · 42pt · 800</div><div class="type-sample t-stars">237</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 28pt · 700</div><div class="type-sample t-28">Rewards</div></div>
+        <div class="type-row"><div class="type-meta">Sheet Title · 22pt · 700</div><div class="type-sample t-22">Hot Coffees</div></div>
+        <div class="type-row"><div class="type-meta">Section Header · 18pt · 700</div><div class="type-sample t-18">Featured drinks</div></div>
+        <div class="type-row"><div class="type-meta">Drink Title · 16pt · 600</div><div class="type-sample t-16">Caramel Macchiato</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 400</div><div class="type-sample t-15">Freshly steamed milk with vanilla-flavored syrup.</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 400 tnum</div><div class="type-sample t-13">Grande · 150 cal · $5.45</div></div>
+        <div class="type-row"><div class="type-meta">Tab Label · 11pt · 600</div><div class="type-sample t-11">Order</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Add to Order</button>
+          <button class="btn btn-outline">Customize</button>
+          <button class="btn btn-dark">Scan to Pay</button>
+          <button class="btn btn-gold">Redeem Star</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive — Drink Size Selector</div>
+        <div class="size-row">
+          <div class="size-cup">
+            <div class="cup cup-s"></div>
+            <div class="size-label">Short</div>
+            <div class="size-oz">8 oz</div>
+          </div>
+          <div class="size-cup">
+            <div class="cup cup-t"></div>
+            <div class="size-label">Tall</div>
+            <div class="size-oz">12 oz</div>
+          </div>
+          <div class="size-cup cup-selected">
+            <div class="cup cup-g"></div>
+            <div class="size-label active">Grande</div>
+            <div class="size-oz">16 oz</div>
+          </div>
+          <div class="size-cup">
+            <div class="cup cup-v"></div>
+            <div class="size-label">Venti</div>
+            <div class="size-oz">20 oz</div>
+          </div>
+          <div class="size-cup">
+            <div class="cup cup-tr"></div>
+            <div class="size-label">Trenta</div>
+            <div class="size-oz">30 oz</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Snapchat iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: dark;
+    --canvas: #000000;
+    --surface-1: #1A1A1A;
+    --surface-2: #2C2C2C;
+    --divider: #333333;
+    --text: #FFFFFF;
+    --text-secondary: #8A8A8F;
+    --text-tertiary: #555555;
+    --snap-yellow: #FFFC00;
+    --yellow-pressed: #E6E300;
+    --snap-red: #FF2E3D;
+    --snap-purple: #9B51FF;
+    --snap-blue: #4DA7FF;
+    --snap-green: #4CD964;
+    --success: #00D873;
+    --error: #FF3B30;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #080808; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; }
+  .page-chip { background: var(--snap-yellow); color: #000; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 5; }
+
+  /* Camera viewfinder faux feed */
+  .viewfinder { position: absolute; inset: 0; background: linear-gradient(165deg, #F5C28A 0%, #E88B5E 25%, #8B4D7A 55%, #2E2E6B 85%, #0A0A2E 100%); }
+  .viewfinder::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 30% 20%, rgba(255,220,150,0.4), transparent 45%), radial-gradient(ellipse at 70% 70%, rgba(100,60,140,0.45), transparent 50%); }
+  .viewfinder::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 40%; background: linear-gradient(180deg, transparent, rgba(0,0,0,0.4)); }
+
+  .cam-overlay { position: relative; z-index: 2; width: 100%; height: 100%; display: flex; flex-direction: column; }
+
+  .cam-top { padding: 48px 16px 0; display: flex; align-items: center; justify-content: space-between; }
+  .bitmoji { width: 32px; height: 32px; border-radius: 50%; background: var(--snap-yellow); display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+  .bitmoji-ghost { width: 20px; height: 20px; background: #fff; border-radius: 50% 50% 40% 40% / 60% 60% 40% 40%; position: relative; }
+  .bitmoji-ghost::before, .bitmoji-ghost::after { content: ''; position: absolute; top: 7px; width: 3px; height: 3px; background: #000; border-radius: 50%; }
+  .bitmoji-ghost::before { left: 5px; }
+  .bitmoji-ghost::after { right: 5px; }
+  .cam-search { flex: 1; margin: 0 12px; height: 36px; border-radius: 18px; background: rgba(0,0,0,0.3); backdrop-filter: blur(20px); display: flex; align-items: center; padding: 0 14px; gap: 8px; font-size: 13px; color: var(--text); }
+  .cam-search svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .cam-right-icons { display: flex; gap: 12px; }
+  .cam-icon { width: 32px; height: 32px; border-radius: 50%; background: rgba(0,0,0,0.3); backdrop-filter: blur(20px); display: flex; align-items: center; justify-content: center; color: var(--text); filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4)); }
+  .cam-icon svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  .cam-spacer { flex: 1; }
+
+  .cam-label { text-align: center; font-size: 11px; font-weight: 700; color: #fff; letter-spacing: 0.3px; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,0.5); margin-bottom: 8px; }
+
+  /* Lens carousel */
+  .lens-carousel { display: flex; justify-content: center; align-items: center; gap: 10px; padding: 0 16px 14px; }
+  .lens { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.15); backdrop-filter: blur(14px); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .lens.active { width: 56px; height: 56px; box-shadow: 0 0 0 3px var(--snap-yellow); background: rgba(255,255,255,0.25); font-size: 22px; }
+
+  /* Capture button row */
+  .capture-row { display: flex; align-items: center; justify-content: space-between; padding: 0 36px 18px; }
+  .memory-btn { width: 44px; height: 44px; border-radius: 10px; background: linear-gradient(135deg, #FFD6C9, #7B3C8A); display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 4px rgba(0,0,0,0.5); position: relative; }
+  .memory-btn::after { content: ''; position: absolute; inset: 0; border: 2px solid #fff; border-radius: 10px; }
+  .capture { width: 72px; height: 72px; border-radius: 50%; border: 5px solid var(--snap-yellow); background: transparent; position: relative; }
+  .capture::after { content: ''; position: absolute; inset: 4px; border-radius: 50%; background: #fff; }
+  .flip-btn { width: 36px; height: 36px; border-radius: 50%; background: rgba(0,0,0,0.3); backdrop-filter: blur(20px); display: flex; align-items: center; justify-content: center; color: #fff; }
+  .flip-btn svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Tab strip (5 dots) */
+  .tab-strip { display: flex; align-items: center; justify-content: center; gap: 16px; padding: 0 0 20px; }
+  .tab-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.4); }
+  .tab-dot.active { background: var(--snap-yellow); width: 8px; height: 8px; box-shadow: 0 0 8px var(--snap-yellow); }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 16px; min-height: 90px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #000; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 210px; flex-shrink: 0; }
+  .type-sample { flex: 1; }
+  .t-48 { font-size: 40px; font-weight: 900; letter-spacing: -0.5px; }
+  .t-24 { font-size: 24px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-20 { font-size: 20px; font-weight: 700; }
+  .t-16b { font-size: 16px; font-weight: 700; }
+  .t-16m { font-size: 16px; font-weight: 500; }
+  .t-13hud { font-size: 13px; font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase; }
+  .t-13m { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 16px; font-weight: 700; padding: 10px 20px; border-radius: 500px; border: none; cursor: pointer; }
+  .btn-yellow { background: var(--snap-yellow); color: #000; }
+  .btn-yellow:active { background: var(--yellow-pressed); transform: scale(0.97); }
+  .btn-dark { background: var(--surface-2); color: #fff; }
+  .btn-add { background: var(--snap-yellow); color: #000; font-size: 14px; padding: 6px 14px; }
+  .btn-added { background: var(--surface-2); color: #fff; font-size: 14px; padding: 6px 14px; }
+  .send-demo { width: 40px; height: 40px; border-radius: 50%; background: var(--snap-yellow); border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; color: #000; }
+  .send-demo svg { width: 18px; height: 18px; fill: currentColor; transform: rotate(-45deg); }
+  .capture-demo { width: 82px; height: 82px; border-radius: 50%; border: 6px solid var(--snap-yellow); background: transparent; position: relative; cursor: pointer; }
+  .capture-demo::after { content: ''; position: absolute; inset: 5px; border-radius: 50%; background: #fff; }
+
+  /* Friend Emoji Legend */
+  .legend-row { display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--divider); font-size: 14px; }
+  .legend-row:last-child { border-bottom: none; }
+  .legend-emoji { font-size: 22px; width: 36px; text-align: center; }
+  .legend-name { font-weight: 700; color: var(--text); flex: 1; }
+  .legend-desc { color: var(--text-secondary); font-size: 13px; }
+
+  /* Snap type indicators */
+  .snap-types { display: flex; gap: 16px; padding: 8px 0 16px; }
+  .snap-type { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .snap-type-box { width: 20px; height: 20px; }
+  .snap-type-box.photo { background: var(--snap-red); }
+  .snap-type-box.video { background: var(--snap-purple); }
+  .snap-type-box.chat { background: var(--snap-blue); }
+  .snap-type-box.audio { background: var(--snap-green); }
+  .snap-type-lbl { font-size: 10px; color: var(--text-secondary); font-family: 'SF Mono', Menlo, monospace; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--snap-yellow); color: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Snapchat iOS — Design Tokens</div>
+    <div class="page-chip">Camera</div>
+  </div>
+  <p class="page-subtitle">The camera IS the home screen — edge-to-edge viewfinder with chromeless floating controls and Snap Yellow as the single aggressive accent on the capture ring and streak flames.</p>
+
+  <div class="grid">
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="viewfinder"></div>
+          <div class="island"></div>
+          <div class="cam-overlay">
+            <div class="cam-top">
+              <div class="bitmoji"><div class="bitmoji-ghost"></div></div>
+              <div class="cam-search">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+                <span>Search</span>
+              </div>
+              <div class="cam-right-icons">
+                <div class="cam-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div>
+              </div>
+            </div>
+            <div class="cam-spacer"></div>
+            <div class="cam-label">Sunset Beach</div>
+            <div class="lens-carousel">
+              <div class="lens">🌸</div>
+              <div class="lens">🦋</div>
+              <div class="lens active">✨</div>
+              <div class="lens">🔥</div>
+              <div class="lens">🎭</div>
+            </div>
+            <div class="capture-row">
+              <div class="memory-btn"></div>
+              <div class="capture"></div>
+              <div class="flip-btn"><svg viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3"/></svg></div>
+            </div>
+            <div class="tab-strip">
+              <div class="tab-dot"></div>
+              <div class="tab-dot"></div>
+              <div class="tab-dot active"></div>
+              <div class="tab-dot"></div>
+              <div class="tab-dot"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette — Camera Dark</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#000000;"><div class="name">Canvas Black</div>#000000</div>
+          <div class="swatch" style="background:#1A1A1A;"><div class="name">Surface 1</div>#1A1A1A</div>
+          <div class="swatch" style="background:#2C2C2C;"><div class="name">Surface 2</div>#2C2C2C</div>
+          <div class="swatch" style="background:#333333;"><div class="name">Divider</div>#333333</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Text Primary</div>#FFFFFF</div>
+          <div class="swatch" style="background:#8A8A8F;"><div class="name">Text Secondary</div>#8A8A8F</div>
+          <div class="swatch light" style="background:#FFFC00;"><div class="name">Snap Yellow</div>#FFFC00</div>
+          <div class="swatch" style="background:#FF2E3D;"><div class="name">Photo Red</div>#FF2E3D</div>
+          <div class="swatch" style="background:#9B51FF;"><div class="name">Video Purple</div>#9B51FF</div>
+          <div class="swatch" style="background:#4DA7FF;"><div class="name">Chat Blue</div>#4DA7FF</div>
+          <div class="swatch" style="background:#4CD964;"><div class="name">Audio Green</div>#4CD964</div>
+          <div class="swatch" style="background:#00D873;"><div class="name">Success Green</div>#00D873</div>
+        </div>
+        <div class="snap-types">
+          <div class="snap-type"><div class="snap-type-box photo"></div><div class="snap-type-lbl">Photo</div></div>
+          <div class="snap-type"><div class="snap-type-box video"></div><div class="snap-type-lbl">Video</div></div>
+          <div class="snap-type"><div class="snap-type-box chat"></div><div class="snap-type-lbl">Chat</div></div>
+          <div class="snap-type"><div class="snap-type-box audio"></div><div class="snap-type-lbl">Audio</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Avenir Next (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Splash · 48pt · 900</div><div class="type-sample t-48">Snapchat</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 24pt · 700</div><div class="type-sample t-24">Chat</div></div>
+        <div class="type-row"><div class="type-meta">Section Header · 20pt · 700</div><div class="type-sample t-20">Best Friends</div></div>
+        <div class="type-row"><div class="type-meta">Chat Row Name · 16pt · 700</div><div class="type-sample t-16b">Sarah Jones</div></div>
+        <div class="type-row"><div class="type-meta">Chat Message · 16pt · 500</div><div class="type-sample t-16m">on my way home now</div></div>
+        <div class="type-row"><div class="type-meta">HUD Label · 13pt · 700 UP</div><div class="type-sample t-13hud">SUNSET BEACH</div></div>
+        <div class="type-row"><div class="type-meta">Chat Status · 13pt · 500</div><div class="type-sample t-13m">Received · 2m ago</div></div>
+        <div class="type-row"><div class="type-meta">Timestamp · 12pt · 500</div><div class="type-sample t-12">2m · Yesterday</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="capture-demo"></button>
+          <button class="btn btn-yellow">Send To →</button>
+          <button class="btn btn-add">Add Friend</button>
+          <button class="btn btn-added">Added ✓</button>
+          <button class="send-demo"><svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
+          <button class="btn btn-dark">Cancel</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Friend Emoji Legend</div>
+        <div class="legend-row">
+          <div class="legend-emoji">🔥</div>
+          <div class="legend-name">Streak</div>
+          <div class="legend-desc">Snap daily 3+ days in a row</div>
+        </div>
+        <div class="legend-row">
+          <div class="legend-emoji">💛</div>
+          <div class="legend-name">Best Friend</div>
+          <div class="legend-desc">#1 mutual top-sent-to</div>
+        </div>
+        <div class="legend-row">
+          <div class="legend-emoji">👑</div>
+          <div class="legend-name">#1 BF</div>
+          <div class="legend-desc">Your top best friend</div>
+        </div>
+        <div class="legend-row">
+          <div class="legend-emoji">😎</div>
+          <div class="legend-name">Mutual BF</div>
+          <div class="legend-desc">One of their BFs is one of yours</div>
+        </div>
+        <div class="legend-row">
+          <div class="legend-emoji">💕</div>
+          <div class="legend-name">#1 BFs</div>
+          <div class="legend-desc">Best Friends for 2+ months</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

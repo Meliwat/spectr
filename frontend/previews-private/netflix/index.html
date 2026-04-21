@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Netflix iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: dark;
+    --canvas: #141414;
+    --deep: #000000;
+    --surface-1: #1F1F1F;
+    --surface-2: #2A2A2A;
+    --surface-3: #3A3A3A;
+    --divider: #2B2B2B;
+    --input: #333333;
+    --text: #FFFFFF;
+    --text-secondary: #AAAAAA;
+    --text-tertiary: #777777;
+    --red: #E50914;
+    --red-pressed: #B7070F;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; }
+  .page-chip { background: var(--red); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 4px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 680px; margin-bottom: 40px; line-height: 1.5; }
+
+  .nf-word { color: var(--red); font-family: var(--font); font-weight: 900; font-size: 22px; letter-spacing: 1px; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Hero area */
+  .hero { position: relative; height: 380px; overflow: hidden; }
+  .hero-bg { position: absolute; inset: 0; background: linear-gradient(160deg, #0B0E22 0%, #3B1E2A 40%, #6A1A1C 70%, #141414 100%); }
+  .hero-bg::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 60% 30%, rgba(255,180,120,0.16), transparent 55%), radial-gradient(circle at 20% 70%, rgba(229,9,20,0.2), transparent 60%); }
+  .hero-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 45%; background: linear-gradient(180deg, rgba(20,20,20,0) 0%, rgba(20,20,20,0.6) 50%, var(--canvas) 100%); z-index: 2; }
+  .hero-top { position: absolute; top: 48px; left: 0; right: 0; display: flex; justify-content: center; z-index: 5; }
+  .top10-badge { position: absolute; top: 90px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; z-index: 5; }
+  .top10-chip { background: var(--red); color: #fff; font-size: 10px; font-weight: 800; padding: 3px 6px; border-radius: 2px; letter-spacing: 0.4px; }
+  .top10-text { font-size: 11px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.3px; }
+  .hero-title { position: absolute; left: 0; right: 0; top: 140px; text-align: center; z-index: 5; padding: 0 24px; }
+  .hero-title-art { font-family: var(--font); font-size: 34px; font-weight: 900; color: #fff; letter-spacing: -1.2px; line-height: 1; text-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+  .hero-sub { position: absolute; left: 0; right: 0; top: 210px; text-align: center; z-index: 5; }
+  .hero-sub-chips { font-size: 11px; font-weight: 500; color: #fff; letter-spacing: 0.3px; }
+  .hero-tag { position: absolute; left: 0; right: 0; top: 230px; text-align: center; z-index: 5; font-size: 12px; font-weight: 400; color: #AAAAAA; }
+  .hero-btns { position: absolute; left: 16px; right: 16px; bottom: 20px; display: flex; gap: 8px; z-index: 5; }
+  .hero-btn { flex: 1; padding: 10px 0; border-radius: 4px; font-size: 14px; font-weight: 700; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .hero-btn.play { background: #fff; color: #000; }
+  .hero-btn.play svg { width: 14px; height: 14px; fill: #000; }
+  .hero-btn.list { background: rgba(255,255,255,0.15); color: #fff; font-weight: 500; }
+  .hero-btn.list svg { width: 14px; height: 14px; stroke: #fff; stroke-width: 2.5; fill: none; }
+
+  /* Continue watching */
+  .row-sec { padding: 14px 12px 0; }
+  .row-header { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .row-scroll { display: flex; gap: 6px; overflow: hidden; }
+  .cw-tile { width: 90px; height: 52px; border-radius: 2px; position: relative; overflow: hidden; flex-shrink: 0; }
+  .cw-tile.c1 { background: linear-gradient(135deg, #6A1A1C, #2F1044); }
+  .cw-tile.c2 { background: linear-gradient(135deg, #0B4F6C, #031926); }
+  .cw-tile.c3 { background: linear-gradient(135deg, #3E3E91, #0D1B2A); }
+  .cw-prog { position: absolute; left: 0; bottom: 0; height: 2px; background: rgba(255,255,255,0.3); width: 100%; }
+  .cw-prog-fill { height: 100%; background: var(--red); }
+
+  /* Top 10 row */
+  .top10 { padding: 12px 0 12px 8px; }
+  .top10-header { padding-left: 4px; font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .top10-row { display: flex; gap: 4px; overflow: hidden; }
+  .top10-cell { display: flex; align-items: flex-end; position: relative; width: 100px; height: 92px; flex-shrink: 0; }
+  .top10-numeral { font-family: var(--font); font-weight: 900; font-size: 110px; line-height: 0.85; color: transparent; -webkit-text-stroke: 2px #fff; letter-spacing: -8px; position: relative; z-index: 1; margin-right: -32px; opacity: 0.95; }
+  .top10-poster { width: 58px; height: 88px; border-radius: 3px; position: relative; z-index: 2; flex-shrink: 0; }
+  .p1 { background: linear-gradient(135deg, #6A1A1C, #2F1044); }
+  .p2 { background: linear-gradient(135deg, #0B4F6C, #1E3F1E); }
+  .p3 { background: linear-gradient(135deg, #3E3E91, #0D1B2A); }
+
+  /* Tab bar */
+  .tab-bar { height: 58px; background: rgba(20,20,20,0.92); backdrop-filter: saturate(180%) blur(20px); display: flex; align-items: center; justify-content: space-around; padding: 4px 4px 10px; border-top: 1px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--text-tertiary); font-size: 10px; font-weight: 500; }
+  .tab.active { color: #fff; }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 16px; min-height: 90px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #000; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; }
+  .t-32 { font-size: 32px; font-weight: 700; letter-spacing: -0.4px; }
+  .t-20 { font-size: 20px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-17b { font-size: 17px; font-weight: 700; }
+  .t-17m { font-size: 17px; font-weight: 500; }
+  .t-14 { font-size: 14px; font-weight: 400; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 15px; font-weight: 500; padding: 12px 20px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; border-radius: 4px; }
+  .btn-play { background: #fff; color: #000; font-size: 17px; font-weight: 700; padding: 14px 24px; }
+  .btn-play svg { width: 16px; height: 16px; fill: #000; }
+  .btn-red-play { background: var(--red); color: #fff; font-size: 17px; font-weight: 700; padding: 14px 24px; }
+  .btn-red-play svg { width: 16px; height: 16px; fill: #fff; }
+  .btn-mylist { background: rgba(255,255,255,0.15); color: #fff; }
+  .btn-mylist svg { width: 16px; height: 16px; stroke: #fff; stroke-width: 2.5; fill: none; }
+  .btn-info { background: rgba(255,255,255,0.15); color: #fff; }
+  .btn-info svg { width: 16px; height: 16px; stroke: #fff; stroke-width: 2; fill: none; }
+
+  /* Distinctive — Top 10 */
+  .big-top10 { display: flex; gap: 8px; flex-wrap: wrap; }
+  .big-cell { display: flex; align-items: flex-end; position: relative; height: 180px; }
+  .big-numeral { font-family: var(--font); font-weight: 900; font-size: 220px; line-height: 0.85; color: transparent; -webkit-text-stroke: 4px #fff; letter-spacing: -16px; position: relative; z-index: 1; margin-right: -70px; opacity: 0.95; }
+  .big-poster { width: 110px; height: 170px; border-radius: 4px; position: relative; z-index: 2; flex-shrink: 0; }
+  .bp1 { background: linear-gradient(135deg, #6A1A1C 0%, #2F1044 100%); }
+  .bp2 { background: linear-gradient(135deg, #0B4F6C 0%, #1E3F1E 100%); }
+  .bp3 { background: linear-gradient(135deg, #3E3E91 0%, #0D1B2A 100%); }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--red); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Netflix iOS — Design Tokens</div>
+    <div class="page-chip">Dark only</div>
+  </div>
+  <p class="page-subtitle">Warm-dark canvas (#141414), Netflix Red for the wordmark, Play button, and Continue Watching progress. Cinematic gradients fade hero art into the canvas — no light mode, ever.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="hero">
+            <div class="hero-bg"></div>
+            <div class="hero-fade"></div>
+            <div class="hero-top"><div class="nf-word">NETFLIX</div></div>
+            <div class="top10-badge">
+              <div class="top10-chip">TOP 10</div>
+              <div class="top10-text">in the U.S. Today</div>
+            </div>
+            <div class="hero-title"><div class="hero-title-art">NIGHT<br>WAVE</div></div>
+            <div class="hero-sub"><div class="hero-sub-chips">Gripping · Dramas · Thrillers</div></div>
+            <div class="hero-tag">This week's trending</div>
+            <div class="hero-btns">
+              <div class="hero-btn play"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg>Play</div>
+              <div class="hero-btn list"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>My List</div>
+            </div>
+          </div>
+          <div class="row-sec">
+            <div class="row-header">Continue Watching</div>
+            <div class="row-scroll">
+              <div class="cw-tile c1"><div class="cw-prog"><div class="cw-prog-fill" style="width:65%;"></div></div></div>
+              <div class="cw-tile c2"><div class="cw-prog"><div class="cw-prog-fill" style="width:32%;"></div></div></div>
+              <div class="cw-tile c3"><div class="cw-prog"><div class="cw-prog-fill" style="width:88%;"></div></div></div>
+            </div>
+          </div>
+          <div class="top10">
+            <div class="top10-header" style="padding-left:12px;">Top 10 in the U.S. Today</div>
+            <div class="top10-row">
+              <div class="top10-cell"><div class="top10-numeral">1</div><div class="top10-poster p1"></div></div>
+              <div class="top10-cell"><div class="top10-numeral">2</div><div class="top10-poster p2"></div></div>
+              <div class="top10-cell"><div class="top10-numeral">3</div><div class="top10-poster p3"></div></div>
+            </div>
+          </div>
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><polygon points="13,2 4,14 12,14 11,22 20,10 12,10"/></svg><span>New & Hot</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/><polyline points="16,20 12,22 8,20"/></svg><span>My Netflix</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#E50914;"><div class="name">Netflix Red</div>#E50914</div>
+          <div class="swatch" style="background:#B7070F;"><div class="name">Red Pressed</div>#B7070F</div>
+          <div class="swatch" style="background:#831010;"><div class="name">Red Dimmed</div>#831010</div>
+          <div class="swatch" style="background:#141414;"><div class="name">Canvas</div>#141414</div>
+          <div class="swatch" style="background:#000000;"><div class="name">Deep Black</div>#000000</div>
+          <div class="swatch" style="background:#1F1F1F;"><div class="name">Surface 1</div>#1F1F1F</div>
+          <div class="swatch" style="background:#2A2A2A;"><div class="name">Surface 2</div>#2A2A2A</div>
+          <div class="swatch" style="background:#3A3A3A;"><div class="name">Surface 3</div>#3A3A3A</div>
+          <div class="swatch" style="background:#2B2B2B;"><div class="name">Divider</div>#2B2B2B</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Text Primary</div>#FFFFFF</div>
+          <div class="swatch" style="background:#AAAAAA; color:#000;"><div class="name">Text Secondary</div>#AAAAAA</div>
+          <div class="swatch" style="background:#777777;"><div class="name">Text Tertiary</div>#777777</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Netflix Sans</div>
+        <div class="type-row"><div class="type-meta">Title Hero · 32pt · 700</div><div class="type-sample t-32">Night Wave</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 20pt · 700</div><div class="type-sample t-20">My Netflix</div></div>
+        <div class="type-row"><div class="type-meta">Row Header · 17pt · 700</div><div class="type-sample t-17b">Continue Watching</div></div>
+        <div class="type-row"><div class="type-meta">Episode Title · 17pt · 500</div><div class="type-sample t-17m">Episode 1: Chapter One</div></div>
+        <div class="type-row"><div class="type-meta">Body · 14pt · 400</div><div class="type-sample t-14">An investigative journalist tracks a pirate radio signal across a coastal blackout.</div></div>
+        <div class="type-row"><div class="type-meta">Metadata · 13pt · 400</div><div class="type-sample t-13">2024 · 2h 15m · TV-MA</div></div>
+        <div class="type-row"><div class="type-meta">Badge · 11pt · 700 UP</div><div class="type-sample t-11">NEW SEASON</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-play"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg>Play</button>
+          <button class="btn btn-red-play"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg>Resume</button>
+          <button class="btn btn-mylist"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>My List</button>
+          <button class="btn btn-info"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="8.1"/><line x1="12" y1="12" x2="12" y2="16"/></svg>Info</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive — Top 10 Row (giant outlined numerals)</div>
+        <div class="big-top10">
+          <div class="big-cell"><div class="big-numeral">1</div><div class="big-poster bp1"></div></div>
+          <div class="big-cell"><div class="big-numeral">2</div><div class="big-poster bp2"></div></div>
+          <div class="big-cell"><div class="big-numeral">3</div><div class="big-poster bp3"></div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
