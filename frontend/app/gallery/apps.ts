@@ -74,20 +74,7 @@ export function isAppSlug(slug: string): slug is AppSlug {
   return (APPS as readonly string[]).includes(slug)
 }
 
-// Only the original 8 apps have full spec markdown published externally.
-const APPS_WITH_EXTERNAL_SPEC: ReadonlySet<AppSlug> = new Set<AppSlug>([
-  'airbnb',
-  'cal-ai',
-  'doordash',
-  'duolingo',
-  'instagram',
-  'spotify',
-  'tiktok',
-  'uber',
-])
-
-export function specGithubUrl(slug: AppSlug): string | null {
-  if (!APPS_WITH_EXTERNAL_SPEC.has(slug)) return null
+export function specGithubUrl(slug: AppSlug): string {
   return `https://github.com/Meliwat/awesome-ios-design-md/tree/main/design-md/${slug}`
 }
 
