@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { APPS } from './gallery/apps'
+import { CATEGORIES } from './gallery/categories'
 
 const SITE_URL = (process.env.SITE_URL || 'https://www.spectr.to').replace(/\/$/, '')
 
@@ -12,6 +13,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 1,
     },
+    ...CATEGORIES.map((slug) => ({
+      url: `${SITE_URL}/gallery/${slug}`,
+      lastModified: now,
+      changeFrequency: 'weekly' as const,
+      priority: 0.85,
+    })),
     ...APPS.map((slug) => ({
       url: `${SITE_URL}/gallery/${slug}`,
       lastModified: now,

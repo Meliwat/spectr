@@ -12,6 +12,13 @@ import {
   specGithubUrl,
   type AppSlug,
 } from '../apps'
+import {
+  CATEGORIES,
+  CATEGORY_APPS,
+  CATEGORY_LABELS,
+  isCategorySlug,
+} from '../categories'
+import CategoryView from '../CategoryView'
 
 const SITE_URL = (process.env.SITE_URL || 'https://www.spectr.to').replace(/\/$/, '')
 
@@ -720,10 +727,36 @@ const APP_COPY: Record<AppSlug, AppCopy> = {
 type Params = { slug: string }
 
 export function generateStaticParams(): Params[] {
-  return APPS.map((slug) => ({ slug }))
+  return [
+    ...APPS.map((slug) => ({ slug })),
+    ...CATEGORIES.map((slug) => ({ slug })),
+  ]
 }
 
 export function generateMetadata({ params }: { params: Params }): Metadata {
+  if (isCategorySlug(params.slug)) {
+    const label = CATEGORY_LABELS[params.slug]
+    const apps = CATEGORY_APPS[params.slug]
+    const appsList = apps.map((s) => TITLES[s]).join(', ')
+    const title = `${label} iOS design blueprints — Spectr gallery`
+    const description = `${apps.length} ${label.toLowerCase()} app design blueprints: ${appsList}. Tap a phone to open the live preview.`
+    return {
+      title,
+      description,
+      alternates: { canonical: `/gallery/${params.slug}` },
+      openGraph: {
+        type: 'website',
+        title,
+        description,
+        url: `${SITE_URL}/gallery/${params.slug}`,
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+      },
+    }
+  }
   if (!isAppSlug(params.slug)) {
     return { title: 'Gallery', robots: { index: false, follow: false } }
   }
@@ -751,6 +784,9 @@ export function generateMetadata({ params }: { params: Params }): Metadata {
 }
 
 export default async function GalleryAppPage({ params }: { params: Params }) {
+  if (isCategorySlug(params.slug)) {
+    return <CategoryView category={params.slug} />
+  }
   if (!isAppSlug(params.slug)) notFound()
   const slug: AppSlug = params.slug
   const name = TITLES[slug]
