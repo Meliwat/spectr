@@ -38,6 +38,74 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
+  // ── Bypass path: gated by NEXT_PUBLIC_GALLERY_PAYWALL_ENABLED ────────────
+  // When the env var is anything other than 'true' (unset, '', 'false', etc.)
+  // the client may submit { bypass: true, email, mode, ... } and we skip Stripe
+  // entirely. A `source='comp'` credit is created so the project still has
+  // standard audit / refund machinery available.
+  if (body?.bypass === true) {
+    const paywallEnabled =
+      (process.env.NEXT_PUBLIC_GALLERY_PAYWALL_ENABLED ?? '').replace(/\n/g, '').trim() === 'true'
+    if (paywallEnabled) {
+      return NextResponse.json({ error: 'Paywall is enabled' }, { status: 402 })
+    }
+    const email = (body?.email || '').toString().trim().toLowerCase()
+    if (!email) {
+      return NextResponse.json({ error: 'Missing email' }, { status: 400 })
+    }
+    const adminBypass = makeSupabaseServer()
+    let bypassUserId: string
+    try {
+      const { data: existing, error: listErr } = await adminBypass.auth.admin.listUsers({
+        page: 1,
+        perPage: 200,
+      })
+      if (listErr) throw listErr
+      const found = existing.users.find((u) => (u.email ?? '').toLowerCase() === email)
+      if (found) {
+        bypassUserId = found.id
+      } else {
+        const { data: created, error: createErr } = await adminBypass.auth.admin.createUser({
+          email,
+          email_confirm: true,
+        })
+        if (createErr || !created.user) throw createErr ?? new Error('no user returned')
+        bypassUserId = created.user.id
+      }
+    } catch (err: any) {
+      console.error('[projects/gallery] bypass user resolve failed:', err?.message ?? err)
+      return NextResponse.json({ error: 'user_resolve_failed' }, { status: 500 })
+    }
+    const { data: bypassCredit, error: bypassCreditErr } = await adminBypass
+      .from('spec_credits')
+      .insert({
+        user_id: bypassUserId,
+        stripe_session_id: null,
+        stripe_payment_id: null,
+        amount_cents: 0,
+        status: 'consumed',
+        source: 'comp',
+        consumed_at: new Date().toISOString(),
+      })
+      .select('id')
+      .single()
+    if (bypassCreditErr) {
+      console.error('[projects/gallery] bypass comp credit failed:', bypassCreditErr.message)
+      return NextResponse.json({ error: 'credit_failed' }, { status: 500 })
+    }
+    const bypassCtx: SubmitCtx = {
+      userId: bypassUserId,
+      email,
+      sessionId: 'bypass',
+      creditId: bypassCredit!.id,
+    }
+    const bypassMode = body?.mode
+    if (bypassMode === 'appstore') return handleAppStore(adminBypass, body, bypassCtx)
+    if (bypassMode === 'recording') return handleRecording(adminBypass, body, bypassCtx)
+    await adminBypass.from('spec_credits').delete().eq('id', bypassCtx.creditId)
+    return NextResponse.json({ error: 'Invalid mode' }, { status: 400 })
+  }
+
   const session_id = typeof body?.session_id === 'string' ? body.session_id.trim() : ''
   if (!session_id) {
     return NextResponse.json({ error: 'Missing session_id' }, { status: 400 })

@@ -40,7 +40,7 @@ User uploads MP4 + app name
   → Worker: process_project_spec(project_id)
     → [1/3] Extract frames (ffmpeg scene-change → dedup → cap 48)
     → [2/3] Analyze frontend (parallel vision batches: screens + design tokens)
-    → [3/3] Generate spec.md (7 sections in 2 parallel lanes → assemble → validate → upload)
+    → [3/3] Generate spec.md (7 sections in up to 4 parallel lanes → assemble → validate → upload)
   → Supabase Realtime: frontend subscribes, updates UI in real time
   → User downloads spec.md or bundle.zip
 ```
@@ -96,7 +96,7 @@ Both passes run in batches of 25 frames. Each batch runs concurrently (up to 4 w
 
 ### Stage 3: Spec Generation
 
-7 sections generated in 2 parallel lanes:
+7 sections generated in up to 4 parallel lanes (each section is its own lane; `SPEC_LANE_WORKERS` caps concurrency, default 4):
 
 | Section | Key |
 |---|---|
@@ -301,7 +301,7 @@ The frontend `StatusTracker` component handles both the legacy 3-stage set and t
 | `STITCH_MODEL` | No | claude-sonnet-4-6 | Model for spec generation |
 | `MAX_FRAMES` | No | 48 (code) / 20 (Railway production) | Cap on unique frames kept |
 | `FRAME_BATCH_SIZE` | No | 25 | Frames per vision API call |
-| `SPEC_LANE_WORKERS` | No | 2 | Parallel spec section lanes |
+| `SPEC_LANE_WORKERS` | No | 4 | Parallel spec section lanes (capped at 4) |
 | `SPEC_ANALYSIS_WORKERS` | No | 2 | Parallel vision passes |
 | `SCENE_THRESHOLD` | No | 0.15 | ffmpeg scene-change sensitivity |
 | `COMPRESS_THRESHOLD_MB` | No | 50 | Video compression trigger |
@@ -848,3 +848,21 @@ When starting any task, read these files before making changes:
 5. `frontend/src/lib/types.ts` — all TypeScript types including status enums
 6. `frontend/src/components/StatusTracker.tsx` — realtime progress UI
 7. `supabase/schema.sql` — database schema
+
+## Skill routing
+
+When the user's request matches an available skill, invoke it via the Skill tool. When in doubt, invoke the skill.
+
+Key routing rules:
+- Product ideas/brainstorming → invoke /office-hours
+- Strategy/scope → invoke /plan-ceo-review
+- Architecture → invoke /plan-eng-review
+- Design system/plan review → invoke /design-consultation or /plan-design-review
+- Full review pipeline → invoke /autoplan
+- Bugs/errors → invoke /investigate
+- QA/testing site behavior → invoke /qa or /qa-only
+- Code review/diff check → invoke /review
+- Visual polish → invoke /design-review
+- Ship/deploy/PR → invoke /ship or /land-and-deploy
+- Save progress → invoke /context-save
+- Resume context → invoke /context-restore

@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
+const BYPASS_SENTINEL = '__bypass__'
+
 type Tab = 'appstore' | 'recording'
 
 /**
@@ -26,16 +28,19 @@ export default function GenerateSpecModal({
   paidSessionId?: string | null
 }) {
   const router = useRouter()
-  const isPaid = !!paidSessionId
+  const isBypass = paidSessionId === BYPASS_SENTINEL
+  const isPaid = !!paidSessionId && !isBypass
+  const showSubmissionForm = isPaid || isBypass
 
   const [tab, setTab] = useState<Tab>('appstore')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Post-pay state
+  // Post-pay state (also used in bypass)
   const [appStoreUrl, setAppStoreUrl] = useState('')
   const [file, setFile] = useState<File | null>(null)
   const [referenceApp, setReferenceApp] = useState(defaultReferenceApp ?? '')
+  const [bypassEmail, setBypassEmail] = useState('')
   const [uploadPct, setUploadPct] = useState(0)
   const [uploadStage, setUploadStage] = useState<'idle' | 'uploading' | 'submitting'>('idle')
   const fileRef = useRef<HTMLInputElement | null>(null)
@@ -49,6 +54,7 @@ export default function GenerateSpecModal({
     setAppStoreUrl('')
     setFile(null)
     setReferenceApp(defaultReferenceApp ?? '')
+    setBypassEmail('')
   }, [open, defaultReferenceApp])
 
   useEffect(() => {
@@ -59,6 +65,20 @@ export default function GenerateSpecModal({
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [open, busy, onClose])
+
+  // Build the POST body for /api/projects/gallery, branching on bypass mode.
+  // In bypass mode we send email + bypass=true; otherwise the verified Stripe
+  // session_id. The server validates both shapes.
+  const buildRequestBody = (extra: Record<string, unknown>) => {
+    if (isBypass) {
+      return {
+        bypass: true,
+        email: bypassEmail.trim().toLowerCase(),
+        ...extra,
+      }
+    }
+    return { session_id: paidSessionId, ...extra }
+  }
 
   // ── Pre-pay: send to Stripe Checkout (Stripe collects email) ─────────────
   const submitCheckout = useCallback(async () => {
@@ -84,7 +104,7 @@ export default function GenerateSpecModal({
     }
   }, [])
 
-  // ── Post-pay: App Store URL → project ─────────────────────────────────────
+  // ── Post-pay (or bypass): App Store URL → project ─────────────────────────
   const submitAppStore = useCallback(async () => {
     setError(null)
     if (!paidSessionId) { setError('Missing payment session.'); return }
@@ -99,11 +119,10 @@ export default function GenerateSpecModal({
       const res = await fetch('/api/projects/gallery', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          session_id: paidSessionId,
+        body: JSON.stringify(buildRequestBody({
           mode: 'appstore',
           appStoreUrl: url,
-        }),
+        })),
       })
       const json = await res.json().catch(() => ({}))
       if (!res.ok || !json?.projectId) {
@@ -116,7 +135,7 @@ export default function GenerateSpecModal({
       setError('Network error \u2014 please try again.')
       setBusy(false)
     }
-  }, [paidSessionId, appStoreUrl, router])
+  }, [paidSessionId, appStoreUrl, router, isBypass, bypassEmail])
 
   // ── Post-pay: MP4 upload → project ────────────────────────────────────────
   const submitRecording = useCallback(async () => {
@@ -161,13 +180,12 @@ export default function GenerateSpecModal({
       const res = await fetch('/api/projects/gallery', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          session_id: paidSessionId,
+        body: JSON.stringify(buildRequestBody({
           mode: 'recording',
           video_s3_key: key,
           video_filename: file.name,
           reference_app: referenceApp.trim(),
-        }),
+        })),
       })
       const json = await res.json().catch(() => ({}))
       if (!res.ok || !json?.projectId) {
@@ -179,7 +197,7 @@ export default function GenerateSpecModal({
       setError('Network error \u2014 please try again.')
       setBusy(false); setUploadStage('idle')
     }
-  }, [paidSessionId, file, referenceApp, router])
+  }, [paidSessionId, file, referenceApp, router, isBypass, bypassEmail])
 
   if (!open) return null
 
@@ -375,12 +393,33 @@ export default function GenerateSpecModal({
             ×
           </button>
 
-          {isPaid ? (
-            // ── Post-payment: show the two-tab submission form ─────────────
+          {showSubmissionForm ? (
+            // ── Post-payment OR bypass mode: show the two-tab submission form ──
             <>
-              <div className="gsm-paid-badge">
-                <span className="gsm-paid-dot" /> Payment received
-              </div>
+              {isBypass ? (
+                <div className="gsm-paid-badge" style={{ background: 'linear-gradient(135deg, #ffb86b, #ff9a4d)' }}>
+                  <span className="gsm-paid-dot" /> Test mode — no charge
+                </div>
+              ) : (
+                <div className="gsm-paid-badge">
+                  <span className="gsm-paid-dot" /> Payment received
+                </div>
+              )}
+              {isBypass ? (
+                <div className="gsm-field">
+                  <label className="gsm-label" htmlFor="gsm-bypass-email">Your email</label>
+                  <input
+                    id="gsm-bypass-email"
+                    className="gsm-input"
+                    type="email"
+                    placeholder="you@example.com"
+                    value={bypassEmail}
+                    onChange={(e) => setBypassEmail(e.target.value)}
+                    disabled={busy}
+                    autoFocus
+                  />
+                </div>
+              ) : null}
               <h3 id="gsm-title" className="gsm-title">Generate your spec</h3>
               <p className="gsm-sub">
                 Pick how you want to reference the app. Output is a full design
