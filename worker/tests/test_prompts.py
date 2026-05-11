@@ -64,6 +64,49 @@ def test_section_prompt_builder_restricts_top_level_headings():
     assert "### 1." in prompt
 
 
+def test_section_prompt_builder_split_returns_cache_friendly_tuple():
+    # When split=True we must return a (cached_prefix, suffix) tuple such that:
+    #   - cache-stable content (reference_app, brand_overrides, frontend_spec) lives in prefix
+    #   - section-specific content (filename, allowed_headings, instructions) lives in suffix
+    # If a future refactor accidentally moves the filename into the prefix, every
+    # section call gets a fresh cache key and the ~40-60% input-token win is lost.
+    shared_components = next(section for section in SPEC_SECTION_DEFINITIONS if section["key"] == "shared_components")
+    result = build_spec_section_prompt(
+        section=shared_components,
+        reference_app="DoorDash",
+        your_app_name="MyApp",
+        brand_overrides="Brand=#FF00AA",
+        frontend_spec="## DESIGN TOKENS\n- token-color: #123456",
+        split=True,
+    )
+    assert isinstance(result, tuple) and len(result) == 2
+    cached_prefix, suffix = result
+
+    assert "DoorDash" in cached_prefix
+    assert "MyApp" in cached_prefix
+    assert "Brand=#FF00AA" in cached_prefix
+    assert "## DESIGN TOKENS" in cached_prefix
+    assert "token-color: #123456" in cached_prefix
+
+    assert shared_components["filename"] in suffix
+    assert shared_components["filename"] not in cached_prefix
+    assert "## Shared Components" in suffix
+    assert "## Shared Components" not in cached_prefix
+    assert "### 1." in suffix
+
+    # Backward compat: omitting split returns a single string equal to prefix+suffix.
+    legacy = build_spec_section_prompt(
+        section=shared_components,
+        reference_app="DoorDash",
+        your_app_name="MyApp",
+        brand_overrides="Brand=#FF00AA",
+        frontend_spec="## DESIGN TOKENS\n- token-color: #123456",
+    )
+    assert isinstance(legacy, str)
+    assert shared_components["filename"] in legacy
+    assert "## DESIGN TOKENS" in legacy
+
+
 def test_section_system_uses_design_tokens_as_authoritative_source():
     assert "A DESIGN TOKENS block is included in the frontend input." in SPEC_SECTION_SYSTEM
     assert "Use it as the authoritative source" in SPEC_SECTION_SYSTEM
@@ -85,8 +128,9 @@ def test_spec_sections_require_expo_and_branding_constraints():
     assert "iPhone 15" in app_overview["required_substrings"]
     assert "Expo SDK 54" in implementation_notes["required_substrings"]
     assert "Expo Go" in implementation_notes["required_substrings"]
-    assert "merchant logos" in implementation_notes["required_substrings"]
+    assert "merchant logos" not in implementation_notes["required_substrings"]
     assert "Expo SDK 54" in claude_code_prompt["required_substrings"]
     assert "react-native-svg" in claude_code_prompt["required_substrings"]
     assert "npx expo install" in claude_code_prompt["required_substrings"]
+    assert "merchant logos" not in claude_code_prompt["required_substrings"]
 

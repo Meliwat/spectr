@@ -3,6 +3,11 @@
 import { useCallback, useEffect, useState } from 'react'
 import GenerateSpecModal from './GenerateSpecModal'
 
+const PAYWALL_ENABLED =
+  (process.env.NEXT_PUBLIC_GALLERY_PAYWALL_ENABLED ?? '').replace(/\n/g, '').trim() === 'true'
+
+export const BYPASS_SENTINEL = '__bypass__'
+
 export default function GenerateSpecButton({
   defaultReferenceApp,
   className,
@@ -30,9 +35,13 @@ export default function GenerateSpecButton({
     }
   }, [])
 
-  // Direct-to-Stripe on click — no email prompt. Stripe collects email natively.
-  const startCheckout = useCallback(async () => {
+  const handleClick = useCallback(async () => {
     setError(null)
+    if (!PAYWALL_ENABLED) {
+      setPaidSessionId(BYPASS_SENTINEL)
+      setModalOpen(true)
+      return
+    }
     setBusy(true)
     try {
       const returnPath =
@@ -72,7 +81,7 @@ export default function GenerateSpecButton({
       <button
         type="button"
         className={className}
-        onClick={startCheckout}
+        onClick={handleClick}
         disabled={busy}
       >
         {busy ? 'Starting checkout…' : (children ?? 'Generate your own spec ↗')}

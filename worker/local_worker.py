@@ -84,12 +84,17 @@ STITCH_MODEL = os.getenv("STITCH_MODEL", "claude-sonnet-4-6")
 OUTPUT_MODE = os.getenv("OUTPUT_MODE", "spec")
 MAX_TOTAL_RETRIES = int(os.getenv("MAX_TOTAL_RETRIES", 8))
 SPEC_SECTION_TIMEOUT = int(os.getenv("SPEC_SECTION_TIMEOUT", "480"))
-SPEC_LANE_WORKERS = max(1, min(2, int(os.getenv("SPEC_LANE_WORKERS", "2"))))
+SPEC_LANE_WORKERS = max(1, min(4, int(os.getenv("SPEC_LANE_WORKERS", "4"))))
 SPEC_ANALYSIS_WORKERS = max(1, min(2, int(os.getenv("SPEC_ANALYSIS_WORKERS", "2"))))
 
 SPEC_SECTION_LANES = (
-    ("app_overview", "navigation_structure", "implementation_notes", "claude_code_prompt"),
-    ("screen_specifications", "shared_components", "design_system"),
+    ("app_overview",),
+    ("navigation_structure",),
+    ("screen_specifications",),
+    ("shared_components",),
+    ("design_system",),
+    ("implementation_notes",),
+    ("claude_code_prompt",),
 )
 
 _bucket_mime_ok = False  # cached after first successful allowlist check
@@ -123,17 +128,31 @@ def _sdk_extract_text(response) -> str:
 
 
 def _claude_text_sdk(prompt: str, system: str = None, tools: list[str] = None,
-                     model: str = None) -> str:
+                     model: str = None, cached_user_prefix: str = None,
+                     cache: bool = False) -> str:
     ac = _get_anthropic()
     model = model or STITCH_MODEL
 
     create_kwargs: dict = {"model": model, "max_tokens": 16000}
     if system:
-        create_kwargs["system"] = system
+        if cache:
+            create_kwargs["system"] = [
+                {"type": "text", "text": system, "cache_control": {"type": "ephemeral"}}
+            ]
+        else:
+            create_kwargs["system"] = system
     if tools and "WebSearch" in tools:
         create_kwargs["tools"] = [{"type": "web_search_20250305", "name": "web_search"}]
 
-    messages = [{"role": "user", "content": prompt}]
+    if cached_user_prefix:
+        user_content = [
+            {"type": "text", "text": cached_user_prefix, "cache_control": {"type": "ephemeral"}},
+            {"type": "text", "text": prompt},
+        ]
+    else:
+        user_content = prompt
+
+    messages = [{"role": "user", "content": user_content}]
 
     for _ in range(15):  # safety cap on agentic turns
         resp = ac.messages.create(**create_kwargs, messages=messages)
@@ -215,7 +234,10 @@ def _run_claude(cmd: list[str], stdin_data: str = None, timeout: int = 300) -> s
 
 
 def _claude_text_cli(prompt: str, system: str = None, tools: list[str] = None,
-                     timeout: int = 300, model: str = None) -> str:
+                     timeout: int = 300, model: str = None,
+                     cached_user_prefix: str = None) -> str:
+    if cached_user_prefix:
+        prompt = cached_user_prefix + "\n\n" + prompt
     cmd = [
         "claude", "--print",
         "--output-format", "text",
@@ -271,10 +293,13 @@ def _claude_vision_cli(frame_paths: list[str], text_prompt: str,
 # ──────────────────────────────────────────────
 
 def claude_text(prompt: str, system: str = None, tools: list[str] = None,
-                timeout: int = 300, model: str = None) -> str:
+                timeout: int = 300, model: str = None,
+                cached_user_prefix: str = None, cache: bool = False) -> str:
     if os.getenv("ANTHROPIC_API_KEY"):
-        return _claude_text_sdk(prompt, system=system, tools=tools, model=model)
-    return _claude_text_cli(prompt, system=system, tools=tools, timeout=timeout, model=model)
+        return _claude_text_sdk(prompt, system=system, tools=tools, model=model,
+                                cached_user_prefix=cached_user_prefix, cache=cache)
+    return _claude_text_cli(prompt, system=system, tools=tools, timeout=timeout, model=model,
+                            cached_user_prefix=cached_user_prefix)
 
 
 def claude_vision(frame_paths: list[str], text_prompt: str, system: str = None, model: str = None) -> str:
@@ -609,22 +634,25 @@ def _generate_spec_section(
     output_dir: Path,
 ) -> str:
     project_log(project_id, f"        → writing section {section_index}/{total_sections}: {section['filename']}")
-    prompt = build_spec_section_prompt(
+    cached_prefix, suffix = build_spec_section_prompt(
         section=section,
         reference_app=reference_app,
         your_app_name=your_app_name,
         brand_overrides=brand_overrides,
         frontend_spec=frontend_spec,
+        split=True,
     )
 
     last_error = None
     for attempt in range(3):
         try:
             raw_section = claude_text(
-                prompt,
+                suffix,
                 system=SPEC_SECTION_SYSTEM,
                 timeout=SPEC_SECTION_TIMEOUT,
                 model=STITCH_MODEL,
+                cached_user_prefix=cached_prefix,
+                cache=True,
             )
             clean_section = validate_spec_section_content(section, raw_section)
             (output_dir / section["filename"]).write_text(clean_section + "\n", encoding="utf-8")
