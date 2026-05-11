@@ -33,16 +33,17 @@ export async function middleware(request: NextRequest) {
     },
   )
 
-  // Refresh the session so `getUser()` below is accurate and the client cookie
-  // stays in sync.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  // Only /app/* requires authentication. Landing (/), waitlist redirect,
-  // progress view (/p/*), login, admin (query-key gated), and auth callback
-  // are all public.
+  // Only /app/* requires authentication. Landing (/), gallery, progress view
+  // (/p/*), login, admin (query-key gated), and auth callback are all public.
+  // We deliberately skip the Supabase round-trip for those routes — a stale or
+  // expired session cookie can make supabase.auth.getUser() hang long enough
+  // to trip Vercel's MIDDLEWARE_INVOCATION_TIMEOUT (25s edge cap) and return
+  // a 504 on the landing page. The session is still refreshed naturally on
+  // any /app/* navigation below.
   if (pathname.startsWith('/app')) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
     if (!user) {
       const loginUrl = new URL('/login', request.url)
       loginUrl.searchParams.set('next', pathname + request.nextUrl.search)
