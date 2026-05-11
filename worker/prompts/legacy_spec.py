@@ -359,7 +359,7 @@ Write 5-7 bullets explaining the visual philosophy of the reference app.""",
         "key": "implementation_notes",
         "filename": "06-frontend-implementation-notes.md",
         "top_level_headings": ("## Frontend Implementation Notes",),
-        "required_substrings": ("Expo SDK 54", "Expo Go", "Animated", "FlatList", "npx expo install", "iPhone 15", "merchant logos"),
+        "required_substrings": ("Expo SDK 54", "Expo Go", "Animated", "FlatList", "npx expo install", "iPhone 15"),
         "instructions": """Output exactly one top-level section:
 
 ## Frontend Implementation Notes
@@ -397,7 +397,6 @@ Keep the guidance practical and implementation-oriented.""",
             "npx expo install",
             "Expo Go",
             "iPhone 15",
-            "merchant logos",
         ),
         "instructions": """Output exactly one top-level section:
 
@@ -446,9 +445,9 @@ def build_spec_section_prompt(
     your_app_name: str,
     brand_overrides: str,
     frontend_spec: str,
-) -> str:
-    return """Produce only `{filename}` for a frontend-only spec.md for a clone of '{reference_app}'.
-Rename the app to '{your_app_name}' throughout.
+    split: bool = False,
+):
+    cached_prefix = """You are producing one section of a frontend-only spec.md for a clone of '{reference_app}', renamed to '{your_app_name}'.
 Apply these branding overrides: {brand_overrides}
 
 FRONTEND SPEC:
@@ -456,10 +455,17 @@ FRONTEND SPEC:
 
 The frontend input may contain a `## DESIGN TOKENS` block extracted directly
 from the app frames. Use that block as the authoritative design source and map
-its values into this section. Do not output a standalone `## DESIGN TOKENS`
+its values into the requested section. Do not output a standalone `## DESIGN TOKENS`
 section.
 When the UI shows iconography or illustrations, specify them as local SVG
-assets/components instead of emoji characters.
+assets/components instead of emoji characters.""".format(
+        reference_app=reference_app,
+        your_app_name=your_app_name,
+        brand_overrides=brand_overrides,
+        frontend_spec=frontend_spec,
+    )
+
+    suffix = """Produce only `{filename}`.
 
 Do not output the document title. Do not output any top-level `##` sections
 other than:
@@ -468,10 +474,10 @@ other than:
 {instructions}
 """.format(
         filename=section["filename"],
-        reference_app=reference_app,
-        your_app_name=your_app_name,
-        brand_overrides=brand_overrides,
-        frontend_spec=frontend_spec,
         allowed_headings="\n".join(section["top_level_headings"]),
         instructions=section["instructions"],
     )
+
+    if split:
+        return cached_prefix, suffix
+    return cached_prefix + "\n\n" + suffix

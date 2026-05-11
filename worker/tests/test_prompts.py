@@ -85,8 +85,9 @@ def test_spec_sections_require_expo_and_branding_constraints():
     assert "iPhone 15" in app_overview["required_substrings"]
     assert "Expo SDK 54" in implementation_notes["required_substrings"]
     assert "Expo Go" in implementation_notes["required_substrings"]
-    assert "merchant logos" in implementation_notes["required_substrings"]
+    assert "merchant logos" not in implementation_notes["required_substrings"]
     assert "Expo SDK 54" in claude_code_prompt["required_substrings"]
     assert "react-native-svg" in claude_code_prompt["required_substrings"]
     assert "npx expo install" in claude_code_prompt["required_substrings"]
+    assert "merchant logos" not in claude_code_prompt["required_substrings"]
 
