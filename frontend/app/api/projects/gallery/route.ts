@@ -44,14 +44,23 @@ export async function POST(req: NextRequest) {
   // entirely. A `source='comp'` credit is created so the project still has
   // standard audit / refund machinery available.
   if (body?.bypass === true) {
+    // Reject ambiguous requests rather than silently dropping the session_id.
+    // A paid client that erroneously sets bypass=true would otherwise be granted
+    // a free spec while their paid session goes unconsumed.
+    if (typeof body?.session_id === 'string' && body.session_id.trim()) {
+      return NextResponse.json(
+        { error: 'Cannot send both bypass and session_id' },
+        { status: 400 },
+      )
+    }
     const paywallEnabled =
       (process.env.NEXT_PUBLIC_GALLERY_PAYWALL_ENABLED ?? '').replace(/\n/g, '').trim() === 'true'
     if (paywallEnabled) {
       return NextResponse.json({ error: 'Paywall is enabled' }, { status: 402 })
     }
     const email = (body?.email || '').toString().trim().toLowerCase()
-    if (!email) {
-      return NextResponse.json({ error: 'Missing email' }, { status: 400 })
+    if (!email || !email.includes('@')) {
+      return NextResponse.json({ error: 'Invalid email' }, { status: 400 })
     }
     const adminBypass = makeSupabaseServer()
     let bypassUserId: string

@@ -3,8 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-
-const BYPASS_SENTINEL = '__bypass__'
+import { BYPASS_SENTINEL } from './GenerateSpecButton'
 
 type Tab = 'appstore' | 'recording'
 
