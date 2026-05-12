@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="frontend/public/brand/spectr-logotype.png" alt="Spectr" width="360" />
+<img src="assets/spectr-identity.gif" alt="Spectr" width="640" />
 
 ### See an app. Ship an app.
 
@@ -44,7 +44,7 @@ Three ways to install. Pick one — they all share the same vision pipeline and 
 ### 1. MCP server (recommended for Claude Code)
 
 ```bash
-claude mcp add spectr -- uvx --from git+https://github.com/Meliwat/spectr spectr-mcp
+claude mcp add spectr -- uvx spectr-mcp
 ```
 
 Then in any Claude Code conversation, drop an `.mp4` and ask Claude to spec it. Runs on **your** Claude subscription — no API key required.
@@ -52,20 +52,20 @@ Then in any Claude Code conversation, drop an `.mp4` and ask Claude to spec it. 
 ### 2. CLI
 
 ```bash
-npx -y github:Meliwat/spectr generate ./recording.mp4 --app "Duolingo"
+npx -y spectr-cli generate ./recording.mp4 --app "Duolingo"
 ```
 
 Or install globally:
 
 ```bash
-npm install -g github:Meliwat/spectr
+npm install -g spectr-cli
 spectr generate ./recording.mp4 --app "Duolingo"
 ```
 
 ### 3. Claude Code skill
 
 ```bash
-npx -y github:Meliwat/spectr install-skill
+npx -y spectr-cli install-skill
 ```
 
 Drops a `SKILL.md` into `~/.claude/skills/spectr/`. Mention "spec it" or "use Spectr" in any Claude Code conversation with a recording attached and Claude picks up the skill automatically.

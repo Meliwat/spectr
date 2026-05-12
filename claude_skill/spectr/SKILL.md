@@ -33,10 +33,10 @@ Optional, only if the user supplies them:
 
 ### Step 2 — Run `spectr-cli`
 
-Run via Bash. `uvx` resolves and runs the latest CLI directly from the Spectr GitHub repo. The first run installs ffmpeg-python and the worker dependencies into an isolated venv (~30 sec). Subsequent runs are instant.
+Run via Bash. `uvx` resolves and runs the latest CLI from PyPI. The first run installs ffmpeg-python and the worker dependencies into an isolated venv (~30 sec). Subsequent runs are instant.
 
 ```
-uvx --from git+https://github.com/Meliwat/spectr spectr-cli generate \
+uvx --from spectr-mcp spectr-cli generate \
   "<path-to-recording>" \
   --app "<reference-app-name>" \
   --output ./spec.md
