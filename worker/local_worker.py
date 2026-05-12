@@ -44,6 +44,11 @@ def _resize_frame_for_api(path: str) -> str:
     if w > MAX_IMAGE_DIM or h > MAX_IMAGE_DIM:
         scale = MAX_IMAGE_DIM / max(w, h)
         img = img.resize((int(w * scale), int(h * scale)), Image.LANCZOS)
+    # JPEG can't carry alpha or palette. App Store screenshots scraped from the
+    # mzstatic CDN come back as RGBA PNGs; ffmpeg-extracted frames are usually
+    # already RGB but defensive convert keeps every code path safe.
+    if img.mode != "RGB":
+        img = img.convert("RGB")
     buf = io.BytesIO()
     img.save(buf, format="JPEG", quality=85)
     return base64.b64encode(buf.getvalue()).decode()

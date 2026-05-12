@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   PIPELINE_STAGES,
   Project,
@@ -520,6 +520,22 @@ export default function StatusTracker({
     return liveMetrics.etaSeconds ?? STAGE_ETA_SECONDS[project.status] ?? 0
   })
 
+  // Animation target: updated in render via direct ref mutation. Monotonic —
+  // never moves backward. The rAF loop below smoothly lerps displayProgress
+  // toward this target so stage transitions don't visibly jump.
+  const targetProgressRef = useRef<number>(liveMetrics.progress ?? currentProgress)
+  const stageBase = STAGE_PROGRESS[project.status] ?? 0
+  const stageCeiling = STAGE_CEILINGS[project.status] ?? stageBase
+  if (typeof liveMetrics.progress === 'number') {
+    const clamped = Math.min(stageCeiling, Math.max(stageBase, liveMetrics.progress))
+    if (clamped > targetProgressRef.current) {
+      targetProgressRef.current = clamped
+    }
+  }
+  if (stageBase > targetProgressRef.current) {
+    targetProgressRef.current = stageBase
+  }
+
   const currentSubstep = liveMetrics.substep ?? (substeps.length > 0 ? substeps[substepIdx % substeps.length] : null)
   const pipelineStages: Array<{ key: string; label: string }> = isLegacySpecFlow ? LEGACY_PIPELINE_STAGES : PIPELINE_STAGES
   const currentStageKey = isLegacySpecFlow
@@ -550,49 +566,69 @@ export default function StatusTracker({
     return remainingCurrent + remainingFuture
   }, [currentCeiling, currentIdx, currentProgress, displayProgress, isLegacySpecFlow, pipelineStages, project.status])
 
+  // Snap ETA whenever live metrics provide one. Otherwise the rAF loop
+  // decrements it naturally.
   useEffect(() => {
-    const nextProgress = liveMetrics.progress ?? STAGE_PROGRESS[project.status] ?? 0
-    setDisplayProgress(nextProgress)
-    setSubstepIdx(0)
-    setEtaSeconds(liveMetrics.etaSeconds ?? STAGE_ETA_SECONDS[project.status] ?? 0)
+    if (typeof liveMetrics.etaSeconds === 'number') {
+      setEtaSeconds(liveMetrics.etaSeconds)
+    }
+  }, [liveMetrics.etaSeconds])
 
-    if (complete || failed) {
+  // Reset substep index when stage changes so the new stage's rotation
+  // starts from the top.
+  useEffect(() => {
+    setSubstepIdx(0)
+  }, [project.status])
+
+  // Rotate substep text when there are multiple fallback substeps and no
+  // live substep is overriding.
+  useEffect(() => {
+    if (liveMetrics.substep) return
+    if (substeps.length === 0) return
+    const id = window.setInterval(() => {
+      setSubstepIdx(value => (value + 1) % substeps.length)
+    }, 4800)
+    return () => window.clearInterval(id)
+  }, [liveMetrics.substep, substeps.length])
+
+  // Single requestAnimationFrame loop. Smoothly lerps displayProgress toward
+  // targetProgressRef at ~5% of remaining distance per second, with a 0.1%/s
+  // floor so the bar never visibly stalls. No CSS transition on the fill —
+  // we update width 60×/s here. Stage transitions now look continuous instead
+  // of jumping then easing.
+  useEffect(() => {
+    if (complete) {
+      setDisplayProgress(100)
+      setEtaSeconds(0)
+      return
+    }
+    if (failed) {
       return
     }
 
-    let ticks = 0
-    const interval = window.setInterval(() => {
-      ticks += 1
+    let last = performance.now()
+    let rafId = 0
+
+    const tick = (now: number) => {
+      const dt = Math.min(0.1, (now - last) / 1000)
+      last = now
+
       setDisplayProgress(value => {
-        const liveProgress = liveMetrics.progress
-        if (typeof liveProgress === 'number') {
-          const target = Math.min(currentCeiling, liveProgress)
-          if (value >= target) {
-            return target
-          }
-          return Math.min(target, value + Math.max(0.15, (target - value) * 0.45))
-        }
-
-        const ceiling = STAGE_CEILINGS[project.status] ?? value
-        if (value >= ceiling) {
-          return ceiling
-        }
-        const delta = 0.15 + Math.random() * 0.3
-        return Math.min(ceiling, value + delta)
+        const target = Math.min(100, targetProgressRef.current)
+        if (value >= target - 0.02) return target
+        const distance = target - value
+        const speed = Math.max(0.1, distance * 0.05)
+        return Math.min(target, value + speed * dt)
       })
-      setEtaSeconds(value => {
-        if (typeof liveMetrics.etaSeconds === 'number') {
-          return liveMetrics.etaSeconds
-        }
-        return Math.max(0, value - 1)
-      })
-      if (!liveMetrics.substep && substeps.length > 0 && ticks % 4 === 0) {
-        setSubstepIdx(value => (value + 1) % substeps.length)
-      }
-    }, 1200)
 
-    return () => window.clearInterval(interval)
-  }, [complete, currentCeiling, failed, liveMetrics.etaSeconds, liveMetrics.progress, liveMetrics.substep, project.status, substeps.length])
+      setEtaSeconds(value => Math.max(0, value - dt))
+
+      rafId = requestAnimationFrame(tick)
+    }
+
+    rafId = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(rafId)
+  }, [complete, failed])
 
   return (
     <div className="panel space-y-5 p-5" style={{ borderRadius: 16 }}>
@@ -633,7 +669,6 @@ export default function StatusTracker({
         style={{ height: 6, background: 'rgba(255,255,255,0.06)' }}
       >
         <div
-          className="transition-all duration-1000"
           style={{
             width: `${displayProgress}%`,
             height: 6,
