@@ -125,19 +125,6 @@ const SKILL_STEPS: Step[] = [
 
 const STEPS_BY_TAB: Record<TabKey, Step[]> = { mcp: MCP_STEPS, cli: CLI_STEPS, skill: SKILL_STEPS }
 
-function ClaudeMark({ size = 14 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
-      <g fill="#D97757">
-        <ellipse cx="12" cy="12" rx="1.5" ry="10.5" />
-        <ellipse cx="12" cy="12" rx="1.5" ry="10.5" transform="rotate(45 12 12)" />
-        <ellipse cx="12" cy="12" rx="1.5" ry="10.5" transform="rotate(90 12 12)" />
-        <ellipse cx="12" cy="12" rx="1.5" ry="10.5" transform="rotate(135 12 12)" />
-      </g>
-    </svg>
-  )
-}
-
 export default function InstallTabs({ defaultTab = 'mcp' }: InstallTabsProps) {
   const [tab, setTab] = useState<TabKey>(defaultTab)
   const steps = STEPS_BY_TAB[tab]
@@ -161,13 +148,6 @@ export default function InstallTabs({ defaultTab = 'mcp' }: InstallTabsProps) {
               <span className="mcp-tab-label">{t.label}</span>
             </button>
           ))}
-        </div>
-
-        <div className="mcp-agents" aria-label="Supported AI agent">
-          <span className="mcp-agent is-primary">
-            <ClaudeMark />
-            <span>Claude</span>
-          </span>
         </div>
       </div>
 
