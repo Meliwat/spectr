@@ -268,11 +268,25 @@ async function handleAppStore(admin: any, body: any, ctx: SubmitCtx) {
   }
 
   // Prefer iPhone screenshots, fall back to iPad if iPhone gallery is empty.
-  // Some apps (iPad-first, indie, kids/education) ship without iPhone previews
-  // but still have iPad previews that are useful for design extraction.
+  // Some apps (iPad-first, indie, kids/education) ship without iPhone previews.
   const iphoneShots = Array.isArray(app.screenshotUrls) ? app.screenshotUrls : []
   const ipadShots = Array.isArray(app.ipadScreenshotUrls) ? app.ipadScreenshotUrls : []
-  const screenshotUrls: string[] = (iphoneShots.length > 0 ? iphoneShots : ipadShots).slice(0, 20)
+  let screenshotUrls: string[] = (iphoneShots.length > 0 ? iphoneShots : ipadShots).slice(0, 20)
+
+  // Apple has progressively stopped exposing screenshots through the legacy
+  // iTunes Lookup API for popular apps (DoorDash, Instagram, Spotify all return
+  // empty arrays as of 2026). The screenshots ARE still in the App Store web
+  // page HTML — fetch the rendered page and scrape mzstatic.com URLs as a
+  // fallback. This is brittle vs. Apple's HTML changes; if it breaks we'll
+  // see the 422 + log message and can adjust the regex.
+  if (screenshotUrls.length === 0) {
+    console.warn('[gallery] iTunes API returned 0 screenshots — falling back to App Store HTML scrape')
+    screenshotUrls = await scrapeAppStoreScreenshots(rawUrl)
+    if (screenshotUrls.length > 0) {
+      console.info(`[gallery] HTML scrape found ${screenshotUrls.length} screenshots`)
+    }
+  }
+
   if (screenshotUrls.length === 0) {
     await rollbackCredit(admin, ctx.creditId)
     return NextResponse.json(
@@ -417,4 +431,66 @@ async function handleRecording(admin: any, body: any, ctx: SubmitCtx) {
 
 async function rollbackCredit(admin: any, creditId: string) {
   await admin.from('spec_credits').delete().eq('id', creditId)
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// App Store HTML screenshot scrape
+// ───────────────────────────────────────────────────────────────────────────
+//
+// Apple's iTunes Lookup API increasingly returns empty `screenshotUrls`,
+// `ipadScreenshotUrls`, and `appletvScreenshotUrls` arrays for popular apps
+// (DoorDash, Instagram, Spotify all show this as of May 2026). The actual
+// screenshots are embedded in the App Store web page HTML on
+// `apps.apple.com/.../id<NUMBER>` — fetch the rendered page and pull the
+// iPhone screenshot URLs out via regex. Append the standard mzstatic CDN
+// size suffix (`/1290x2796bb.png`, iPhone 6.9" base resolution) to get the
+// full-resolution image.
+//
+// Brittle vs. App Store HTML changes. If Apple restructures the page, this
+// returns [] and the route falls through to the standard 422. Look for
+// `[gallery] iTunes API returned 0 screenshots` warnings in Vercel logs to
+// catch regressions.
+async function scrapeAppStoreScreenshots(appStoreUrl: string): Promise<string[]> {
+  try {
+    const res = await fetch(appStoreUrl, {
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 spectr/1.0',
+      },
+      cache: 'no-store',
+    })
+    if (!res.ok) {
+      console.warn(`[gallery] App Store page fetch failed: ${res.status}`)
+      return []
+    }
+    const html = await res.text()
+
+    // Match mzstatic.com URLs up to (and including) the AppStore-iPhone*-Screen-NN.png
+    // segment; we'll append the size transformation suffix ourselves so we get the
+    // full-resolution image instead of whatever thumbnail Apple inlined.
+    const pattern =
+      /https:\/\/[a-z0-9-]+\.mzstatic\.com\/image\/thumb\/[^"\s]+?\/AppStore-iPhone[\d.]+-Screen-\d+\.png/g
+    const seen = new Set<string>()
+    const matches: string[] = []
+    let m: RegExpExecArray | null
+    while ((m = pattern.exec(html)) !== null) {
+      if (!seen.has(m[0])) {
+        seen.add(m[0])
+        matches.push(m[0])
+      }
+    }
+
+    // Order by screen number so vision analysis sees the narrative flow Apple
+    // designed (intro → core features → onboarding → conversion → ...).
+    matches.sort((a, b) => {
+      const na = parseInt(a.match(/Screen-(\d+)\.png/)?.[1] ?? '99', 10)
+      const nb = parseInt(b.match(/Screen-(\d+)\.png/)?.[1] ?? '99', 10)
+      return na - nb
+    })
+
+    return matches.slice(0, 20).map((u) => `${u}/1290x2796bb.png`)
+  } catch (err: any) {
+    console.error('[gallery] App Store HTML scrape error:', err?.message ?? err)
+    return []
+  }
 }
