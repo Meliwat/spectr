@@ -101,9 +101,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <Link href="/" className="nav-text-link">
                   Gallery
                 </Link>
+                <Link href="/mcp" className="nav-text-link">
+                  MCP
+                </Link>
                 <span className="nav-icon-sep" aria-hidden="true" />
                 <a
-                  href="#"
+                  href="https://github.com/Meliwat/spectr"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="nav-icon-link"
                   aria-label="GitHub"
                 >

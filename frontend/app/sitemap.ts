@@ -13,6 +13,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 1,
     },
+    {
+      url: `${SITE_URL}/mcp`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.95,
+    },
     ...CATEGORIES.map((slug) => ({
       url: `${SITE_URL}/gallery/${slug}`,
       lastModified: now,

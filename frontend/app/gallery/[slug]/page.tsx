@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import SpectrBackground from '../../SpectrBackground'
-import GenerateSpecButton from '../GenerateSpecButton'
 import HeroPhone from '../HeroPhone'
 import {
   APPS,
@@ -1032,12 +1031,9 @@ export default async function GalleryAppPage({ params }: { params: Params }) {
           <p>{copy.pitch}</p>
 
           <div className="ga-ctas">
-            <GenerateSpecButton
-              defaultReferenceApp={name}
-              className="ga-cta-primary"
-            >
-              Generate your own spec ↗
-            </GenerateSpecButton>
+            <Link href="/mcp" className="ga-cta-primary">
+              Generate your own with the MCP ↗
+            </Link>
             <a
               href={specUrl}
               target="_blank"
