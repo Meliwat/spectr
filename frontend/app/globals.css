@@ -669,20 +669,18 @@ body:has(.landing-frame)::-webkit-scrollbar {
 
 .mcp-headline {
   font-size: clamp(32px, 4.4vw, 56px);
-  font-weight: 510;
+  font-weight: 540;
   line-height: 1.02;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.028em;
   margin: 4px 0 0;
   color: var(--text);
   white-space: nowrap;
 }
 
+/* impeccable: never gradient-clip text. Emphasis via solid color + weight. */
 .mcp-grad {
-  background: linear-gradient(120deg, #b0baff 0%, #7170ff 45%, #5e6ad2 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+  color: #b0baff;
+  font-weight: 640;
 }
 
 .mcp-subhead {
@@ -1266,66 +1264,62 @@ body:has(.landing-frame)::-webkit-scrollbar {
   background: rgba(255,255,255,0.32);
 }
 
-/* Horizontal step row (3 tight columns) */
-
+/* Horizontal step row (3 tight columns) — spacing does the grouping,
+ * no card frames, no side-stripes. */
 .mcp-steps-row {
   list-style: none;
   padding: 0;
   margin: 0;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  gap: 36px;
 }
 
+/* impeccable: cards are the lazy answer. Drop borders + flat fills so the
+ * three steps read as numbered sequence (1 → 2 → 3) through spacing and
+ * type hierarchy instead of identical SaaS card frames. */
 .mcp-step-card {
   position: relative;
-  padding: 18px;
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 12px;
-  background: rgba(255,255,255,0.015);
+  padding: 0;
   display: flex;
   flex-direction: column;
   gap: 10px;
   min-width: 0;
-  transition: border-color 0.2s ease, background 0.2s ease;
-}
-
-.mcp-step-card:hover {
-  border-color: rgba(113,112,255,0.2);
-  background: rgba(113,112,255,0.025);
 }
 
 .mcp-step-card-head {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  align-items: baseline;
+  gap: 12px;
   min-width: 0;
 }
 
+/* Numeric marker is doing real hierarchy work now that the card frame is
+ * gone — make it bigger and more confident. */
 .mcp-step-card-num {
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
-  background: rgba(113,112,255,0.16);
-  border: 1px solid rgba(113,112,255,0.28);
-  color: #d4d9ff;
+  align-items: baseline;
+  color: #8a91ff;
   font-family: ui-monospace, SF Mono, Menlo, monospace;
-  font-size: 11px;
-  font-weight: 510;
-  letter-spacing: 0.02em;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
   flex-shrink: 0;
+  line-height: 1;
+}
+
+.mcp-step-card-num::before {
+  content: '0';
+  opacity: 0.45;
 }
 
 .mcp-step-card-title {
-  font-size: 14.5px;
-  font-weight: 510;
-  letter-spacing: -0.01em;
+  font-size: 15.5px;
+  font-weight: 580;
+  letter-spacing: -0.015em;
   color: var(--text);
   margin: 0;
-  line-height: 1.25;
+  line-height: 1.2;
 }
 
 .mcp-step-card-body {

@@ -49,8 +49,8 @@ export default function HomePage() {
             Turn <span className="mcp-grad">Claude</span> into an award-winning iOS designer.
           </h1>
           <p className="mcp-subhead">
-            Connect Spectr to Claude. Drop in any iOS app. Get back a production-ready{' '}
-            <code>spec.md</code> in five minutes — precise enough to build a pixel-perfect clone.
+            Drop in any iOS app. Get back a production-ready{' '}
+            <code>spec.md</code> in five minutes, precise enough to build a pixel-perfect clone.
           </p>
 
           <InstallTabs />
