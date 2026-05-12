@@ -54,7 +54,7 @@ const MCP_STEPS: Step[] = [
     body: (
       <>
         One command. Runs on <strong>your Claude subscription</strong> via the{' '}
-        <code>claude</code> CLI — no API key needed.
+        <code>claude</code> CLI. No API key needed.
       </>
     ),
     command: 'claude mcp add spectr -- uvx spectr-mcp',
@@ -81,8 +81,8 @@ const CLI_STEPS: Step[] = [
     body: (
       <>
         No install step. <code>npx</code> resolves the CLI from npm and runs it.
-        Uses <strong>your Claude subscription</strong> via the <code>claude</code> CLI —
-        no API key needed.
+        Uses <strong>your Claude subscription</strong> via the <code>claude</code> CLI.
+        No API key needed.
       </>
     ),
     command: 'npx -y spectr-cli generate ./recording.mp4 --app "Duolingo"',
@@ -108,7 +108,7 @@ const SKILL_STEPS: Step[] = [
     body: (
       <>
         Drops <code>SKILL.md</code> into <code>~/.claude/skills/spectr/</code>. Runs inside
-        Claude Code on <strong>your Claude subscription</strong> — no API key needed.
+        Claude Code on <strong>your Claude subscription</strong>. No API key needed.
       </>
     ),
     command: 'npx -y spectr-cli install-skill',
