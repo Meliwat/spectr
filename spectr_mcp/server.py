@@ -21,9 +21,16 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server.fastmcp import Context, FastMCP
 
 from .pipeline import generate_spec as _generate_spec_impl
+
+# Heartbeat cadence for long-running tool calls. The MCP client (Claude Code,
+# Cursor, etc.) has a per-request timeout that fires if no traffic flows on the
+# stdio channel — observed default ~60 s. The pipeline takes 5–10 min, so we
+# send a `notifications/message` every HEARTBEAT_INTERVAL_S seconds while the
+# pipeline runs. Any wire activity resets the client's timeout window.
+HEARTBEAT_INTERVAL_S = 25
 
 # stdout is reserved for MCP protocol traffic — log to stderr only.
 logging.basicConfig(
@@ -44,6 +51,7 @@ async def generate_spec(
     brand_colors: Optional[dict] = None,
     max_frames: int = 20,
     output_path: Optional[str] = None,
+    ctx: Context = None,
 ) -> str:
     """Generate a production-ready spec.md from a screen recording.
 
@@ -85,8 +93,37 @@ async def generate_spec(
         confirmation summary (if output_path was written successfully).
     """
     # Run the synchronous, long-running pipeline off the asyncio event loop so
-    # MCP heartbeats and concurrent tool calls keep flowing during the 2-10 min
-    # spec generation.
+    # concurrent tool calls keep flowing. Critically, also run a parallel
+    # heartbeat task that sends `notifications/message` to the client every
+    # HEARTBEAT_INTERVAL_S seconds — without it, the MCP client times out
+    # mid-pipeline and closes stdio with `MCP error -32000: Connection closed`.
+    async def _heartbeat() -> None:
+        if ctx is None:
+            return
+        elapsed = 0
+        try:
+            await ctx.info(
+                f"Spectr: starting pipeline (5–10 min for a typical recording, "
+                f"max_frames={max_frames})."
+            )
+        except Exception:
+            log.debug("initial heartbeat ctx.info failed; client may not accept notifications")
+            return
+        while True:
+            try:
+                await asyncio.sleep(HEARTBEAT_INTERVAL_S)
+            except asyncio.CancelledError:
+                return
+            elapsed += HEARTBEAT_INTERVAL_S
+            try:
+                await ctx.info(
+                    f"Spectr: still working ({elapsed // 60}m{elapsed % 60:02d}s elapsed)…"
+                )
+            except Exception:
+                # The client may have detached; stop pinging.
+                return
+
+    heartbeat_task = asyncio.create_task(_heartbeat())
     try:
         spec_md = await asyncio.to_thread(
             _generate_spec_impl,
@@ -101,6 +138,12 @@ async def generate_spec(
     except Exception as e:
         log.exception("generate_spec failed")
         return f"Pipeline failed: {e}"
+    finally:
+        heartbeat_task.cancel()
+        try:
+            await heartbeat_task
+        except (asyncio.CancelledError, Exception):
+            pass
 
     if output_path:
         try:

@@ -42,7 +42,9 @@ uvx --from spectr-mcp spectr-cli generate \
   --output ./spec.md
 ```
 
-The pipeline takes **5–10 minutes** for a typical recording. It runs ffmpeg for frame extraction, two parallel Claude vision passes for screen + design-token analysis, then 7 spec-section generations in parallel. Tell the user this up front so they don't think the tool is hung.
+**CRITICAL: Pass `timeout: 600000` (10 minutes — the Bash tool maximum) when invoking the command.** The pipeline takes **5–10 minutes** for a typical recording; the Bash tool's default 2-minute timeout will kill it mid-run and leave you with no spec.md. Without an explicit timeout you will see the command get cancelled at the 2-minute mark with no output. Always set the timeout.
+
+The pipeline runs ffmpeg for frame extraction, two parallel Claude vision passes for screen + design-token analysis, then 7 spec-section generations in parallel. Tell the user up front it will take 5–10 minutes so they don't think the tool is hung.
 
 While it runs, the CLI logs progress to stderr. Surface the highlights to the user (frame count, vision-pass status, section count).
 
