@@ -659,18 +659,22 @@ body:has(.landing-frame)::-webkit-scrollbar {
   gap: 22px;
 }
 
+/* Hero text uses the full inner-row width so headline + subhead each fit
+ * on a single line at desktop. Mobile + tablet still wrap naturally via the
+ * clamp() font lower-bound and the @media block at the bottom of this file. */
 .mcp-hero-inner .mcp-headline,
 .mcp-hero-inner .mcp-subhead {
-  max-width: 820px;
+  max-width: none;
 }
 
 .mcp-headline {
-  font-size: clamp(40px, 6vw, 64px);
+  font-size: clamp(32px, 4.4vw, 56px);
   font-weight: 510;
   line-height: 1.02;
   letter-spacing: -0.025em;
   margin: 4px 0 0;
   color: var(--text);
+  white-space: nowrap;
 }
 
 .mcp-grad {
@@ -682,11 +686,11 @@ body:has(.landing-frame)::-webkit-scrollbar {
 }
 
 .mcp-subhead {
-  font-size: clamp(16px, 1.5vw, 19px);
-  line-height: 1.55;
+  font-size: clamp(14px, 1.2vw, 16px);
+  line-height: 1.5;
   color: var(--text-2);
-  max-width: 640px;
   margin: 0;
+  white-space: nowrap;
 }
 
 .mcp-subhead code {
@@ -1085,6 +1089,12 @@ body:has(.landing-frame)::-webkit-scrollbar {
 @media (max-width: 960px) {
   .mcp-hero {
     padding: 64px 0 48px;
+  }
+
+  /* Below 960px the one-line layout doesn't fit — allow natural wrap. */
+  .mcp-headline,
+  .mcp-subhead {
+    white-space: normal;
   }
 
   .mcp-headline {
