@@ -98,11 +98,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <span className="brand-neon-text" aria-hidden="true">Spectr</span>
               </Link>
               <div className="site-nav-links">
-                <Link href="/" className="nav-text-link">
+                <Link href="/gallery" className="nav-text-link">
                   Gallery
-                </Link>
-                <Link href="/mcp" className="nav-text-link">
-                  MCP
                 </Link>
                 <span className="nav-icon-sep" aria-hidden="true" />
                 <a

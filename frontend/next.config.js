@@ -1,14 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  async redirects() {
-    return [
-      {
-        source: '/gallery',
-        destination: '/',
-        permanent: true,
-      },
-    ]
-  },
+  // No top-level redirects. /mcp → / is handled by app/mcp/page.tsx
+  // (a server component that calls permanentRedirect('/')).
 }
 
 module.exports = nextConfig
