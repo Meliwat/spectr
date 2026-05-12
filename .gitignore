@@ -36,6 +36,10 @@ frontend/.claude/
 .superpowers/
 docs/superpowers/
 
+# Founder-only context (kept local, never published)
+CLAUDE.md
+TODOS.md
+
 # Remotion promo build artifacts
 promo/node_modules/
 promo/out/

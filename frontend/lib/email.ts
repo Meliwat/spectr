@@ -19,7 +19,7 @@ export async function sendFounderSampleNotification(args: {
   }
 
   const fromAddress = getEnv('RESEND_FROM') || 'spectr <onboarding@resend.dev>'
-  const founderEmail = 'muhammedeliwat@gmail.com'
+  const founderEmail = getEnv('FOUNDER_EMAIL') || 'hello@spectr.to'
 
   const cliCommand = `cd ~/spectr/worker && python local_worker.py --project-id ${args.projectId}`
 
