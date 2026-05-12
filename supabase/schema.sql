@@ -102,7 +102,7 @@ alter table projects
   drop constraint if exists projects_processing_mode_check;
 alter table projects
   add constraint projects_processing_mode_check
-  check (processing_mode in ('auto', 'manual'));
+  check (processing_mode in ('auto', 'manual', 'gallery'));
 
 create index if not exists projects_mode_status_idx
   on projects(processing_mode, status);
