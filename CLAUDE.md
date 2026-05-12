@@ -12,6 +12,8 @@ The output is not documentation. It is a blueprint — precise enough that a dev
 
 The target user uploads an MP4 of an app they want to clone or draw inspiration from, provides the reference app name, optionally provides brand colors, and receives a `spec.md` that covers screens, design system, navigation, components, and implementation guidance.
 
+Spectr has three surface areas: (1) the hosted web product at `spectr.to` (paid, $19/spec, Stripe + Railway worker), (2) the waitlist landing flow (now merged into the main page), and (3) the **Spectr MCP server** — a free stdio MCP that runs inside AI coding agents (Claude Code, Cursor, Codex). The MCP is documented in the "Spectr MCP Server" section below; it shares the worker's vision pipeline but is DB-free and user-key-driven.
+
 ---
 
 ## Stack
@@ -659,6 +661,9 @@ Local development relies on the CLI fallback. Removing it breaks local dev entir
 **Do not inline prompts in `local_worker.py`.**
 All prompts belong in `worker/prompts/`. The separation exists so prompts can be edited, versioned, and eventually A/B tested without touching pipeline logic.
 
+**Do not re-add the top-level `from supabase import create_client` to `worker/local_worker.py`.**
+It was moved into `get_db()` (commit `3c57245`) so the `spectr_mcp` package can import `worker.local_worker` without pulling supabase + httpx + storage SDK transitive deps into the MCP install. The hosted worker is unaffected — `get_db()` triggers the import on first DB call exactly as before. If you find yourself needing supabase types or symbols at module scope, prefer a `TYPE_CHECKING`-guarded import over a real one.
+
 **Do not add synchronous blocking calls in the FastAPI routes.**
 The worker uses FastAPI background tasks for processing. The `/run` endpoint returns immediately and processing happens asynchronously. Blocking the route would cause Railway to think the worker is unresponsive.
 
@@ -795,6 +800,80 @@ There are three compositions registered in `promo/src/index.tsx`. **SpectrePromo
 The `promo/` directory has its own `node_modules` and is not wired into the frontend build.
 
 **Detailed animation reference**: `promo/ANIMATION_SPEC.md` — 2,238-line spec covering every timing constant (frames + seconds), every color (hex + rgba), every easing config (damping/stiffness/mass), every SVG filter attribute, exact pixel coordinates per component, 24 critical frames annotated, motion principles, layer order, render commands, and implementation notes. Read this before modifying any animation in the promo.
+
+---
+
+## Spectr MCP Server
+
+### What it is
+
+The Spectr MCP server is the **third surface area of Spectr**, alongside the hosted product at `spectr.to` and the waitlist landing flow. It is a stdio MCP (Model Context Protocol) server written in Python, exposed as the `spectr-mcp` console script, that lets any MCP-capable AI coding agent (Claude Code, Cursor, Codex, etc.) generate a Spectr `spec.md` directly from an App Store URL or a local MP4 — without going through the hosted web app.
+
+Lives in `spectr_mcp/` at the repo root. Built on [FastMCP](https://github.com/jlowin/fastmcp). One async tool registered.
+
+### Why it exists
+
+- **Free distribution into AI coding agents.** Developers using Claude Code / Cursor / Codex can install Spectr in seconds and start generating specs inline with whatever they're already building. No browser context-switch, no checkout, no account.
+- **Zero API cost to Spectr.** Users bring their own `ANTHROPIC_API_KEY`. Spectr eats no Anthropic bill for MCP-generated specs — every spec is paid for by the user's own Anthropic account.
+- **Designer customer-dev surface separate from spectr.to.** Lets us see how power users want to invoke Spectr, surfaces feature requests we'd never get from web-only usage, and creates a low-friction top-of-funnel that may eventually convert to paid hosted usage (team workspaces, project history, no-key flows).
+
+### Install / invoke
+
+The canonical install once this lands on master:
+
+```bash
+claude mcp add spectr --env ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY -- uvx --from git+https://github.com/Meliwat/spectr spectr-mcp
+```
+
+`uvx` resolves the package from git, builds an isolated venv, and runs the `spectr-mcp` entry point. The `--env` flag injects the user's Anthropic key into the MCP subprocess.
+
+`ANTHROPIC_API_KEY` is **effectively required**. The shared worker `claude_text()` / `claude_vision()` abstraction supports a Claude CLI fallback for local dev, but the CLI subprocess path is unreliable inside the MCP stdio context (parent process owns stdio, the CLI tries to write to a TTY that doesn't exist). Always install with an API key.
+
+### Architecture
+
+Three files compose the package:
+
+| File | Role |
+|---|---|
+| `spectr_mcp/appstore.py` | Python port of the App Store URL parser + iTunes lookup + HTML preview scraper. Mirrors the TypeScript implementation in `frontend/app/api/projects/gallery/route.ts` so the MCP path and the hosted gallery path produce equivalent screenshot sets from the same input URL. |
+| `spectr_mcp/pipeline.py` | DB-free orchestrator. Imports and composes existing worker functions (`extract_frames`, `deduplicate_frames`, `run_vision_batches`, `generate_sectioned_spec`, `fetch_app_research`) from `worker.local_worker`. No Supabase, no project rows, no realtime — just frames in, `spec.md` string out. |
+| `spectr_mcp/server.py` | FastMCP stdio entry point. Registers a single async tool `generate_spec(...)`. Wraps the synchronous pipeline in `asyncio.to_thread` so MCP heartbeats keep flowing during the 2–10 min pipeline run (otherwise the client would time out or perceive a hang). |
+
+The worker is **imported as a Python package**, not invoked as a subprocess. This works because of two changes that landed alongside the MCP (commits `3c57245` + `32dda13`):
+
+1. New empty `worker/__init__.py` so `worker` resolves as a package and `from worker.local_worker import ...` works from outside the `worker/` directory.
+2. `from supabase import create_client` was moved out of `worker/local_worker.py`'s module top and into the body of `get_db()` — a **lazy import**. This means importing `worker.local_worker` no longer pulls in supabase, httpx, the storage SDK, and their transitive deps. The MCP install stays slim. The hosted worker is unaffected — `get_db()` triggers the import on first DB call exactly as before.
+
+### Tool surface
+
+One tool, `generate_spec`:
+
+```
+generate_spec(
+  source: str,                    # App Store URL OR local MP4 file path
+  reference_app: str | None,      # Defaults to scraped app name when source is App Store URL
+  your_app_name: str | None,      # Optional: name of the app the user is building
+  brand_colors: dict | None,      # Optional: { primary, accent, ... } overrides
+  max_frames: int = 20,           # Cap on unique frames sent to vision
+  output_path: str | None,        # If set, writes spec.md here; else returns the string
+) -> str
+```
+
+The function detects whether `source` is a URL or a file path and routes to the App Store screenshot path or the MP4 frame-extraction path accordingly.
+
+**`max_frames=20` is the default** (down from the original code default of 48). This matches the cap set in Spectr's hosted Railway production (`MAX_FRAMES=20`). Twenty well-chosen frames cover most apps; the cost story is cleaner (~$0.60–$1.20 per spec instead of ~$1.40–$2.00); raising it is fine for visually complex apps with many distinct screens but costs scale roughly linearly.
+
+### Cost
+
+At default `max_frames=20`, expect **~$0.60–$1.20 per spec** on the user's Anthropic account. Vision passes (Haiku 4.5) dominate the per-frame cost. Spec section generation (Sonnet 4.6, 7 sections) adds a fixed tail. Raising `max_frames` scales the vision cost linearly without changing the section cost.
+
+### Tests
+
+30 unit tests live in `spectr_mcp/tests/` (`test_appstore.py`, `test_pipeline.py`). They cover **deterministic paths only**: URL parsing, app ID extraction, country-code detection, HTML scrape selectors, pipeline composition / argument plumbing. Network-bound paths (real iTunes calls, real vision API, real spec generation) are excluded from the unit suite — they belong in an integration tier that doesn't yet exist and would require an Anthropic key in CI.
+
+### Distribution roadmap
+
+Currently git-only — users install via `uvx --from git+...`. PyPI publish + a GitHub release workflow with semver tags are tracked as a **P2** in the new repo-root `TODOS.md`. Until PyPI lands, `git+...` is the install path in all docs and the README inside `spectr_mcp/`.
 
 ---
 
