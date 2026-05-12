@@ -35,7 +35,7 @@ If you have **Claude Code** installed and logged in (`claude login`), you can al
 ### Claude Code
 
 ```bash
-claude mcp add spectr -- uvx --from git+https://github.com/Meliwat/spectr spectr-mcp
+claude mcp add spectr -- uvx spectr-mcp
 ```
 
 Or for local development against this repo:
@@ -49,7 +49,7 @@ claude mcp add spectr -- uvx --from /path/to/spectr spectr-mcp
 Any client that supports MCP stdio servers can launch the local version:
 
 ```bash
-uvx --from git+https://github.com/Meliwat/spectr spectr-mcp
+uvx spectr-mcp
 ```
 
 If you don't have the `claude` CLI installed and authenticated, the MCP needs an `ANTHROPIC_API_KEY` instead — set it in the launching process's environment.

@@ -57,7 +57,7 @@ const MCP_STEPS: Step[] = [
         <code>claude</code> CLI — no API key needed.
       </>
     ),
-    command: 'claude mcp add spectr -- uvx --from git+https://github.com/Meliwat/spectr spectr-mcp',
+    command: 'claude mcp add spectr -- uvx spectr-mcp',
   },
   {
     title: 'Drop a screen recording',

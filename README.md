@@ -44,7 +44,7 @@ Three ways to install. Pick one — they all share the same vision pipeline and 
 ### 1. MCP server (recommended for Claude Code)
 
 ```bash
-claude mcp add spectr -- uvx --from git+https://github.com/Meliwat/spectr spectr-mcp
+claude mcp add spectr -- uvx spectr-mcp
 ```
 
 Then in any Claude Code conversation, drop an `.mp4` and ask Claude to spec it. Runs on **your** Claude subscription — no API key required.
