@@ -36,6 +36,7 @@ Issues = "https://github.com/Meliwat/spectr/issues"
 
 [project.scripts]
 spectr-mcp = "spectr_mcp.server:main"
+spectr-cli = "spectr_mcp.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["spectr_mcp*", "worker*"]

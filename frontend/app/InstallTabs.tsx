@@ -60,57 +60,70 @@ const MCP_STEPS: Step[] = [
     command: 'claude mcp add spectr -- uvx --from git+https://github.com/Meliwat/spectr spectr-mcp',
   },
   {
-    title: 'Ask Claude for a spec',
-    body: 'Drop any App Store URL into the conversation. Spectr scrapes Apple’s preview screenshots and runs vision analysis through your Claude session.',
-    command: 'Generate a spec from apps.apple.com/us/app/duolingo/id570060128',
+    title: 'Drop a screen recording',
+    body: (
+      <>
+        Drag an <code>.mp4</code> / <code>.mov</code> of any iOS app into your Claude conversation
+        and tell Claude what app it is. Vision runs through your Claude session.
+      </>
+    ),
+    command: 'Generate a spec from ./recording.mp4 for the Duolingo app',
   },
   {
     title: 'Read the spec.md',
-    body: '2–10 minutes later, a 7-section markdown spec lands on disk. Exact hex codes, exact font weights, every screen state.',
+    body: '5–10 minutes later, a 7-section markdown spec lands on disk. Exact hex codes, exact font weights, every screen state.',
   },
 ]
 
 const CLI_STEPS: Step[] = [
   {
-    title: 'Install the CLI',
+    title: 'No install needed',
     body: (
       <>
-        One command. Runs locally on <strong>your Claude subscription</strong> via the{' '}
-        <code>claude</code> CLI — no API key needed.
+        <code>uvx</code> resolves the latest CLI from GitHub on first run.{' '}
+        <a
+          href="https://docs.astral.sh/uv/getting-started/installation/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >Install <code>uv</code></a>{' '}first if you haven't yet — one curl line on macOS or Linux.
       </>
     ),
-    command: 'npm install -g @spectr/cli',
+    command: 'curl -LsSf https://astral.sh/uv/install.sh | sh',
   },
   {
-    title: 'Point at any iOS app',
-    body: 'Pass an App Store URL or a local MP4 screen recording. Vision runs through your Claude session.',
-    command: 'spectr generate <app-store-url>',
+    title: 'Run it against a recording',
+    body: (
+      <>
+        Single command. Uses your <strong>Claude subscription</strong> via the{' '}
+        <code>claude</code> CLI — no API key needed. Scriptable for cron, batch jobs, CI.
+      </>
+    ),
+    command: 'uvx --from git+https://github.com/Meliwat/spectr spectr-cli generate ./recording.mp4 --app "Duolingo"',
   },
   {
     title: 'Read the spec.md',
-    body: '2–10 minutes later, a 7-section markdown spec lands in your working directory. Exact tokens, every screen state.',
+    body: 'Spec lands at ./spec.md by default. Pass -o to choose a different path. Exact tokens, every screen state.',
   },
 ]
 
 const SKILL_STEPS: Step[] = [
   {
-    title: 'Add the Spectr skill',
+    title: 'Install the Spectr skill',
     body: (
       <>
         Drops <code>SKILL.md</code> into <code>~/.claude/skills/spectr/</code>. Runs inside
         Claude Code on <strong>your Claude subscription</strong> — no API key needed.
       </>
     ),
-    command: 'npx skills add spectr-ai/skills',
+    command: 'curl -fsSL https://raw.githubusercontent.com/Meliwat/spectr/master/claude_skill/install.sh | bash',
   },
   {
-    title: 'Drop frames into chat',
-    body: 'A folder of pre-extracted iOS frames, screenshots from your phone, design comps — anything vertical and iOS-shaped.',
+    title: 'Drop a recording in chat',
+    body: 'Drag an .mp4 / .mov of any iOS app into Claude Code and mention "spec it" or "use Spectr". Claude picks up the skill automatically.',
   },
   {
-    title: 'Invoke the skill',
-    body: 'Claude Code calls the skill, runs vision passes, writes spec.md to disk in your project.',
-    command: '/spectr',
+    title: 'Spectr handles the rest',
+    body: 'The skill extracts frames, runs vision passes, writes spec.md to disk. Same 7-section output as the MCP and CLI paths.',
   },
 ]
 

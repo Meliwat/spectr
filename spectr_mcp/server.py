@@ -39,13 +39,13 @@ mcp = FastMCP("spectr")
 @mcp.tool()
 async def generate_spec(
     source: str,
-    reference_app: Optional[str] = None,
+    reference_app: str,
     your_app_name: Optional[str] = None,
     brand_colors: Optional[dict] = None,
     max_frames: int = 20,
     output_path: Optional[str] = None,
 ) -> str:
-    """Generate a production-ready spec.md from an App Store URL or local MP4.
+    """Generate a production-ready spec.md from a screen recording.
 
     The spec is a structured 7-section markdown document (~80-150KB) covering
     app overview, navigation architecture, screen specifications, component
@@ -53,27 +53,28 @@ async def generate_spec(
     notes, and a Claude Code prompt the developer can paste to build the clone.
     Targets Expo SDK 54 / React Native / iPhone 15 baseline.
 
-    Pipeline cost is billed to the caller's ANTHROPIC_API_KEY. Typical run:
-    2-5 min for App Store URLs, 5-10 min for MP4 recordings.
+    Pipeline runs on the user's Claude subscription via the `claude` CLI by
+    default (no API key needed). If ANTHROPIC_API_KEY is set in the env,
+    uses the SDK path instead. Typical run: 5–10 min per MP4.
 
     Args:
-        source: One of:
-            - An App Store URL (https://apps.apple.com/us/app/.../id123456789)
-            - A bare app id ("id123456789" or "123456789")
-            - An absolute path to a local MP4 screen recording.
-          App Store URLs use 5-10 screenshots Apple already published.
-          MP4 paths use up to 48 deduplicated frames from the recording.
-        reference_app: Display name of the source app. Auto-detected from
-            App Store metadata when source is a URL. REQUIRED for MP4 input.
-        your_app_name: Name of the clone the developer is building. Defaults
-            to reference_app.
+        source: Absolute path to a local screen recording. Accepted formats:
+            .mp4, .mov, .m4v. Anything you can phone-mirror / simulator-
+            capture / desktop-record works. The pipeline extracts unique
+            frames via ffmpeg scene-change detection + perceptual-hash
+            dedup, so a 5-minute recording yields ~15-25 unique frames.
+        reference_app: Display name of the app the recording shows.
+            REQUIRED — the spec uses it for section headings, navigation
+            anchor names, and the Claude Code build prompt.
+        your_app_name: Name of the clone the developer is building.
+            Defaults to reference_app.
         brand_colors: Optional dict of brand color overrides (e.g.
             {"primary": "#FF5722"}). Tells the spec to bias toward these
             values instead of the source app's palette.
-        max_frames: Cap on frames sent to vision analysis. Default 20 (matches
-            Spectr's hosted production setting — covers most apps cleanly).
-            Raise to 30-48 for complex apps with many distinct screens; each
-            +10 frames roughly +50% vision cost.
+        max_frames: Cap on frames sent to vision analysis. Default 20
+            (covers most app flows cleanly). Raise to 30-48 for complex
+            apps with many distinct screens; each +10 frames roughly
+            +50% vision cost.
         output_path: Optional absolute path to write the spec.md to. If
             provided, the tool writes the file and returns a short summary
             (recommended — keeps the calling LLM's context window small).
