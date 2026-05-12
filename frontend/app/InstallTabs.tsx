@@ -81,12 +81,17 @@ const MCP_STEPS: Step[] = [
 const CLI_STEPS: Step[] = [
   {
     title: 'Install the CLI',
-    body: 'One command. Pulls the npm package and registers the spectr binary.',
+    body: (
+      <>
+        One command. Runs locally on <strong>your Claude subscription</strong> via the{' '}
+        <code>claude</code> CLI — no API key needed.
+      </>
+    ),
     command: 'npm install -g @spectr/cli',
   },
   {
     title: 'Point at any iOS app',
-    body: 'Pass an App Store URL or a local MP4 screen recording.',
+    body: 'Pass an App Store URL or a local MP4 screen recording. Vision runs through your Claude session.',
     command: 'spectr generate <app-store-url>',
   },
   {
@@ -100,18 +105,19 @@ const SKILL_STEPS: Step[] = [
     title: 'Add the Spectr skill',
     body: (
       <>
-        Drops <code>SKILL.md</code> into <code>~/.claude/skills/spectr/</code>. Works inside any Claude Code conversation.
+        Drops <code>SKILL.md</code> into <code>~/.claude/skills/spectr/</code>. Runs inside
+        Claude Code on <strong>your Claude subscription</strong> — no API key needed.
       </>
     ),
     command: 'npx skills add spectr-ai/skills',
   },
   {
     title: 'Drop frames into chat',
-    body: 'A folder of pre-extracted iOS frames, screenshots from your phone, design comps, anything vertical.',
+    body: 'A folder of pre-extracted iOS frames, screenshots from your phone, design comps — anything vertical and iOS-shaped.',
   },
   {
     title: 'Invoke the skill',
-    body: 'Claude Code calls into the skill, runs vision passes, writes spec.md to disk.',
+    body: 'Claude Code calls the skill, runs vision passes, writes spec.md to disk in your project.',
     command: '/spectr',
   },
 ]
@@ -156,18 +162,10 @@ export default function InstallTabs({ defaultTab = 'mcp' }: InstallTabsProps) {
           ))}
         </div>
 
-        <div className="mcp-agents" aria-label="Supported AI agents">
+        <div className="mcp-agents" aria-label="Supported AI agent">
           <span className="mcp-agent is-primary">
             <ClaudeMark />
             <span>Claude</span>
-          </span>
-          <span className="mcp-agent">
-            <span className="mcp-agent-dot" aria-hidden="true" />
-            <span>Cursor</span>
-          </span>
-          <span className="mcp-agent">
-            <span className="mcp-agent-dot" aria-hidden="true" />
-            <span>Codex</span>
           </span>
         </div>
       </div>
