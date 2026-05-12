@@ -150,13 +150,27 @@ Do not break this abstraction. Do not add SDK-specific or CLI-specific logic out
 
 ### Key Pages
 
-- `/` — Spectr MCP install landing page. Hero with copy-to-clipboard install command, 3-step how-it-works, 6-card feature grid, Claude Code conversation example, cost callout (Claude subscription OR API key), requirements table, final CTA to gallery. This is the primary growth surface — the MCP is the front door of the product. Lives at `frontend/app/page.tsx` + `frontend/app/CopyableCommand.tsx`.
+- `/` — Spectr install landing page. Higgsfield-style layout with aurora background. Hero headline ("Turn Claude Code into an award-winning iOS designer") + **horizontal install section**: top row has three tab pills (MCP / CLI / Skill) on the left and agent-compatibility badges (Claude primary, Cursor + Codex secondary) on the right; below the tabs, **3 step cards laid out horizontally** (numbered 01/02/03) that swap content when the active tab changes — no vertical scrolling needed to see all steps. Below the install section: 6-card "What you get" feature grid, 6-card "Built for the work" use-case section (competitive analysis, design handoff, audit, reverse-engineering, onboarding, prototyping), terminal-styled Claude Code conversation example, 6-question FAQ accordion, and a full-width final CTA. The MCP tab shows a Claude connector URL flow (`https://mcp.spectr.to`) with steps: Open Claude settings → Add custom connector named "Spectr" → paste URL → Connect and sign in. This is the primary growth surface. Lives at `frontend/app/page.tsx` + `frontend/app/InstallTabs.tsx` + `frontend/app/FAQ.tsx` + `frontend/app/CopyableCommand.tsx`. **Important: all three install paths shown on the homepage are aspirational — see "Homepage Install Paths: Current Reality" below.**
 - `/gallery` — Public showcase of example specs. Plain grid of app cards organized by category; each card links to `/gallery/[slug]`. No hero on this page. Was at `/` until the MCP took the homepage; lives at `frontend/app/gallery/page.tsx`.
 - `/gallery/[slug]` — Per-app detail page: MacBook-scroll–style hero phone reveal, then app description and links. All 8 slugs pre-rendered via `generateStaticParams`.
 - `/mcp` — 308 permanent redirect to `/` (preserved for crawlers and any external links that pointed at `/mcp` during the brief window — minutes — the MCP install page lived there).
 - `/app` — Upload form. UploadZone + BrandingForm + submission to `/api/projects`.
 - `/app/projects` — Project list. Server-rendered, last 50 projects.
 - `/app/projects/[id]` — Project detail. Realtime status, log polling, download links.
+
+### Homepage Install Paths: Current Reality
+
+The homepage shows three polished install tabs (MCP / CLI / Skill), but **none of the advertised install endpoints are live yet** (as of 2026-05-12, PR #11). The page promises a UX that requires backend work to fulfill:
+
+| Tab | What the page shows | What actually works | What's needed |
+|---|---|---|---|
+| **MCP** | `https://mcp.spectr.to` Claude connector URL (3-step: Settings → Add connector → Connect) | **Code ready, deploy pending.** `spectr-mcp --http` now runs the streamable-http transport; `mcp_server/Dockerfile` is ready for Railway. Need to (1) create Railway service pointing at `mcp_server/Dockerfile`, (2) set `ANTHROPIC_API_KEY` on it, (3) point `mcp.spectr.to` DNS at the Railway domain. See `mcp_server/README.md`. | DNS + Railway service creation (manual) |
+| **CLI** | `npm install -g @spectr/cli` | **Not published.** No `@spectr/cli` package exists on npm | Publish a thin Node wrapper around `uvx --from git+...spectr-mcp` as `@spectr/cli` |
+| **Skill** | `npx skills add spectr-ai/skills` | **Not published.** No `spectr-ai/skills` package or org exists | Publish a `spectr-ai/skills` repo with SKILL.md, register with the skills registry |
+
+The local stdio install (`claude mcp add spectr -- uvx --from git+...`) still works as a developer fallback. The hosted MCP at `mcp.spectr.to` is the primary public-facing install once the Railway service is up.
+
+**Hosted MCP cost note:** Once the connector goes live, every spec generated through it bills Anthropic to Spectr's own API key (set on the Railway service), not the user's. Plan for ~$0.60-1.20 per spec. Open to the public without rate limiting = open to abuse. See `mcp_server/README.md` for mitigations (IP-based rate limit, Anthropic monthly cap, eventual auth).
 
 ### Gallery Architecture
 

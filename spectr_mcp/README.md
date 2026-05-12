@@ -16,9 +16,21 @@ One tool, `generate_spec(source, ...)`:
 
 Typical run: 2–5 min for App Store URLs, 5–10 min for MP4 recordings.
 
-## Install
+## Two ways to install
 
-If you have **Claude Code** installed and logged in (`claude login`), the MCP runs on your existing Claude subscription — no API key needed.
+### Hosted (recommended) — Claude web app connector
+
+Open Claude → Settings → Connectors → Add a custom connector → paste:
+
+```
+https://mcp.spectr.to
+```
+
+No key, no install, no env vars. The hosted MCP runs on Spectr's Anthropic key; you just paste the URL and start asking Claude to generate specs.
+
+### Local (developer install) — stdio via Claude Code
+
+If you have **Claude Code** installed and logged in (`claude login`), you can also run the MCP locally as a stdio subprocess. Uses your existing Claude Pro/Max subscription — no API key needed.
 
 ### Claude Code
 
@@ -32,15 +44,29 @@ Or for local development against this repo:
 claude mcp add spectr -- uvx --from /path/to/spectr spectr-mcp
 ```
 
-### Other clients (Cursor, Codex, custom)
+### Other clients (Cursor, Codex, custom MCP hosts)
 
-Any client that supports MCP stdio servers can launch:
+Any client that supports MCP stdio servers can launch the local version:
 
 ```bash
 uvx --from git+https://github.com/Meliwat/spectr spectr-mcp
 ```
 
 If you don't have the `claude` CLI installed and authenticated, the MCP needs an `ANTHROPIC_API_KEY` instead — set it in the launching process's environment.
+
+Or use the **hosted** version at `https://mcp.spectr.to` if your client supports remote MCP connectors over HTTP.
+
+## Self-hosting the HTTP server
+
+The same package runs the streamable-http transport for hosted deployments:
+
+```bash
+spectr-mcp --http --port 8000
+# Or with env var
+SPECTR_MCP_HTTP=1 PORT=8000 spectr-mcp
+```
+
+Set `ANTHROPIC_API_KEY` in the process env. See [`../mcp_server/README.md`](../mcp_server/README.md) for the Dockerfile + Railway deployment recipe used to host `mcp.spectr.to`.
 
 ## Requirements
 
