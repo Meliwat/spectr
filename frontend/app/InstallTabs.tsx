@@ -14,7 +14,7 @@ const TABS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
     key: 'mcp',
     label: 'MCP',
     icon: (
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
         <rect x="2" y="4" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
         <path d="M5 7.5h6M5 10h4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
       </svg>
@@ -24,14 +24,8 @@ const TABS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
     key: 'cli',
     label: 'CLI',
     icon: (
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-        <path
-          d="M2 5l3 3-3 3M7 11h7"
-          stroke="currentColor"
-          strokeWidth="1.6"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M2 5l3 3-3 3M7 11h7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     ),
   },
@@ -39,13 +33,8 @@ const TABS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
     key: 'skill',
     label: 'Skill',
     icon: (
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-        <path
-          d="M4 3h6l2.5 2.5V13a1 1 0 01-1 1H4a1 1 0 01-1-1V4a1 1 0 011-1z"
-          stroke="currentColor"
-          strokeWidth="1.4"
-          strokeLinejoin="round"
-        />
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M4 3h6l2.5 2.5V13a1 1 0 01-1 1H4a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
         <path d="M10 3v2.5h2.5" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
       </svg>
     ),
@@ -56,34 +45,34 @@ type Step = {
   title: string
   body: React.ReactNode
   command?: string
+  link?: { label: string; href: string }
 }
 
 const MCP_STEPS: Step[] = [
   {
-    title: 'Add Spectr to Claude Code',
+    title: 'Open Claude settings',
     body: (
       <>
-        One command. Works in Claude Code, Cursor, Codex, or any MCP-capable client.
+        Launch the app or open <strong>claude.ai</strong> and go to
       </>
     ),
-    command: 'claude mcp add spectr -- uvx --from git+https://github.com/Meliwat/spectr spectr-mcp',
+    link: { label: 'Settings → Connectors', href: 'https://claude.ai/settings/connectors' },
   },
   {
-    title: 'Point at any iOS app',
+    title: 'Add a custom connector',
     body: (
       <>
-        Drop an App Store URL into the conversation. Spectr scrapes the screenshots Apple
-        already publishes and runs vision analysis.
+        Name it <strong>Spectr</strong> and paste the URL:
       </>
     ),
-    command: 'Generate a spec from apps.apple.com/us/app/duolingo/id570060128',
+    command: 'https://mcp.spectr.to',
   },
   {
-    title: 'Read the spec.md',
+    title: 'Connect and sign in',
     body: (
       <>
-        2–10 minutes later, a 7-section markdown spec lands on disk. Exact hex codes,
-        exact font weights, every screen state.
+        Click <strong>Add → Connect</strong>, sign in with your Spectr account —
+        you're all set. Ask Claude to generate a spec from any App Store URL.
       </>
     ),
   },
@@ -91,65 +80,53 @@ const MCP_STEPS: Step[] = [
 
 const CLI_STEPS: Step[] = [
   {
-    title: 'Install ffmpeg + clone',
-    body: 'Frame extraction needs ffmpeg. The repo ships the extract.py tool used by the rest of Spectr.',
-    command: 'brew install ffmpeg && git clone https://github.com/Meliwat/spectr ~/spectr',
+    title: 'Install the CLI',
+    body: 'One command. Pulls the npm package and registers the spectr binary.',
+    command: 'npm install -g @spectr/cli',
   },
   {
-    title: 'Extract unique frames',
-    body: (
-      <>
-        Feed it any MP4 — phone mirror, simulator capture, desktop recording.
-        Scene-change detection + perceptual hashing dedupes to a clean set.
-      </>
-    ),
-    command: 'python ~/spectr/worker/extract.py --mp4 ./rec.mp4 --app "Duolingo"',
+    title: 'Point at any iOS app',
+    body: 'Pass an App Store URL or a local MP4 screen recording.',
+    command: 'spectr generate <app-store-url>',
   },
   {
-    title: 'Hand the frames off',
-    body: (
-      <>
-        Drag the resulting <code>frames/</code> folder into Claude Code and invoke{' '}
-        <code>/spectr</code>. Or pipe the output into your own pipeline.
-      </>
-    ),
+    title: 'Read the spec.md',
+    body: '2–10 minutes later, a 7-section markdown spec lands in your working directory. Exact tokens, every screen state.',
   },
 ]
 
 const SKILL_STEPS: Step[] = [
   {
-    title: 'Install Claude Code',
+    title: 'Add the Spectr skill',
     body: (
       <>
-        The skill runs inside Claude Code. The MCP install bundles it into{' '}
-        <code>~/.claude/skills/spectr/</code> automatically.
+        Drops <code>SKILL.md</code> into <code>~/.claude/skills/spectr/</code>. Works inside any Claude Code conversation.
       </>
     ),
+    command: 'npx skills add spectr-ai/skills',
   },
   {
     title: 'Drop frames into chat',
-    body: 'Any folder of iOS-shaped screen frames works — extract.py output, screenshots from your phone, design comps, anything vertical.',
+    body: 'A folder of pre-extracted iOS frames, screenshots from your phone, design comps, anything vertical.',
   },
   {
     title: 'Invoke the skill',
-    body: 'Claude Code calls into the skill, runs the same vision passes, writes spec.md to disk.',
+    body: 'Claude Code calls into the skill, runs vision passes, writes spec.md to disk.',
     command: '/spectr',
   },
 ]
 
-const STEPS_BY_TAB: Record<TabKey, Step[]> = {
-  mcp: MCP_STEPS,
-  cli: CLI_STEPS,
-  skill: SKILL_STEPS,
-}
+const STEPS_BY_TAB: Record<TabKey, Step[]> = { mcp: MCP_STEPS, cli: CLI_STEPS, skill: SKILL_STEPS }
 
-function ClaudeMark() {
+function ClaudeMark({ size = 14 }: { size?: number }) {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        d="M12 1 L13.3 10.4 L22.6 12 L13.3 13.6 L12 23 L10.7 13.6 L1.4 12 L10.7 10.4 Z"
-        fill="#D97757"
-      />
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
+      <g fill="#D97757">
+        <ellipse cx="12" cy="12" rx="1.5" ry="10.5" />
+        <ellipse cx="12" cy="12" rx="1.5" ry="10.5" transform="rotate(45 12 12)" />
+        <ellipse cx="12" cy="12" rx="1.5" ry="10.5" transform="rotate(90 12 12)" />
+        <ellipse cx="12" cy="12" rx="1.5" ry="10.5" transform="rotate(135 12 12)" />
+      </g>
     </svg>
   )
 }
@@ -205,11 +182,26 @@ export default function InstallTabs({ defaultTab = 'mcp' }: InstallTabsProps) {
         <ol className="mcp-steps-row">
           {steps.map((step, i) => (
             <li key={i} className="mcp-step-card">
-              <span className="mcp-step-card-num">{String(i + 1).padStart(2, '0')}</span>
-              <h3 className="mcp-step-card-title">{step.title}</h3>
+              <div className="mcp-step-card-head">
+                <span className="mcp-step-card-num">{i + 1}</span>
+                <h3 className="mcp-step-card-title">{step.title}</h3>
+              </div>
               <p className="mcp-step-card-body">{step.body}</p>
               {step.command ? (
                 <CopyableCommand value={step.command} label="Copy" />
+              ) : null}
+              {step.link ? (
+                <a
+                  className="mcp-step-link"
+                  href={step.link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {step.link.label}
+                  <svg width="11" height="11" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M5 3h8v8M13 3L4 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </a>
               ) : null}
             </li>
           ))}
