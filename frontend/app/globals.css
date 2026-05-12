@@ -1132,33 +1132,41 @@ body:has(.landing-frame)::-webkit-scrollbar {
 
 .mcp-tabs-wrap {
   width: 100%;
-  max-width: 880px;
+  max-width: 1100px;
   margin-top: 10px;
+}
+
+/* Top row: tabs (left) + supported-agents pills (right) */
+
+.mcp-tabs-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 18px;
 }
 
 .mcp-tabs {
   display: inline-flex;
   flex-wrap: wrap;
-  gap: 6px;
-  padding: 5px;
+  gap: 4px;
+  padding: 4px;
   border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 10px;
+  border-radius: 9px;
   background: rgba(8,9,10,0.7);
-  margin-bottom: 22px;
 }
 
 .mcp-tab {
-  position: relative;
   display: inline-flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
-  padding: 10px 18px;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 13px;
   border: 1px solid transparent;
-  border-radius: 7px;
+  border-radius: 6px;
   background: transparent;
   color: var(--text-2);
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 510;
   letter-spacing: -0.005em;
   cursor: pointer;
@@ -1172,27 +1180,24 @@ body:has(.landing-frame)::-webkit-scrollbar {
 }
 
 .mcp-tab.is-active {
-  background: rgba(113,112,255,0.16);
-  border-color: rgba(113,112,255,0.4);
-  color: #e6e9ff;
-  box-shadow: 0 0 0 1px rgba(113,112,255,0.18), 0 6px 16px -6px rgba(94,106,210,0.45);
+  background: #ffffff;
+  border-color: #ffffff;
+  color: #0a0a0c;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 6px 14px -6px rgba(255,255,255,0.18);
+}
+
+.mcp-tab-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  color: currentColor;
 }
 
 .mcp-tab-label {
-  font-size: 14px;
+  font-size: 13.5px;
   letter-spacing: 0;
-}
-
-.mcp-tab-sub {
-  font-size: 10px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.4);
-  font-weight: 510;
-}
-
-.mcp-tab.is-active .mcp-tab-sub {
-  color: rgba(176,186,255,0.7);
 }
 
 .mcp-tab-panel {
@@ -1204,75 +1209,135 @@ body:has(.landing-frame)::-webkit-scrollbar {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Step flow inside the tab panel */
+/* Supported-agents pills */
 
-.mcp-steps-flow {
+.mcp-agents {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.mcp-agent {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 13px;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 9px;
+  background: rgba(8,9,10,0.7);
+  color: rgba(255,255,255,0.45);
+  font-size: 13.5px;
+  font-weight: 510;
+  letter-spacing: -0.005em;
+}
+
+.mcp-agent.is-primary {
+  background: #ffffff;
+  border-color: #ffffff;
+  color: #0a0a0c;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 6px 14px -6px rgba(255,255,255,0.18);
+}
+
+.mcp-agent-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.35);
+}
+
+/* Horizontal step row (3 columns) */
+
+.mcp-steps-row {
   list-style: none;
   padding: 0;
   margin: 0;
   display: grid;
-  gap: 18px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
 }
 
-.mcp-step-flow {
-  display: grid;
-  grid-template-columns: 56px 1fr;
-  gap: 18px;
-  align-items: flex-start;
+.mcp-step-card {
+  position: relative;
+  padding: 22px 22px 22px;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.015);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  transition: border-color 0.2s ease, background 0.2s ease;
 }
 
-.mcp-step-flow-num {
+.mcp-step-card:hover {
+  border-color: rgba(113,112,255,0.22);
+  background: rgba(113,112,255,0.025);
+}
+
+.mcp-step-card-num {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  background: linear-gradient(180deg, rgba(113,112,255,0.18) 0%, rgba(94,106,210,0.06) 100%);
-  border: 1px solid rgba(113,112,255,0.25);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(113,112,255,0.2) 0%, rgba(94,106,210,0.06) 100%);
+  border: 1px solid rgba(113,112,255,0.28);
   color: #d4d9ff;
   font-family: ui-monospace, SF Mono, Menlo, monospace;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 510;
   letter-spacing: 0.04em;
   box-shadow: 0 0 0 1px rgba(113,112,255,0.04) inset, 0 6px 14px -8px rgba(94,106,210,0.5);
 }
 
-.mcp-step-flow-body {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 0;
-}
-
-.mcp-step-flow-title {
-  font-size: 17px;
+.mcp-step-card-title {
+  font-size: 16px;
   font-weight: 510;
   letter-spacing: -0.01em;
   color: var(--text);
   margin: 0;
 }
 
-.mcp-step-flow-text {
-  font-size: 14.5px;
+.mcp-step-card-body {
+  font-size: 14px;
   line-height: 1.55;
   color: var(--text-2);
   margin: 0;
-  max-width: 640px;
+  flex: 1;
 }
 
-.mcp-step-flow-text code {
+.mcp-step-card-body code {
   font-family: ui-monospace, SF Mono, Menlo, monospace;
-  font-size: 13px;
-  padding: 1px 6px;
+  font-size: 12.5px;
+  padding: 1px 5px;
   border-radius: 4px;
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.06);
   color: var(--text);
 }
 
-.mcp-step-flow-body .mcp-cmd {
+.mcp-step-card .mcp-cmd {
   margin-top: 4px;
+}
+
+.mcp-step-card .mcp-cmd-label {
+  padding: 9px 14px 0;
+  font-size: 10px;
+}
+
+.mcp-step-card .mcp-cmd-text {
+  padding: 10px 88px 14px 14px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.mcp-step-card .mcp-cmd-copy {
+  top: 9px;
+  right: 9px;
+  padding: 5px 9px;
+  font-size: 11px;
 }
 
 /* ───────────────────────── Use cases section ───────────────────────── */
@@ -1495,14 +1560,13 @@ body:has(.landing-frame)::-webkit-scrollbar {
     grid-template-columns: 1fr 1fr;
   }
 
-  .mcp-step-flow {
-    grid-template-columns: 48px 1fr;
-    gap: 14px;
+  .mcp-steps-row {
+    grid-template-columns: 1fr;
   }
 
-  .mcp-step-flow-num {
-    width: 40px;
-    height: 40px;
+  .mcp-tabs-header {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 
@@ -1517,8 +1581,7 @@ body:has(.landing-frame)::-webkit-scrollbar {
 
   .mcp-tab {
     padding: 9px 8px;
-    gap: 1px;
-    align-items: center;
+    justify-content: center;
     text-align: center;
   }
 
@@ -1526,19 +1589,24 @@ body:has(.landing-frame)::-webkit-scrollbar {
     font-size: 13px;
   }
 
-  .mcp-tab-sub {
+  .mcp-agents {
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+
+  .mcp-agents::-webkit-scrollbar {
     display: none;
   }
 
-  .mcp-step-flow {
-    grid-template-columns: 36px 1fr;
-    gap: 12px;
+  .mcp-agent {
+    flex-shrink: 0;
   }
 
-  .mcp-step-flow-num {
-    width: 32px;
-    height: 32px;
-    font-size: 11px;
+  .mcp-step-card {
+    padding: 18px 18px 18px;
   }
 
   .mcp-usecases {
