@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="frontend/public/brand/spectr-logotype.png" alt="Spectr" width="360" />
+<img src="assets/spectr-identity.gif" alt="Spectr" width="640" />
 
 ### See an app. Ship an app.
 
