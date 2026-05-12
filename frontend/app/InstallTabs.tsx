@@ -77,28 +77,24 @@ const MCP_STEPS: Step[] = [
 
 const CLI_STEPS: Step[] = [
   {
-    title: 'No install needed',
+    title: 'Run it from npx',
     body: (
       <>
-        <code>uvx</code> resolves the latest CLI from GitHub on first run.{' '}
-        <a
-          href="https://docs.astral.sh/uv/getting-started/installation/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >Install <code>uv</code></a>{' '}first if you haven't yet — one curl line on macOS or Linux.
+        No install step. <code>npx</code> resolves the CLI from GitHub and runs it.
+        Uses <strong>your Claude subscription</strong> via the <code>claude</code> CLI —
+        no API key needed.
       </>
     ),
-    command: 'curl -LsSf https://astral.sh/uv/install.sh | sh',
+    command: 'npx -y github:Meliwat/spectr generate ./recording.mp4 --app "Duolingo"',
   },
   {
-    title: 'Run it against a recording',
+    title: 'Or install globally',
     body: (
       <>
-        Single command. Uses your <strong>Claude subscription</strong> via the{' '}
-        <code>claude</code> CLI — no API key needed. Scriptable for cron, batch jobs, CI.
+        Want a persistent <code>spectr</code> command? Install once, run anywhere.
       </>
     ),
-    command: 'uvx --from git+https://github.com/Meliwat/spectr spectr-cli generate ./recording.mp4 --app "Duolingo"',
+    command: 'npm install -g github:Meliwat/spectr',
   },
   {
     title: 'Read the spec.md',
@@ -115,7 +111,7 @@ const SKILL_STEPS: Step[] = [
         Claude Code on <strong>your Claude subscription</strong> — no API key needed.
       </>
     ),
-    command: 'curl -fsSL https://raw.githubusercontent.com/Meliwat/spectr/master/claude_skill/install.sh | bash',
+    command: 'npx -y github:Meliwat/spectr install-skill',
   },
   {
     title: 'Drop a recording in chat',

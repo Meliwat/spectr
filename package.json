@@ -1,0 +1,41 @@
+{
+  "name": "spectr-cli",
+  "version": "0.1.0",
+  "description": "Turn a screen recording into a production-ready spec.md. CLI + Claude Code skill installer.",
+  "bin": {
+    "spectr": "bin/spectr.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "bin/",
+    "claude_skill/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node bin/spectr.js --help >/dev/null && echo 'OK'"
+  },
+  "keywords": [
+    "spectr",
+    "spec",
+    "claude-code",
+    "screen-recording",
+    "mp4",
+    "ios-spec",
+    "design-tokens",
+    "react-native",
+    "expo"
+  ],
+  "author": "Spectr",
+  "license": "MIT",
+  "homepage": "https://www.spectr.to",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Meliwat/spectr.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Meliwat/spectr/issues"
+  }
+}
