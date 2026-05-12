@@ -80,12 +80,12 @@ const CLI_STEPS: Step[] = [
     title: 'Run it from npx',
     body: (
       <>
-        No install step. <code>npx</code> resolves the CLI from GitHub and runs it.
+        No install step. <code>npx</code> resolves the CLI from npm and runs it.
         Uses <strong>your Claude subscription</strong> via the <code>claude</code> CLI —
         no API key needed.
       </>
     ),
-    command: 'npx -y github:Meliwat/spectr generate ./recording.mp4 --app "Duolingo"',
+    command: 'npx -y spectr-cli generate ./recording.mp4 --app "Duolingo"',
   },
   {
     title: 'Or install globally',
@@ -94,7 +94,7 @@ const CLI_STEPS: Step[] = [
         Want a persistent <code>spectr</code> command? Install once, run anywhere.
       </>
     ),
-    command: 'npm install -g github:Meliwat/spectr',
+    command: 'npm install -g spectr-cli',
   },
   {
     title: 'Read the spec.md',
@@ -111,7 +111,7 @@ const SKILL_STEPS: Step[] = [
         Claude Code on <strong>your Claude subscription</strong> — no API key needed.
       </>
     ),
-    command: 'npx -y github:Meliwat/spectr install-skill',
+    command: 'npx -y spectr-cli install-skill',
   },
   {
     title: 'Drop a recording in chat',

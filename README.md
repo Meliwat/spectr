@@ -52,20 +52,20 @@ Then in any Claude Code conversation, drop an `.mp4` and ask Claude to spec it. 
 ### 2. CLI
 
 ```bash
-npx -y github:Meliwat/spectr generate ./recording.mp4 --app "Duolingo"
+npx -y spectr-cli generate ./recording.mp4 --app "Duolingo"
 ```
 
 Or install globally:
 
 ```bash
-npm install -g github:Meliwat/spectr
+npm install -g spectr-cli
 spectr generate ./recording.mp4 --app "Duolingo"
 ```
 
 ### 3. Claude Code skill
 
 ```bash
-npx -y github:Meliwat/spectr install-skill
+npx -y spectr-cli install-skill
 ```
 
 Drops a `SKILL.md` into `~/.claude/skills/spectr/`. Mention "spec it" or "use Spectr" in any Claude Code conversation with a recording attached and Claude picks up the skill automatically.
