@@ -1376,16 +1376,17 @@ body:has(.landing-frame)::-webkit-scrollbar {
 }
 
 .mcp-step-card .mcp-cmd-text {
-  padding: 8px 76px 12px 12px;
-  font-size: 12.5px;
-  line-height: 1.45;
-  white-space: pre;
-  overflow-x: auto;
+  padding: 8px 12px 36px 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre-wrap;
   word-break: normal;
+  overflow-wrap: break-word;
 }
 
 .mcp-step-card .mcp-cmd-copy {
-  top: 7px;
+  top: auto;
+  bottom: 7px;
   right: 7px;
   padding: 4px 8px;
   font-size: 11px;

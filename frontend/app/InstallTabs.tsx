@@ -50,31 +50,23 @@ type Step = {
 
 const MCP_STEPS: Step[] = [
   {
-    title: 'Open Claude settings',
+    title: 'Add Spectr to Claude Code',
     body: (
       <>
-        Launch the app or open <strong>claude.ai</strong> and go to
+        One command. Runs on <strong>your Claude subscription</strong> via the{' '}
+        <code>claude</code> CLI — no API key needed.
       </>
     ),
-    link: { label: 'Settings → Connectors', href: 'https://claude.ai/settings/connectors' },
+    command: 'claude mcp add spectr -- uvx --from git+https://github.com/Meliwat/spectr spectr-mcp',
   },
   {
-    title: 'Add a custom connector',
-    body: (
-      <>
-        Name it <strong>Spectr</strong> and paste the URL:
-      </>
-    ),
-    command: 'https://mcp.spectr.to',
+    title: 'Ask Claude for a spec',
+    body: 'Drop any App Store URL into the conversation. Spectr scrapes Apple’s preview screenshots and runs vision analysis through your Claude session.',
+    command: 'Generate a spec from apps.apple.com/us/app/duolingo/id570060128',
   },
   {
-    title: 'Connect and sign in',
-    body: (
-      <>
-        Click <strong>Add → Connect</strong>, sign in with your Spectr account —
-        you're all set. Ask Claude to generate a spec from any App Store URL.
-      </>
-    ),
+    title: 'Read the spec.md',
+    body: '2–10 minutes later, a 7-section markdown spec lands on disk. Exact hex codes, exact font weights, every screen state.',
   },
 ]
 
