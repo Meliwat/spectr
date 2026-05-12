@@ -129,7 +129,9 @@ def fetch_app_research(reference_app: str) -> str:
     return "\n".join(lines).rstrip() + "\n"
 
 
-from supabase import create_client
+# Lazy supabase import — see get_db(). Keeps `import worker.local_worker`
+# usable from contexts that don't have supabase installed (e.g. the MCP
+# server), which only call the DB-free pipeline helpers.
 from dotenv import load_dotenv
 from services.ffmpeg import extract_frames, compress_video
 from services.dedup import deduplicate_frames
@@ -416,6 +418,7 @@ LEGACY_PROJECT_SELECT_COLUMNS = ",".join(
 def get_db():
     global _db
     if _db is None:
+        from supabase import create_client  # lazy: only needed for DB-bound flows
         _db = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_SERVICE_KEY"))
     return _db
 

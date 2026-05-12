@@ -39,3 +39,8 @@ docs/superpowers/
 # Remotion promo build artifacts
 promo/node_modules/
 promo/out/
+
+# Python packaging artifacts (spectr-mcp)
+build/
+dist/
+*.egg-info/
