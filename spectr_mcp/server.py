@@ -1,12 +1,19 @@
-"""MCP stdio server exposing Spectr's spec generator as a tool.
+"""MCP server exposing Spectr's spec generator as a tool.
 
-Run via the `spectr-mcp` console script (configured in pyproject.toml).
-Typically launched by an MCP client (Claude Code, Cursor, etc.) and not
-invoked directly.
+Two transports:
+
+- **stdio** (default) — local-only. Launched by an MCP client (Claude Code,
+  Cursor, etc.) as a subprocess. `spectr-mcp` console script with no args.
+
+- **streamable-http** — hosted. Lets users add Spectr to Claude via the web
+  app's "Settings → Connectors → Add a custom connector" flow with the
+  server URL. `spectr-mcp --http` or set `SPECTR_MCP_HTTP=1`. Reads `$PORT`
+  for the listen port (Railway / Heroku / Fly convention).
 """
 
 from __future__ import annotations
 
+import argparse
 import asyncio
 import logging
 import os
@@ -113,8 +120,44 @@ async def generate_spec(
 
 
 def main() -> None:
-    """Entrypoint for the `spectr-mcp` console script."""
-    mcp.run()
+    """Entrypoint for the `spectr-mcp` console script.
+
+    Detects transport via flag or env:
+      - `--http` flag OR `SPECTR_MCP_HTTP=1` env var → streamable-http on $PORT
+      - otherwise → stdio (local subprocess launched by an MCP client)
+    """
+    parser = argparse.ArgumentParser(description="Spectr MCP server")
+    parser.add_argument(
+        "--http",
+        action="store_true",
+        help="Run the streamable-http transport instead of stdio. Required for hosted deployments where Claude / Cursor / Codex add the server as a remote connector URL.",
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=int(os.getenv("PORT", "8000")),
+        help="Port to bind in --http mode. Defaults to $PORT (Railway / Heroku convention) or 8000.",
+    )
+    parser.add_argument(
+        "--host",
+        default=os.getenv("HOST", "0.0.0.0"),
+        help="Interface to bind in --http mode. Defaults to 0.0.0.0 (all interfaces).",
+    )
+    args, _ = parser.parse_known_args()
+
+    use_http = args.http or os.getenv("SPECTR_MCP_HTTP", "").lower() in ("1", "true", "yes")
+
+    if use_http:
+        # streamable-http transport: exposes an HTTP endpoint that MCP clients
+        # connect to via the "Add a custom connector" flow in Claude.
+        log.info("Starting Spectr MCP (streamable-http) on %s:%d", args.host, args.port)
+        mcp.settings.host = args.host
+        mcp.settings.port = args.port
+        mcp.run(transport="streamable-http")
+    else:
+        # stdio: launched as subprocess by the client. No host/port involved.
+        log.info("Starting Spectr MCP (stdio)")
+        mcp.run()
 
 
 if __name__ == "__main__":
