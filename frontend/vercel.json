@@ -1,5 +1,11 @@
 {
   "buildCommand": "next build",
   "outputDirectory": ".next",
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "crons": [
+    {
+      "path": "/api/keep-alive",
+      "schedule": "0 12 * * 1,4"
+    }
+  ]
 }

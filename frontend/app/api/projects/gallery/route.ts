@@ -267,13 +267,16 @@ async function handleAppStore(admin: any, body: any, ctx: SubmitCtx) {
     return NextResponse.json({ error: 'App not found on the App Store.' }, { status: 404 })
   }
 
-  const screenshotUrls: string[] = Array.isArray(app.screenshotUrls)
-    ? app.screenshotUrls.slice(0, 20)
-    : []
+  // Prefer iPhone screenshots, fall back to iPad if iPhone gallery is empty.
+  // Some apps (iPad-first, indie, kids/education) ship without iPhone previews
+  // but still have iPad previews that are useful for design extraction.
+  const iphoneShots = Array.isArray(app.screenshotUrls) ? app.screenshotUrls : []
+  const ipadShots = Array.isArray(app.ipadScreenshotUrls) ? app.ipadScreenshotUrls : []
+  const screenshotUrls: string[] = (iphoneShots.length > 0 ? iphoneShots : ipadShots).slice(0, 20)
   if (screenshotUrls.length === 0) {
     await rollbackCredit(admin, ctx.creditId)
     return NextResponse.json(
-      { error: 'This app has no iPhone preview screenshots available.' },
+      { error: 'This app has no preview screenshots on the App Store. Try the screen-recording option instead.' },
       { status: 422 }
     )
   }

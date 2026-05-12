@@ -49,6 +49,81 @@ def _resize_frame_for_api(path: str) -> str:
     return base64.b64encode(buf.getvalue()).decode()
 
 
+def fetch_app_research(reference_app: str) -> str:
+    """Best-effort iTunes lookup for the reference app. Returns a markdown
+    research block that gets prepended to frontend_spec so the spec section
+    prompts have App Store context (description, release notes, genre,
+    developer, scale signals). Free public API, no key needed.
+
+    Returns empty string on any failure — caller must treat empty as "no
+    research available, proceed with vision output only".
+    """
+    import urllib.parse
+    import urllib.request
+    name = (reference_app or "").strip()
+    if not name:
+        return ""
+    try:
+        params = urllib.parse.urlencode({
+            "term": name,
+            "country": "us",
+            "entity": "software",
+            "limit": 1,
+        })
+        url = f"https://itunes.apple.com/search?{params}"
+        req = urllib.request.Request(url, headers={"User-Agent": "spectr/1.0"})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read())
+    except Exception as exc:
+        log.warning("fetch_app_research: iTunes lookup failed for %r: %s", name, exc)
+        return ""
+
+    results = data.get("results") or []
+    if not results:
+        return ""
+
+    app = results[0]
+    display_name = app.get("trackName") or name
+    developer = app.get("artistName") or app.get("sellerName")
+    genre = app.get("primaryGenreName")
+    rating = app.get("averageUserRating")
+    rating_count = app.get("userRatingCount") or 0
+    version = app.get("version")
+    bundle_id = app.get("bundleId")
+    release_date = (app.get("currentVersionReleaseDate") or "")[:10]
+    description = (app.get("description") or "").strip()
+    release_notes = (app.get("releaseNotes") or "").strip()
+    languages = (app.get("languageCodesISO2A") or [])[:10]
+
+    lines = ["## App Store Research"]
+    header = f"**App:** {display_name}"
+    if version:
+        header += f" (v{version})"
+    lines.append(header)
+    if developer:
+        lines.append(f"**Developer:** {developer}")
+    if genre:
+        lines.append(f"**Category:** {genre}")
+    if rating and rating_count:
+        lines.append(f"**Rating:** {rating}/5 across {rating_count:,} reviews")
+    if release_date:
+        lines.append(f"**Last Updated:** {release_date}")
+    if languages:
+        lines.append(f"**Languages:** {', '.join(languages)}")
+    if bundle_id:
+        lines.append(f"**Bundle ID:** `{bundle_id}`")
+    lines.append("")
+    if description:
+        lines.append("### App Description (from App Store listing)")
+        lines.append(description)
+        lines.append("")
+    if release_notes:
+        lines.append("### Recent Release Notes")
+        lines.append(release_notes)
+        lines.append("")
+    return "\n".join(lines).rstrip() + "\n"
+
+
 from supabase import create_client
 from dotenv import load_dotenv
 from services.ffmpeg import extract_frames, compress_video
@@ -860,6 +935,15 @@ def process_project_spec(project_id: str):
                 + "\n\n---\n## DESIGN TOKENS\n---\n\n"
                 + "\n\n---\n\n".join(design_token_specs)
             )
+
+            research_block = fetch_app_research(reference_app)
+            if research_block:
+                frontend_spec = research_block + "\n---\n\n" + frontend_spec
+                project_log(
+                    project_id,
+                    f"        + {len(research_block)} chars of App Store research prepended",
+                )
+
             update_project(project_id, {"frontend_spec": frontend_spec})
             project_log(
                 project_id,
@@ -1004,6 +1088,15 @@ def process_project_from_screenshots(project_id: str):
                 + "\n\n---\n## DESIGN TOKENS\n---\n\n"
                 + "\n\n---\n\n".join(design_token_specs)
             )
+
+            research_block = fetch_app_research(reference_app)
+            if research_block:
+                frontend_spec = research_block + "\n---\n\n" + frontend_spec
+                project_log(
+                    project_id,
+                    f"        + {len(research_block)} chars of App Store research prepended",
+                )
+
             update_project(project_id, {"frontend_spec": frontend_spec})
             project_log(
                 project_id,
