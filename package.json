@@ -1,6 +1,6 @@
 {
   "name": "spectr-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Turn a screen recording into a production-ready spec.md. CLI + Claude Code skill installer.",
   "bin": {
     "spectr": "bin/spectr.js"
