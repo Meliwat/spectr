@@ -141,29 +141,6 @@ The worker pipeline is the heart of the project. Everything else — MCP, CLI, s
 
 ---
 
-## Self-hosting the web product
-
-The hosted product at [spectr.to](https://www.spectr.to) is the same code. To run it yourself:
-
-```bash
-# Frontend
-cd frontend && npm install && npm run dev
-
-# Worker (separate terminal)
-cd worker && pip install -r requirements.txt
-uvicorn main:app --reload --port 8001
-```
-
-Set `WORKER_URL=http://localhost:8001` in `frontend/.env.local` and fill the rest from [`.env.example`](.env.example).
-
-Stack:
-
-- **Frontend:** Next.js 14 App Router + Tailwind → Vercel
-- **Worker:** Python 3.11 + FastAPI + ffmpeg → Railway (auto-deploys via [`worker/nixpacks.toml`](worker/nixpacks.toml))
-- **DB + storage + realtime:** Supabase — run [`supabase/schema.sql`](supabase/schema.sql) on a new project, create a `spectr-uploads` bucket, enable Realtime on `projects`
-
----
-
 ## Contributing
 
 Issues and PRs welcome. A few principles to follow:
