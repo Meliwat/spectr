@@ -150,12 +150,13 @@ Do not break this abstraction. Do not add SDK-specific or CLI-specific logic out
 
 ### Key Pages
 
-- `/` — Landing page. Static marketing, hero, animated stat cards.
+- `/` — Spectr MCP install landing page. Hero with copy-to-clipboard install command, 3-step how-it-works, 6-card feature grid, Claude Code conversation example, cost callout (Claude subscription OR API key), requirements table, final CTA to gallery. This is the primary growth surface — the MCP is the front door of the product. Lives at `frontend/app/page.tsx` + `frontend/app/CopyableCommand.tsx`.
+- `/gallery` — Public showcase of example specs. Plain grid of app cards organized by category; each card links to `/gallery/[slug]`. No hero on this page. Was at `/` until the MCP took the homepage; lives at `frontend/app/gallery/page.tsx`.
+- `/gallery/[slug]` — Per-app detail page: MacBook-scroll–style hero phone reveal, then app description and links. All 8 slugs pre-rendered via `generateStaticParams`.
+- `/mcp` — 308 permanent redirect to `/` (preserved for crawlers and any external links that pointed at `/mcp` during the brief window — minutes — the MCP install page lived there).
 - `/app` — Upload form. UploadZone + BrandingForm + submission to `/api/projects`.
 - `/app/projects` — Project list. Server-rendered, last 50 projects.
 - `/app/projects/[id]` — Project detail. Realtime status, log polling, download links.
-- `/gallery` — Public showcase of example specs. Plain grid of 8 app cards; each card links to `/gallery/[slug]`. No hero on this page.
-- `/gallery/[slug]` — Per-app detail page: MacBook-scroll–style hero phone reveal, then app description and links. All 8 slugs pre-rendered via `generateStaticParams`.
 
 ### Gallery Architecture
 
@@ -177,9 +178,11 @@ The hero phone reveal requires `overflow-x: clip` on the outer scroll container 
 
 **Nav clearance**: `.hero-sticky` uses `top: 72px` and `height: calc(100vh - 72px)` so the sticky viewport sits below the nav bar. Without this offset, the phone bleeds into the nav as it scales past 1.0 in phase 2. If the nav height ever changes from 72px, update both values in `HeroPhone.tsx`.
 
-### Generate-Your-Own-Spec Flow (gallery modal)
+### Generate-Your-Own-Spec Flow (gallery → MCP redirect)
 
-Every `/gallery/[slug]` page has a gradient CTA **"Generate your own spec"** next to the GitHub spec link. Clicking it opens `GenerateSpecModal` — a client component with two tabs:
+**Current state (as of 2026-05-12):** Every `/gallery/[slug]` page has a gradient CTA **"Generate your own with the MCP ↗"** that links to `/mcp`. The previous Stripe checkout modal (`GenerateSpecModal` + `GenerateSpecButton`) is **disabled but not deleted** — the components remain on disk but are no longer rendered from gallery slug pages. To re-enable the modal flow, re-add `<GenerateSpecButton>` to `gallery/[slug]/page.tsx`.
+
+**Previous modal flow (retained code, not active):** `GenerateSpecModal` is a client component with two tabs:
 
 - **App Store URL** — paste any `apps.apple.com/.../id123456789` link. Backend parses the app ID, hits the iTunes lookup API (`https://itunes.apple.com/lookup?id=<id>&country=<cc>`), downloads the preview screenshots in parallel, and uploads them to `spectr-uploads/<project_id>/screenshots/NNN.jpg`. Faster + cheaper path (5–10 shots), thinner coverage than a real recording.
 - **Screen recording** — reuses the existing signed-upload flow (`/api/waitlist/upload` → `waitlist-videos` bucket), then the same gallery endpoint copies the MP4 to `spectr-uploads` and creates a project with `processing_mode='auto'` so the existing MP4 pipeline handles it. More comprehensive coverage than the App Store path.
@@ -205,12 +208,12 @@ Files:
 
 SEO is implemented via Next.js App Router `metadata` exports and `generateMetadata`. Decisions:
 
-**Indexed routes**: `/`, `/gallery`, and all 8 `/gallery/[slug]` pages (airbnb, cal-ai, doordash, duolingo, instagram, spotify, tiktok, uber). Each has full OG tags, canonical URL, per-app title/description/keywords (5 per page), and appears in `sitemap.ts`. Gallery detail pages also have JSON-LD `CreativeWork` + `BreadcrumbList` structured data and rich body copy (tagline H2, blurb, pitch paragraph, 6 screens documented, 4 info cards).
+**Indexed routes**: `/`, `/gallery`, `/mcp`, and all 8 `/gallery/[slug]` pages (airbnb, cal-ai, doordash, duolingo, instagram, spotify, tiktok, uber). Each has full OG tags, canonical URL, per-app title/description/keywords (5 per page), and appears in `sitemap.ts`. `/mcp` is at priority 0.95. Gallery detail pages also have JSON-LD `CreativeWork` + `BreadcrumbList` structured data and rich body copy (tagline H2, blurb, pitch paragraph, 6 screens documented, 4 info cards).
 
 **Noindexed routes**: `/app/*` (authenticated user area), `/login`, `/admin`, `/p/[id]` (public project view by token — unlisted, not crawled). Noindex is applied via a shared `app/app/layout.tsx` for the entire `/app/*` subtree, and per-page `metadata` exports on the others.
 
 **New SEO files**:
-- `app/sitemap.ts` — exports all 10 URLs: `/`, `/gallery`, and the 8 gallery detail slugs
+- `app/sitemap.ts` — exports all 11 URLs: `/`, `/gallery`, `/mcp`, and the 8 gallery detail slugs
 - `app/robots.ts` — disallows `/api`, `/app`, `/admin`, `/login`, `/p`, `/auth`, `/spectr-enter`
 - `app/opengraph-image.tsx` — dynamic 1200×630 OG image (Next.js image generation)
 
@@ -814,20 +817,24 @@ Lives in `spectr_mcp/` at the repo root. Built on [FastMCP](https://github.com/j
 ### Why it exists
 
 - **Free distribution into AI coding agents.** Developers using Claude Code / Cursor / Codex can install Spectr in seconds and start generating specs inline with whatever they're already building. No browser context-switch, no checkout, no account.
-- **Zero API cost to Spectr.** Users bring their own `ANTHROPIC_API_KEY`. Spectr eats no Anthropic bill for MCP-generated specs — every spec is paid for by the user's own Anthropic account.
+- **Zero API cost to Spectr.** Users bring their own credentials — either via the `claude` CLI (Claude Pro/Max subscription) or an `ANTHROPIC_API_KEY`. Spectr eats no Anthropic bill for MCP-generated specs.
 - **Designer customer-dev surface separate from spectr.to.** Lets us see how power users want to invoke Spectr, surfaces feature requests we'd never get from web-only usage, and creates a low-friction top-of-funnel that may eventually convert to paid hosted usage (team workspaces, project history, no-key flows).
 
 ### Install / invoke
 
-The canonical install once this lands on master:
+The canonical install:
 
 ```bash
-claude mcp add spectr --env ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY -- uvx --from git+https://github.com/Meliwat/spectr spectr-mcp
+claude mcp add spectr -- uvx --from git+https://github.com/Meliwat/spectr spectr-mcp
 ```
 
-`uvx` resolves the package from git, builds an isolated venv, and runs the `spectr-mcp` entry point. The `--env` flag injects the user's Anthropic key into the MCP subprocess.
+`uvx` resolves the package from git, builds an isolated venv, and runs the `spectr-mcp` entry point.
 
-`ANTHROPIC_API_KEY` is **effectively required**. The shared worker `claude_text()` / `claude_vision()` abstraction supports a Claude CLI fallback for local dev, but the CLI subprocess path is unreliable inside the MCP stdio context (parent process owns stdio, the CLI tries to write to a TTY that doesn't exist). Always install with an API key.
+**No `--env ANTHROPIC_API_KEY` required for Claude Code users.** The MCP subprocess inherits no env vars from Claude Code (Claude Code launches it cleanly), but the `claude` CLI inside the worker authenticates via `~/.claude/credentials.json` (file-based, not env-based), so any user who has run `claude login` once has the credentials picked up automatically. The fallback path in `worker.local_worker.claude_text()` shells out to the CLI and uses the user's subscription.
+
+If a user prefers token billing (or is using a non-Claude-Code MCP host like Cursor without the `claude` CLI installed), they can set `ANTHROPIC_API_KEY` in their env and the SDK path takes over. The worker checks `os.getenv("ANTHROPIC_API_KEY")` first; if present, SDK wins; otherwise CLI fallback.
+
+The earlier guidance that `ANTHROPIC_API_KEY` was "effectively required" was a misread of the CLI subprocess behavior — the CLI auth path works fine in MCP stdio context because nothing about CLI auth depends on stdio (it reads a credentials file). The earlier `--env ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY` install command still works (for paying-by-token users) but is no longer the default.
 
 ### Architecture
 

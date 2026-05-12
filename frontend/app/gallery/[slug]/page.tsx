@@ -1011,7 +1011,7 @@ export default async function GalleryAppPage({ params }: { params: Params }) {
         <SpectrBackground />
 
         <div className="ga-topback">
-          <Link href="/" prefetch={false}>
+          <Link href="/gallery" prefetch={false}>
             <span className="arr">←</span> Back to Gallery
           </Link>
         </div>
@@ -1031,7 +1031,7 @@ export default async function GalleryAppPage({ params }: { params: Params }) {
           <p>{copy.pitch}</p>
 
           <div className="ga-ctas">
-            <Link href="/mcp" className="ga-cta-primary">
+            <Link href="/" className="ga-cta-primary">
               Generate your own with the MCP ↗
             </Link>
             <a
@@ -1086,7 +1086,7 @@ export default async function GalleryAppPage({ params }: { params: Params }) {
         </section>
 
         <nav className="ga-below">
-          <Link href="/" className="ga-link" prefetch={false}>
+          <Link href="/gallery" className="ga-link" prefetch={false}>
             ← Back to gallery
           </Link>
           <a

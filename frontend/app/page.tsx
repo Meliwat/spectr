@@ -1,298 +1,218 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import SpectrBackground from './SpectrBackground'
-import { TITLES, fetchPhone, type AppSlug } from './gallery/apps'
-import {
-  CATEGORIES,
-  CATEGORY_APPS,
-  CATEGORY_LABELS,
-  type CategorySlug,
-} from './gallery/categories'
-import { PHONE_CARD_CSS } from './gallery/PhoneCard'
+import CopyableCommand from './CopyableCommand'
 
-const SITE_URL = (process.env.SITE_URL || 'https://www.spectr.to').replace(/\/$/, '')
+const SITE_URL = 'https://www.spectr.to'
 
 export const metadata: Metadata = {
-  title: 'Spectr — Live iOS design blueprints by category',
+  title: 'Spectr — generate iOS app specs from inside Claude Code',
   description:
-    'Browse live iOS design blueprints by category — Social, Messaging, Travel, Music, Video, Food, and more. 30 apps including Airbnb, Instagram, Spotify, TikTok, Uber, ChatGPT, Notion, Netflix.',
-  alternates: { canonical: '/' },
+    'Drop in the Spectr MCP. Hand it an App Store URL or a screen recording. Get a production-ready spec.md back in 5 minutes — precise enough for Claude Code to build a clone from. Free, runs on your Claude subscription.',
+  alternates: { canonical: SITE_URL },
   openGraph: {
-    url: SITE_URL,
-    title: 'Spectr — Live iOS design blueprints by category',
+    title: 'Spectr — generate iOS app specs from inside Claude Code',
     description:
-      'Browse live iOS design blueprints by category — Social, Messaging, Travel, Music, Video, Food, and more.',
-  },
-}
-
-const collectionSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'CollectionPage',
-  name: 'Spectr Gallery',
-  description:
-    'Live iOS design blueprints grouped by category.',
-  url: SITE_URL,
-  creator: {
-    '@type': 'Organization',
-    name: 'Spectr',
+      'Drop in the MCP. Point at any app. Get a complete spec.md back in 5 minutes. Free, local, runs on your Claude subscription.',
     url: SITE_URL,
+    type: 'website',
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Spectr — generate iOS app specs from inside Claude Code',
+    description:
+      'Drop in the MCP. Point at any app. Get a complete spec.md back in 5 minutes.',
+  },
+  keywords: [
+    'MCP server',
+    'Model Context Protocol',
+    'Claude Code MCP',
+    'Cursor MCP',
+    'app spec generator',
+    'React Native spec',
+    'Expo spec',
+    'design tokens extraction',
+    'iOS app clone',
+    'reverse engineering UI',
+    'iOS design blueprint',
+  ],
 }
 
-type StackEntry = { slug: AppSlug; name: string; doc: string | null }
+const INSTALL_CMD = `claude mcp add spectr -- uvx --from git+https://github.com/Meliwat/spectr spectr-mcp`
 
-async function buildStack(cat: CategorySlug): Promise<StackEntry[]> {
-  const apps = CATEGORY_APPS[cat].slice(0, 3)
-  return Promise.all(
-    apps.map(async (slug) => ({
-      slug,
-      name: TITLES[slug],
-      doc: await fetchPhone(slug),
-    })),
-  )
-}
+const EXAMPLE_CONVERSATION = `you  ›  Generate a spec from
+       https://apps.apple.com/us/app/duolingo/id570060128
+       and save it to ./duolingo-spec.md
 
-export default async function HomePage() {
-  const stacks = await Promise.all(
-    CATEGORIES.map(async (cat) => ({
-      cat,
-      label: CATEGORY_LABELS[cat],
-      total: CATEGORY_APPS[cat].length,
-      previews: await buildStack(cat),
-    })),
-  )
+cc   ›  ↪ spectr.generate_spec({
+            source: "https://apps.apple.com/us/app/duolingo/...",
+            output_path: "./duolingo-spec.md"
+          })
 
+         ⏱  Scraping App Store screenshots…
+         ⏱  Vision pass: screen analysis (20 frames)
+         ⏱  Vision pass: design tokens (20 frames)
+         ⏱  Writing 7 spec sections in 4 parallel lanes
+         ✓  Done in 4m 32s
+
+         Spec written to ./duolingo-spec.md
+         (124,560 chars, 7 top-level sections).
+
+you  ›  Read it and scaffold the React Native clone
+       in apps/duo-clone/`
+
+export default function HomePage() {
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }}
-      />
-
-      <style dangerouslySetInnerHTML={{ __html: `
-        ${PHONE_CARD_CSS}
-
-        .cat-page {
-          position: relative;
-          min-height: calc(100dvh - 72px);
-          overflow-x: clip;
-          background: radial-gradient(ellipse 180% 100% at 50% -20%,
-            #0d0e18 0%, #07080f 40%, #010102 100%);
-          padding: 56px 24px 120px;
-        }
-        .cat-inner {
-          position: relative;
-          z-index: 3;
-          max-width: 1180px;
-          margin: 0 auto;
-        }
-        .cat-head {
-          text-align: center;
-          margin-bottom: 72px;
-        }
-        .cat-eyebrow {
-          display: inline-block;
-          font-size: 11px;
-          letter-spacing: 0.24em;
-          text-transform: uppercase;
-          color: rgba(160,170,255,0.75);
-          margin-bottom: 14px;
-        }
-        .cat-title {
-          font-size: clamp(32px, 4.2vw, 52px);
-          font-weight: 520;
-          line-height: 1.05;
-          letter-spacing: -0.03em;
-          color: #f7f8f8;
-          margin: 0 0 10px;
-          text-shadow:
-            0 0 60px rgba(113,112,255,0.18),
-            0 0 120px rgba(113,112,255,0.06);
-        }
-        .cat-sub {
-          font-size: 15px;
-          line-height: 1.55;
-          color: rgba(208,214,224,0.72);
-          max-width: 560px;
-          margin: 0 auto;
-        }
-
-        .cat-grid {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 96px 36px;
-          justify-items: center;
-        }
-        @media (min-width: 640px) {
-          .cat-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-        @media (min-width: 1024px) {
-          .cat-grid { grid-template-columns: repeat(3, 1fr); }
-        }
-
-        .cat-cell {
-          width: 100%;
-          max-width: 260px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 24px;
-          text-decoration: none;
-          color: inherit;
-        }
-        .cat-stack {
-          position: relative;
-          width: 100%;
-          aspect-ratio: 390 / 844;
-          isolation: isolate;
-        }
-        .cat-stack .phone-frame {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          transform-origin: center center;
-          transition:
-            transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-            opacity 0.45s ease,
-            box-shadow 0.45s ease;
-          will-change: transform;
-        }
-
-        /* 3-phone stack */
-        .cat-stack[data-depth="3"] .phone-frame[data-pos="back"] {
-          z-index: 1;
-          opacity: 0.5;
-          transform: translateY(24px) scale(0.92) rotate(-2deg);
-        }
-        .cat-stack[data-depth="3"] .phone-frame[data-pos="middle"] {
-          z-index: 2;
-          opacity: 0.75;
-          transform: translateY(12px) scale(0.96) rotate(0deg);
-        }
-        .cat-stack[data-depth="3"] .phone-frame[data-pos="front"] {
-          z-index: 3;
-          opacity: 1;
-          transform: rotate(2deg);
-        }
-
-        /* 2-phone stack */
-        .cat-stack[data-depth="2"] .phone-frame[data-pos="back"] {
-          z-index: 1;
-          opacity: 0.6;
-          transform: translateY(16px) scale(0.94) rotate(-2deg);
-        }
-        .cat-stack[data-depth="2"] .phone-frame[data-pos="front"] {
-          z-index: 3;
-          opacity: 1;
-          transform: rotate(2deg);
-        }
-
-        /* Hover nudge */
-        .cat-cell:hover .cat-stack[data-depth="3"] .phone-frame[data-pos="back"] {
-          transform: translateY(32px) translateX(-14px) scale(0.92) rotate(-5deg);
-        }
-        .cat-cell:hover .cat-stack[data-depth="3"] .phone-frame[data-pos="middle"] {
-          transform: translateY(16px) translateX(0) scale(0.96) rotate(0deg);
-        }
-        .cat-cell:hover .cat-stack[data-depth="3"] .phone-frame[data-pos="front"] {
-          transform: translateY(-6px) translateX(10px) rotate(4deg);
-        }
-        .cat-cell:hover .cat-stack[data-depth="2"] .phone-frame[data-pos="back"] {
-          transform: translateY(22px) translateX(-14px) scale(0.94) rotate(-5deg);
-        }
-        .cat-cell:hover .cat-stack[data-depth="2"] .phone-frame[data-pos="front"] {
-          transform: translateY(-6px) translateX(10px) rotate(4deg);
-        }
-
-        .cat-caption {
-          display: flex;
-          align-items: baseline;
-          justify-content: center;
-          gap: 10px;
-        }
-        .cat-name {
-          font-size: 19px;
-          font-weight: 620;
-          color: #f3f4fb;
-          letter-spacing: -0.01em;
-          margin: 0;
-        }
-        .cat-count {
-          font-size: 11.5px;
-          color: rgba(160,170,255,0.65);
-          letter-spacing: 0.18em;
-          text-transform: uppercase;
-          font-feature-settings: "tnum";
-        }
-      ` }} />
-
-      <main className="cat-page">
+    <main className="mcp-page">
+      <section className="mcp-hero">
         <SpectrBackground />
+        <div className="page-shell mcp-hero-inner">
+          <span className="eyebrow">v0.1.0 · MCP Server</span>
+          <h1 className="mcp-headline">
+            Generate iOS app specs from inside <span className="mcp-grad">Claude Code</span>.
+          </h1>
+          <p className="mcp-subhead">
+            Drop in the Spectr MCP. Hand it an App Store URL or a screen recording.
+            Get a production-ready <code>spec.md</code> back in five minutes — precise
+            enough for Claude Code to build a clone from.
+          </p>
 
-        <div className="cat-inner">
-          <div className="cat-head">
-            <span className="cat-eyebrow">Gallery</span>
-            <h1 className="cat-title">Browse by category</h1>
-            <p className="cat-sub">
-              30 design blueprints Spectr produced from real iOS apps —
-              grouped by category. Tap a stack to open.
-            </p>
+          <CopyableCommand value={INSTALL_CMD} />
+
+          <div className="mcp-hero-ctas">
+            <Link href="/gallery" className="btn-primary">
+              Browse the gallery <span aria-hidden="true">→</span>
+            </Link>
+            <a
+              href="https://github.com/Meliwat/spectr/tree/master/spectr_mcp"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mcp-cta-ghost"
+            >
+              Read the docs <span aria-hidden="true">↗</span>
+            </a>
           </div>
 
-          <div className="cat-grid">
-            {stacks.map(({ cat, label, total, previews }) => {
-              const depth = Math.min(total, 3)
-              const positions =
-                depth === 3 ? (['back', 'middle', 'front'] as const) : (['back', 'front'] as const)
-              return (
-                <Link
-                  key={cat}
-                  href={`/gallery/${cat}`}
-                  className="cat-cell"
-                  prefetch={false}
-                >
-                  <div className="cat-stack" data-depth={depth}>
-                    {positions.map((pos, i) => {
-                      const entry = previews[i]
-                      if (!entry) return null
-                      return (
-                        <div
-                          key={entry.slug}
-                          data-pos={pos}
-                          className="phone-frame"
-                        >
-                          <div className="phone-glow" aria-hidden="true" />
-                          <div className="phone-viewport">
-                            {entry.doc ? (
-                              <iframe
-                                className="phone-iframe"
-                                srcDoc={entry.doc}
-                                sandbox="allow-same-origin"
-                                scrolling="no"
-                                title={`${entry.name} preview`}
-                                loading="lazy"
-                                aria-hidden="true"
-                              />
-                            ) : (
-                              <div className="phone-skeleton">Preview unavailable</div>
-                            )}
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-
-                  <div className="cat-caption">
-                    <p className="cat-name">{label}</p>
-                    <span className="cat-count">· {total}</span>
-                  </div>
-                </Link>
-              )
-            })}
-          </div>
+          <ul className="mcp-meta-row">
+            <li><span className="mcp-meta-dot" /> Free + local</li>
+            <li><span className="mcp-meta-dot" /> Runs on your Claude subscription</li>
+            <li><span className="mcp-meta-dot" /> No API key required</li>
+            <li><span className="mcp-meta-dot" /> 2–10 min per run</li>
+          </ul>
         </div>
-      </main>
-    </>
+      </section>
+
+      <section className="page-shell mcp-section">
+        <span className="eyebrow">How it works</span>
+        <h2 className="mcp-section-title">Three steps from an app to a buildable spec.</h2>
+        <div className="mcp-steps">
+          <Step
+            n={1}
+            title="Install"
+            body="One command. Claude Code (or Cursor / Codex) adds the MCP and remembers it across sessions."
+          />
+          <Step
+            n={2}
+            title="Point at any app"
+            body="Paste an App Store URL or drop an MP4 of a screen recording. Spectr extracts frames and runs vision analysis."
+          />
+          <Step
+            n={3}
+            title="Get spec.md back"
+            body="A 7-section markdown spec lands on disk: app overview, navigation, screen-by-screen specs, exact design tokens, components, and a Claude Code prompt to build it."
+          />
+        </div>
+      </section>
+
+      <section className="page-shell mcp-section">
+        <span className="eyebrow">Example</span>
+        <h2 className="mcp-section-title">Inside Claude Code, it looks like this.</h2>
+        <pre className="mcp-example"><code>{EXAMPLE_CONVERSATION}</code></pre>
+      </section>
+
+      <section className="page-shell mcp-section">
+        <span className="eyebrow">What you get</span>
+        <h2 className="mcp-section-title">A complete blueprint, not a vibe check.</h2>
+        <div className="mcp-features">
+          <Feature title="7 structured sections" body="App overview, navigation architecture, screen-by-screen specs, component library, design system, implementation notes, and a Claude Code prompt." />
+          <Feature title="Exact values" body="Hex codes, pixel sizes, font weights, line heights, letter spacing, spacing scales. No 'a calming blue.' Just #1A73E8." />
+          <Feature title="Expo SDK 54 + React Native" body="Specs target the modern Expo / RN stack. iPhone 15 baseline. Drop the Claude Code prompt and start building." />
+          <Feature title="80–150 KB of markdown" body="Big enough to be complete, small enough to fit in a context window. Renders cleanly in any editor." />
+          <Feature title="App Store or MP4 input" body="Hand it the App Store URL for fast results, or drop an MP4 screen recording for richer coverage of less-public apps." />
+          <Feature title="No upload to a server" body="Everything runs locally on your machine. Your screen recordings never leave your laptop." />
+        </div>
+      </section>
+
+      <section className="page-shell mcp-section">
+        <div className="mcp-cost">
+          <span className="eyebrow">Cost</span>
+          <h2 className="mcp-section-title">Runs on your existing Claude subscription.</h2>
+          <p className="mcp-cost-line">
+            The MCP shells out to the <code>claude</code> CLI by default. If you have
+            Claude Code installed and logged in, that's all you need — vision + spec
+            generation are billed to <strong>your Claude Pro / Max plan</strong>, not to Spectr.
+          </p>
+          <p className="mcp-cost-line">
+            Prefer to pay Anthropic by token? Set <code>ANTHROPIC_API_KEY</code> in
+            your environment and the MCP will use the SDK instead. Roughly <strong>$0.60–$1.20</strong> per
+            spec at the default <code>max_frames=20</code>.
+          </p>
+          <p className="mcp-cost-line mcp-cost-alt">
+            Want it hosted with a progress UI and retries? <Link href="/gallery">spectr.to</Link> is on the way back.
+          </p>
+        </div>
+      </section>
+
+      <section className="page-shell mcp-section">
+        <span className="eyebrow">Requirements</span>
+        <h2 className="mcp-section-title">Two things, two minutes.</h2>
+        <ul className="mcp-reqs">
+          <li>
+            <span className="mcp-req-key">Claude Code (or any MCP client)</span>
+            <span className="mcp-req-val">
+              The MCP is launched as a stdio subprocess by your client. Install Claude
+              Code from <a href="https://www.claude.com/product/claude-code" target="_blank" rel="noopener noreferrer">claude.com/product/claude-code</a>, run <code>claude login</code> once,
+              and you're done. Cursor / Codex / any MCP-compatible host also works.
+            </span>
+          </li>
+          <li>
+            <span className="mcp-req-key"><code>ffmpeg</code></span>
+            <span className="mcp-req-val">Only required when passing an MP4 recording. Not needed if you're using App Store URLs.</span>
+          </li>
+        </ul>
+      </section>
+
+      <section className="page-shell mcp-section mcp-final">
+        <span className="eyebrow">Browse the gallery</span>
+        <h2 className="mcp-section-title">See what specs look like, first.</h2>
+        <p className="mcp-final-sub">
+          Eight reference apps already specced — Duolingo, DoorDash, Spotify, TikTok, Uber,
+          Instagram, Cal AI, Airbnb. Live HTML previews of each. The MCP produces the
+          same shape of output, freshly, against any app you point it at.
+        </p>
+        <Link href="/gallery" className="btn-primary mcp-final-btn">
+          Open the gallery <span aria-hidden="true">→</span>
+        </Link>
+      </section>
+    </main>
+  )
+}
+
+function Step({ n, title, body }: { n: number; title: string; body: string }) {
+  return (
+    <div className="mcp-step">
+      <span className="mcp-step-num">{n.toString().padStart(2, '0')}</span>
+      <h3 className="mcp-step-title">{title}</h3>
+      <p className="mcp-step-body">{body}</p>
+    </div>
+  )
+}
+
+function Feature({ title, body }: { title: string; body: string }) {
+  return (
+    <div className="mcp-feature">
+      <h3 className="mcp-feature-title">{title}</h3>
+      <p className="mcp-feature-body">{body}</p>
+    </div>
   )
 }

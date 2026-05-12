@@ -18,22 +18,18 @@ Typical run: 2–5 min for App Store URLs, 5–10 min for MP4 recordings.
 
 ## Install
 
-You bring your own Anthropic key. Pipeline costs are billed to your account, not Spectr's.
+If you have **Claude Code** installed and logged in (`claude login`), the MCP runs on your existing Claude subscription — no API key needed.
 
 ### Claude Code
 
 ```bash
-claude mcp add spectr \
-  --env ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY \
-  -- uvx --from git+https://github.com/Meliwat/spectr spectr-mcp
+claude mcp add spectr -- uvx --from git+https://github.com/Meliwat/spectr spectr-mcp
 ```
 
 Or for local development against this repo:
 
 ```bash
-claude mcp add spectr \
-  --env ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY \
-  -- uvx --from /path/to/spectr spectr-mcp
+claude mcp add spectr -- uvx --from /path/to/spectr spectr-mcp
 ```
 
 ### Other clients (Cursor, Codex, custom)
@@ -44,13 +40,17 @@ Any client that supports MCP stdio servers can launch:
 uvx --from git+https://github.com/Meliwat/spectr spectr-mcp
 ```
 
-Set `ANTHROPIC_API_KEY` in the launching process's environment.
+If you don't have the `claude` CLI installed and authenticated, the MCP needs an `ANTHROPIC_API_KEY` instead — set it in the launching process's environment.
 
 ## Requirements
 
-- **Python ≥ 3.10** (installed automatically by `uvx`)
-- **`ANTHROPIC_API_KEY`** — required. The fallback to the `claude` CLI doesn't reliably work inside MCP subprocesses (no keychain access).
-- **`ffmpeg`** — only required when passing an MP4 path; not needed for App Store URLs
+- **Python ≥ 3.10** (installed automatically by `uvx`).
+- **One of**:
+  - **The `claude` CLI** (free path — uses your existing Claude Pro / Max subscription). Install from [claude.com/product/claude-code](https://www.claude.com/product/claude-code), run `claude login` once, you're done.
+  - **`ANTHROPIC_API_KEY`** in env (token-billed path — set it when you want to pay Anthropic directly by token).
+- **`ffmpeg`** — only required when passing an MP4 path; not needed for App Store URLs.
+
+The MCP auto-selects: API key wins if both are present (faster than CLI subprocess).
 
 ## Usage from inside Claude Code
 
@@ -70,7 +70,9 @@ The `reference_app` parameter is required for MP4 input (the tool has no way to 
 
 ## Cost
 
-You pay Anthropic directly for vision + text tokens. Rough numbers per spec at the default `max_frames=20`:
+**With Claude Code subscription (CLI path):** specs are billed against your Claude Pro / Max plan's normal usage allowance. No per-spec charge from Spectr or Anthropic beyond your existing subscription.
+
+**With `ANTHROPIC_API_KEY` (SDK path):** you pay Anthropic by token. Rough numbers per spec at the default `max_frames=20`:
 
 - Vision (20 frames × 2 passes via Haiku): ~$0.10–0.20
 - Spec generation (7 sections via Sonnet, with prompt caching): ~$0.50–1.00
@@ -78,7 +80,7 @@ You pay Anthropic directly for vision + text tokens. Rough numbers per spec at t
 
 Raising `max_frames` past 20 increases vision cost roughly linearly. `max_frames=48` (the old default) runs about $1.40–2.00 per spec.
 
-The hosted version at [spectr.to](https://spectr.to) charges $19 per spec and includes the pipeline, hosting, storage, retries, and the realtime progress UI.
+The hosted version at [spectr.to](https://spectr.to) (coming back soon) charges $19 per spec and includes the pipeline, hosting, storage, retries, and the realtime progress UI.
 
 ## License
 

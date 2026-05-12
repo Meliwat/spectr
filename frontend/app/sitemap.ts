@@ -14,10 +14,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
-      url: `${SITE_URL}/mcp`,
+      url: `${SITE_URL}/gallery`,
       lastModified: now,
       changeFrequency: 'weekly',
-      priority: 0.95,
+      priority: 0.9,
     },
     ...CATEGORIES.map((slug) => ({
       url: `${SITE_URL}/gallery/${slug}`,
