@@ -94,20 +94,32 @@ async def generate_spec(
     """
     # Run the synchronous, long-running pipeline off the asyncio event loop so
     # concurrent tool calls keep flowing. Critically, also run a parallel
-    # heartbeat task that sends `notifications/message` to the client every
-    # HEARTBEAT_INTERVAL_S seconds — without it, the MCP client times out
-    # mid-pipeline and closes stdio with `MCP error -32000: Connection closed`.
+    # heartbeat task that sends BOTH `notifications/progress` and
+    # `notifications/message` to the client every HEARTBEAT_INTERVAL_S seconds.
+    #
+    # v0.1.1 only sent `notifications/message` (ctx.info). Claude Code's MCP
+    # client ignores log messages for request-timeout purposes — it only
+    # treats `notifications/progress` (matching the request's progressToken)
+    # as a keep-alive signal. Result: stdio dropped mid-pipeline with
+    # `MCP error -32000: Connection closed`. v0.1.2 fixes this by emitting
+    # progress on every tick. The log message stays for transcript visibility.
+    #
+    # Progress total is the 600-second / 10-minute worst case for a typical
+    # pipeline run; elapsed clamps to total so we don't overshoot.
+    HEARTBEAT_TOTAL_S = 600
+
     async def _heartbeat() -> None:
         if ctx is None:
             return
         elapsed = 0
         try:
+            await ctx.report_progress(progress=0, total=HEARTBEAT_TOTAL_S)
             await ctx.info(
                 f"Spectr: starting pipeline (5–10 min for a typical recording, "
                 f"max_frames={max_frames})."
             )
         except Exception:
-            log.debug("initial heartbeat ctx.info failed; client may not accept notifications")
+            log.debug("initial heartbeat failed; client may not accept notifications")
             return
         while True:
             try:
@@ -116,6 +128,14 @@ async def generate_spec(
                 return
             elapsed += HEARTBEAT_INTERVAL_S
             try:
+                # progress notification — the actual MCP keep-alive primitive.
+                # No-op if the client didn't send a progressToken, but every
+                # major MCP client (Claude Code, Cursor, Codex) does.
+                await ctx.report_progress(
+                    progress=min(elapsed, HEARTBEAT_TOTAL_S),
+                    total=HEARTBEAT_TOTAL_S,
+                )
+                # log message — visible to the user in the transcript.
                 await ctx.info(
                     f"Spectr: still working ({elapsed // 60}m{elapsed % 60:02d}s elapsed)…"
                 )
