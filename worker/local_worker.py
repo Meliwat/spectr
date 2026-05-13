@@ -165,7 +165,15 @@ VISION_MODEL = os.getenv("VISION_MODEL", "claude-haiku-4-5-20251001")
 STITCH_MODEL = os.getenv("STITCH_MODEL", "claude-sonnet-4-6")
 OUTPUT_MODE = os.getenv("OUTPUT_MODE", "spec")
 MAX_TOTAL_RETRIES = int(os.getenv("MAX_TOTAL_RETRIES", 8))
-SPEC_SECTION_TIMEOUT = int(os.getenv("SPEC_SECTION_TIMEOUT", "480"))
+SPEC_SECTION_TIMEOUT = int(os.getenv("SPEC_SECTION_TIMEOUT", "600"))
+# Section 3 (screen_specifications) often exceeds the per-section timeout
+# when an app has many distinct screens, because the model has to write
+# everything in one go. The split path issues one Claude call per screen,
+# in parallel, with much tighter per-call timeouts. These knobs control it.
+SCREEN_SPLIT_TIMEOUT = int(os.getenv("SCREEN_SPLIT_TIMEOUT", "240"))  # per-screen call cap
+SCREEN_SPLIT_WORKERS = max(1, min(4, int(os.getenv("SCREEN_SPLIT_WORKERS", "4"))))
+SCREEN_SPLIT_MIN = int(os.getenv("SCREEN_SPLIT_MIN", "2"))  # under this, monolithic is fine
+SCREEN_SPLIT_MAX = int(os.getenv("SCREEN_SPLIT_MAX", "30"))  # over this, the parse is probably bogus
 SPEC_LANE_WORKERS = max(1, min(4, int(os.getenv("SPEC_LANE_WORKERS", "4"))))
 SPEC_ANALYSIS_WORKERS = max(1, min(2, int(os.getenv("SPEC_ANALYSIS_WORKERS", "2"))))
 
@@ -704,6 +712,168 @@ def validate_complete_spec_document(
     return text if text.endswith("\n") else text + "\n"
 
 
+_SCREEN_HEADER_RE = re.compile(r"(?m)^##\s+Screen:\s*(.+?)\s*$")
+
+
+def _extract_screen_names(frontend_spec: str) -> list[str]:
+    """Pull the list of screen names from PROMPT_1 vision output.
+
+    The screen-analysis prompt instructs the model to use `## Screen: Name`
+    headers per screen, so a simple regex over the assembled frontend_spec
+    gives us the screen inventory cheaply. Dedups case-insensitively while
+    preserving the order screens first appeared in the recording.
+    """
+    seen: set[str] = set()
+    out: list[str] = []
+    for match in _SCREEN_HEADER_RE.findall(frontend_spec):
+        name = match.strip()
+        key = name.lower()
+        if key and key not in seen:
+            seen.add(key)
+            out.append(name)
+    return out
+
+
+def _generate_screen_specs_split(
+    *,
+    section: dict,
+    section_index: int,
+    total_sections: int,
+    reference_app: str,
+    your_app_name: str,
+    brand_overrides: str,
+    frontend_spec: str,
+    project_id: str,
+    output_dir: Path,
+) -> str | None:
+    """Generate section 3 (screen_specifications) as N parallel per-screen calls.
+
+    Returns the assembled section content on success, or None to signal that
+    the caller should fall back to the monolithic single-call path.
+
+    Why: the monolithic path asks the model to document every screen in one
+    response. For apps with 15+ screens, that single response can push past
+    the per-section timeout (SPEC_SECTION_TIMEOUT) and exhaust all 3 retries
+    in ~24 minutes, leaving a placeholder behind. Per-screen calls run in
+    parallel with much smaller individual workloads, so total wall-clock
+    drops from ~10 min to ~1 min for the common case.
+    """
+    screens = _extract_screen_names(frontend_spec)
+    if len(screens) < SCREEN_SPLIT_MIN or len(screens) > SCREEN_SPLIT_MAX:
+        # Too few: overhead of N calls isn't worth it.
+        # Too many: probably noise in the vision output, fall back to mono.
+        return None
+
+    cached_prefix, _ = build_spec_section_prompt(
+        section=section,
+        reference_app=reference_app,
+        your_app_name=your_app_name,
+        brand_overrides=brand_overrides,
+        frontend_spec=frontend_spec,
+        split=True,
+    )
+
+    project_log(
+        project_id,
+        f"        → section {section_index}/{total_sections}: "
+        f"splitting into {len(screens)} per-screen calls"
+        f" (workers={min(SCREEN_SPLIT_WORKERS, len(screens))}, timeout={SCREEN_SPLIT_TIMEOUT}s each)",
+    )
+
+    def _one_screen(screen_name: str) -> tuple[str, str | None]:
+        suffix = (
+            f'Produce ONLY the spec content for one specific screen: "{screen_name}".\n\n'
+            f"Output format: start with a `### {screen_name}` subheading. For this screen, document:\n"
+            "- purpose\n"
+            "- layout hierarchy from top to bottom\n"
+            "- key modules and sections\n"
+            "- primary actions\n"
+            "- empty, loading, error, and success states if visible or strongly implied\n"
+            "- motion or transition behavior if visible in the recording\n"
+            "- exact spacing, sizing, and alignment details when the design tokens or "
+            "frames make them clear\n\n"
+            "Do not output any `##` top-level headings. Do not output content for any "
+            "other screen. Do not preface with explanation."
+        )
+        for attempt in range(3):
+            try:
+                raw = claude_text(
+                    suffix,
+                    system=SPEC_SECTION_SYSTEM,
+                    timeout=SCREEN_SPLIT_TIMEOUT,
+                    model=STITCH_MODEL,
+                    cached_user_prefix=cached_prefix,
+                    cache=True,
+                )
+                # Cheap content sanity check — should have at least one ### heading.
+                if "###" not in raw:
+                    raise ValueError("per-screen output missing ### heading")
+                # Strip any stray ## top-level headings the model might leak.
+                cleaned = "\n".join(
+                    line for line in raw.splitlines()
+                    if not line.strip().startswith("## ") or line.strip().startswith("###")
+                )
+                return screen_name, cleaned.strip()
+            except Exception as exc:
+                if attempt == 2:
+                    project_log(
+                        project_id,
+                        f"        ! screen '{screen_name}' failed after 3 attempts: {exc}",
+                    )
+                    return screen_name, None
+                time.sleep(2 ** attempt)
+        return screen_name, None
+
+    workers = min(len(screens), SCREEN_SPLIT_WORKERS)
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        results = list(pool.map(_one_screen, screens))
+
+    failure_count = sum(1 for _, c in results if c is None)
+    # If more than half the screens failed, the whole split path is suspect.
+    # Fall back to monolithic so the caller can try the all-in-one approach.
+    if failure_count * 2 > len(screens):
+        project_log(
+            project_id,
+            f"        ! split path: {failure_count}/{len(screens)} screens failed — "
+            f"falling back to monolithic generation",
+        )
+        return None
+
+    # Some screens may have failed individually; inject a per-screen placeholder
+    # instead of aborting. Most apps still get a useful section 3 this way.
+    parts: list[str] = []
+    for screen_name, content in results:
+        if content is not None:
+            parts.append(content)
+        else:
+            parts.append(
+                f"### {screen_name}\n\n"
+                f"> ⚠️ Content for this screen could not be generated automatically. "
+                f"Re-run the project or fill in manually."
+            )
+    assembled = "## Screen Specifications\n\n" + "\n\n".join(parts) + "\n"
+
+    # Run the same validator the monolithic path uses, to catch structural issues.
+    try:
+        validated = validate_spec_section_content(section, assembled)
+    except Exception as exc:
+        project_log(
+            project_id,
+            f"        ! split path: validation failed ({exc}) — "
+            f"falling back to monolithic generation",
+        )
+        return None
+
+    (output_dir / section["filename"]).write_text(validated + "\n", encoding="utf-8")
+    successes = len(screens) - failure_count
+    project_log(
+        project_id,
+        f"        ✓ section {section_index}/{total_sections} done "
+        f"({successes}/{len(screens)} screens via split path)",
+    )
+    return validated
+
+
 def _generate_spec_section(
     *,
     section: dict,
@@ -717,6 +887,25 @@ def _generate_spec_section(
     output_dir: Path,
 ) -> str:
     project_log(project_id, f"        → writing section {section_index}/{total_sections}: {section['filename']}")
+
+    # Section 3 (screen_specifications) regularly times out in the monolithic
+    # path on apps with 15+ screens. Try the per-screen split first; fall
+    # through to the monolithic code below if it returns None.
+    if section["key"] == "screen_specifications":
+        split_result = _generate_screen_specs_split(
+            section=section,
+            section_index=section_index,
+            total_sections=total_sections,
+            reference_app=reference_app,
+            your_app_name=your_app_name,
+            brand_overrides=brand_overrides,
+            frontend_spec=frontend_spec,
+            project_id=project_id,
+            output_dir=output_dir,
+        )
+        if split_result is not None:
+            return split_result
+
     cached_prefix, suffix = build_spec_section_prompt(
         section=section,
         reference_app=reference_app,
