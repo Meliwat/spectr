@@ -96,46 +96,41 @@ def _base_project(**kwargs):
     return base
 
 
-# Distinctive substrings for each of the 5 fast_spec dynamic prompts. Maps
-# the prompt's marker text to the canned mock response we return for it.
-FAST_SPEC_PROMPT_RESPONSES = {
-    "describing the product, its target user": (
-        "MyApp is a concise consumer product experience built around the core "
-        "task its users care about most. It is built for everyday users who "
-        "want something fast and uncluttered."
-    ),
-    "Document the primary navigation model": (
-        "## Navigation Structure\n\n"
-        "Users move between Home, Browse, and Me with modal overlays for "
-        "search and cart."
-    ),
-    "For every distinct screen documented": (
-        "## Screen Specifications\n\n"
-        "### Home Feed\n- Purpose: discover content\n- Layout: sticky header, carousels"
-    ),
-    "numbered shared-component catalog": (
-        "## Shared Components\n\n### 1. SearchBar\n"
-        "Reusable search entry point used on Home and Browse."
-    ),
-    "Reformat the DESIGN TOKENS block": (
-        "## Design System\n\n"
-        "### Color Palette\n#### Primary\n- **Blue** (`#2032d5`): primary accent\n\n"
-        "### Typography\n"
-        "| Role | Font | Size | Weight | Line Height | Letter Spacing | Notes |\n"
-        "|---|---|---|---|---|---|---|\n"
-        "| Body | SF Pro Text | `15px` | `400` | `20px` | `0` | Base copy |\n"
-    ),
-}
+# The new fast_spec generates the full 10-section DESIGN.md in one
+# comprehensive Sonnet call instead of 5 parallel section calls. The mock
+# returns a minimal-but-valid DESIGN.md whenever it sees the canonical
+# prompt opener.
+FAST_SPEC_DESIGN_MD = (
+    "# Design System Inspiration of TestApp (iOS)\n\n"
+    "## 1. Visual Theme & Atmosphere\n\n"
+    "TestApp is a concise consumer product experience designed around speed and clarity.\n\n"
+    "**Key Characteristics:**\n- Single accent color\n- Edge-to-edge cards\n- Tabular numerals everywhere\n\n"
+    "## 2. Color Palette & Roles\n\n"
+    "### Primary\n- **Blue** (`#2032d5`): primary accent, CTAs\n\n"
+    "## 3. Typography Rules\n\n"
+    "### Font Family\nSF Pro Text with system fallback.\n\n"
+    "### Hierarchy\n\n"
+    "| Role | Font | Size | Weight | Line Height | Letter Spacing | Notes |\n"
+    "|------|------|------|--------|-------------|----------------|-------|\n"
+    "| Body | SF Pro Text | `15pt` | `400` | `20pt` | `0` | Base copy |\n\n"
+    "## 4. Component Stylings\n\n### Buttons\nPrimary fills in `#2032d5`, 12pt radius.\n\n"
+    "## 5. Screen Inventory & Patterns\n\n### Home\nFeed of cards with a sticky header.\n\n"
+    "## 6. Layout & Spacing\n\n| Token | Value | Usage |\n|---|---|---|\n| `md` | `16pt` | Card padding |\n\n"
+    "## 7. Depth & Elevation\n\n| Level | Treatment | Use |\n|---|---|---|\n| 1 | `shadow: 0 1pt 2pt rgba(0,0,0,0.08)` | Cards |\n\n"
+    "## 8. Dos and Don'ts\n\n### Do\n- **Bold principle** — reason it matters\n\n### Don't\n- **Bold principle** — reason it matters\n\n"
+    "## 9. Responsive / Adaptive Rules\n\n| Name | Width | Key Changes |\n|---|---|---|\n| Mobile Standard | `375pt` | Baseline |\n\n"
+    "## 10. Quick Reference Cheat Sheet\n\nPrimary `#2032d5` · Body 15pt 400 · Card radius 12pt.\n"
+)
 
-# Number of model calls fast_spec makes for the dynamic sections.
-FAST_SPEC_DYNAMIC_SECTION_COUNT = len(FAST_SPEC_PROMPT_RESPONSES)
+
+# fast_spec emits exactly one model call per project in the new pipeline.
+FAST_SPEC_DESIGN_MD_CALLS = 1
 
 
 def _fast_spec_side_effect():
     def _respond(prompt, **kwargs):
-        for marker, output in FAST_SPEC_PROMPT_RESPONSES.items():
-            if marker in prompt:
-                return output
+        if "Produce a single DESIGN.md file for the iOS app" in prompt:
+            return FAST_SPEC_DESIGN_MD
         raise AssertionError(f"Unexpected fast_spec prompt: {prompt[:160]}")
 
     return _respond
@@ -176,8 +171,8 @@ class TestPipelineResume(unittest.TestCase):
         mock_extract.assert_not_called()
         mock_dedup.assert_not_called()
 
-        # fast_spec issues one model call per dynamic section
-        self.assertEqual(mock_claude_text.call_count, FAST_SPEC_DYNAMIC_SECTION_COUNT)
+        # fast_spec issues exactly one Sonnet call to produce DESIGN.md
+        self.assertEqual(mock_claude_text.call_count, FAST_SPEC_DESIGN_MD_CALLS)
 
         update_calls = client.table.return_value.update.call_args_list
         statuses_set = [c[0][0].get("status") for c in update_calls if "status" in c[0][0]]
@@ -188,10 +183,12 @@ class TestPipelineResume(unittest.TestCase):
 
         stored_specs = [c.args[0]["spec_md_text"] for c in update_calls if "spec_md_text" in c.args[0]]
         self.assertEqual(len(stored_specs), 1)
-        self.assertTrue(stored_specs[0].startswith("# MyApp — Frontend Specification"))
-        self.assertIn("## App Overview", stored_specs[0])
-        self.assertIn("## Shared Components", stored_specs[0])
-        self.assertIn("## Claude Code Prompt", stored_specs[0])
+        # New DESIGN.md output: starts with the canonical inspired-by title and
+        # carries the gallery template's 10-section structure.
+        self.assertTrue(stored_specs[0].startswith("# Design System Inspiration of TestApp"))
+        self.assertIn("## 1. Visual Theme & Atmosphere", stored_specs[0])
+        self.assertIn("## 5. Screen Inventory & Patterns", stored_specs[0])
+        self.assertIn("## 10. Quick Reference Cheat Sheet", stored_specs[0])
 
     # ------------------------------------------------------------------
     # 2. No stored analysis → full frontend-only spec pipeline runs.
@@ -228,7 +225,7 @@ class TestPipelineResume(unittest.TestCase):
         mock_extract.assert_called_once()
         mock_dedup.assert_called_once()
         self.assertEqual(mock_vision.call_count, 2)
-        self.assertEqual(mock_claude_text.call_count, FAST_SPEC_DYNAMIC_SECTION_COUNT)
+        self.assertEqual(mock_claude_text.call_count, FAST_SPEC_DESIGN_MD_CALLS)
 
         expected_frames = ["/tmp/f/frame_0001.jpg"]
         seen_vision_calls = {
@@ -255,10 +252,9 @@ class TestPipelineResume(unittest.TestCase):
             },
         )
 
-        # fast_spec calls claude_text with only `model` and `timeout` kwargs.
-        # Verify every call uses one of the two models we route to.
+        # fast_spec issues exactly one Sonnet call to produce DESIGN.md.
         for call in mock_claude_text.call_args_list:
-            self.assertIn(call.kwargs.get("model"), {"claude-haiku-4-5-20251001", "claude-sonnet-4-6"})
+            self.assertEqual(call.kwargs.get("model"), "claude-sonnet-4-6")
 
         frontend_updates = [
             c.args[0]["frontend_spec"]

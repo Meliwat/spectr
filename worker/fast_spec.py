@@ -1,287 +1,241 @@
-"""Fast-mode spec generator — experimental "best bang for buck" path.
+"""DESIGN.md generator — pipeline output now follows the canonical
+"Awesome iOS DESIGN.md" template (see the awesome-ios-design-md repo).
 
-Differs from worker.local_worker.generate_sectioned_spec in 4 ways:
+The previous fast_spec produced a 7-section Spectr-shaped spec.md with
+templated "Implementation Notes" and "Claude Code Prompt" sections. We
+swapped to the inspired-by design-system shape that the gallery uses, so
+pipeline output is drop-in compatible with the awesome-ios-design-md
+folder format.
 
-1. Sections 1, 6, 7 are static templates with thin interpolation — no LLM calls.
-2. Sections 4 and 5 are reformat-only Haiku calls over the DESIGN TOKENS block.
-3. Section 3 is a single monolithic Sonnet call — no per-screen split.
-4. All 5 model-call sections run in parallel (no lane sequencing).
+Output shape: one DESIGN.md file, 10 numbered sections:
 
-Wall-clock target: ~3 min vs the full pipeline's 5-10 min.
-For a 15-screen app: ~5 spec-gen calls vs the full path's ~21.
+  1. Visual Theme & Atmosphere
+  2. Color Palette & Roles
+  3. Typography Rules
+  4. Component Stylings
+  5. Screen Inventory & Patterns   ← folds in the per-screen content
+  6. Layout & Spacing
+  7. Depth & Elevation
+  8. Dos and Don'ts
+  9. Responsive / Adaptive Rules
+  10. Quick Reference Cheat Sheet
 
-Same input (frontend_spec) and same output shape (assembled spec.md) as the
-full path, so the two modes can be diffed directly.
+Sections 1-4 and 6-10 mirror the canonical gallery template
+(awesome-ios-design-md/design-md/airbnb/DESIGN.md). Section 5 is the
+fold-in — vision-extracted screen-by-screen patterns that the gallery
+doesn't carry (because the gallery is hand-curated brand reference, not
+recording-driven).
+
+The generator is one comprehensive Sonnet call rather than the previous
+5-parallel-call orchestration. Single call gives better cross-section
+coherence — every reference to a color or font lands consistently because
+the model sees the whole document at once.
+
+`brand_colors` and `your_app_name` are accepted for API compatibility but
+ignored: DESIGN.md is an "inspired by" design-system reference, not a
+"build a clone with these brand overrides" instruction. Apply brand
+overrides at the implementation stage instead.
 """
 
 from __future__ import annotations
 
-import json
-import re
 import time
-from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from threading import Lock
 
-# Import the module rather than rebinding the names. Tests patch
-# `local_worker.claude_text` per-test with unittest.mock, and a name binding
-# created via `from local_worker import claude_text` would freeze the
-# reference at module-load time — patches in later tests would silently miss
-# fast_spec's call sites once any earlier test has already imported this
-# module. Resolving through `local_worker.claude_text` keeps every call site
-# honest about the live attribute.
 try:
     import local_worker
 except ImportError:
     from worker import local_worker  # type: ignore[no-redef]
 
 
-_HAIKU = "claude-haiku-4-5-20251001"
 _SONNET = "claude-sonnet-4-6"
 
-_SCREEN_HEADER_RE = re.compile(r"(?m)^##\s+Screen:\s*(.+?)\s*$")
-
 
 # ──────────────────────────────────────────────
-# Static section templates (no model calls)
+# Prompts
 # ──────────────────────────────────────────────
 
-_SECTION_1_TEMPLATE = """## App Overview
+_DESIGN_MD_SYSTEM = """You are producing a comprehensive iOS design-system reference document in the
+canonical "Awesome iOS DESIGN.md" format — a magazine-quality "inspired by"
+design spec that an AI coding agent or a designer reads to understand and
+recreate the look and feel of a real iOS app.
 
-{summary_paragraphs}
+Voice and rigor:
+- Editorial, opinionated, specific. Long > short. Specific > general.
+- Use real font names and exact hex codes wherever possible. Lean on your
+  knowledge of the named reference app when the frames are ambiguous, but
+  prefer the values present in the FRONTEND SPEC's DESIGN TOKENS block
+  when there is a conflict.
+- Every color must include its `#hex` value in backticks.
+- Every font must have a real name (SF Pro Text, Inter, Söhne, Cash Sans,
+  Airbnb Cereal, etc.) — never "system sans-serif" alone.
+- Every numeric value carries a unit (`16pt`, `1.4`, `0.08`, etc.).
 
-The intended implementation target is a React Native mobile app for iPhone and
-Android phones, not a desktop site. Treat the base-model iPhone 15 viewport as
-the primary sizing reference for layout decisions.
-"""
+Tone constraints:
+- This is inspired-by. The reference app's trademarks belong to its owners.
+  Do not claim official endorsement.
+- Avoid generic adjectives like "clean" or "minimal" without saying what
+  specifically makes the design so — e.g. "12pt vertical rhythm, hairline
+  dividers, no decorative chrome" instead of "clean".
 
-_SECTION_6_TEMPLATE = """## Frontend Implementation Notes
-
-Build with Expo SDK 54 plus React Native, TypeScript, React Navigation,
-Zustand, and react-native-svg. Drive the first build order from the screen and
-component lists above — start with the navigation shell, then the most-
-trafficked screens, then secondary surfaces.
-
-Prefer React Native Animated and FlatList by default. Reach for
-react-native-reanimated or FlashList only when a screen clearly needs them
-(complex shared-element transitions, lists with thousands of items). Smaller
-defaults reduce native-module surface and keep the project Expo Go-safe.
-
-Install all Expo-native packages with `npx expo install` so the resolver picks
-versions that match the installed SDK. Do not add custom Babel configuration or
-prebuild-native config unless the current official Expo docs explicitly require
-it. Prioritize Expo Go compatibility and runtime stability over exact animation
-fidelity — if a setup risks runtime issues, simplify the animation instead of
-leaving a broken app.
-
-Optimize for the base-model iPhone 15 as the baseline device size. The
-recording's spacing, type scale, and tap targets were measured at that
-viewport.
-
-Do not run final iOS build, simulator, or `npm` commands; execution is done
-manually by the user. The spec is build-ready, not deploy-ready.
-
-When branding overrides only change colors, preserve universal restaurant
-photos, merchant banners, and merchant logos. Only swap the app logo when an
-explicit replacement logo is provided.
-"""
-
-_SECTION_7_TEMPLATE = """## Claude Code Prompt
-
-Paste everything below this line into Claude Code:
-
-Build a React Native mobile app called "{your_app_name}" that clones the user
-experience of {reference_app}. The app should match the visual system, screen
-flow, and core interactions documented in spec.md.
-
-The frontend stack is:
-- Expo SDK 54
-- React Native
-- TypeScript
-- React Navigation
-- Zustand
-- react-native-svg
-
-Start with these five screens, in order: {top_screens}.
-
-Extract shared components from day one — the navigation shell, list cells,
-section headers, the primary CTA button, and any pill/badge components used
-across multiple screens.
-
-This should be built as a React Native mobile app for iPhone and Android
-phones, not a responsive web app. Use local SVG icons and illustrations
-instead of emoji characters. Prefer React Native Animated and FlatList by
-default, and only reach for react-native-reanimated or FlashList when clearly
-necessary. Install Expo-native packages only with `npx expo install` and only
-at Expo-compatible versions for SDK 54. Do not add custom Babel or native
-configuration unless the current official Expo docs require it. Prioritize
-Expo Go compatibility and runtime stability over exact animation fidelity —
-simplify risky setups rather than leaving a broken app. If the spec mentions
-older or ambiguous versions like "Reanimated 2", interpret that as the
-current Expo-compatible version, not a legacy setup. Do not run iOS build,
-simulator, or `npm` commands at the end; final execution is handled by the
-user manually. The baseline device target is the base-model iPhone 15.
-Branding overrides should only change colors and an explicitly provided
-replacement logo while preserving universal restaurant photos, merchant
-banners, and merchant logos. Use mocked local data — JSON fixtures or
-in-memory stores — for any feature that would otherwise need a backend.
-
-Use the spec.md in this project as your source of truth for all screens,
-components, and visual rules.
-"""
+Output rules:
+- Markdown only. No code fences around the whole document.
+- No preamble, no closing remarks.
+- Exactly the 10 numbered top-level sections in the order specified by the
+  user prompt. No extra `##` sections."""
 
 
-# ──────────────────────────────────────────────
-# Dynamic-content prompts (model calls)
-# ──────────────────────────────────────────────
+_DESIGN_MD_USER = """Produce a single DESIGN.md file for the iOS app: {reference_app}.
 
-_APP_OVERVIEW_PROMPT = """Write 2-3 short paragraphs describing the product, its target user, and
-its core value proposition. Base everything on the FRONTEND SPEC below. Do
-not mention React Native, iPhone 15, Expo, or any implementation detail —
-those are stitched in by a downstream template. Just describe what the app
-does and who it's for.
+The FRONTEND SPEC below is a vision-extracted summary of a screen recording
+of {reference_app}. It contains per-screen analysis and a DESIGN TOKENS
+block (colors, typography, components, layout, elevation, do's/don'ts,
+responsive rules — extracted directly from frames). Use this as your
+primary source of truth for concrete values. Where values are missing or
+ambiguous, fall back to your knowledge of the real {reference_app} iOS app.
 
-{brand_block}FRONTEND SPEC:
+FRONTEND SPEC:
 {frontend_spec}
-"""
 
-_NAVIGATION_PROMPT = """Document the primary navigation model, route hierarchy, tab structure,
-modal layers, drill-down paths, sticky headers, and cross-screen movement
-patterns visible in the recording. Base everything on the FRONTEND SPEC
-below — do not invent navigation not supported by the recording.
+OUTPUT exactly this structure:
 
-Output exactly one top-level section, starting with the heading
-`## Navigation Structure`. No other `##` headings. No preamble.
+# Design System Inspiration of {reference_app} (iOS)
 
-{brand_block}FRONTEND SPEC:
-{frontend_spec}
-"""
+## 1. Visual Theme & Atmosphere
 
-_SCREENS_PROMPT = """For every distinct screen documented in the FRONTEND SPEC, write a
-`### Screen Name` subheading followed by a tight per-screen entry covering:
+Write 2-4 paragraphs describing the overall look, mood, contrast model,
+surface treatment, and visual hierarchy. Identify the signature visual
+moves that make the app instantly recognizable. End with a bullet list
+titled **Key Characteristics:** with 5-9 bullets summarizing the signature
+moves (canvas color + accent + iconography + key motion + typography
+personality + tab/nav model).
 
-- purpose
-- layout hierarchy from top to bottom
-- key modules and sections
-- primary actions
-- visible empty / loading / error / success states
-- motion or transition behavior if visible
-- exact spacing, sizing, and alignment when the DESIGN TOKENS block makes
-  them clear
+## 2. Color Palette & Roles
 
-Keep each screen under ~250 words. Output exactly one top-level section,
-starting with the heading `## Screen Specifications`. Do not introduce any
-other top-level `##` headings. Do not preface with explanation.
-
-{brand_block}FRONTEND SPEC:
-{frontend_spec}
-"""
-
-_COMPONENTS_PROMPT = """The FRONTEND SPEC's DESIGN TOKENS block contains a Component Recipes
-section. Reformat that material as a numbered shared-component catalog under
-a single `## Shared Components` heading. Number components starting at
-`### 1.` and increment without gaps.
-
-For each component, list:
-- the screens it appears on
-- the exact visual rules — background, text, radius, border, shadow,
-  padding, and visible states
-
-Do not invent components not present in the DESIGN TOKENS block. Output
-exactly one top-level section starting with `## Shared Components`. No other
-`##` headings.
-
-{brand_block}FRONTEND SPEC:
-{frontend_spec}
-"""
-
-_DESIGN_SYSTEM_PROMPT = """Reformat the DESIGN TOKENS block from the FRONTEND SPEC into the
-structure below. Move every concrete value (hex, rgba, px, font weight,
-line-height, shadow) verbatim into the corresponding subsection. Do not
-invent values; only reorganize what is already in the DESIGN TOKENS block.
-
-Output exactly one top-level section, starting with `## Design System`,
-containing these subsections in this order:
-
-### Color Palette
 Organize as:
-#### Primary
-#### Surface & Background
-#### Accent
-#### Neutral
-#### Semantic
-Format each color as: Name (`#hex`): functional role description
 
-### Typography
-Output a table with exactly these columns:
+### Primary
+- **Name** (`#hex`): role description
+
+### Surface, Background & Dividers
+- **Name** (`#hex`): role description
+
+### Text
+- **Name** (`#hex`): role description
+
+### Semantic
+- **Success / Warning / Error / Info** (`#hex` each)
+
+### Dark Mode
+Include only if the recording shows dark mode or it is strongly implied by
+the brand. Mirror the structure above with the dark variants.
+
+## 3. Typography Rules
+
+### Font Family
+Name the primary face (real name — e.g. "SF Pro Text", "Inter",
+"Capsule Sans Text", "Airbnb Cereal", etc.). List weights available and
+the platform fallback stack.
+
+### Hierarchy
+
 | Role | Font | Size | Weight | Line Height | Letter Spacing | Notes |
-Then add `### Principles` with 3-5 rationale bullets.
+|------|------|------|--------|-------------|----------------|-------|
 
-### Spacing & Layout
-Output a token table with exactly these columns:
+Cover at least: Large Nav Title, Section Header, Subsection, Card Title,
+Body, Body Small, Metadata, Button (Primary), Button (Secondary), Tab
+Label, Chip Label, Caption. Use real values inferred from the frames +
+your knowledge of the app.
+
+### Principles
+3-5 bullets explaining the typographic logic and hierarchy.
+
+## 4. Component Stylings
+
+For each major component family visible in the frames (Buttons, Cards,
+Inputs, Lists, Navigation Bars, Tab Bars, Modals & Sheets, Pills/Badges,
+Toasts, Empty States, Avatars), use a `### ComponentName` subheading and
+specify exact values for: background, text, border-radius, border, shadow,
+padding, and states (`pressed`, `focus`, `disabled`, `selected`) where
+applicable. Be concrete: `border-radius: 12pt`, not "rounded corners".
+
+## 5. Screen Inventory & Patterns
+
+For each distinct screen visible in the FRONTEND SPEC, write a
+`### Screen Name` subheading followed by a tight ~75-150 word entry
+covering:
+
+- **Purpose** — one sentence on what the screen does for the user
+- **Layout** — header / body / footer structure, sticky elements, scroll
+  behavior
+- **Key modules** — the named patterns this screen uses (e.g. "carousel
+  rail", "two-column grid", "sticky bottom CTA")
+- **Primary actions** — the dominant CTAs and gestures
+- **States** — empty / loading / error / success behaviors visible or
+  strongly implied
+- **Motion** — transitions or animation if visible
+
+After all per-screen entries, add a `### Shared Patterns` subsection
+naming the cross-screen patterns (e.g. "every screen has a sticky search
+header", "all detail screens slide up as a sheet from the bottom",
+"the tab bar disappears in immersive flows").
+
+## 6. Layout & Spacing
+
+Document the spacing scale, grid system, gutters, page padding, card
+padding, and major layout intervals with precise numeric values.
+
 | Token | Value | Usage |
-Also note grid system, gutters, page padding, card padding, and major layout
-intervals with precise numeric values.
+|-------|-------|-------|
 
-### Component Styles
-For each major component: background, text, radius, border, shadow, padding,
-and states (`pressed`, `focus`, `disabled`, `selected`).
+Cover at least: page horizontal padding, card padding, vertical rhythm
+between sections, gap between cards, hairline divider weight.
 
-### Elevation & Depth
+## 7. Depth & Elevation
+
 | Level | Treatment | Use |
+|-------|-----------|-----|
 
-### Responsive Breakpoints
+Cover 3-5 rows from flat surfaces through cards, sticky chrome, and
+modals/overlays. Include borders, shadows, blur, and luminance shifts as
+applicable.
+
+### Principles
+3-5 bullets explaining how depth is communicated.
+
+## 8. Dos and Don'ts
+
+### Do
+5-9 bullets. Each item formatted: `**Bold principle** — reason it matters`
+
+### Don't
+5-9 bullets. Same format.
+
+## 9. Responsive / Adaptive Rules
+
 | Name | Width | Key Changes |
+|------|-------|-------------|
 
-### Do's and Don'ts
-Two parallel bullet lists. Each item: **Bold principle** — reason it matters.
+Cover Mobile Standard (375pt), Larger Phones (414pt / 430pt), and iPad if
+the app supports it. Document layout shifts, density changes, and
+navigation collapse rules.
 
-### Design Principles
-5-7 bullets on the visual philosophy of the reference app.
+### Principles
+3-5 bullets explaining the responsive strategy.
 
-Do not output any other top-level `##` headings. No preamble.
+## 10. Quick Reference Cheat Sheet
 
-{brand_block}FRONTEND SPEC:
-{frontend_spec}
-"""
+A compact, build-oriented reference for the most important colors,
+typography roles, spacing tokens, and component recipes. Designed for an
+engineer translating the design into code. Use short tables or tight
+bullet lists; this section is a fast lookup, not prose."""
 
 
 # ──────────────────────────────────────────────
 # Helpers
 # ──────────────────────────────────────────────
 
-def _build_brand_block(brand_colors: dict | None) -> str:
-    if not brand_colors:
-        return ""
-    return (
-        f"BRAND OVERRIDES (apply throughout, replace existing brand colors):\n"
-        f"{json.dumps(brand_colors)}\n\n"
-    )
-
-
-def _extract_top_screens(frontend_spec: str, n: int = 5) -> list[str]:
-    """Pull up to `n` unique screen names from the vision output, first-seen order."""
-    seen: set[str] = set()
-    out: list[str] = []
-    for match in _SCREEN_HEADER_RE.findall(frontend_spec):
-        name = match.strip()
-        key = name.lower()
-        if key and key not in seen:
-            seen.add(key)
-            out.append(name)
-        if len(out) >= n:
-            break
-    return out
-
-
-def _render_top_screens(screens: list[str]) -> str:
-    if not screens:
-        return "Home, Search, Detail, Profile, Settings"
-    return ", ".join(screens[:5])
-
-
 def _strip_fence(text: str) -> str:
-    """Strip a leading/trailing markdown fence if the model wrapped output in one."""
     t = (text or "").strip()
     if t.startswith("```"):
         lines = t.splitlines()
@@ -294,7 +248,7 @@ def _strip_fence(text: str) -> str:
 
 
 # ──────────────────────────────────────────────
-# Main entry — drop-in replacement signature for generate_sectioned_spec
+# Public entry — drop-in signature with generate_sectioned_spec
 # ──────────────────────────────────────────────
 
 def generate_spec_fast(
@@ -306,106 +260,44 @@ def generate_spec_fast(
     project_id: str,
     output_dir: Path,
 ) -> str:
-    """Fast-mode spec generator.
+    """Generate a single DESIGN.md (10-section gallery format) from the
+    vision-extracted frontend spec.
 
-    Same signature, same return shape as generate_sectioned_spec. Persists
-    each section to `output_dir` for parity with the full path so disk-level
-    diffs work between modes.
+    `your_app_name` and `brand_colors` are accepted for API compatibility
+    with the previous fast_spec signature but are not applied — DESIGN.md
+    is an inspired-by reference document, not a "clone-build with these
+    brand overrides" instruction. Brand overrides belong at the
+    implementation stage.
     """
+    del your_app_name, brand_colors  # unused under the new contract
+
     output_dir.mkdir(parents=True, exist_ok=True)
     start = time.time()
-    call_count = 0
-    call_lock = Lock()
 
-    def _bump():
-        nonlocal call_count
-        with call_lock:
-            call_count += 1
-
-    brand_block = _build_brand_block(brand_colors)
-
-    def _call(prompt: str, *, model: str, timeout: int) -> str:
-        _bump()
-        return local_worker.claude_text(prompt, model=model, timeout=timeout)
-
-    def _overview_task() -> str:
-        return _call(
-            _APP_OVERVIEW_PROMPT.format(brand_block=brand_block, frontend_spec=frontend_spec),
-            model=_HAIKU,
-            timeout=300,
-        )
-
-    def _nav_task() -> str:
-        return _call(
-            _NAVIGATION_PROMPT.format(brand_block=brand_block, frontend_spec=frontend_spec),
-            model=_SONNET,
-            timeout=300,
-        )
-
-    def _screens_task() -> str:
-        return _call(
-            _SCREENS_PROMPT.format(brand_block=brand_block, frontend_spec=frontend_spec),
-            model=_SONNET,
-            timeout=900,
-        )
-
-    def _components_task() -> str:
-        return _call(
-            _COMPONENTS_PROMPT.format(brand_block=brand_block, frontend_spec=frontend_spec),
-            model=_HAIKU,
-            timeout=300,
-        )
-
-    def _design_task() -> str:
-        return _call(
-            _DESIGN_SYSTEM_PROMPT.format(brand_block=brand_block, frontend_spec=frontend_spec),
-            model=_HAIKU,
-            timeout=300,
-        )
-
-    local_worker.project_log(project_id, "        [fast] launching 5 section calls in parallel")
-    with ThreadPoolExecutor(max_workers=5) as pool:
-        f_overview = pool.submit(_overview_task)
-        f_nav = pool.submit(_nav_task)
-        f_screens = pool.submit(_screens_task)
-        f_components = pool.submit(_components_task)
-        f_design = pool.submit(_design_task)
-        overview_text = _strip_fence(f_overview.result())
-        nav_text = _strip_fence(f_nav.result())
-        screens_text = _strip_fence(f_screens.result())
-        components_text = _strip_fence(f_components.result())
-        design_text = _strip_fence(f_design.result())
-
-    section_1 = _SECTION_1_TEMPLATE.format(summary_paragraphs=overview_text)
-    section_6 = _SECTION_6_TEMPLATE
-    section_7 = _SECTION_7_TEMPLATE.format(
-        your_app_name=your_app_name,
-        reference_app=reference_app,
-        top_screens=_render_top_screens(_extract_top_screens(frontend_spec)),
+    local_worker.project_log(
+        project_id,
+        "        [design.md] generating 10-section spec via Sonnet",
     )
 
-    sections = [
-        ("01-app-overview.md", section_1.rstrip() + "\n"),
-        ("02-navigation-structure.md", nav_text.rstrip() + "\n"),
-        ("03-screen-specifications.md", screens_text.rstrip() + "\n"),
-        ("04-shared-components.md", components_text.rstrip() + "\n"),
-        ("05-design-system.md", design_text.rstrip() + "\n"),
-        ("06-frontend-implementation-notes.md", section_6.rstrip() + "\n"),
-        ("07-claude-code-prompt.md", section_7.rstrip() + "\n"),
-    ]
-    for filename, content in sections:
-        (output_dir / filename).write_text(content, encoding="utf-8")
-
-    header = (
-        f"# {your_app_name} — Frontend Specification\n"
-        f"> Generated by Spectr | Reference app: {reference_app}"
+    raw = local_worker.claude_text(
+        _DESIGN_MD_USER.format(
+            reference_app=reference_app,
+            frontend_spec=frontend_spec,
+        ),
+        system=_DESIGN_MD_SYSTEM,
+        model=_SONNET,
+        timeout=900,
     )
-    body = "\n\n---\n\n".join([header] + [content.rstrip() for _, content in sections])
-    assembled = body.strip() + "\n"
+    content = _strip_fence(raw)
+    if not content:
+        raise RuntimeError("DESIGN.md generation returned empty content")
+
+    text = content + "\n" if not content.endswith("\n") else content
+    (output_dir / "DESIGN.md").write_text(text, encoding="utf-8")
 
     elapsed = time.time() - start
     local_worker.project_log(
         project_id,
-        f"        [fast] complete: {elapsed:.1f}s wall, {call_count} claude calls",
+        f"        [design.md] complete: {elapsed:.1f}s, {len(text):,} chars",
     )
-    return assembled
+    return text

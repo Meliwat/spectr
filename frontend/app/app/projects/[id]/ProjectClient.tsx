@@ -99,7 +99,7 @@ export default function ProjectClient({
   }
 
   const isLive = project.status !== 'complete' && project.status !== 'failed'
-  const downloadFilename = project.bundle_s3_key ? 'bundle.zip' : 'spec.md'
+  const downloadFilename = project.bundle_s3_key ? 'bundle.zip' : 'DESIGN.md'
   const downloadHref = `/api/projects/${id}/download${tokenQs}`
 
   return (

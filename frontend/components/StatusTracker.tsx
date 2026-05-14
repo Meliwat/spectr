@@ -26,7 +26,7 @@ const LEGACY_PIPELINE_STAGES: TrackerStage[] = [
   { key: 'analyzing_screens', label: 'Screens', start: 28, end: 48, stageLabel: 'Reading screen layouts and repeated patterns...' },
   { key: 'analyzing_design', label: 'Style', start: 48, end: 64, stageLabel: 'Capturing color, type, spacing, and components...' },
   { key: 'preparing_brief', label: 'Prep', start: 64, end: 70, stageLabel: 'Organizing the spec before writing...' },
-  { key: 'writing_brief', label: 'Writing', start: 70, end: 97, stageLabel: 'Writing the spec section by section...' },
+  { key: 'writing_brief', label: 'Writing', start: 70, end: 97, stageLabel: 'Writing DESIGN.md in one coherent pass...' },
   { key: 'saving', label: 'Saving', start: 97, end: 100, stageLabel: 'Saving your spec...' },
 ] as const
 
@@ -418,7 +418,7 @@ function buildLegacyLiveMetrics(
       const completedUnits = Math.min(total, doneSet.size + Math.min(0.35, inFlightCount * 0.35))
       const latestStarted = startedMatches.at(-1)
       const latestStartedIndex = latestStarted?.current ?? doneMatches.at(-1)?.current ?? 0
-      const startedAt = parseClock(lines.find(line => line.includes('[3/3] Writing spec.md')) ?? '')
+      const startedAt = parseClock(lines.find(line => line.includes('[3/3] Writing DESIGN.md')) ?? '')
       const nowAt = parseClock(lines.at(-1) ?? '')
       const elapsed = startedAt != null && nowAt != null ? Math.max(0, nowAt - startedAt) : null
       const latestSectionName = sectionTitle(latestStarted?.filename)

@@ -8,12 +8,12 @@ const SITE_URL = 'https://www.spectr.to'
 export const metadata: Metadata = {
   title: 'Spectr — Turn Claude into an award-winning iOS designer',
   description:
-    'Connect Spectr to Claude. Drop in any iOS app. Get back a production-ready spec.md in 5 minutes — exact hex codes, exact font sizes, exact spacing. Runs on your Claude subscription.',
+    'Connect Spectr to Claude. Drop in any iOS app. Get back a production-ready DESIGN.md in 3 minutes — exact hex codes, exact font sizes, exact spacing. Runs on your Claude subscription.',
   alternates: { canonical: SITE_URL },
   openGraph: {
     title: 'Spectr — Turn Claude into an award-winning iOS designer',
     description:
-      'Connect Spectr to Claude. Drop in any iOS app. Get back a complete spec.md in 5 minutes. Runs on your Claude subscription.',
+      'Connect Spectr to Claude. Drop in any iOS app. Get back a complete DESIGN.md in 3 minutes. Runs on your Claude subscription.',
     url: SITE_URL,
     type: 'website',
   },
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Spectr — Turn Claude into an award-winning iOS designer',
     description:
-      'Connect Spectr to Claude. Drop in any iOS app. Get back a complete spec.md in 5 minutes.',
+      'Connect Spectr to Claude. Drop in any iOS app. Get back a complete DESIGN.md in 3 minutes.',
   },
   keywords: [
     'MCP server',
@@ -44,13 +44,13 @@ export default function HomePage() {
       <section className="mcp-hero">
         <SpectrBackground />
         <div className="page-shell mcp-hero-inner">
-          <span className="eyebrow">v0.1.0 · MCP Server · CLI · Claude Skill</span>
+          <span className="eyebrow">v0.2.0 · MCP Server · CLI · Claude Skill</span>
           <h1 className="mcp-headline">
             Turn <span className="mcp-grad">Claude</span> into an award-winning iOS designer.
           </h1>
           <p className="mcp-subhead">
             Drop in any iOS app. Get back a production-ready{' '}
-            <code>spec.md</code> in five minutes, precise enough to build a pixel-perfect clone.
+            <code>DESIGN.md</code> in three minutes, precise enough to build a pixel-perfect clone.
           </p>
 
           <InstallTabs />
