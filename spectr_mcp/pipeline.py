@@ -27,6 +27,7 @@ if str(_WORKER_DIR) not in sys.path:
     sys.path.insert(0, str(_WORKER_DIR))
 
 from worker import local_worker  # noqa: E402
+from worker.fast_spec import generate_spec_fast as _generate_spec_fast  # noqa: E402
 from worker.services.ffmpeg import (  # noqa: E402
     extract_frames as _extract_frames,
     compress_video as _compress_video,
@@ -118,6 +119,11 @@ def generate_spec(
     Requires either `ANTHROPIC_API_KEY` in the env or the `claude` CLI on PATH.
     Always requires ffmpeg on PATH for frame extraction.
 
+    Spec generation uses the fast path in `worker.fast_spec`: templates for
+    sections 1/6/7, Haiku reformat for sections 4/5, single Sonnet calls for
+    navigation and screens, all 5 dynamic sections in parallel. Wall-clock
+    target ~2-4 min.
+
     Args:
         source: Path to a local screen recording file (.mp4 / .mov / .m4v).
         reference_app: Name of the app the recording shows. Required — the
@@ -135,7 +141,8 @@ def generate_spec(
         The full spec.md content as a string.
 
     Raises:
-        ValueError: source is not an existing video file or reference_app is missing.
+        ValueError: source is not an existing video file or reference_app is
+            missing.
         RuntimeError: pipeline produced no frames or vision/spec stage failed.
     """
     if not reference_app or not reference_app.strip():
@@ -170,7 +177,7 @@ def generate_spec(
 
         spec_dir = workdir / "spec"
         spec_dir.mkdir(parents=True, exist_ok=True)
-        spec_md = local_worker.generate_sectioned_spec(
+        return _generate_spec_fast(
             reference_app=app_name,
             your_app_name=clone_name,
             brand_colors=brand,
@@ -178,7 +185,6 @@ def generate_spec(
             project_id="mcp-local",
             output_dir=spec_dir,
         )
-        return spec_md
     finally:
         if cleanup:
             shutil.rmtree(workdir, ignore_errors=True)
