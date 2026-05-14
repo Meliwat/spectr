@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Cash App iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #000000;
+    --surface-1: #0F0F0F;
+    --surface-2: #1A1A1A;
+    --divider: #1F1F1F;
+    --hairline: #2A2A2A;
+    --text: #FFFFFF;
+    --text-secondary: #9E9E9E;
+    --text-tertiary: #6E6E6E;
+    --cash-green: #00D632;
+    --cash-green-pressed: #00B829;
+    --cash-green-dim: #008C20;
+    --bitcoin: #F7931A;
+    --red: #FF453A;
+    --amber: #FFA300;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+    --mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #0a0a0a; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 900; letter-spacing: -0.6px; }
+  .page-chip { background: var(--cash-green); color: var(--canvas); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 4px; letter-spacing: 0.6px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Top: recipient pill */
+  .top-area { padding: 48px 16px 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; }
+  .top-recipient { background: var(--surface-2); border-radius: 500px; padding: 6px 12px 6px 6px; display: flex; align-items: center; gap: 8px; }
+  .top-avatar { width: 26px; height: 26px; border-radius: 50%; background: #FF6B9D; color: #fff; font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; }
+  .top-tag { font-family: var(--mono); font-weight: 500; font-size: 14px; color: var(--text); }
+
+  /* Giant amount */
+  .amount-area { flex: 1; display: flex; align-items: center; justify-content: center; padding: 0 16px; }
+  .amount {
+    font-family: var(--mono);
+    font-weight: 700;
+    color: var(--text);
+    font-size: 80px;
+    line-height: 1;
+    letter-spacing: -2px;
+    text-shadow: 0 0 12px rgba(0, 214, 50, 0.45);
+    display: flex; align-items: baseline; gap: 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .amount .currency { color: var(--text-secondary); font-size: 52px; text-shadow: none; }
+
+  /* Keypad */
+  .keypad { padding: 6px 24px 8px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; flex-shrink: 0; }
+  .key { height: 50px; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 26px; font-weight: 400; color: var(--text); border-radius: 10px; }
+  .key:active, .key.pressed { background: var(--surface-2); }
+  .key svg { width: 24px; height: 24px; stroke: var(--text); stroke-width: 2; fill: none; }
+
+  /* Action row */
+  .actions { display: flex; gap: 10px; padding: 8px 24px 12px; flex-shrink: 0; }
+  .act-btn {
+    flex: 1;
+    height: 52px;
+    border-radius: 28px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 700;
+    letter-spacing: 0.1px;
+  }
+  .act-request { background: var(--surface-2); color: var(--text); }
+  .act-pay { background: var(--cash-green); color: var(--canvas); }
+
+  /* Tab bar */
+  .tab-bar { height: 56px; background: var(--canvas); border-top: 0.5px solid var(--divider); display: flex; align-items: center; justify-content: space-around; padding: 4px 12px 14px; flex-shrink: 0; }
+  .tab { color: var(--text); display: flex; align-items: center; justify-content: center; }
+  .tab svg { width: 26px; height: 26px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+  .tab.pay svg { width: 30px; height: 30px; stroke-width: 2.2; }
+  .tab.active { color: var(--cash-green); }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 8px; padding: 14px; min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 500; font-family: var(--mono); border: 1px solid var(--divider); color: var(--text); }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--canvas); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: var(--mono); font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); }
+  .t-amount { font-family: var(--mono); font-size: 56px; font-weight: 700; letter-spacing: -1.2px; color: var(--text); font-variant-numeric: tabular-nums; }
+  .t-balance { font-family: var(--mono); font-size: 36px; font-weight: 700; letter-spacing: -0.8px; font-variant-numeric: tabular-nums; }
+  .t-title { font-size: 28px; font-weight: 900; letter-spacing: -0.5px; }
+  .t-section { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-tag { font-family: var(--mono); font-size: 22px; font-weight: 500; color: var(--cash-green); }
+  .t-card { font-size: 16px; font-weight: 500; }
+  .t-meta { font-size: 13px; color: var(--text-secondary); }
+  .t-caps { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-secondary); }
+
+  /* Cash Card */
+  .cash-card { aspect-ratio: 1.586; background: var(--canvas); border: 1px solid var(--hairline); border-radius: 14px; padding: 22px; display: flex; flex-direction: column; justify-content: flex-end; max-width: 100%; }
+  .cash-card-row { display: flex; align-items: flex-end; justify-content: space-between; }
+  .cash-card-tag { font-family: var(--mono); font-weight: 700; font-size: 24px; color: var(--cash-green); }
+  .cash-card-logo { font-family: var(--font); font-weight: 900; font-size: 34px; color: var(--cash-green); line-height: 1; }
+
+  /* Activity row */
+  .activity-row { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 0.5px solid var(--divider); }
+  .activity-row:last-child { border-bottom: none; }
+  .activity-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 18px; flex-shrink: 0; }
+  .activity-info { flex: 1; min-width: 0; }
+  .activity-name { font-size: 16px; font-weight: 500; color: var(--text); }
+  .activity-sub { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+  .activity-amt { font-family: var(--mono); font-weight: 500; font-size: 17px; font-variant-numeric: tabular-nums; }
+  .amt-rcv { color: var(--cash-green); }
+  .amt-snt { color: var(--text); }
+
+  /* Button demo */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 17px; font-weight: 700; padding: 16px 28px; border-radius: 30px; border: none; cursor: pointer; }
+  .btn-pay { background: var(--cash-green); color: var(--canvas); }
+  .btn-request { background: var(--surface-2); color: var(--text); }
+  .btn-pill { background: var(--surface-2); color: var(--text); padding: 10px 18px; border-radius: 500px; font-size: 15px; font-weight: 500; }
+  .btn-disabled { background: var(--surface-2); color: var(--text-tertiary); padding: 16px 28px; border-radius: 30px; font-weight: 700; font-size: 17px; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--cash-green); color: var(--canvas); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-24 { border-radius: 24px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Cash App iOS — Design Tokens</div>
+    <div class="page-chip">Dark</div>
+  </div>
+  <p class="page-subtitle">Near-black canvas <code>#000000</code> with a single saturated green accent <code>#00D632</code>. Cash Sans / Cash Sans Mono — geometric, slightly condensed. The Pay screen's giant $-amount keypad is the entire visual signature.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="top-area">
+            <div class="top-recipient">
+              <div class="top-avatar">S</div>
+              <div class="top-tag">$sarahkim</div>
+            </div>
+            <div style="color: var(--text); font-size: 14px; font-weight: 500;">×</div>
+          </div>
+
+          <div class="amount-area">
+            <div class="amount">
+              <span class="currency">$</span><span>42</span>
+            </div>
+          </div>
+
+          <div class="keypad">
+            <div class="key">1</div>
+            <div class="key">2</div>
+            <div class="key">3</div>
+            <div class="key">4</div>
+            <div class="key">5</div>
+            <div class="key">6</div>
+            <div class="key">7</div>
+            <div class="key">8</div>
+            <div class="key">9</div>
+            <div class="key">.</div>
+            <div class="key">0</div>
+            <div class="key"><svg viewBox="0 0 24 24"><path d="M3 12l5-7h13v14H8z"/><line x1="18" y1="9" x2="12" y2="15"/><line x1="12" y1="9" x2="18" y2="15"/></svg></div>
+          </div>
+
+          <div class="actions">
+            <div class="act-btn act-request">Request</div>
+            <div class="act-btn act-pay">Pay</div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="12" y1="10" x2="12" y2="14"/></svg></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+            <div class="tab pay active"><svg viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12,7 12,12 15,14"/></svg></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M11.5 11.5h2.5a2 2 0 0 0 0-4h-2.5z M11.5 11.5h3a2 2 0 0 1 0 4h-3z M11.5 7.5v8 M11.5 5v2.5 M11.5 15.5v2"/><circle cx="12" cy="12" r="10"/></svg></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#000000;"><div class="name">Canvas</div>#000000</div>
+          <div class="swatch" style="background:#0F0F0F;"><div class="name">Surface 1</div>#0F0F0F</div>
+          <div class="swatch" style="background:#1A1A1A;"><div class="name">Surface 2</div>#1A1A1A</div>
+          <div class="swatch" style="background:#1F1F1F;"><div class="name">Divider</div>#1F1F1F</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Text Primary</div>#FFFFFF</div>
+          <div class="swatch" style="background:#9E9E9E; color:#000;"><div class="name">Text Secondary</div>#9E9E9E</div>
+          <div class="swatch light" style="background:#00D632;"><div class="name">Cash Green</div>#00D632</div>
+          <div class="swatch light" style="background:#00B829;"><div class="name">Green Pressed</div>#00B829</div>
+          <div class="swatch" style="background:#008C20;"><div class="name">Green Dim</div>#008C20</div>
+          <div class="swatch light" style="background:#F7931A;"><div class="name">Bitcoin</div>#F7931A</div>
+          <div class="swatch" style="background:#FF453A;"><div class="name">Error Red</div>#FF453A</div>
+          <div class="swatch light" style="background:#FFA300;"><div class="name">Warning Amber</div>#FFA300</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Cash Sans / Cash Sans Mono</div>
+        <div class="type-row"><div class="type-meta">Amount Hero · Mono 80pt · 700</div><div class="type-sample t-amount">$42</div></div>
+        <div class="type-row"><div class="type-meta">Balance · Mono 36pt · 700</div><div class="type-sample t-balance">$1,247.92</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 28pt · 900</div><div class="type-sample t-title">Money</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-section">Recent activity</div></div>
+        <div class="type-row"><div class="type-meta">Cashtag · Mono 22pt · 500</div><div class="type-sample t-tag">$johndoe</div></div>
+        <div class="type-row"><div class="type-meta">Card Label · 16pt · 500</div><div class="type-sample t-card">Sarah Kim</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 400</div><div class="type-sample t-meta">Yesterday at 3:42pm</div></div>
+        <div class="type-row"><div class="type-meta">All-Caps · 11pt · 700 +1.5</div><div class="type-sample t-caps">Cash Balance</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Cash Card</div>
+        <div class="cash-card">
+          <div class="cash-card-row">
+            <div class="cash-card-tag">$johndoe</div>
+            <div class="cash-card-logo">$</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Activity Feed</div>
+        <div class="activity-row">
+          <div class="activity-avatar" style="background:#FF6B9D;">S</div>
+          <div class="activity-info"><div class="activity-name">Sarah Kim</div><div class="activity-sub">From Sarah Kim · Yesterday</div></div>
+          <div class="activity-amt amt-rcv">+$42.00</div>
+        </div>
+        <div class="activity-row">
+          <div class="activity-avatar" style="background:#619AFF;">M</div>
+          <div class="activity-info"><div class="activity-name">Marcus Lin</div><div class="activity-sub">Sent to Marcus Lin · 2 days ago</div></div>
+          <div class="activity-amt amt-snt">-$18.50</div>
+        </div>
+        <div class="activity-row">
+          <div class="activity-avatar" style="background:#AA77FF;">J</div>
+          <div class="activity-info"><div class="activity-name">Jess Cho</div><div class="activity-sub">From Jess Cho · 4 days ago</div></div>
+          <div class="activity-amt amt-rcv">+$120.00</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-pay">Pay</button>
+          <button class="btn btn-request">Request</button>
+          <button class="btn btn-pill">Add Cash</button>
+          <button class="btn btn-pill">Cash Out</button>
+          <button class="btn-disabled">Pay</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-24">24</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

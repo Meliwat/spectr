@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Strava iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --surface-warm: #F5F4F2;
+    --surface-cool: #F0F0F0;
+    --divider: #E5E5E5;
+    --map-tile: #E8E5DD;
+    --ink: #0E0E0E;
+    --ink-2: #666666;
+    --ink-3: #9A9A9A;
+    --orange: #FC4C02;
+    --orange-pressed: #D44002;
+    --orange-halo: rgba(252,76,2,0.3);
+    --pr-gold: #F5C24A;
+    --silver: #C6C6C6;
+    --bronze: #CD7F32;
+    --success: #22C55E;
+    --heart-red: #E74C3C;
+    --pace-blue: #3B82F6;
+    --elev-brown: #8B6F47;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+    --mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #EAEAEA; color: var(--ink); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 800; letter-spacing: -0.6px; color: var(--orange); }
+  .page-chip { background: var(--ink); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 4px; letter-spacing: 0.6px; text-transform: uppercase; }
+  .page-subtitle { color: var(--ink-2); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.5), 0 0 0 2px rgba(0,0,0,0.08) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Top bar */
+  .topbar { padding: 48px 16px 8px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .topbar-title { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; color: var(--ink); }
+  .topbar-actions { display: flex; gap: 12px; }
+  .topbar-actions svg { width: 22px; height: 22px; stroke: var(--ink); stroke-width: 2; fill: none; }
+
+  /* Feed */
+  .feed { flex: 1; overflow: hidden; padding: 6px 16px 60px; }
+  .feed-card { background: var(--canvas); padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .feed-card:last-child { border-bottom: none; }
+
+  .card-header { display: flex; align-items: center; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--orange), #FF8043); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+  .author { flex: 1; margin-left: 10px; }
+  .author-name { font-size: 14px; font-weight: 600; color: var(--ink); letter-spacing: -0.1px; }
+  .author-time { font-size: 11px; color: var(--ink-2); margin-top: 1px; }
+  .activity-icon { color: var(--orange); }
+  .activity-icon svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  .activity-title { font-size: 15px; font-weight: 600; color: var(--ink); margin: 8px 0 8px; letter-spacing: -0.2px; }
+
+  /* Map snapshot */
+  .map-snapshot { width: 100%; aspect-ratio: 16/9; background: var(--map-tile); border-radius: 6px; overflow: hidden; position: relative; }
+  .map-snapshot::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(90deg, transparent 38%, #C8BFA9 38%, #C8BFA9 38.4%, transparent 38.4%),
+      linear-gradient(90deg, transparent 64%, #C8BFA9 64%, #C8BFA9 64.4%, transparent 64.4%),
+      linear-gradient(0deg, transparent 24%, #C8BFA9 24%, #C8BFA9 24.4%, transparent 24.4%),
+      linear-gradient(0deg, transparent 62%, #C8BFA9 62%, #C8BFA9 62.4%, transparent 62.4%),
+      linear-gradient(120deg, transparent 30%, #D6CFBE 30%, #D6CFBE 60%, transparent 60%);
+    opacity: 0.6;
+  }
+  /* Polyline halo (drawn beneath) */
+  .map-snapshot svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .map-snapshot .halo { stroke: var(--orange-halo); stroke-width: 8px; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .map-snapshot .stroke { stroke: var(--orange); stroke-width: 4px; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .map-snapshot .start { fill: #fff; stroke: var(--orange); stroke-width: 2px; }
+  .map-snapshot .end   { fill: var(--orange); stroke: #fff; stroke-width: 2px; }
+
+  /* 3-up stat grid */
+  .stat-grid { display: flex; align-items: stretch; margin-top: 12px; }
+  .stat-cell { flex: 1; text-align: center; padding: 4px 0; }
+  .stat-cell + .stat-cell { border-left: 1px solid var(--surface-cool); }
+  .stat-label { font-size: 10px; font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.6px; }
+  .stat-value { font-size: 18px; font-weight: 700; color: var(--ink); margin-top: 2px; letter-spacing: -0.3px; font-variant-numeric: tabular-nums; }
+
+  /* Achievement row */
+  .ach-row { display: flex; gap: 6px; margin-top: 8px; }
+  .ach { background: rgba(252,76,2,0.08); border-radius: 999px; padding: 3px 8px; display: flex; align-items: center; gap: 4px; }
+  .ach-icon { width: 12px; height: 12px; color: var(--orange); }
+  .ach-icon svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 2; fill: currentColor; }
+  .ach-text { font-size: 11px; font-weight: 600; color: var(--ink); }
+
+  /* Kudos row */
+  .kudos-row { display: flex; align-items: center; gap: 16px; margin-top: 12px; }
+  .kudos, .comments { display: flex; align-items: center; gap: 4px; }
+  .kudos svg, .comments svg { width: 18px; height: 18px; stroke: var(--ink-2); stroke-width: 2; fill: none; }
+  .kudos.active svg { fill: var(--orange); stroke: var(--orange); }
+  .count { font-size: 12px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .view-link { margin-left: auto; font-size: 12px; font-weight: 600; color: var(--orange); }
+
+  /* Tab bar */
+  .tab-bar { height: 60px; background: #fff; border-top: 0.5px solid var(--divider); display: flex; align-items: center; justify-content: space-around; padding: 4px 6px 12px; flex-shrink: 0; position: relative; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--ink-2); font-size: 9px; font-weight: 600; flex: 1; }
+  .tab.active { color: var(--orange); }
+  .tab svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; }
+
+  /* Record button */
+  .record-btn { width: 50px; height: 50px; border-radius: 50%; background: var(--orange); position: absolute; top: -16px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 14px rgba(252,76,2,0.5); }
+  .record-btn svg { width: 22px; height: 22px; fill: #fff; stroke: #fff; stroke-width: 2; }
+  .record-btn .core { width: 12px; height: 12px; background: #fff; border-radius: 50%; }
+
+  /* Token sections */
+  .section { background: #fff; border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--ink-2); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 14px; min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 500; font-family: var(--mono); border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--ink); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: var(--mono); font-size: 11px; color: var(--ink-2); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--ink); }
+  .t-hero { font-size: 44px; font-weight: 900; color: var(--ink); letter-spacing: -0.6px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .t-nav { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; }
+  .t-title { font-size: 17px; font-weight: 600; letter-spacing: -0.2px; }
+  .t-body { font-size: 15px; font-weight: 400; line-height: 1.45; }
+  .t-stat-label { font-size: 11px; font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.6px; }
+  .t-stat-val { font-size: 17px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .t-meta { font-size: 13px; font-weight: 400; color: var(--ink-2); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 15px; font-weight: 600; padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; letter-spacing: -0.2px; }
+  .btn-primary { background: var(--orange); color: #fff; }
+  .btn-outline { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); padding: 10.5px 22.5px; }
+  .btn-following { background: var(--surface-cool); color: var(--ink); }
+  .btn-link { background: transparent; color: var(--orange); font-weight: 600; padding: 8px 0; }
+
+  /* Leaderboard */
+  .lb-list { background: var(--canvas); }
+  .lb-row { display: flex; align-items: center; padding: 8px 12px; border-bottom: 0.5px solid var(--divider); }
+  .lb-row:last-child { border-bottom: none; }
+  .rank-chip { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 900; font-size: 12px; flex-shrink: 0; }
+  .rank-1 { background: var(--pr-gold); }
+  .rank-2 { background: var(--silver); }
+  .rank-3 { background: var(--bronze); }
+  .rank-default { background: var(--surface-cool); color: var(--ink); }
+  .lb-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--orange), #FFB084); margin-left: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 12px; }
+  .lb-info { flex: 1; margin-left: 10px; }
+  .lb-name { font-size: 13px; font-weight: 600; color: var(--ink); }
+  .lb-date { font-size: 10px; color: var(--ink-2); margin-top: 1px; }
+  .lb-right { text-align: right; }
+  .lb-time { font-size: 15px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .lb-gap { font-size: 10px; color: var(--ink-2); margin-top: 1px; font-variant-numeric: tabular-nums; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--orange); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-10 { border-radius: 10px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Strava iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">Sweat-stained newspaper for athletes. Strava Orange `#FC4C02` is the only accent — Record CTA, route polyline, kudos filled, achievements. Route lines drawn at 4pt stroke with a halo so they read on busy maps. Tabular numerals on every stat.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="topbar">
+            <div class="topbar-title">Home</div>
+            <div class="topbar-actions">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            </div>
+          </div>
+
+          <div class="feed">
+
+            <!-- Feed card 1 -->
+            <div class="feed-card">
+              <div class="card-header">
+                <div class="avatar">CR</div>
+                <div class="author">
+                  <div class="author-name">Casey Reardon</div>
+                  <div class="author-time">2 hours ago · Boston, MA</div>
+                </div>
+                <div class="activity-icon">
+                  <svg viewBox="0 0 24 24"><circle cx="17" cy="4" r="2"/><path d="M15.5 8 11 12.5l3.5 3.5L11 22"/><path d="M9 9l-3 3 2.5 3"/></svg>
+                </div>
+              </div>
+
+              <div class="activity-title">Tuesday Morning Run</div>
+
+              <div class="map-snapshot">
+                <svg viewBox="0 0 280 158" preserveAspectRatio="xMidYMid meet">
+                  <!-- halo first -->
+                  <path class="halo" d="M30,120 Q60,40 120,80 T200,40 Q230,30 250,80" />
+                  <path class="stroke" d="M30,120 Q60,40 120,80 T200,40 Q230,30 250,80" />
+                  <circle class="start" cx="30" cy="120" r="6" />
+                  <circle class="end" cx="250" cy="80" r="6" />
+                </svg>
+              </div>
+
+              <div class="stat-grid">
+                <div class="stat-cell">
+                  <div class="stat-label">Distance</div>
+                  <div class="stat-value">8.2 mi</div>
+                </div>
+                <div class="stat-cell">
+                  <div class="stat-label">Time</div>
+                  <div class="stat-value">1:14:23</div>
+                </div>
+                <div class="stat-cell">
+                  <div class="stat-label">Pace</div>
+                  <div class="stat-value">9:03 /mi</div>
+                </div>
+              </div>
+
+              <div class="ach-row">
+                <div class="ach">
+                  <div class="ach-icon"><svg viewBox="0 0 24 24"><path d="M12 2l2.39 7.36H22l-6.18 4.49 2.36 7.36L12 16.7l-6.18 4.51 2.36-7.36L2 9.36h7.61z"/></svg></div>
+                  <div class="ach-text">1 PR</div>
+                </div>
+                <div class="ach">
+                  <div class="ach-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/></svg></div>
+                  <div class="ach-text">3 Best Efforts</div>
+                </div>
+              </div>
+
+              <div class="kudos-row">
+                <div class="kudos active">
+                  <svg viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-6 0v4H2v11h20V9z"/></svg>
+                  <span class="count">27</span>
+                </div>
+                <div class="comments">
+                  <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  <span class="count">12</span>
+                </div>
+                <div class="view-link">View Activity</div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg><span>Maps</span></div>
+            <div class="tab" style="opacity:0;"><span>·</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><circle cx="17" cy="11" r="2"/></svg><span>Groups</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 14a4 4 0 1 0 0-8 4 4 0 0 0 0 8"/><path d="M5 20s2-4 7-4 7 4 7 4"/></svg><span>You</span></div>
+
+            <div class="record-btn">
+              <div class="core"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#FC4C02;"><div class="name">Strava Orange</div>#FC4C02</div>
+          <div class="swatch" style="background:#D44002;"><div class="name">Orange Pressed</div>#D44002</div>
+          <div class="swatch light" style="background:rgba(252,76,2,0.3);"><div class="name">Orange Halo</div>rgba(252,76,2,.3)</div>
+          <div class="swatch" style="background:#0E0E0E;"><div class="name">Ink Primary</div>#0E0E0E</div>
+          <div class="swatch" style="background:#666666;"><div class="name">Ink Secondary</div>#666666</div>
+          <div class="swatch light" style="background:#F5F4F2;"><div class="name">Surface Warm</div>#F5F4F2</div>
+          <div class="swatch light" style="background:#E8E5DD;"><div class="name">Map Tile</div>#E8E5DD</div>
+          <div class="swatch light" style="background:#F5C24A;"><div class="name">PR Gold</div>#F5C24A</div>
+          <div class="swatch light" style="background:#C6C6C6;"><div class="name">Silver</div>#C6C6C6</div>
+          <div class="swatch" style="background:#CD7F32;"><div class="name">Bronze</div>#CD7F32</div>
+          <div class="swatch" style="background:#22C55E;"><div class="name">Success</div>#22C55E</div>
+          <div class="swatch" style="background:#E74C3C;"><div class="name">Heart Red</div>#E74C3C</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — SF Pro</div>
+        <div class="type-row"><div class="type-meta">Hero Stat · 44pt · 900 tnum</div><div class="type-sample t-hero">8.2</div></div>
+        <div class="type-row"><div class="type-meta">Large Nav · 28pt · 700</div><div class="type-sample t-nav">Activity</div></div>
+        <div class="type-row"><div class="type-meta">Activity Title · 17pt · 600</div><div class="type-sample t-title">Tuesday Morning Run</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 400</div><div class="type-sample t-body">Felt strong despite the rain on the Esplanade.</div></div>
+        <div class="type-row"><div class="type-meta">Stat Label · 11pt · 600 UPPER 0.6tr</div><div class="type-sample t-stat-label">Distance · Time · Pace</div></div>
+        <div class="type-row"><div class="type-meta">Stat Value · 17pt · 700 tnum</div><div class="type-sample t-stat-val">1:14:23</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 400</div><div class="type-sample t-meta">2 hours ago · Boston, MA</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Segment Leaderboard</div>
+        <div class="lb-list">
+          <div class="lb-row">
+            <div class="rank-chip rank-1">1</div>
+            <div class="lb-avatar">JD</div>
+            <div class="lb-info">
+              <div class="lb-name">Jamie Davis</div>
+              <div class="lb-date">Aug 14, 2025</div>
+            </div>
+            <div class="lb-right">
+              <div class="lb-time">7:42</div>
+              <div class="lb-gap">leader</div>
+            </div>
+          </div>
+          <div class="lb-row">
+            <div class="rank-chip rank-2">2</div>
+            <div class="lb-avatar" style="background:linear-gradient(135deg,#3B82F6,#60A5FA);">MS</div>
+            <div class="lb-info">
+              <div class="lb-name">Maria Sánchez</div>
+              <div class="lb-date">Aug 11, 2025</div>
+            </div>
+            <div class="lb-right">
+              <div class="lb-time">7:54</div>
+              <div class="lb-gap">+0:12</div>
+            </div>
+          </div>
+          <div class="lb-row">
+            <div class="rank-chip rank-3">3</div>
+            <div class="lb-avatar" style="background:linear-gradient(135deg,#22C55E,#86EFAC);">CR</div>
+            <div class="lb-info">
+              <div class="lb-name">Casey Reardon</div>
+              <div class="lb-date">Today</div>
+            </div>
+            <div class="lb-right">
+              <div class="lb-time">8:03</div>
+              <div class="lb-gap">+0:21</div>
+            </div>
+          </div>
+          <div class="lb-row">
+            <div class="rank-chip rank-default">4</div>
+            <div class="lb-avatar" style="background:linear-gradient(135deg,#9333EA,#C4B5FD);">RT</div>
+            <div class="lb-info">
+              <div class="lb-name">Riley Tan</div>
+              <div class="lb-date">Aug 10, 2025</div>
+            </div>
+            <div class="lb-right">
+              <div class="lb-time">8:11</div>
+              <div class="lb-gap">+0:29</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Record</button>
+          <button class="btn btn-outline">Follow</button>
+          <button class="btn btn-following">Following</button>
+          <button class="btn btn-link">View Activity</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

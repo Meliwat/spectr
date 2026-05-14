@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Figma iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --surface-1: #F5F5F5;
+    --surface-2: #E5E5E5;
+    --divider: #E5E5E5;
+    --hairline: #EEEEEE;
+    --dark-canvas: #1E1E1E;
+    --dark-surface-1: #2C2C2C;
+    --dark-surface-2: #383838;
+    --ink: #1E1E1E;
+    --text-sec: #757575;
+    --text-ter: #B3B3B3;
+    --cube-red: #F24E1E;
+    --cube-orange: #FF7262;
+    --cube-purple: #A259FF;
+    --cube-blue: #1ABCFE;
+    --cube-green: #0ACF83;
+    --action-blue: #0D99FF;
+    --action-blue-pressed: #0769B5;
+    --blurple: #5551FF;
+    --macaron: #FFC8C8;
+    --success: #14AE5C;
+    --warning: #F2AC2A;
+    --error: #E03E1A;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+    --mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #F0F0F0; color: var(--ink); font-family: var(--font); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--ink); color: #fff; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 4px; letter-spacing: 0.4px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-sec); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.4), 0 0 0 2px rgba(0,0,0,0.08) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--dark-canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Nav */
+  .nav { padding: 50px 16px 14px; background: var(--dark-canvas); flex-shrink: 0; }
+  .nav-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+  .nav-title { font-size: 26px; font-weight: 700; color: #fff; letter-spacing: -0.4px; }
+  .nav-meta { font-size: 12px; color: var(--text-ter); }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 600; font-size: 14px; }
+
+  /* Search */
+  .search { margin: 0 16px 8px; background: var(--dark-surface-1); height: 36px; border-radius: 6px; display: flex; align-items: center; padding: 0 12px; gap: 8px; }
+  .search svg { width: 14px; height: 14px; stroke: var(--text-ter); stroke-width: 2; fill: none; }
+  .search input, .search .ph { font-size: 13px; color: var(--text-sec); background: none; border: none; outline: none; flex: 1; font-family: var(--font); }
+
+  /* Section header */
+  .sec-head { padding: 14px 16px 8px; display: flex; align-items: center; justify-content: space-between; }
+  .sec-title { font-size: 14px; font-weight: 600; color: #fff; }
+  .sec-link { font-size: 12px; color: var(--action-blue); font-weight: 500; }
+
+  /* Files grid */
+  .files-grid { padding: 0 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .file-card { width: 100%; }
+  .file-thumb {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--dark-surface-2);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .file-thumb.no-preview { display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 28px; font-family: var(--font); }
+  .file-thumb.c1 { background: var(--cube-purple); }
+  .file-thumb.c2 { background: var(--cube-blue); }
+  .file-thumb.c3 { background: var(--cube-orange); }
+  .file-thumb.c4 { background: var(--cube-green); }
+  .file-thumb.preview {
+    background: var(--canvas);
+    position: relative;
+  }
+  .file-thumb.preview::after {
+    content: '';
+    position: absolute;
+    inset: 14% 18% 26% 18%;
+    background:
+      linear-gradient(180deg, var(--cube-purple) 0%, var(--cube-purple) 12%, transparent 12%, transparent 100%),
+      linear-gradient(90deg, transparent 0, transparent 60%, var(--cube-orange) 60%, var(--cube-orange) 72%, transparent 72%);
+    border-radius: 4px;
+  }
+  .file-name { font-size: 13px; font-weight: 500; color: #fff; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .file-meta { font-size: 11px; color: var(--text-ter); margin-top: 2px; display: flex; justify-content: space-between; align-items: center; }
+  .av-stack { display: flex; }
+  .av-mini { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--dark-canvas); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 600; font-size: 8px; }
+  .av-mini + .av-mini { margin-left: -6px; }
+
+  /* Recent projects list */
+  .proj-list { padding: 6px 16px 0; }
+  .proj-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; }
+  .proj-icon { width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 600; font-size: 13px; }
+  .proj-info { flex: 1; min-width: 0; }
+  .proj-name { font-size: 14px; font-weight: 500; color: #fff; }
+  .proj-meta { font-size: 11px; color: var(--text-ter); margin-top: 1px; }
+
+  /* Tab bar */
+  .tab-bar { height: 60px; background: var(--dark-canvas); border-top: 1px solid var(--dark-surface-1); display: flex; align-items: center; justify-content: space-around; padding: 4px 8px 14px; flex-shrink: 0; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--text-sec); font-size: 10px; font-weight: 500; }
+  .tab.active { color: #fff; }
+  .tab svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: #fff; border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-sec); margin-bottom: 16px; }
+
+  /* Cubes display */
+  .cubes-row { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; padding: 8px 0 8px; }
+  .cube-tile {
+    width: 76px; height: 76px; border-radius: 8px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    color: #fff; font-size: 24px; font-weight: 700;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  .cube-meta { font-size: 9px; font-weight: 500; font-family: var(--mono); margin-top: 2px; opacity: 0.9; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 8px; padding: 14px; min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 500; font-family: var(--mono); border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--ink); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: var(--mono); font-size: 11px; color: var(--text-sec); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--ink); }
+  .t-28 { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; }
+  .t-17 { font-size: 17px; font-weight: 700; }
+  .t-15 { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 500; }
+  .t-13 { font-size: 13px; font-weight: 400; line-height: 1.5; }
+  .t-12 { font-size: 12px; font-weight: 400; color: var(--text-sec); }
+  .t-mono { font-family: var(--mono); font-weight: 500; font-size: 12px; color: var(--ink); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 14px; font-weight: 600; padding: 10px 16px; border-radius: 6px; border: none; cursor: pointer; }
+  .btn-primary { background: var(--action-blue); color: #fff; }
+  .btn-outline { background: transparent; color: var(--ink); border: 1px solid var(--divider); padding: 9px 15px; }
+  .btn-text { background: transparent; color: var(--action-blue); }
+  .badge { padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase; }
+  .badge-pro { background: var(--blurple); color: #fff; }
+  .badge-free { background: var(--macaron); color: var(--ink); }
+  .badge-org { background: var(--action-blue); color: #fff; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--action-blue); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Figma iOS — Design Tokens</div>
+    <div class="page-chip">Dark</div>
+  </div>
+  <p class="page-subtitle">Companion app for a design tool. White or `#1E1E1E` canvas, the iconic five Figma cubes as brand accents on avatars / cursors / thumbnails, Action Blue `#0D99FF` for the actual CTA. Inter typography at small, dense sizes (11–16pt range carries the app). 6pt corner radius is the signature.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="nav">
+            <div class="nav-row">
+              <div>
+                <div class="nav-title">Recents</div>
+                <div class="nav-meta">Personal · 4 teams</div>
+              </div>
+              <div class="avatar" style="background: var(--cube-purple)">M</div>
+            </div>
+          </div>
+
+          <div class="search">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16" y2="16"/></svg>
+            <div class="ph">Search files and projects</div>
+          </div>
+
+          <div class="sec-head">
+            <div class="sec-title">Recently viewed</div>
+            <div class="sec-link">See all</div>
+          </div>
+
+          <div class="files-grid">
+            <div class="file-card">
+              <div class="file-thumb preview"></div>
+              <div class="file-name">Onboarding flows</div>
+              <div class="file-meta">
+                <span>2h ago</span>
+                <div class="av-stack">
+                  <div class="av-mini" style="background:var(--cube-orange)">S</div>
+                  <div class="av-mini" style="background:var(--cube-green)">J</div>
+                </div>
+              </div>
+            </div>
+            <div class="file-card">
+              <div class="file-thumb no-preview c1">D</div>
+              <div class="file-name">Design System v3</div>
+              <div class="file-meta">
+                <span>Yesterday</span>
+                <div class="av-stack">
+                  <div class="av-mini" style="background:var(--cube-red)">A</div>
+                </div>
+              </div>
+            </div>
+            <div class="file-card">
+              <div class="file-thumb no-preview c2">M</div>
+              <div class="file-name">Marketing site</div>
+              <div class="file-meta">
+                <span>Mon</span>
+                <div class="av-stack">
+                  <div class="av-mini" style="background:var(--cube-purple)">M</div>
+                  <div class="av-mini" style="background:var(--cube-blue)">K</div>
+                  <div class="av-mini" style="background:var(--cube-green)">L</div>
+                </div>
+              </div>
+            </div>
+            <div class="file-card">
+              <div class="file-thumb no-preview c4">I</div>
+              <div class="file-name">Icon explorations</div>
+              <div class="file-meta">
+                <span>3d ago</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="sec-head">
+            <div class="sec-title">Projects</div>
+          </div>
+
+          <div class="proj-list">
+            <div class="proj-row">
+              <div class="proj-icon" style="background:var(--cube-red)">D</div>
+              <div class="proj-info">
+                <div class="proj-name">Design Team</div>
+                <div class="proj-meta">12 files · Updated 1h ago</div>
+              </div>
+            </div>
+            <div class="proj-row">
+              <div class="proj-icon" style="background:var(--cube-orange)">M</div>
+              <div class="proj-info">
+                <div class="proj-name">Mobile App</div>
+                <div class="proj-meta">8 files · Updated yesterday</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>Recents</span>
+            </div>
+            <div class="tab">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <span>Drafts</span>
+            </div>
+            <div class="tab">
+              <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              <span>Notifications</span>
+            </div>
+            <div class="tab">
+              <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <span>Profile</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">The Five Figma Cubes — brand accents only</div>
+        <div class="cubes-row">
+          <div class="cube-tile" style="background:var(--cube-red)">R<div class="cube-meta">#F24E1E</div></div>
+          <div class="cube-tile" style="background:var(--cube-orange)">O<div class="cube-meta">#FF7262</div></div>
+          <div class="cube-tile" style="background:var(--cube-purple)">P<div class="cube-meta">#A259FF</div></div>
+          <div class="cube-tile" style="background:var(--cube-blue)">B<div class="cube-meta">#1ABCFE</div></div>
+          <div class="cube-tile" style="background:var(--cube-green)">G<div class="cube-meta">#0ACF83</div></div>
+        </div>
+        <div style="font-size: 12px; color: var(--text-sec); padding-top: 12px;">
+          Randomly assigned per user, persisted forever. Appear on avatars, file thumbnails, cursors. Never as primary CTAs.
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">UI Action Colors + Surfaces</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0D99FF;"><div class="name">Action Blue</div>#0D99FF</div>
+          <div class="swatch" style="background:#0769B5;"><div class="name">Blue Pressed</div>#0769B5</div>
+          <div class="swatch" style="background:#5551FF;"><div class="name">Blurple</div>#5551FF</div>
+          <div class="swatch light" style="background:#FFC8C8;"><div class="name">Macaron Pink</div>#FFC8C8</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Canvas (Light)</div>#FFFFFF</div>
+          <div class="swatch" style="background:#1E1E1E;"><div class="name">Canvas (Dark)</div>#1E1E1E</div>
+          <div class="swatch light" style="background:#F5F5F5;"><div class="name">Surface Light 1</div>#F5F5F5</div>
+          <div class="swatch" style="background:#2C2C2C;"><div class="name">Dark Surface 1</div>#2C2C2C</div>
+          <div class="swatch light" style="background:#E5E5E5;"><div class="name">Divider Light</div>#E5E5E5</div>
+          <div class="swatch" style="background:#1E1E1E;"><div class="name">Ink</div>#1E1E1E</div>
+          <div class="swatch" style="background:#757575;"><div class="name">Text Secondary</div>#757575</div>
+          <div class="swatch" style="background:#14AE5C;"><div class="name">Success</div>#14AE5C</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter · tabular numerals · uppercase hex</div>
+        <div class="type-row"><div class="type-meta">Hero · 28pt · 700</div><div class="type-sample t-28">Recents</div></div>
+        <div class="type-row"><div class="type-meta">Page Section · 17pt · 700</div><div class="type-sample t-17">Recently viewed</div></div>
+        <div class="type-row"><div class="type-meta">Subhead · 15pt · 600</div><div class="type-sample t-15">Design Team</div></div>
+        <div class="type-row"><div class="type-meta">File Name · 14pt · 500</div><div class="type-sample t-14">Onboarding flows</div></div>
+        <div class="type-row"><div class="type-meta">Body · 14pt · 400</div><div class="type-sample t-13">Tap a file to view it, leave a comment, or open in Figma.</div></div>
+        <div class="type-row"><div class="type-meta">Metadata · 12pt · 400</div><div class="type-sample t-12">Edited 2h ago · 4 collaborators</div></div>
+        <div class="type-row"><div class="type-meta">Mono · 12pt · 500 tnum</div><div class="type-sample t-mono">#FF7262 · 120 × 80 · 16pt</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons + Plan Badges</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Open in Figma</button>
+          <button class="btn btn-outline">Cancel</button>
+          <button class="btn btn-text">Edit</button>
+          <span class="badge badge-free">FREE</span>
+          <span class="badge badge-pro">PRO</span>
+          <span class="badge badge-org">ORG</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale — 6pt is the Figma signature</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

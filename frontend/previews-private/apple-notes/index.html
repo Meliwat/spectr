@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Apple Notes iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FFFBED;
+    --cream-surf-1: #FAF6E3;
+    --cream-surf-2: #F2EDD6;
+    --divider: #EDEAD8;
+    --dark-paper: #1A1A1A;
+    --dark-surf-1: #262626;
+    --orange: #F09A38;
+    --orange-pressed: #D87E1F;
+    --orange-tint: #FFF1DD;
+    --folder-yellow: #F5D773;
+    --folder-highlight: #FAE8A0;
+    --highlight-yellow: #FFEB78;
+    --ink: #1C1C1E;
+    --slate: #8E8E93;
+    --mute: #C7C7CC;
+    --success: #34C759;
+    --warning: #FFCC00;
+    --error: #FF3B30;
+    --info: #0A84FF;
+    --h-green: #B3E47B;
+    --h-blue: #A0D8FF;
+    --h-pink: #FFB3DB;
+    --h-purple: #D4B3FF;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', sans-serif;
+    --mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #F5F0E0; color: var(--ink); font-family: var(--font); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--orange); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--slate); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(240,154,56,0.25), 0 0 0 2px rgba(0,0,0,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--cream); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Nav */
+  .nav { padding: 50px 16px 12px; background: var(--cream); flex-shrink: 0; }
+  .nav-tools { display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: var(--orange); font-weight: 500; }
+  .nav-tools svg { width: 18px; height: 18px; stroke: var(--orange); stroke-width: 2; fill: none; }
+  .nav-title { font-size: 30px; font-weight: 800; color: var(--ink); letter-spacing: -0.5px; margin-top: 8px; }
+
+  /* Search */
+  .search { margin: 4px 16px 8px; background: var(--cream-surf-1); height: 32px; border-radius: 10px; display: flex; align-items: center; padding: 0 10px; gap: 6px; }
+  .search svg { width: 13px; height: 13px; stroke: var(--slate); stroke-width: 2; fill: none; }
+  .search .ph { font-size: 15px; color: var(--slate); }
+  .search .mic { margin-left: auto; }
+
+  /* Tags */
+  .tags { padding: 4px 16px 10px; display: flex; gap: 8px; overflow: hidden; }
+  .tag { background: var(--orange-tint); color: var(--orange); font-size: 13px; font-weight: 500; padding: 5px 10px; border-radius: 14px; white-space: nowrap; }
+  .tag.active { background: var(--orange); color: #fff; }
+
+  /* Pinned */
+  .section-head { padding: 8px 16px 6px; }
+  .section-label { font-size: 11px; font-weight: 700; color: var(--slate); letter-spacing: 1.4px; text-transform: uppercase; }
+
+  /* Note list */
+  .notes-list { flex: 1; overflow: hidden; }
+  .note-row { padding: 12px 16px; border-bottom: 0.5px solid var(--divider); position: relative; }
+  .note-row.pinned-bg { background: var(--cream-surf-1); }
+  .note-title { font-size: 15px; font-weight: 600; color: var(--ink); display: flex; align-items: center; gap: 6px; line-height: 1.2; }
+  .note-title svg { width: 10px; height: 10px; fill: var(--orange); }
+  .note-preview { font-size: 13px; font-weight: 400; color: var(--slate); margin-top: 3px; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .note-date { font-size: 11px; font-weight: 400; color: var(--slate); margin-top: 2px; }
+
+  /* FAB */
+  .fab { position: absolute; bottom: 16px; right: 16px; width: 52px; height: 52px; border-radius: 50%; background: var(--orange); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(240,154,56,0.45); }
+  .fab svg { width: 22px; height: 22px; stroke: #fff; stroke-width: 2; fill: none; }
+
+  /* Token sections */
+  .section { background: #fff; border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--slate); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 14px; min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 500; font-family: var(--mono); border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--ink); }
+
+  /* Folder showcase */
+  .folder-showcase { display: flex; gap: 22px; align-items: center; padding: 8px 0 8px; flex-wrap: wrap; }
+  .folder-pic { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .folder-glyph {
+    width: 80px;
+    height: 64px;
+    position: relative;
+    transform: rotate(-2deg);
+  }
+  .folder-glyph .tab {
+    position: absolute;
+    top: 0; left: 0;
+    width: 40px; height: 14px;
+    background: var(--folder-yellow);
+    border-left: 1px solid var(--orange);
+    border-top: 1px solid var(--orange);
+    border-right: 1px solid var(--orange);
+    border-radius: 4px 8px 0 0;
+  }
+  .folder-glyph .body {
+    position: absolute;
+    top: 12px; left: 0;
+    right: 0; bottom: 0;
+    background: var(--folder-yellow);
+    border: 1px solid var(--orange);
+    border-radius: 0 4px 4px 4px;
+  }
+  .folder-glyph .body::before {
+    content: '';
+    position: absolute;
+    top: 2px; left: 6px; right: 6px;
+    height: 0.5px;
+    background: var(--folder-highlight);
+  }
+  .folder-glyph.small { width: 28px; height: 22px; }
+  .folder-glyph.small .tab { width: 12px; height: 5px; border-radius: 2px 3px 0 0; }
+  .folder-glyph.small .body { top: 4px; }
+  .folder-pic .meta { font-size: 11px; color: var(--slate); font-family: var(--mono); }
+
+  /* Type rows */
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: var(--mono); font-size: 11px; color: var(--slate); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--ink); }
+  .t-34 { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-20 { font-size: 20px; font-weight: 600; letter-spacing: -0.2px; }
+  .t-17 { font-size: 17px; font-weight: 400; line-height: 1.5; }
+  .t-16-sb { font-size: 16px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--slate); }
+  .t-12 { font-size: 12px; font-weight: 400; color: var(--slate); }
+
+  /* Highlight palette */
+  .highlights-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; padding: 4px 0; }
+  .hl-sample {
+    font-size: 14px; font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: var(--ink);
+  }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 16px; font-weight: 600; padding: 11px 22px; border-radius: 12px; border: none; cursor: pointer; }
+  .btn-primary { background: var(--orange); color: #fff; }
+  .btn-secondary { background: transparent; color: var(--orange); font-weight: 400; padding: 11px 0; }
+  .btn-pill { background: var(--cream-surf-1); color: var(--ink); border-radius: 999px; padding: 8px 16px; font-size: 14px; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--orange); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-10 { border-radius: 10px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Apple Notes iOS — Design Tokens</div>
+    <div class="page-chip">Light · Cream</div>
+  </div>
+  <p class="page-subtitle">Apple's quietest app. Warm cream canvas `#FFFBED`, Notes Orange `#F09A38` for the actual action, and the iconic yellow folder glyph `#F5D773` everywhere. SF Pro Display Heavy at 34pt on the large nav, 17pt 400 body with 1.5 line-height — the calmest body in any iOS app.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="nav">
+            <div class="nav-tools">
+              <span>&lt; Folders</span>
+              <div style="display: flex; gap: 14px;">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="1.5"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M4 7h16M7 12h10M10 17h4"/></svg>
+              </div>
+            </div>
+            <div class="nav-title">Notes</div>
+          </div>
+
+          <div class="search">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16" y2="16"/></svg>
+            <span class="ph">Search</span>
+            <svg class="mic" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6"/></svg>
+          </div>
+
+          <div class="tags">
+            <div class="tag active">#recipes</div>
+            <div class="tag">#books</div>
+            <div class="tag">#ideas</div>
+            <div class="tag">#travel</div>
+          </div>
+
+          <div class="section-head">
+            <div class="section-label">Pinned</div>
+          </div>
+
+          <div class="notes-list">
+            <div class="note-row pinned-bg">
+              <div class="note-title">
+                <svg viewBox="0 0 24 24"><path d="M12 2L8 6 4 8l4 2 2 4 4-4 4-2-4-2z" fill="var(--orange)"/></svg>
+                Grocery list
+              </div>
+              <div class="note-preview">Milk, eggs, butter, sourdough bread, basil, lemons...</div>
+              <div class="note-date">Yesterday</div>
+            </div>
+            <div class="note-row pinned-bg">
+              <div class="note-title">
+                <svg viewBox="0 0 24 24"><path d="M12 2L8 6 4 8l4 2 2 4 4-4 4-2-4-2z" fill="var(--orange)"/></svg>
+                Reading list
+              </div>
+              <div class="note-preview">The Overstory · Project Hail Mary · A Fine Balance...</div>
+              <div class="note-date">Mar 8</div>
+            </div>
+
+            <div class="section-head" style="padding-top: 12px;">
+              <div class="section-label">All Notes</div>
+            </div>
+
+            <div class="note-row">
+              <div class="note-title">Trip to Lisbon</div>
+              <div class="note-preview">Day 1: Time Out Market, Alfama walk, sunset at Miradouro...</div>
+              <div class="note-date">May 12</div>
+            </div>
+            <div class="note-row">
+              <div class="note-title">Banana bread recipe</div>
+              <div class="note-preview">3 ripe bananas · 1/3 cup melted butter · 3/4 cup sugar...</div>
+              <div class="note-date">May 4</div>
+            </div>
+            <div class="note-row">
+              <div class="note-title">Book ideas</div>
+              <div class="note-preview">A novel about the quiet collapse of a small town library...</div>
+              <div class="note-date">Apr 28</div>
+            </div>
+          </div>
+
+          <div class="fab">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6M9 15h6" stroke-width="2"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">The Iconic Yellow Folder</div>
+        <div class="folder-showcase">
+          <div class="folder-pic">
+            <div class="folder-glyph">
+              <div class="tab"></div>
+              <div class="body"></div>
+            </div>
+            <div class="meta">80pt hero</div>
+          </div>
+          <div class="folder-pic">
+            <div class="folder-glyph small">
+              <div class="tab"></div>
+              <div class="body"></div>
+            </div>
+            <div class="meta">28pt list</div>
+          </div>
+          <div style="font-size: 12px; color: var(--slate); max-width: 280px; line-height: 1.5;">
+            Fill <code style="font-family:var(--mono); background: var(--cream-surf-1); padding: 1px 4px; border-radius: 3px;">#F5D773</code> · Stroke <code style="font-family:var(--mono); background: var(--cream-surf-1); padding: 1px 4px; border-radius: 3px;">#F09A38</code> · 2-deg forward tilt · Warm-cream inner highlight for depth.
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch light" style="background:#FFFBED;"><div class="name">Notes Cream</div>#FFFBED</div>
+          <div class="swatch light" style="background:#FAF6E3;"><div class="name">Cream Surf 1</div>#FAF6E3</div>
+          <div class="swatch light" style="background:#F2EDD6;"><div class="name">Cream Surf 2</div>#F2EDD6</div>
+          <div class="swatch light" style="background:#EDEAD8;"><div class="name">Divider</div>#EDEAD8</div>
+          <div class="swatch" style="background:#F09A38;"><div class="name">Notes Orange</div>#F09A38</div>
+          <div class="swatch" style="background:#D87E1F;"><div class="name">Orange Pressed</div>#D87E1F</div>
+          <div class="swatch light" style="background:#FFF1DD;"><div class="name">Orange Tint</div>#FFF1DD</div>
+          <div class="swatch light" style="background:#F5D773;"><div class="name">Folder Yellow</div>#F5D773</div>
+          <div class="swatch light" style="background:#FFEB78;"><div class="name">Highlight Yellow</div>#FFEB78</div>
+          <div class="swatch" style="background:#1C1C1E;"><div class="name">Ink</div>#1C1C1E</div>
+          <div class="swatch" style="background:#8E8E93;"><div class="name">Slate</div>#8E8E93</div>
+          <div class="swatch" style="background:#1A1A1A;"><div class="name">Dark Paper</div>#1A1A1A</div>
+          <div class="swatch" style="background:#34C759;"><div class="name">Success</div>#34C759</div>
+          <div class="swatch" style="background:#FF3B30;"><div class="name">Error</div>#FF3B30</div>
+          <div class="swatch" style="background:#FFCC00;"><div class="name">Lock Yellow</div>#FFCC00</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Text Highlights — 5 colors for text selection inside the note body</div>
+        <div class="highlights-row">
+          <span class="hl-sample" style="background:#FFEB78;">Yellow highlight</span>
+          <span class="hl-sample" style="background:#B3E47B;">Green</span>
+          <span class="hl-sample" style="background:#A0D8FF;">Blue</span>
+          <span class="hl-sample" style="background:#FFB3DB;">Pink</span>
+          <span class="hl-sample" style="background:#D4B3FF;">Purple</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — SF Pro · 1.5 line-height on body</div>
+        <div class="type-row"><div class="type-meta">Large Nav · 34pt · 800 Heavy</div><div class="type-sample t-34">Notes</div></div>
+        <div class="type-row"><div class="type-meta">Folder Section · 22pt · 700</div><div class="type-sample t-22">On My iPhone</div></div>
+        <div class="type-row"><div class="type-meta">Note Body Title · 20pt · 600</div><div class="type-sample t-20">Trip to Lisbon</div></div>
+        <div class="type-row"><div class="type-meta">Body · 17pt · 400 · 1.5</div><div class="type-sample t-17">Day 1: Time Out Market, then a walk through Alfama, ending with sunset at Miradouro da Senhora do Monte. Try the pastel de nata at Manteigaria.</div></div>
+        <div class="type-row"><div class="type-meta">Row Title · 16pt · 600</div><div class="type-sample t-16-sb">Grocery list</div></div>
+        <div class="type-row"><div class="type-meta">Row Preview · 14pt · 400 Slate</div><div class="type-sample t-14">Milk, eggs, butter, sourdough bread...</div></div>
+        <div class="type-row"><div class="type-meta">Row Date · 12pt · 400 Slate</div><div class="type-sample t-12">Yesterday · May 12, 2026</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Save</button>
+          <button class="btn btn-secondary">Cancel</button>
+          <button class="btn btn-pill">Aa Format</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

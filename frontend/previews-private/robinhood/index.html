@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Robinhood iOS — Light</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --surface-gray: #F7F7F7;
+    --surface-gray-2: #EFEFEF;
+    --divider: #E6E6E6;
+    --text: #000000;
+    --text-secondary: #5C6166;
+    --text-tertiary: #9B9EA3;
+    --rh-green: #00C805;
+    --rh-green-pressed: #00A904;
+    --rh-green-bg: #E6F9E0;
+    --rh-red: #FF5000;
+    --rh-red-bg: #FFEDE5;
+    --error-true: #E62232;
+    --bitcoin: #F7931A;
+    --ethereum: #627EEA;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #F0F0F0; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; color: var(--text); }
+  .page-chip { background: var(--rh-green); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 4px; letter-spacing: 0.6px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.5), 0 0 0 2px rgba(0,0,0,0.08) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Title area */
+  .nav-area { padding: 48px 16px 8px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .nav-title { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .nav-icons { display: flex; gap: 16px; color: var(--text); }
+  .nav-icons svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Hero */
+  .hero { padding: 8px 16px 4px; flex-shrink: 0; }
+  .hero-label { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 6px; }
+  .hero-value { font-size: 40px; font-weight: 700; letter-spacing: -0.5px; color: var(--text); line-height: 1; font-variant-numeric: tabular-nums; }
+  .hero-change { margin-top: 6px; font-size: 14px; font-weight: 500; color: var(--rh-green); font-variant-numeric: tabular-nums; }
+
+  /* Chart */
+  .chart { flex: 1; position: relative; padding: 8px 0 0; min-height: 200px; }
+  .chart svg { width: 100%; height: 100%; }
+
+  /* Range chips */
+  .ranges { display: flex; justify-content: space-around; padding: 8px 14px 6px; flex-shrink: 0; }
+  .range-chip { display: flex; flex-direction: column; align-items: center; padding: 6px 4px; }
+  .range-chip .lbl { font-size: 12px; font-weight: 600; color: var(--text-secondary); letter-spacing: 0.3px; }
+  .range-chip.active .lbl { color: var(--rh-green); }
+  .range-chip .underline { height: 2px; width: 22px; margin-top: 4px; background: transparent; }
+  .range-chip.active .underline { background: var(--rh-green); }
+
+  /* Holdings */
+  .holdings { padding: 0; flex-shrink: 0; border-top: 1px solid var(--divider); }
+  .h-row { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 0.5px solid var(--divider); }
+  .h-logo { width: 30px; height: 30px; border-radius: 8px; background: var(--surface-gray); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0; color: var(--text); }
+  .h-logo.apple { background: #000; color: #fff; }
+  .h-logo.tesla { background: #E31937; color: #fff; }
+  .h-logo.btc { background: var(--bitcoin); color: #fff; }
+  .h-info { flex: 1; min-width: 0; }
+  .h-name { font-size: 14px; font-weight: 600; color: var(--text); }
+  .h-meta { font-size: 11px; color: var(--text-secondary); letter-spacing: 0.2px; margin-top: 1px; }
+  .h-ticker { font-weight: 500; letter-spacing: 0.3px; }
+  .h-val-block { text-align: right; }
+  .h-val { font-size: 14px; font-weight: 500; color: var(--text); font-variant-numeric: tabular-nums; }
+  .h-chg { font-size: 11px; font-weight: 500; font-variant-numeric: tabular-nums; margin-top: 1px; }
+  .h-chg.up { color: var(--rh-green); }
+  .h-chg.dn { color: var(--rh-red); }
+
+  /* Tab bar */
+  .tab-bar { height: 56px; background: var(--canvas); border-top: 0.5px solid var(--divider); display: flex; align-items: center; justify-content: space-around; padding: 4px 6px 14px; flex-shrink: 0; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--text-tertiary); font-size: 9px; font-weight: 600; letter-spacing: 0.2px; }
+  .tab.active { color: var(--text); }
+  .tab svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--canvas); border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 8px; padding: 14px; min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 500; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--text); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); font-variant-numeric: tabular-nums; }
+  .t-hero { font-size: 40px; font-weight: 700; letter-spacing: -0.5px; }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 600; }
+  .t-16 { font-size: 16px; font-weight: 600; }
+  .t-17 { font-size: 17px; font-weight: 500; }
+  .t-13 { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+  .t-ticker { font-size: 13px; font-weight: 500; letter-spacing: 0.3px; color: var(--text); }
+  .t-up { font-size: 16px; font-weight: 500; color: var(--rh-green); }
+  .t-caps { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 16px; font-weight: 600; padding: 14px 24px; border-radius: 8px; border: none; cursor: pointer; }
+  .btn-trade { background: var(--text); color: #fff; }
+  .btn-buy { background: var(--rh-green); color: #fff; }
+  .btn-sell { background: var(--rh-red); color: #fff; }
+  .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--divider); padding: 13px 23px; font-weight: 500; }
+  .pill-up { background: var(--rh-green-bg); color: var(--rh-green); padding: 4px 10px; border-radius: 500px; font-weight: 600; font-size: 12px; }
+  .pill-dn { background: var(--rh-red-bg); color: var(--rh-red); padding: 4px 10px; border-radius: 500px; font-weight: 600; font-size: 12px; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--text); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Robinhood iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">Clean tech-product aesthetic. White canvas, pure black text, Capsule Sans throughout with tabular numerals everywhere. The 2pt portfolio chart line in green <code>#00C805</code> (up) or orange <code>#FF5000</code> (down) is the visual anchor.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="nav-area">
+            <div class="nav-title">Investing</div>
+            <div class="nav-icons">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16" y2="16"/></svg>
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M5.5 20a8.5 8.5 0 0 1 13 0"/></svg>
+            </div>
+          </div>
+
+          <div class="hero">
+            <div class="hero-label">Buying Power</div>
+            <div class="hero-value">$24,847.93</div>
+            <div class="hero-change">+$847.93 (+3.52%) Today</div>
+          </div>
+
+          <div class="chart">
+            <svg viewBox="0 0 320 140" preserveAspectRatio="none">
+              <polyline
+                fill="none"
+                stroke="#00C805"
+                stroke-width="2"
+                points="0,98 18,92 36,85 54,90 72,80 90,72 108,68 126,62 144,55 162,60 180,48 198,52 216,40 234,36 252,30 270,26 288,22 306,18 320,12"
+              />
+            </svg>
+          </div>
+
+          <div class="ranges">
+            <div class="range-chip"><div class="lbl">1D</div><div class="underline"></div></div>
+            <div class="range-chip active"><div class="lbl">1W</div><div class="underline"></div></div>
+            <div class="range-chip"><div class="lbl">1M</div><div class="underline"></div></div>
+            <div class="range-chip"><div class="lbl">3M</div><div class="underline"></div></div>
+            <div class="range-chip"><div class="lbl">YTD</div><div class="underline"></div></div>
+            <div class="range-chip"><div class="lbl">1Y</div><div class="underline"></div></div>
+            <div class="range-chip"><div class="lbl">ALL</div><div class="underline"></div></div>
+          </div>
+
+          <div class="holdings">
+            <div class="h-row">
+              <div class="h-logo apple"></div>
+              <div class="h-info">
+                <div class="h-name">Apple Inc.</div>
+                <div class="h-meta"><span class="h-ticker">AAPL</span> · 4 shares</div>
+              </div>
+              <div class="h-val-block">
+                <div class="h-val">$786.40</div>
+                <div class="h-chg up">+$12.40 (+1.60%)</div>
+              </div>
+            </div>
+            <div class="h-row">
+              <div class="h-logo tesla">T</div>
+              <div class="h-info">
+                <div class="h-name">Tesla, Inc.</div>
+                <div class="h-meta"><span class="h-ticker">TSLA</span> · 2 shares</div>
+              </div>
+              <div class="h-val-block">
+                <div class="h-val">$520.30</div>
+                <div class="h-chg dn">−$8.20 (−1.55%)</div>
+              </div>
+            </div>
+            <div class="h-row">
+              <div class="h-logo btc">₿</div>
+              <div class="h-info">
+                <div class="h-name">Bitcoin</div>
+                <div class="h-meta"><span class="h-ticker">BTC</span> · 0.018 shares</div>
+              </div>
+              <div class="h-val-block">
+                <div class="h-val">$1,224.66</div>
+                <div class="h-chg up">+$48.12 (+4.09%)</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><polyline points="22,12 18,6 12,14 7,9 2,16"/></svg><span>Investing</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16" y2="16"/></svg><span>Search</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9 8h5a2 2 0 0 1 0 4H9z M9 12h6a2 2 0 0 1 0 4H9z M11 8v8 M13 5v3 M13 16v3"/></svg><span>Crypto</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="14" rx="2"/><line x1="2" y1="11" x2="22" y2="11"/></svg><span>Cash</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><span>Account</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Canvas</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#F7F7F7;"><div class="name">Surface Gray</div>#F7F7F7</div>
+          <div class="swatch light" style="background:#E6E6E6;"><div class="name">Divider</div>#E6E6E6</div>
+          <div class="swatch" style="background:#000000;"><div class="name">Text Primary</div>#000000</div>
+          <div class="swatch" style="background:#5C6166;"><div class="name">Text Secondary</div>#5C6166</div>
+          <div class="swatch" style="background:#9B9EA3;"><div class="name">Text Tertiary</div>#9B9EA3</div>
+          <div class="swatch light" style="background:#00C805;"><div class="name">Robinhood Green</div>#00C805</div>
+          <div class="swatch" style="background:#00A904;"><div class="name">Green Pressed</div>#00A904</div>
+          <div class="swatch light" style="background:#E6F9E0;"><div class="name">Green Bg</div>#E6F9E0</div>
+          <div class="swatch" style="background:#FF5000;"><div class="name">RH Red (orange)</div>#FF5000</div>
+          <div class="swatch light" style="background:#FFEDE5;"><div class="name">Red Bg</div>#FFEDE5</div>
+          <div class="swatch" style="background:#E62232;"><div class="name">Error True Red</div>#E62232</div>
+          <div class="swatch light" style="background:#F7931A;"><div class="name">Bitcoin</div>#F7931A</div>
+          <div class="swatch" style="background:#627EEA;"><div class="name">Ethereum</div>#627EEA</div>
+          <div class="swatch light" style="background:#FFB800;"><div class="name">Warning</div>#FFB800</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Capsule Sans Text / Display</div>
+        <div class="type-row"><div class="type-meta">Portfolio Hero · Display 40pt · 700 tab</div><div class="type-sample t-hero">$24,847.93</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 22pt · 700</div><div class="type-sample t-22">Investing</div></div>
+        <div class="type-row"><div class="type-meta">Section · 18pt · 600</div><div class="type-sample t-18">Stocks</div></div>
+        <div class="type-row"><div class="type-meta">Position Title · 16pt · 600</div><div class="type-sample t-16">Apple Inc.</div></div>
+        <div class="type-row"><div class="type-meta">Position Value · 17pt · 500 tab</div><div class="type-sample t-17">$1,247.92</div></div>
+        <div class="type-row"><div class="type-meta">Day Change · 16pt · 500 tab</div><div class="type-sample t-up">+$847.93 (+3.52%) Today</div></div>
+        <div class="type-row"><div class="type-meta">Ticker · 13pt · 500 +0.3</div><div class="type-sample t-ticker">AAPL</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 500</div><div class="type-sample t-13">4 shares · Yesterday</div></div>
+        <div class="type-row"><div class="type-meta">All-Caps · 11pt · 700 +0.6</div><div class="type-sample t-caps">Buying Power</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons & Pills</div>
+        <div class="btn-row">
+          <button class="btn btn-trade">Trade</button>
+          <button class="btn btn-buy">Buy AAPL</button>
+          <button class="btn btn-sell">Sell AAPL</button>
+          <button class="btn btn-outline">Set Alert</button>
+        </div>
+        <div class="btn-row" style="margin-top: 16px;">
+          <span class="pill-up">+$847.93 (+3.52%) Today</span>
+          <span class="pill-dn">−$48.12 (−1.93%) Today</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

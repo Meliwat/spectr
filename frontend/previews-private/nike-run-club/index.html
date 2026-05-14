@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Nike Run Club iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #000000;
+    --charcoal: #0A0A0A;
+    --surface-1: #1A1A1A;
+    --surface-2: #2B2B2B;
+    --divider: #333333;
+    --volt: #CCFF00;
+    --volt-pressed: #9FCC00;
+    --red: #FA5400;
+    --brake-red: #E50916;
+    --white: #FFFFFF;
+    --gray-1: #B3B3B3;
+    --gray-2: #8E8E8E;
+    --gray-3: #5C5C5C;
+    --hr-1: #3D87F4;
+    --hr-2: #48C77E;
+    --hr-3: #FFD600;
+    --hr-4: #FA5400;
+    --hr-5: #E50916;
+    --display: 'Oswald', 'Trade Gothic', 'Helvetica Neue Condensed Bold', sans-serif;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+    --mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #0a0a0a; color: var(--white); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-family: var(--display); font-size: 32px; font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-chip { background: var(--volt); color: #000; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 4px; letter-spacing: 0.6px; text-transform: uppercase; }
+  .page-subtitle { color: var(--gray-1); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Stats row */
+  .stats-row { display: flex; padding: 60px 16px 0; gap: 8px; }
+  .stat { flex: 1; text-align: center; }
+  .stat-label { font-family: var(--display); font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 1.0px; line-height: 1; }
+  .stat-value { font-family: var(--display); font-size: 38px; font-weight: 700; color: var(--white); line-height: 1; letter-spacing: 0.3px; margin-top: 4px; font-variant-numeric: tabular-nums; }
+
+  /* Ring */
+  .ring-wrap { display: flex; align-items: center; justify-content: center; margin: 24px 0; position: relative; }
+  .ring-svg { width: 260px; height: 260px; }
+  .ring-track { fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 6; }
+  .ring-fill { fill: none; stroke: var(--volt); stroke-width: 6; stroke-linecap: round; transform: rotate(-90deg); transform-origin: center; }
+  .ring-inner { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .ring-elapsed { font-family: var(--display); font-size: 64px; font-weight: 700; color: var(--white); line-height: 0.95; letter-spacing: 0.5px; font-variant-numeric: tabular-nums; }
+  .ring-label { font-family: var(--display); font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 4px; }
+
+  /* Controls */
+  .controls { display: flex; align-items: center; justify-content: center; padding: 8px 16px 28px; position: relative; }
+  .pause-btn { width: 60px; height: 60px; border-radius: 50%; background: var(--white); display: flex; align-items: center; justify-content: center; }
+  .pause-btn svg { width: 24px; height: 24px; fill: #000; }
+  .lock-btn { position: absolute; right: 28px; bottom: 36px; width: 40px; height: 40px; border-radius: 50%; background: var(--surface-2); display: flex; align-items: center; justify-content: center; }
+  .lock-btn svg { width: 16px; height: 16px; stroke: var(--white); stroke-width: 2; fill: none; }
+
+  /* Tab bar */
+  .tab-bar { height: 56px; background: var(--canvas); border-top: 0.5px solid var(--divider); display: flex; align-items: center; padding: 4px 6px 10px; flex-shrink: 0; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--gray-3); font-size: 9px; font-weight: 600; flex: 1; }
+  .tab.active { color: var(--white); }
+  .tab svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; }
+  .tab.active .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--volt); margin-top: 2px; }
+
+  /* Token sections */
+  .section { background: #0E0E0E; border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-family: var(--display); font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--white); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 14px; min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 500; font-family: var(--mono); border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #000; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: var(--mono); font-size: 11px; color: var(--gray-1); width: 240px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--white); }
+  .t-run-hero { font-family: var(--display); font-size: 64px; font-weight: 700; line-height: 0.95; letter-spacing: 0.5px; font-variant-numeric: tabular-nums; }
+  .t-pre-hero { font-family: var(--display); font-size: 48px; font-weight: 700; line-height: 0.95; letter-spacing: 0.3px; }
+  .t-headline { font-family: var(--display); font-size: 32px; font-weight: 700; line-height: 1; letter-spacing: 0.3px; }
+  .t-button { font-family: var(--display); font-size: 17px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+  .t-stat-label { font-family: var(--display); font-size: 12px; font-weight: 700; color: var(--gray-1); text-transform: uppercase; letter-spacing: 1.0px; }
+  .t-body { font-family: var(--font); font-size: 15px; font-weight: 400; line-height: 1.45; color: var(--white); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--display); font-size: 15px; font-weight: 700; padding: 16px 28px; border-radius: 32px; border: none; cursor: pointer; letter-spacing: 0.5px; text-transform: uppercase; }
+  .btn-primary { background: var(--white); color: #000; }
+  .btn-volt { background: var(--volt); color: #000; }
+  .btn-outline { background: transparent; color: var(--white); border: 2px solid var(--white); padding: 14px 26px; }
+  .btn-red { background: var(--brake-red); color: #fff; }
+
+  /* Medal */
+  .medal-wrap { display: flex; flex-direction: column; align-items: center; padding: 16px 0; }
+  .medal { width: 140px; height: 140px; position: relative; }
+  .medal svg { width: 100%; height: 100%; }
+  .medal-num { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-family: var(--display); font-size: 44px; font-weight: 700; color: #000; line-height: 1; }
+  .medal-title { font-family: var(--display); font-size: 20px; font-weight: 700; color: var(--white); text-transform: uppercase; letter-spacing: 0.3px; margin-top: 12px; }
+  .medal-sub { font-size: 13px; color: var(--gray-1); margin-top: 4px; }
+
+  /* HR Zone bar */
+  .hr-bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; margin: 8px 0 12px; }
+  .hr-seg-1 { flex: 1; background: var(--hr-1); }
+  .hr-seg-2 { flex: 3; background: var(--hr-2); }
+  .hr-seg-3 { flex: 4; background: var(--hr-3); }
+  .hr-seg-4 { flex: 2.5; background: var(--hr-4); }
+  .hr-seg-5 { flex: 0.5; background: var(--hr-5); }
+  .hr-labels { display: flex; gap: 14px; flex-wrap: wrap; }
+  .hr-label { display: flex; align-items: center; gap: 4px; }
+  .hr-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .hr-txt { font-family: var(--display); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--white); }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--volt); color: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-8 { border-radius: 8px; }
+  .r-16 { border-radius: 16px; }
+  .r-32 { border-radius: 32px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Nike Run Club iOS — Design Tokens</div>
+    <div class="page-chip">Dark</div>
+  </div>
+  <p class="page-subtitle">A stadium tunnel — black walls, white spotlights, a runner sprinting through them. True black canvas `#000000`. Volt `#CCFF00` for progress and primary action. Trade Gothic Condensed Heavy on every hero number and every button. NRC is unapologetically loud.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="stats-row">
+            <div class="stat">
+              <div class="stat-label">Distance</div>
+              <div class="stat-value">1.4</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Min/Mi</div>
+              <div class="stat-value">8:42</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">BPM</div>
+              <div class="stat-value">152</div>
+            </div>
+          </div>
+
+          <div class="ring-wrap">
+            <svg class="ring-svg" viewBox="0 0 100 100">
+              <circle class="ring-track" cx="50" cy="50" r="46" />
+              <circle class="ring-fill" cx="50" cy="50" r="46"
+                stroke-dasharray="289"
+                stroke-dashoffset="167"
+              />
+            </svg>
+            <div class="ring-inner">
+              <div class="ring-elapsed">12:34</div>
+              <div class="ring-label">Elapsed</div>
+            </div>
+          </div>
+
+          <div class="controls">
+            <div class="pause-btn">
+              <svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+            </div>
+            <div class="lock-btn">
+              <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active">
+              <svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg>
+              <span>Home</span>
+              <div class="dot"></div>
+            </div>
+            <div class="tab">
+              <svg viewBox="0 0 24 24"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="6" width="4" height="15"/><rect x="17" y="9" width="4" height="12"/></svg>
+              <span>Activity</span>
+            </div>
+            <div class="tab">
+              <svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="11" r="3"/><path d="M7 18c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>
+              <span>Coach</span>
+            </div>
+            <div class="tab">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>
+              <span>Goal</span>
+            </div>
+            <div class="tab">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 22a8 8 0 0 1 16 0"/></svg>
+              <span>Profile</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch light" style="background:#CCFF00;"><div class="name">Nike Volt</div>#CCFF00</div>
+          <div class="swatch light" style="background:#9FCC00;"><div class="name">Volt Pressed</div>#9FCC00</div>
+          <div class="swatch" style="background:#FA5400;"><div class="name">Nike Red</div>#FA5400</div>
+          <div class="swatch" style="background:#E50916;"><div class="name">Brake Red</div>#E50916</div>
+          <div class="swatch" style="background:#000000;border-color:#222;"><div class="name">True Black</div>#000000</div>
+          <div class="swatch" style="background:#1A1A1A;"><div class="name">Surface 1</div>#1A1A1A</div>
+          <div class="swatch" style="background:#2B2B2B;"><div class="name">Surface 2</div>#2B2B2B</div>
+          <div class="swatch" style="background:#B3B3B3;color:#000;"><div class="name">Gray 1</div>#B3B3B3</div>
+          <div class="swatch" style="background:#3D87F4;"><div class="name">HR Z1 Blue</div>#3D87F4</div>
+          <div class="swatch" style="background:#48C77E;"><div class="name">HR Z2 Green</div>#48C77E</div>
+          <div class="swatch light" style="background:#FFD600;"><div class="name">HR Z3 Yellow</div>#FFD600</div>
+          <div class="swatch" style="background:#FFC400;color:#000;"><div class="name">Warning</div>#FFC400</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Trade Gothic Condensed (Oswald fallback)</div>
+        <div class="type-row"><div class="type-meta">Run Hero · 88pt · 900 tnum</div><div class="type-sample t-run-hero">12:34</div></div>
+        <div class="type-row"><div class="type-meta">Pre/Post Hero · 64pt · 900</div><div class="type-sample t-pre-hero">8.2 MI</div></div>
+        <div class="type-row"><div class="type-meta">Screaming Header · 32pt · 900</div><div class="type-sample t-headline">TODAY'S RUN</div></div>
+        <div class="type-row"><div class="type-meta">Stat Label · 13pt · 700 1.0tr</div><div class="type-sample t-stat-label">Distance · Min/Mi · BPM</div></div>
+        <div class="type-row"><div class="type-meta">Button · 17pt · 900 0.5tr</div><div class="type-sample t-button">START RUN</div></div>
+        <div class="type-row"><div class="type-meta">Body · SF Pro 15pt · 400</div><div class="type-sample t-body">Coach Bennett · Easy effort. Let your legs find the rhythm.</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Achievement Medal</div>
+        <div class="medal-wrap">
+          <div class="medal">
+            <svg viewBox="0 0 100 100">
+              <defs>
+                <linearGradient id="medgrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#CCFF00"/>
+                  <stop offset="100%" stop-color="#FA5400"/>
+                </linearGradient>
+              </defs>
+              <polygon points="50,5 92,28 92,72 50,95 8,72 8,28" fill="url(#medgrad)" />
+            </svg>
+            <div class="medal-num">100</div>
+          </div>
+          <div class="medal-title">100 Miles</div>
+          <div class="medal-sub">Lifetime distance</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Heart Rate Zone Bar</div>
+        <div class="hr-bar">
+          <div class="hr-seg-1"></div>
+          <div class="hr-seg-2"></div>
+          <div class="hr-seg-3"></div>
+          <div class="hr-seg-4"></div>
+          <div class="hr-seg-5"></div>
+        </div>
+        <div class="hr-labels">
+          <div class="hr-label"><div class="hr-dot" style="background:#3D87F4;"></div><span class="hr-txt">Z1 Easy</span></div>
+          <div class="hr-label"><div class="hr-dot" style="background:#48C77E;"></div><span class="hr-txt">Z2 Steady</span></div>
+          <div class="hr-label"><div class="hr-dot" style="background:#FFD600;"></div><span class="hr-txt">Z3 Mod</span></div>
+          <div class="hr-label"><div class="hr-dot" style="background:#FA5400;"></div><span class="hr-txt">Z4 Hard</span></div>
+          <div class="hr-label"><div class="hr-dot" style="background:#E50916;"></div><span class="hr-txt">Z5 Max</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Start Run</button>
+          <button class="btn btn-volt">Claim Medal</button>
+          <button class="btn btn-outline">View Plan</button>
+          <button class="btn btn-red">End Run</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-32">32</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

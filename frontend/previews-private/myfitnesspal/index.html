@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by MyFitnessPal iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --surface: #F5F7FA;
+    --surface-2: #E5E9F0;
+    --divider: #E5E7EB;
+    --hairline: #EEF1F5;
+    --ink: #1F2937;
+    --slate: #4B5563;
+    --mute: #9CA3AF;
+    --hero: #111827;
+    --mfp-blue: #005DAA;
+    --lake-blue: #0072CE;
+    --lake-pressed: #005FA8;
+    --sky-blue: #E7F0FF;
+    --carbs: #FF9F1C;
+    --fat: #A463F2;
+    --protein: #19C37D;
+    --amber: #F59E0B;
+    --red: #EF4444;
+    --streak: #FB923C;
+    --gold: #D4A437;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+    --mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #EAF1F7; color: var(--ink); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; color: var(--lake-blue); }
+  .page-chip { background: var(--lake-blue); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--slate); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,93,170,0.4), 0 0 0 2px rgba(0,0,0,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Nav */
+  .nav { padding: 50px 16px 8px; display: flex; align-items: center; justify-content: space-between; background: var(--canvas); flex-shrink: 0; }
+  .nav-title { font-size: 24px; font-weight: 700; letter-spacing: -0.4px; color: var(--ink); }
+  .nav-streak { display: flex; align-items: center; gap: 4px; background: var(--surface); padding: 5px 10px; border-radius: 999px; }
+  .nav-streak svg { width: 14px; height: 14px; fill: var(--streak); }
+  .nav-streak span { font-size: 12px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  /* Scroll area */
+  .scroll { flex: 1; overflow: hidden; padding: 6px 16px 0; position: relative; }
+
+  /* Calorie ring */
+  .ring-wrap { display: flex; flex-direction: column; align-items: center; padding: 8px 0 14px; }
+  .ring { position: relative; width: 168px; height: 168px; }
+  .ring svg { transform: rotate(-90deg); }
+  .ring .bg { fill: none; stroke: var(--surface-2); stroke-width: 14; }
+  .ring .fg { fill: none; stroke: var(--lake-blue); stroke-width: 14; stroke-linecap: round; }
+  .ring .center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+  .ring .label { font-size: 10px; font-weight: 600; color: var(--slate); letter-spacing: 0.6px; }
+  .ring .num { font-size: 38px; font-weight: 800; color: var(--hero); letter-spacing: -0.8px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .ring .sub { font-size: 11px; font-weight: 500; color: var(--slate); }
+
+  .gfe-row { display: flex; justify-content: space-around; width: 100%; padding-top: 12px; }
+  .gfe { text-align: center; }
+  .gfe-num { font-size: 14px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .gfe-lbl { font-size: 9px; font-weight: 600; color: var(--slate); letter-spacing: 0.5px; margin-top: 2px; }
+
+  /* Macros */
+  .macros { display: flex; justify-content: space-around; padding: 14px 4px 18px; border-top: 1px solid var(--divider); }
+  .macro-stat { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .macro-bar { width: 60px; height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
+  .macro-bar-fill { height: 100%; border-radius: 2px; }
+  .macro-num { font-size: 14px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; line-height: 1; margin-top: 2px; }
+  .macro-lbl { font-size: 9px; font-weight: 600; color: var(--slate); letter-spacing: 0.5px; }
+  .macro-pct { font-size: 9px; color: var(--mute); font-variant-numeric: tabular-nums; }
+
+  /* Meal section */
+  .meal { padding-top: 10px; }
+  .meal-head { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; }
+  .meal-name { font-size: 16px; font-weight: 600; color: var(--ink); }
+  .meal-total { font-size: 14px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .meal-row { padding: 8px 0; border-top: 1px solid var(--divider); display: flex; align-items: center; }
+  .meal-row .info { flex: 1; min-width: 0; }
+  .meal-row .food { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 1px; }
+  .meal-row .sub { font-size: 11px; color: var(--slate); }
+  .meal-row .cal { font-size: 13px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .meal-add { display: flex; align-items: center; gap: 6px; padding: 10px 0 4px; border-top: 1px solid var(--divider); }
+  .meal-add svg { width: 16px; height: 16px; }
+  .meal-add span { font-size: 13px; font-weight: 600; color: var(--lake-blue); }
+
+  /* FAB */
+  .fab { position: absolute; bottom: 74px; left: 50%; transform: translateX(-50%); width: 52px; height: 52px; border-radius: 50%; background: var(--lake-blue); display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 16px rgba(0,93,170,0.45); z-index: 5; border: 3px solid var(--canvas); }
+  .fab svg { width: 22px; height: 22px; stroke: #fff; stroke-width: 2.5; fill: none; }
+
+  /* Tab bar */
+  .tab-bar { height: 60px; background: var(--canvas); border-top: 0.5px solid var(--divider); display: flex; align-items: center; justify-content: space-around; padding: 4px 6px 14px; flex-shrink: 0; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--mute); font-size: 9px; font-weight: 600; }
+  .tab.active { color: var(--lake-blue); }
+  .tab svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+  .tab.middle { visibility: hidden; }
+
+  /* Token sections */
+  .section { background: var(--canvas); border: 1px solid var(--divider); border-radius: 16px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--slate); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 14px; min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 500; font-family: var(--mono); border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--ink); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: var(--mono); font-size: 11px; color: var(--slate); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--ink); }
+  .t-hero { font-size: 48px; font-weight: 800; color: var(--hero); letter-spacing: -1px; font-variant-numeric: tabular-nums; line-height: 1; }
+  .t-28 { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-18 { font-size: 18px; font-weight: 600; }
+  .t-16 { font-size: 16px; font-weight: 500; }
+  .t-15 { font-size: 15px; font-weight: 400; line-height: 1.5; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--slate); font-variant-numeric: tabular-nums; }
+  .t-11 { font-size: 11px; font-weight: 600; color: var(--slate); letter-spacing: 0.8px; text-transform: uppercase; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 15px; font-weight: 600; padding: 13px 26px; border-radius: 12px; border: none; cursor: pointer; }
+  .btn-primary { background: var(--lake-blue); color: #fff; }
+  .btn-tinted { background: var(--sky-blue); color: var(--lake-blue); }
+  .btn-outline { background: transparent; color: var(--ink); border: 1px solid var(--divider); padding: 12px 25px; }
+  .btn-premium { background: linear-gradient(90deg, var(--mfp-blue), var(--lake-blue)); color: #fff; border-radius: 999px; padding: 10px 18px; font-size: 13px; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--lake-blue); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">MyFitnessPal iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">Clinical-but-friendly calorie ledger. White canvas, Lake Blue `#0072CE` for the action, MFP Blue `#005DAA` for the heritage logomark. The calorie ring is the hero — a 220pt donut whose color flips green → blue → amber → red as you eat. Macro trio is locked: orange Carbs, purple Fat, green Protein.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="nav">
+            <div class="nav-title">Dashboard</div>
+            <div class="nav-streak">
+              <svg viewBox="0 0 24 24"><path d="M12 2C8 7 5 10 5 14a7 7 0 0 0 14 0c0-3-1.5-5-3-7-1 3-3 4-4 4 0-2 1-5 0-9z"/></svg>
+              <span>42</span>
+            </div>
+          </div>
+
+          <div class="scroll">
+            <div class="ring-wrap">
+              <div class="ring">
+                <svg width="168" height="168" viewBox="0 0 168 168">
+                  <circle class="bg" cx="84" cy="84" r="76"/>
+                  <circle class="fg" cx="84" cy="84" r="76" stroke-dasharray="477" stroke-dashoffset="200"/>
+                </svg>
+                <div class="center">
+                  <div class="label">REMAINING</div>
+                  <div class="num">1,247</div>
+                  <div class="sub">calories</div>
+                </div>
+              </div>
+              <div class="gfe-row">
+                <div class="gfe">
+                  <div class="gfe-num">2,000</div>
+                  <div class="gfe-lbl">GOAL</div>
+                </div>
+                <div class="gfe">
+                  <div class="gfe-num">753</div>
+                  <div class="gfe-lbl">FOOD</div>
+                </div>
+                <div class="gfe">
+                  <div class="gfe-num">0</div>
+                  <div class="gfe-lbl">EXERCISE</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="macros">
+              <div class="macro-stat">
+                <div class="macro-bar"><div class="macro-bar-fill" style="width:65%;background:var(--carbs)"></div></div>
+                <div class="macro-num">187g</div>
+                <div class="macro-lbl">CARBS</div>
+                <div class="macro-pct">65%</div>
+              </div>
+              <div class="macro-stat">
+                <div class="macro-bar"><div class="macro-bar-fill" style="width:88%;background:var(--fat)"></div></div>
+                <div class="macro-num">64g</div>
+                <div class="macro-lbl">FAT</div>
+                <div class="macro-pct">88%</div>
+              </div>
+              <div class="macro-stat">
+                <div class="macro-bar"><div class="macro-bar-fill" style="width:74%;background:var(--protein)"></div></div>
+                <div class="macro-num">92g</div>
+                <div class="macro-lbl">PROTEIN</div>
+                <div class="macro-pct">74%</div>
+              </div>
+            </div>
+
+            <div class="meal">
+              <div class="meal-head">
+                <div class="meal-name">Breakfast</div>
+                <div class="meal-total">412</div>
+              </div>
+              <div class="meal-row">
+                <div class="info">
+                  <div class="food">Greek Yogurt, Plain Nonfat</div>
+                  <div class="sub">1 cup · 8 oz · Chobani</div>
+                </div>
+                <div class="cal">120</div>
+              </div>
+              <div class="meal-row">
+                <div class="info">
+                  <div class="food">Steel Cut Oats</div>
+                  <div class="sub">1/2 cup dry · Quaker</div>
+                </div>
+                <div class="cal">150</div>
+              </div>
+              <div class="meal-add">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="var(--lake-blue)"/><line x1="12" y1="8" x2="12" y2="16" stroke="#fff" stroke-width="2.5"/><line x1="8" y1="12" x2="16" y2="12" stroke="#fff" stroke-width="2.5"/></svg>
+                <span>Add Food</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="fab">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active">
+              <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+              <span>Dashboard</span>
+            </div>
+            <div class="tab">
+              <svg viewBox="0 0 24 24"><path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4z"/><line x1="4" y1="8" x2="20" y2="8"/></svg>
+              <span>Diary</span>
+            </div>
+            <div class="tab middle"><span>·</span></div>
+            <div class="tab">
+              <svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><circle cx="17" cy="9" r="3"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 14h2a4 4 0 0 1 4 4v3"/></svg>
+              <span>Community</span>
+            </div>
+            <div class="tab">
+              <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
+              <span>More</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#005DAA;"><div class="name">MFP Blue</div>#005DAA</div>
+          <div class="swatch" style="background:#0072CE;"><div class="name">Lake Blue</div>#0072CE</div>
+          <div class="swatch" style="background:#005FA8;"><div class="name">Lake Pressed</div>#005FA8</div>
+          <div class="swatch light" style="background:#E7F0FF;"><div class="name">Sky Blue</div>#E7F0FF</div>
+          <div class="swatch" style="background:#FF9F1C;"><div class="name">Carbs Orange</div>#FF9F1C</div>
+          <div class="swatch" style="background:#A463F2;"><div class="name">Fat Purple</div>#A463F2</div>
+          <div class="swatch" style="background:#19C37D;"><div class="name">Protein Green</div>#19C37D</div>
+          <div class="swatch" style="background:#F59E0B;"><div class="name">Approaching</div>#F59E0B</div>
+          <div class="swatch" style="background:#EF4444;"><div class="name">Over Limit</div>#EF4444</div>
+          <div class="swatch" style="background:#FB923C;"><div class="name">Streak</div>#FB923C</div>
+          <div class="swatch" style="background:#D4A437;"><div class="name">Premium Gold</div>#D4A437</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Canvas</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#F5F7FA;"><div class="name">Surface</div>#F5F7FA</div>
+          <div class="swatch light" style="background:#E5E9F0;"><div class="name">Surface 2</div>#E5E9F0</div>
+          <div class="swatch" style="background:#1F2937;"><div class="name">Ink</div>#1F2937</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — SF Pro · tabular numerals on numbers</div>
+        <div class="type-row"><div class="type-meta">Calorie Hero · 56pt · 700 tnum</div><div class="type-sample t-hero">1,247</div></div>
+        <div class="type-row"><div class="type-meta">Large Nav · 28pt · 700</div><div class="type-sample t-28">Dashboard</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Today's Meals</div></div>
+        <div class="type-row"><div class="type-meta">Meal · 18pt · 600</div><div class="type-sample t-18">Breakfast</div></div>
+        <div class="type-row"><div class="type-meta">Food Name · 16pt · 500</div><div class="type-sample t-16">Greek Yogurt, Plain Nonfat</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 400</div><div class="type-sample t-15">Plain low-fat Greek yogurt, no added sugar.</div></div>
+        <div class="type-row"><div class="type-meta">Sub · 13pt · 400 tnum</div><div class="type-sample t-13">1 cup · 8 oz · Chobani</div></div>
+        <div class="type-row"><div class="type-meta">Macro Label · 11pt · 600</div><div class="type-sample t-11">CARBS / FAT / PROTEIN</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Add Food</button>
+          <button class="btn btn-tinted">Quick Add</button>
+          <button class="btn btn-outline">Cancel</button>
+          <button class="btn btn-premium">Try Premium →</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive — Calorie Ring State Colors</div>
+        <div style="display:flex; gap:18px; padding: 12px 0; flex-wrap: wrap;">
+          <div style="text-align:center;">
+            <div style="width:64px;height:64px;border-radius:50%;background:conic-gradient(var(--protein) 30%, var(--surface-2) 30%);"></div>
+            <div style="font-size:11px;color:var(--slate);margin-top:6px;font-weight:600;">UNDER</div>
+            <div style="font-size:10px;color:var(--mute);font-family:var(--mono);">&lt; 60%</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="width:64px;height:64px;border-radius:50%;background:conic-gradient(var(--lake-blue) 75%, var(--surface-2) 75%);"></div>
+            <div style="font-size:11px;color:var(--slate);margin-top:6px;font-weight:600;">ON TRACK</div>
+            <div style="font-size:10px;color:var(--mute);font-family:var(--mono);">60–95%</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="width:64px;height:64px;border-radius:50%;background:conic-gradient(var(--amber) 96%, var(--surface-2) 96%);"></div>
+            <div style="font-size:11px;color:var(--slate);margin-top:6px;font-weight:600;">CLOSE</div>
+            <div style="font-size:10px;color:var(--mute);font-family:var(--mono);">95–100%</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="width:64px;height:64px;border-radius:50%;background:conic-gradient(var(--red) 100%, var(--surface-2) 0);"></div>
+            <div style="font-size:11px;color:var(--slate);margin-top:6px;font-weight:600;">OVER</div>
+            <div style="font-size:10px;color:var(--mute);font-family:var(--mono);">&gt; 100%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

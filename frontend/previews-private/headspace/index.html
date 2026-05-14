@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Headspace iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFF7E7;
+    --off-cream: #FBF1DA;
+    --warm-gray: #E8DFC9;
+    --marigold: #FF6B35;
+    --marigold-pressed: #E55A2B;
+    --marigold-light: #FFB89E;
+    --aurora-1: #FFB89E;
+    --aurora-2: #FFD25C;
+    --aurora-3: #FF6B35;
+    --butter: #FFD25C;
+    --sage: #7E9F4B;
+    --sage-light: #B4C68F;
+    --coral: #F4877E;
+    --lavender: #B7B0DC;
+    --ink: #2E1A47;
+    --ink-soft: #594675;
+    --ink-mute: #8E7DA5;
+    --dusk: #1A1430;
+    --milestone-gold: #E5B85C;
+    --font: 'Nunito', 'Apercu', -apple-system, BlinkMacSystemFont, 'Avenir Next', sans-serif;
+    --mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #F5EDDA; color: var(--ink); font-family: var(--font); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .page-chip { background: var(--marigold); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--ink-soft); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.55; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(46,26,71,0.4), 0 0 0 2px rgba(46,26,71,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Aurora wash */
+  .aurora {
+    height: 220px;
+    background: linear-gradient(180deg, var(--aurora-1) 0%, var(--aurora-2) 50%, var(--aurora-3) 100%);
+    position: relative;
+    padding: 56px 24px 0;
+    flex-shrink: 0;
+  }
+  .greeting { font-size: 28px; font-weight: 700; color: var(--ink); letter-spacing: -0.3px; line-height: 1.15; }
+  .greeting-sub { font-size: 14px; font-weight: 500; color: var(--ink); opacity: 0.8; margin-top: 4px; }
+
+  /* Today body */
+  .today-body { flex: 1; padding: 12px 16px 80px; overflow: hidden; }
+
+  /* Featured meditation card */
+  .feat-card {
+    height: 160px;
+    border-radius: 24px;
+    background:
+      radial-gradient(circle at 25% 50%, var(--aurora-1) 0%, var(--marigold) 60%, var(--marigold-pressed) 100%);
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    gap: 16px;
+    position: relative;
+    box-shadow: 0 8px 20px rgba(46,26,71,0.12);
+    margin-top: -56px; /* sits half over the aurora */
+  }
+  .feat-sphere {
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.6), rgba(255,255,255,0) 60%);
+    flex-shrink: 0;
+    position: relative;
+  }
+  .feat-sphere::before {
+    content: '';
+    position: absolute;
+    inset: 16px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, var(--aurora-1), var(--marigold) 65%, var(--marigold-pressed));
+  }
+  .feat-content { color: #fff; }
+  .feat-tag { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.9; }
+  .feat-title { font-size: 18px; font-weight: 700; line-height: 1.2; margin-top: 4px; }
+  .feat-sub { font-size: 11px; font-weight: 400; opacity: 0.85; margin-top: 4px; }
+  .feat-start {
+    margin-top: 8px;
+    display: inline-flex;
+    background: rgba(255,255,255,0.95);
+    color: var(--ink);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* Quick meditations */
+  .qm-title { font-size: 14px; font-weight: 700; color: var(--ink); margin: 16px 4px 8px; }
+  .qm-row { display: flex; gap: 10px; overflow: hidden; }
+  .qm-tile {
+    width: 110px;
+    height: 130px;
+    border-radius: 20px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-shrink: 0;
+    color: var(--ink);
+  }
+  .qm-1 { background: var(--butter); }
+  .qm-2 { background: var(--sage-light); }
+  .qm-3 { background: var(--coral); color: #fff; }
+  .qm-4 { background: var(--lavender); }
+  .qm-icon { width: 36px; height: 36px; border-radius: 50%; background: rgba(46,26,71,0.12); display: flex; align-items: center; justify-content: center; }
+  .qm-3 .qm-icon { background: rgba(255,255,255,0.25); }
+  .qm-icon svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .qm-info { width: 100%; }
+  .qm-name { font-size: 13px; font-weight: 700; line-height: 1.2; }
+  .qm-sub { font-size: 10px; font-weight: 500; opacity: 0.7; margin-top: 2px; }
+
+  /* Tab bar */
+  .tab-bar { height: 60px; background: var(--canvas); border-top: 0.5px solid var(--warm-gray); display: flex; align-items: center; justify-content: space-around; padding: 4px 6px 12px; flex-shrink: 0; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--ink-mute); font-size: 9px; font-weight: 500; }
+  .tab.active { color: var(--marigold); }
+  .tab svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: #fff; border: 1px solid var(--warm-gray); border-radius: 16px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(46,26,71,0.05); }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--ink-soft); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 14px; min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 500; font-family: var(--mono); border: 1px solid var(--warm-gray); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--ink); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--warm-gray); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: var(--mono); font-size: 11px; color: var(--ink-soft); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--ink); }
+  .t-greeting { font-size: 32px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-screen { font-size: 28px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-title { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-section { font-size: 18px; font-weight: 700; }
+  .t-body { font-size: 16px; font-weight: 400; line-height: 1.5; }
+  .t-meta { font-size: 13px; font-weight: 400; color: var(--ink-soft); }
+  .t-guidance { font-size: 22px; font-weight: 400; line-height: 1.4; }
+  .t-timer { font-size: 48px; font-weight: 700; letter-spacing: -0.5px; font-variant-numeric: tabular-nums; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 16px; font-weight: 600; padding: 14px 28px; border-radius: 999px; border: none; cursor: pointer; letter-spacing: 0; }
+  .btn-primary { background: var(--marigold); color: #fff; box-shadow: 0 6px 14px rgba(255,107,53,0.3); }
+  .btn-outline { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); padding: 12.5px 26.5px; }
+  .btn-tag-on { background: var(--butter); color: var(--ink); padding: 8px 18px; font-size: 13px; }
+  .btn-tag-off { background: var(--off-cream); color: var(--ink); padding: 8px 18px; font-size: 13px; }
+  .btn-sage { background: var(--sage); color: #fff; box-shadow: 0 6px 14px rgba(126,159,75,0.3); }
+
+  /* Streak ring */
+  .streak-wrap { display: flex; align-items: center; gap: 24px; }
+  .streak-ring { width: 120px; height: 120px; position: relative; flex-shrink: 0; }
+  .streak-ring svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+  .streak-track { fill: none; stroke: var(--off-cream); stroke-width: 8; }
+  .streak-fill { fill: none; stroke: var(--marigold); stroke-width: 8; stroke-linecap: round; stroke-dasharray: 327; stroke-dashoffset: 65; }
+  .streak-inner { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .streak-num { font-size: 36px; font-weight: 700; color: var(--ink); line-height: 1; font-variant-numeric: tabular-nums; }
+  .streak-lbl { font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
+  .streak-info { flex: 1; }
+  .streak-h { font-size: 16px; font-weight: 700; color: var(--ink); }
+  .streak-p { font-size: 13px; color: var(--ink-soft); margin-top: 4px; line-height: 1.4; }
+
+  /* Mood tags */
+  .mood-row { display: flex; gap: 10px; }
+  .mood {
+    flex: 1;
+    height: 84px;
+    border-radius: 16px;
+    background: var(--off-cream);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 4px;
+  }
+  .mood.selected { background: var(--butter); }
+  .mood-emoji { font-size: 24px; }
+  .mood.selected .mood-emoji { font-size: 28px; }
+  .mood-lbl { font-size: 11px; font-weight: 500; color: var(--ink); }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--marigold); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; font-weight: 700; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-20 { border-radius: 20px; }
+  .r-24 { border-radius: 24px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Headspace iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">A hand-drawn morning. Butter-cream canvas `#FFF7E7` — never pure white. Marigold `#FF6B35` for action, Butter Yellow for selection, Sage Moss for the Sleep tab. The Aurora gradient (peach → butter → marigold) is the brand wash. Apercu typography at 1.5 line-height — text feels paced like breath.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="aurora">
+            <div class="greeting">Good morning,<br/>Sam</div>
+            <div class="greeting-sub">Today's vibe: Mindful Moment</div>
+          </div>
+
+          <div class="today-body">
+            <div class="feat-card">
+              <div class="feat-sphere"></div>
+              <div class="feat-content">
+                <div class="feat-tag">Featured · 10 min</div>
+                <div class="feat-title">Stress Release</div>
+                <div class="feat-sub">Andy Puddicombe · Calm</div>
+                <div class="feat-start">Start</div>
+              </div>
+            </div>
+
+            <div class="qm-title">Quick meditations</div>
+            <div class="qm-row">
+              <div class="qm-tile qm-1">
+                <div class="qm-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+                <div class="qm-info">
+                  <div class="qm-name">3-min Reset</div>
+                  <div class="qm-sub">Quick calm</div>
+                </div>
+              </div>
+              <div class="qm-tile qm-2">
+                <div class="qm-icon"><svg viewBox="0 0 24 24"><path d="M12 3a4 4 0 0 1 4 4c0 3-2 5-4 8-2-3-4-5-4-8a4 4 0 0 1 4-4z"/><circle cx="12" cy="7" r="1.5" fill="currentColor"/></svg></div>
+                <div class="qm-info">
+                  <div class="qm-name">Mindful Walk</div>
+                  <div class="qm-sub">10 min</div>
+                </div>
+              </div>
+              <div class="qm-tile qm-3">
+                <div class="qm-icon"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+                <div class="qm-info">
+                  <div class="qm-name">Loving Kindness</div>
+                  <div class="qm-sub">5 min</div>
+                </div>
+              </div>
+              <div class="qm-tile qm-4">
+                <div class="qm-icon"><svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></div>
+                <div class="qm-info">
+                  <div class="qm-name">Wind Down</div>
+                  <div class="qm-sub">15 min</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg><span>Today</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 4 13a7 7 0 0 1 7-7 7 7 0 0 1 7 7 7 7 0 0 1-7 7z"/><path d="M11 6c-3 0-5 3-5 7"/></svg><span>Meditate</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span>Sleep</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><path d="M9 22V12l-2-3L9 4l4 4-3 4v10"/><path d="M14 14l3 4 3-3-3-4z"/></svg><span>Move</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 22a8 8 0 0 1 16 0"/></svg><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#FF6B35;"><div class="name">Marigold</div>#FF6B35</div>
+          <div class="swatch" style="background:#E55A2B;"><div class="name">Marigold Pressed</div>#E55A2B</div>
+          <div class="swatch light" style="background:#FFB89E;"><div class="name">Marigold Light</div>#FFB89E</div>
+          <div class="swatch light" style="background:#FFD25C;"><div class="name">Butter</div>#FFD25C</div>
+          <div class="swatch" style="background:#7E9F4B;"><div class="name">Sage Moss</div>#7E9F4B</div>
+          <div class="swatch light" style="background:#B4C68F;"><div class="name">Sage Light</div>#B4C68F</div>
+          <div class="swatch" style="background:#F4877E;"><div class="name">Coral Flush</div>#F4877E</div>
+          <div class="swatch light" style="background:#B7B0DC;"><div class="name">Sky Lavender</div>#B7B0DC</div>
+          <div class="swatch" style="background:#2E1A47;"><div class="name">Ink Brown</div>#2E1A47</div>
+          <div class="swatch light" style="background:#FFF7E7;"><div class="name">Butter Cream</div>#FFF7E7</div>
+          <div class="swatch light" style="background:#FBF1DA;"><div class="name">Off Cream</div>#FBF1DA</div>
+          <div class="swatch" style="background:#1A1430;"><div class="name">Dusk (Sleep)</div>#1A1430</div>
+        </div>
+        <div style="margin-top:16px; padding:14px; border-radius:12px; background: linear-gradient(180deg, #FFB89E 0%, #FFD25C 50%, #FF6B35 100%); color: var(--ink); font-weight:700; font-size: 14px;">
+          Aurora Gradient · #FFB89E → #FFD25C → #FF6B35
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Apercu (Nunito fallback)</div>
+        <div class="type-row"><div class="type-meta">Greeting · 32pt · 700</div><div class="type-sample t-greeting">Good morning, Sam</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 28pt · 700</div><div class="type-sample t-screen">Meditate</div></div>
+        <div class="type-row"><div class="type-meta">Med Title · 22pt · 700</div><div class="type-sample t-title">Stress Release</div></div>
+        <div class="type-row"><div class="type-meta">Section · 18pt · 700</div><div class="type-sample t-section">Featured this week</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400 (1.5 lh)</div><div class="type-sample t-body">Take a moment to settle in. Notice the rhythm of your breath.</div></div>
+        <div class="type-row"><div class="type-meta">Guidance · 22pt · 400 (play)</div><div class="type-sample t-guidance">Take a deep breath in...</div></div>
+        <div class="type-row"><div class="type-meta">Timer · 56pt · 700 tnum</div><div class="type-sample t-timer">10:00</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 400</div><div class="type-sample t-meta">Andy Puddicombe · 10 min</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Streak Ring</div>
+        <div class="streak-wrap">
+          <div class="streak-ring">
+            <svg viewBox="0 0 120 120">
+              <circle class="streak-track" cx="60" cy="60" r="52"/>
+              <circle class="streak-fill" cx="60" cy="60" r="52"/>
+            </svg>
+            <div class="streak-inner">
+              <div class="streak-num">12</div>
+              <div class="streak-lbl">days</div>
+            </div>
+          </div>
+          <div class="streak-info">
+            <div class="streak-h">You're on a roll</div>
+            <div class="streak-p">12 days of meditation in a row. Two more to unlock your "14 Day Mindful" milestone.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">How are you feeling?</div>
+        <div class="mood-row">
+          <div class="mood"><div class="mood-emoji">😊</div><div class="mood-lbl">Happy</div></div>
+          <div class="mood selected"><div class="mood-emoji">🧘</div><div class="mood-lbl">Calm</div></div>
+          <div class="mood"><div class="mood-emoji">😔</div><div class="mood-lbl">Sad</div></div>
+          <div class="mood"><div class="mood-emoji">😰</div><div class="mood-lbl">Anxious</div></div>
+          <div class="mood"><div class="mood-emoji">🎉</div><div class="mood-lbl">Excited</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Start</button>
+          <button class="btn btn-outline">Skip for now</button>
+          <button class="btn btn-sage">Wind Down</button>
+          <button class="btn btn-tag-on">Calm</button>
+          <button class="btn btn-tag-off">Focus</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-24">24</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

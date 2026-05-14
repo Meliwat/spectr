@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Todoist iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --surface: #FAFAFA;
+    --surface-2: #F0F0F0;
+    --divider: #EEEEEE;
+    --ink: #202020;
+    --secondary: #808080;
+    --tertiary: #B0B0B0;
+    --red: #DC4C3E;
+    --red-pressed: #B53C30;
+    --red-tint: #FBE5E2;
+    --p2: #EB8909;
+    --p3: #246FE0;
+    --success: #058527;
+    --error: #D1453B;
+    --proj-blue: #4073FF;
+    --proj-green: #299438;
+    --proj-grape: #884DFF;
+    --proj-magenta: #E05194;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #F4F2EE; color: var(--ink); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; color: var(--red); }
+  .page-chip { background: var(--red); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 4px; letter-spacing: 0.6px; text-transform: uppercase; }
+  .page-subtitle { color: var(--secondary); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.4), 0 0 0 2px rgba(0,0,0,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Top nav */
+  .nav { padding: 48px 16px 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; background: var(--canvas); }
+  .nav-left { display: flex; align-items: center; gap: 12px; }
+  .nav-hamb svg { width: 22px; height: 22px; stroke: var(--ink); stroke-width: 2; fill: none; }
+  .nav-title { font-size: 24px; font-weight: 700; letter-spacing: -0.4px; color: var(--ink); }
+  .nav-count { font-size: 14px; font-weight: 500; color: var(--secondary); margin-left: 6px; }
+  .nav-right svg { width: 20px; height: 20px; stroke: var(--ink); stroke-width: 1.8; fill: none; }
+
+  /* Section header */
+  .section-hdr { font-size: 11px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; color: var(--secondary); padding: 12px 16px 8px; background: var(--canvas); display: flex; align-items: center; justify-content: space-between; }
+  .section-hdr.overdue { color: var(--red); }
+  .section-hdr svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Task rows */
+  .task-list { flex: 1; background: var(--canvas); overflow: hidden; }
+  .task { display: flex; gap: 12px; padding: 14px 16px; border-bottom: 0.5px solid var(--divider); border-bottom-color: var(--divider); position: relative; }
+  .task::before { content: ''; position: absolute; left: 64px; right: 0; bottom: 0; height: 0.5px; background: var(--divider); }
+  .task:last-child::before { display: none; }
+
+  .check {
+    width: 22px; height: 22px; border-radius: 50%;
+    border: 1.5px solid;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .check.p1 { border-color: var(--red); background: rgba(220,76,62,0.10); }
+  .check.p2 { border-color: var(--p2); background: rgba(235,137,9,0.08); }
+  .check.p3 { border-color: var(--p3); background: rgba(36,111,224,0.08); }
+  .check.p4 { border-color: var(--tertiary); background: transparent; }
+  .check.done { background: var(--secondary); border-color: var(--secondary); }
+  .check.done svg { width: 13px; height: 13px; stroke: #fff; stroke-width: 3; fill: none; display: block; }
+  .check svg { display: none; }
+
+  .task-content { flex: 1; min-width: 0; }
+  .task-title { font-size: 15px; font-weight: 400; color: var(--ink); letter-spacing: -0.1px; line-height: 1.35; }
+  .task-title.done { color: var(--tertiary); text-decoration: line-through; opacity: 0.7; }
+  .task-meta { display: flex; align-items: center; gap: 10px; margin-top: 5px; font-size: 12px; flex-wrap: wrap; }
+  .date-today { color: var(--success); font-weight: 400; }
+  .date-overdue { color: var(--red); font-weight: 500; }
+  .date-future { color: var(--secondary); font-weight: 400; }
+  .proj-tag { display: inline-flex; align-items: center; gap: 5px; color: var(--secondary); }
+  .proj-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .meta-icon { display: inline-flex; align-items: center; gap: 3px; color: var(--secondary); }
+  .meta-icon svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+
+  /* FAB */
+  .fab {
+    position: absolute;
+    bottom: 80px;
+    right: 18px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--red);
+    box-shadow: 0 6px 16px rgba(220,76,62,0.35), 0 2px 4px rgba(220,76,62,0.2);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    font-size: 28px;
+    font-weight: 300;
+    z-index: 10;
+  }
+
+  /* Tab bar */
+  .tab-bar { height: 60px; background: var(--canvas); border-top: 0.5px solid var(--divider); display: flex; align-items: center; justify-content: space-around; padding: 4px 6px 14px; flex-shrink: 0; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--secondary); font-size: 10px; font-weight: 500; }
+  .tab.active { color: var(--red); }
+  .tab svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; opacity: 0.9; }
+
+  /* Token sections */
+  .section { background: #fff; border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 14px; min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 500; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--ink); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--ink); }
+  .t-34 { font-size: 34px; font-weight: 700; letter-spacing: -0.4px; }
+  .t-22 { font-size: 22px; font-weight: 600; letter-spacing: -0.2px; }
+  .t-17 { font-size: 17px; font-weight: 600; letter-spacing: -0.1px; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--secondary); }
+  .t-13-sec { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: var(--secondary); }
+
+  /* Priorities */
+  .priority-row { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+  .priority-cell { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .priority-circle { width: 34px; height: 34px; border-radius: 50%; border: 2px solid; display: flex; align-items: center; justify-content: center; }
+  .priority-p1 { border-color: var(--red); background: rgba(220,76,62,0.10); }
+  .priority-p2 { border-color: var(--p2); background: rgba(235,137,9,0.08); }
+  .priority-p3 { border-color: var(--p3); background: rgba(36,111,224,0.08); }
+  .priority-p4 { border-color: var(--tertiary); background: transparent; }
+  .priority-label { font-size: 11px; font-weight: 600; color: var(--secondary); letter-spacing: 0.2px; }
+  .priority-flag svg { width: 14px; height: 14px; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 15px; font-weight: 600; padding: 11px 24px; border-radius: 8px; border: none; cursor: pointer; }
+  .btn-primary { background: var(--red); color: #fff; }
+  .btn-outline { background: transparent; color: var(--ink); border: 1px solid var(--divider); padding: 10px 23px; }
+  .btn-success { background: var(--success); color: #fff; }
+  .smart-chip { font-size: 13px; font-weight: 500; padding: 4px 10px; border-radius: 6px; }
+  .chip-today { background: rgba(5,133,39,0.12); color: var(--success); }
+  .chip-p1 { background: rgba(220,76,62,0.12); color: var(--red); }
+  .chip-proj { background: rgba(64,115,255,0.12); color: var(--proj-blue); }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 14px; flex-wrap: wrap; }
+  .radius-box { width: 64px; height: 64px; background: var(--red); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Todoist iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">Quiet, productive workshop. Todoist Red `#DC4C3E` reserved for verbs — the FAB, the P1 priority flag, and the brand mark. A tinted red shadow under the FAB is the signature. SF Pro system font; whisper-quiet hierarchy.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="nav">
+            <div class="nav-left">
+              <div class="nav-hamb"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
+              <div>
+                <span class="nav-title">Today</span>
+                <span class="nav-count">7</span>
+              </div>
+            </div>
+            <div class="nav-right"><svg viewBox="0 0 24 24"><line x1="4" y1="8" x2="20" y2="8"/><circle cx="9" cy="8" r="2.5" fill="#FFF"/><line x1="4" y1="16" x2="20" y2="16"/><circle cx="15" cy="16" r="2.5" fill="#FFF"/></svg></div>
+          </div>
+
+          <div class="section-hdr overdue">
+            <span>Overdue · 2</span>
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+
+          <div class="task-list">
+            <div class="task">
+              <div class="check p1"></div>
+              <div class="task-content">
+                <div class="task-title">Reply to Dieter about the rebrand</div>
+                <div class="task-meta">
+                  <span class="date-overdue">2 days ago</span>
+                  <span class="proj-tag"><span class="proj-dot" style="background:var(--proj-grape)"></span># Work</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="task">
+              <div class="check p2"></div>
+              <div class="task-content">
+                <div class="task-title">Renew passport</div>
+                <div class="task-meta">
+                  <span class="date-overdue">Yesterday</span>
+                  <span class="proj-tag"><span class="proj-dot" style="background:var(--proj-magenta)"></span># Personal</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-hdr">
+              <span>Today · 5</span>
+              <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+
+            <div class="task">
+              <div class="check p1"></div>
+              <div class="task-content">
+                <div class="task-title">Ship v1.4 to TestFlight</div>
+                <div class="task-meta">
+                  <span class="date-today">Today 4:00 PM</span>
+                  <span class="proj-tag"><span class="proj-dot" style="background:var(--proj-grape)"></span># Work</span>
+                  <span class="meta-icon"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>3</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="task">
+              <div class="check p3 done">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="task-content">
+                <div class="task-title done">Morning run · 5km</div>
+                <div class="task-meta">
+                  <span class="date-future">Today 7:00 AM</span>
+                  <span class="proj-tag"><span class="proj-dot" style="background:var(--proj-green)"></span># Fitness</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="task">
+              <div class="check p3"></div>
+              <div class="task-content">
+                <div class="task-title">Buy milk, eggs, and bread</div>
+                <div class="task-meta">
+                  <span class="date-today">Today</span>
+                  <span class="proj-tag"><span class="proj-dot" style="background:var(--proj-blue)"></span># Groceries</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="task">
+              <div class="check p4"></div>
+              <div class="task-content">
+                <div class="task-title">Email the contractor about kitchen quote</div>
+                <div class="task-meta">
+                  <span class="date-today">Today</span>
+                  <span class="proj-tag"><span class="proj-dot" style="background:var(--proj-magenta)"></span># Personal</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="task">
+              <div class="check p2"></div>
+              <div class="task-content">
+                <div class="task-title">Read chapter 7 of "Atomic Habits"</div>
+                <div class="task-meta">
+                  <span class="date-today">Today</span>
+                  <span class="proj-tag"><span class="proj-dot" style="background:#7ECC49"></span># Reading</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="fab">+</div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Today</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><polyline points="3 10 21 10"/><line x1="8" y1="14" x2="8" y2="18"/><line x1="16" y1="14" x2="16" y2="18"/></svg><span>Upcoming</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Search</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><span>Browse</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#DC4C3E;"><div class="name">Todoist Red</div>#DC4C3E</div>
+          <div class="swatch" style="background:#B53C30;"><div class="name">Red Pressed</div>#B53C30</div>
+          <div class="swatch light" style="background:#FBE5E2;"><div class="name">Red Tint</div>#FBE5E2</div>
+          <div class="swatch" style="background:#EB8909;"><div class="name">P2 Orange</div>#EB8909</div>
+          <div class="swatch" style="background:#246FE0;"><div class="name">P3 Blue</div>#246FE0</div>
+          <div class="swatch" style="background:#058527;"><div class="name">Success</div>#058527</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Canvas</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#FAFAFA;"><div class="name">Surface</div>#FAFAFA</div>
+          <div class="swatch light" style="background:#F0F0F0;"><div class="name">Surface 2</div>#F0F0F0</div>
+          <div class="swatch light" style="background:#EEEEEE;"><div class="name">Divider</div>#EEEEEE</div>
+          <div class="swatch" style="background:#202020;"><div class="name">Ink</div>#202020</div>
+          <div class="swatch" style="background:#808080;"><div class="name">Secondary</div>#808080</div>
+          <div class="swatch light" style="background:#B0B0B0;"><div class="name">Tertiary</div>#B0B0B0</div>
+          <div class="swatch" style="background:#4073FF;"><div class="name">Proj Blue</div>#4073FF</div>
+          <div class="swatch" style="background:#299438;"><div class="name">Proj Green</div>#299438</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — SF Pro System</div>
+        <div class="type-row"><div class="type-meta">Large Nav · 34pt · 700</div><div class="type-sample t-34">Today</div></div>
+        <div class="type-row"><div class="type-meta">Sheet Title · 22pt · 600</div><div class="type-sample t-22">Quick Add</div></div>
+        <div class="type-row"><div class="type-meta">Inline Nav · 17pt · 600</div><div class="type-sample t-17">Add task</div></div>
+        <div class="type-row"><div class="type-meta">Task Body · 16pt · 400</div><div class="type-sample t-16">Reply to Dieter about the rebrand</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 400</div><div class="type-sample t-13">Today 4:00 PM · # Work · 💬 3</div></div>
+        <div class="type-row"><div class="type-meta">Section Hdr · 13pt · 600 UC</div><div class="type-sample t-13-sec">TODAY · 5</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Priority System</div>
+        <div class="priority-row">
+          <div class="priority-cell">
+            <div class="priority-circle priority-p1"></div>
+            <div class="priority-label">P1 #DC4C3E</div>
+          </div>
+          <div class="priority-cell">
+            <div class="priority-circle priority-p2"></div>
+            <div class="priority-label">P2 #EB8909</div>
+          </div>
+          <div class="priority-cell">
+            <div class="priority-circle priority-p3"></div>
+            <div class="priority-label">P3 #246FE0</div>
+          </div>
+          <div class="priority-cell">
+            <div class="priority-circle priority-p4"></div>
+            <div class="priority-label">P4 outline</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons & Smart Chips</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Add task</button>
+          <button class="btn btn-outline">Cancel</button>
+          <button class="btn btn-success">Schedule</button>
+          <span class="smart-chip chip-today">Today</span>
+          <span class="smart-chip chip-p1">P1</span>
+          <span class="smart-chip chip-proj"># groceries</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

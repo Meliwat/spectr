@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Claude iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F8F4ED;
+    --paper: #FBF9F4;
+    --surface-1: #F0EAE0;
+    --surface-2: #E8E0D2;
+    --sand: #DDD2BD;
+    --ink: #2D2520;
+    --graphite: #5A4F44;
+    --stone: #8A7E72;
+    --bone: #B5AB9E;
+    --orange: #D97757;
+    --orange-pressed: #BE6242;
+    --orange-soft: #F2DDD0;
+    --code-bg: #1F1B16;
+    --code-fg: #E8E0D2;
+    --syntax-key: #D97757;
+    --syntax-string: #7FB069;
+    --syntax-num: #E8B96F;
+    --syntax-func: #9DA4F2;
+    --syntax-cmt: #8A7E72;
+    --error: #C16654;
+    --success: #6B9D5E;
+    --serif: 'Source Serif 4', 'Tiempos Text', Georgia, serif;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Styrene A', sans-serif;
+    --mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #E8E0D2; color: var(--ink); font-family: var(--sans); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-family: var(--serif); font-size: 28px; font-weight: 600; letter-spacing: -0.4px; color: var(--ink); }
+  .page-chip { background: var(--orange); color: var(--paper); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 500px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--graphite); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(40,30,20,0.5), 0 0 0 2px rgba(0,0,0,0.08) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--cream); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Header */
+  .header { padding: 48px 16px 8px; display: flex; align-items: center; justify-content: space-between; background: var(--cream); flex-shrink: 0; }
+  .hamburger svg, .ellipsis svg { width: 18px; height: 18px; stroke: var(--ink); stroke-width: 2; fill: none; }
+  .h-title { font-family: var(--sans); font-size: 16px; font-weight: 600; color: var(--ink); letter-spacing: -0.1px; }
+
+  /* Model chip */
+  .model-chip {
+    align-self: flex-start;
+    margin: 4px 16px 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface-1);
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .model-chip .chev { color: var(--stone); }
+  .model-chip .chev svg { width: 10px; height: 10px; stroke: currentColor; stroke-width: 2.5; fill: none; }
+
+  /* Asterisk-star logomark (SVG inline) */
+  .mark {
+    display: inline-block;
+    width: 14px; height: 14px;
+    color: var(--orange);
+  }
+  .mark.avatar { width: 18px; height: 18px; flex-shrink: 0; }
+  .mark.big { width: 56px; height: 56px; }
+  .mark svg { width: 100%; height: 100%; }
+
+  /* Conversation area */
+  .conv { flex: 1; padding: 4px 16px 0; overflow: hidden; display: flex; flex-direction: column; gap: 24px; }
+
+  /* User message */
+  .user-msg {
+    align-self: flex-end;
+    background: var(--surface-1);
+    padding: 12px 16px;
+    border-radius: 18px;
+    max-width: 80%;
+    font-family: var(--sans);
+    font-size: 15px;
+    color: var(--ink);
+    line-height: 1.45;
+  }
+
+  /* Assistant message */
+  .ast-msg {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .ast-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 0;
+  }
+  .ast-sender { font-family: var(--sans); font-size: 12px; font-weight: 500; color: var(--graphite); }
+  .ast-model { font-family: var(--sans); font-size: 12px; color: var(--stone); }
+  .ast-body {
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--ink);
+    line-height: 1.55;
+    margin-left: 24px;
+  }
+  .ast-body em { font-style: italic; }
+  .ast-body strong { font-weight: 600; }
+  .ast-body code {
+    font-family: var(--mono);
+    font-size: 13px;
+    background: var(--surface-1);
+    padding: 1px 4px;
+    border-radius: 4px;
+  }
+
+  /* Streaming cursor */
+  .cursor {
+    display: inline-block;
+    width: 6px;
+    height: 14px;
+    background: var(--orange);
+    border-radius: 1px;
+    margin-left: 2px;
+    vertical-align: text-bottom;
+    animation: blink 0.6s infinite;
+  }
+  @keyframes blink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+  }
+
+  /* Chat input */
+  .chat-input {
+    position: absolute;
+    left: 12px; right: 12px; bottom: 24px;
+    background: var(--paper);
+    border: 1px solid var(--sand);
+    border-radius: 24px;
+    padding: 6px 8px 6px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 16px rgba(40,30,20,0.06);
+  }
+  .ci-attach svg { width: 20px; height: 20px; stroke: var(--graphite); stroke-width: 2; fill: none; }
+  .ci-input { flex: 1; color: var(--stone); font-family: var(--sans); font-size: 15px; padding: 8px 0; }
+  .ci-send {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--orange);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .ci-send svg { width: 14px; height: 14px; stroke: var(--paper); stroke-width: 2.5; fill: none; }
+
+  /* Token sections */
+  .section { background: var(--paper); border: 1px solid var(--sand); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-family: var(--sans); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--graphite); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 14px; min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 500; font-family: var(--mono); border: 1px solid var(--sand); color: var(--paper); }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--sans); margin-bottom: 2px; }
+  .swatch.light { color: var(--ink); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--surface-1); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: var(--mono); font-size: 11px; color: var(--graphite); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--ink); }
+  .t-display { font-family: var(--serif); font-size: 28px; font-weight: 600; letter-spacing: -0.4px; }
+  .t-h1 { font-family: var(--serif); font-size: 22px; font-weight: 600; letter-spacing: -0.2px; }
+  .t-h2 { font-family: var(--serif); font-size: 18px; font-weight: 600; }
+  .t-body { font-family: var(--serif); font-size: 16px; font-weight: 400; line-height: 1.55; }
+  .t-italic { font-family: var(--serif); font-size: 16px; font-style: italic; }
+  .t-user { font-family: var(--sans); font-size: 15px; font-weight: 400; }
+  .t-action { font-family: var(--sans); font-size: 14px; font-weight: 600; }
+  .t-chip { font-family: var(--sans); font-size: 12px; font-weight: 500; color: var(--graphite); }
+  .t-code { font-family: var(--mono); font-size: 13px; }
+
+  /* Code block */
+  .code-block {
+    background: var(--code-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--sand);
+  }
+  .code-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 12px;
+    background: rgba(58,51,44,0.4);
+    border-bottom: 1px solid #3A332C;
+  }
+  .code-lang { font-family: var(--mono); font-size: 11px; color: var(--stone); }
+  .code-copy { color: var(--code-fg); }
+  .code-copy svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .code-body {
+    padding: 16px;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--code-fg);
+    line-height: 1.5;
+    overflow-x: auto;
+  }
+  .code-body .key { color: var(--syntax-key); }
+  .code-body .str { color: var(--syntax-string); }
+  .code-body .num { color: var(--syntax-num); }
+  .code-body .fn { color: var(--syntax-func); }
+  .code-body .cmt { color: var(--syntax-cmt); font-style: italic; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--sans); font-size: 14px; font-weight: 600; padding: 10px 18px; border-radius: 10px; border: 1px solid transparent; cursor: pointer; }
+  .btn-primary { background: var(--orange); color: var(--paper); }
+  .btn-action { background: var(--paper); color: var(--ink); border-color: var(--sand); }
+  .btn-ink { background: var(--ink); color: var(--paper); border-radius: 24px; padding: 12px 24px; }
+
+  /* Thinking indicator */
+  .thinking {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--orange-soft);
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--graphite);
+  }
+  .thinking .mark { animation: pulse 1.2s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+  .radius-box { width: 72px; height: 72px; background: var(--orange); color: var(--paper); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-12 { border-radius: 12px; }
+  .r-18 { border-radius: 18px; }
+  .r-24 { border-radius: 24px; }
+  .r-circle { border-radius: 50%; }
+
+</style>
+</head>
+<body>
+
+<!-- Reusable asterisk-star SVG defined once -->
+<svg width="0" height="0" style="position:absolute;">
+  <symbol id="claude-mark" viewBox="0 0 24 24">
+    <g fill="currentColor">
+      <path d="M12 1 L13.5 10.5 L12 12 L10.5 10.5 Z"/>
+      <path d="M12 23 L13.5 13.5 L12 12 L10.5 13.5 Z"/>
+      <path d="M23 12 L13.5 13.5 L12 12 L13.5 10.5 Z"/>
+      <path d="M1 12 L10.5 13.5 L12 12 L10.5 10.5 Z"/>
+      <path d="M19.8 4.2 L13.7 11.0 L12 12 L13.0 10.3 Z"/>
+      <path d="M4.2 19.8 L10.3 13.0 L12 12 L11.0 13.7 Z"/>
+      <path d="M19.8 19.8 L13.0 13.7 L12 12 L13.7 13.0 Z"/>
+      <path d="M4.2 4.2 L11.0 10.3 L12 12 L10.3 11.0 Z"/>
+    </g>
+  </symbol>
+</svg>
+
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Claude iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">Warm cream paper canvas `#F8F4ED`. Single signature accent — Claude Orange `#D97757`, a desaturated terracotta — on the send button, asterisk-star avatar, and streaming cursor. Assistant body in Tiempos serif, user messages in Styrene sans. A chat surface that reads as document, not bubbles.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="header">
+            <div class="hamburger"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
+            <div class="h-title">Untitled chat</div>
+            <div class="ellipsis"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="19" cy="12" r="1.5" fill="currentColor"/></svg></div>
+          </div>
+
+          <div class="model-chip">
+            <span class="mark"><svg><use href="#claude-mark"/></svg></span>
+            Claude Opus 4.5
+            <span class="chev"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+          </div>
+
+          <div class="conv">
+            <div class="user-msg">Explain Bayesian inference like I'm a curious 15-year-old.</div>
+
+            <div class="ast-msg">
+              <div class="ast-header">
+                <span class="mark avatar"><svg><use href="#claude-mark"/></svg></span>
+                <span class="ast-sender">Claude</span>
+                <span class="ast-model">· Opus 4.5</span>
+              </div>
+              <div class="ast-body">
+                Imagine you're guessing what's in a friend's pocket. You start with a hunch — maybe <em>they have keys</em> — and then they hint, <em>"it jingles when I walk"</em>. That hint <strong>updates</strong> your belief. Bayesian inference is the math of doing that update systematically.<span class="cursor"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="chat-input">
+            <div class="ci-attach"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
+            <div class="ci-input">Reply to Claude…</div>
+            <div class="ci-send"><svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch light" style="background:#F8F4ED;"><div class="name">Cream Paper</div>#F8F4ED</div>
+          <div class="swatch light" style="background:#FBF9F4;"><div class="name">Paper White</div>#FBF9F4</div>
+          <div class="swatch light" style="background:#F0EAE0;"><div class="name">Surface 1</div>#F0EAE0</div>
+          <div class="swatch light" style="background:#DDD2BD;"><div class="name">Divider Sand</div>#DDD2BD</div>
+          <div class="swatch" style="background:#2D2520;"><div class="name">Ink</div>#2D2520</div>
+          <div class="swatch" style="background:#5A4F44;"><div class="name">Graphite</div>#5A4F44</div>
+          <div class="swatch" style="background:#8A7E72;"><div class="name">Stone</div>#8A7E72</div>
+          <div class="swatch" style="background:#D97757;"><div class="name">Claude Orange</div>#D97757</div>
+          <div class="swatch" style="background:#BE6242;"><div class="name">Orange Pressed</div>#BE6242</div>
+          <div class="swatch light" style="background:#F2DDD0;"><div class="name">Orange Soft</div>#F2DDD0</div>
+          <div class="swatch" style="background:#1F1B16;"><div class="name">Code BG</div>#1F1B16</div>
+          <div class="swatch" style="background:#7FB069;"><div class="name">Syntax String</div>#7FB069</div>
+          <div class="swatch" style="background:#E8B96F;"><div class="name">Syntax Number</div>#E8B96F</div>
+          <div class="swatch" style="background:#9DA4F2;"><div class="name">Syntax Function</div>#9DA4F2</div>
+          <div class="swatch" style="background:#C16654;"><div class="name">Error</div>#C16654</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Tiempos + Styrene</div>
+        <div class="type-row"><div class="type-meta">Display · Tiempos 28pt · 600</div><div class="type-sample t-display">Settings</div></div>
+        <div class="type-row"><div class="type-meta">H1 · Tiempos 22pt · 600</div><div class="type-sample t-h1">A Beginner's Guide</div></div>
+        <div class="type-row"><div class="type-meta">H2 · Tiempos 18pt · 600</div><div class="type-sample t-h2">What is inference?</div></div>
+        <div class="type-row"><div class="type-meta">Body · Tiempos 16pt · 400</div><div class="type-sample t-body">Imagine you're guessing what's in a friend's pocket — you start with a hunch.</div></div>
+        <div class="type-row"><div class="type-meta">Italic · Tiempos 16pt · 400</div><div class="type-sample t-italic">it jingles when I walk</div></div>
+        <div class="type-row"><div class="type-meta">User · Styrene 15pt · 400</div><div class="type-sample t-user">Reply to Claude…</div></div>
+        <div class="type-row"><div class="type-meta">Action · Styrene 14pt · 600</div><div class="type-sample t-action">Continue</div></div>
+        <div class="type-row"><div class="type-meta">Chip · Styrene 12pt · 500</div><div class="type-sample t-chip">Claude Opus 4.5</div></div>
+        <div class="type-row"><div class="type-meta">Code · JetBrains 13pt · 400</div><div class="type-sample t-code">function bayes(prior, likelihood)</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive — Code Block (warm dark)</div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-lang">swift</div>
+            <div class="code-copy"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div>
+          </div>
+          <div class="code-body"><span class="cmt">// Update beliefs with evidence</span>
+<span class="key">func</span> <span class="fn">bayes</span>(prior: <span class="key">Double</span>, likelihood: <span class="key">Double</span>) -&gt; <span class="key">Double</span> {
+  <span class="key">return</span> prior * likelihood / <span class="num">1.0</span>
+}</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive — Thinking Indicator</div>
+        <div class="thinking">
+          <span class="mark"><svg><use href="#claude-mark"/></svg></span>
+          Thinking…
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Send</button>
+          <button class="btn btn-action">Continue</button>
+          <button class="btn btn-action">Regenerate</button>
+          <button class="btn btn-ink">Start a conversation</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-18">18</div>
+          <div class="radius-box r-24">24</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Hinge iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FDF8F2;
+    --paper: #FAF6F0;
+    --sand: #F2EBE0;
+    --sand2: #E8DFD0;
+    --divider: #E0D6C5;
+    --black: #1A1A1A;
+    --graphite: #4A4239;
+    --stone: #7A7268;
+    --bone: #B0A89C;
+    --rose: #E8A04D;
+    --rose-deep: #C57E2E;
+    --rose-light: #F5D9A8;
+    --match-green: #2D7A4B;
+    --error: #B33A2F;
+    --display: 'Manrope', -apple-system, 'SF Pro Display', sans-serif;
+    --body: 'Inter', -apple-system, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #E8DFD0; color: var(--black); font-family: var(--body); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-family: var(--display); font-size: 28px; font-weight: 700; letter-spacing: -0.6px; color: var(--black); }
+  .page-chip { background: var(--black); color: var(--paper); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 500px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--graphite); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(28,20,10,0.5), 0 0 0 2px rgba(0,0,0,0.08) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--cream); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Top header */
+  .header { padding: 48px 20px 8px; display: flex; align-items: center; justify-content: space-between; background: var(--cream); flex-shrink: 0; }
+  .h-mark {
+    width: 28px; height: 28px;
+    background: var(--black);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--paper);
+    font-family: Georgia, serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  .h-title { font-family: var(--display); font-size: 20px; font-weight: 700; color: var(--black); letter-spacing: -0.2px; }
+  .h-icon { color: var(--black); }
+  .h-icon svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Scrollable profile */
+  .profile-scroll { flex: 1; overflow: hidden; padding: 8px 16px 0; position: relative; }
+
+  /* Name + age */
+  .name-row {
+    padding: 8px 4px 14px;
+  }
+  .name-text { font-family: var(--display); font-size: 26px; font-weight: 700; color: var(--black); letter-spacing: -0.4px; }
+  .name-meta { font-family: var(--body); font-size: 13px; color: var(--stone); margin-top: 4px; }
+
+  /* Attribute chip row */
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 4px 14px; }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--sand);
+    padding: 6px 12px;
+    border-radius: 500px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--black);
+  }
+  .chip svg { width: 12px; height: 12px; stroke: var(--black); stroke-width: 2; fill: none; }
+  .chip .verified { width: 12px; height: 12px; color: var(--match-green); fill: var(--match-green); stroke: none; }
+
+  /* Prompt card */
+  .prompt-card {
+    background: var(--paper);
+    border: 0.5px solid var(--divider);
+    border-radius: 16px;
+    padding: 18px;
+    margin: 6px 0 10px;
+    box-shadow: 0 2px 8px rgba(28,20,10,0.06);
+    position: relative;
+  }
+  .prompt-q {
+    font-family: var(--display);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--graphite);
+    font-style: italic;
+    letter-spacing: -0.2px;
+    margin-bottom: 8px;
+  }
+  .prompt-a {
+    font-family: var(--display);
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--black);
+    line-height: 1.25;
+    letter-spacing: -0.3px;
+  }
+  .heart-tap {
+    position: absolute;
+    bottom: 12px; right: 12px;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 1px solid var(--black);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .heart-tap svg { width: 16px; height: 16px; fill: var(--black); }
+
+  /* Photo card */
+  .photo-card {
+    position: relative;
+    height: 170px;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #BFA882 0%, #6E5938 100%);
+    box-shadow: 0 2px 8px rgba(28,20,10,0.06);
+  }
+  .photo-card.p2 { background: linear-gradient(135deg, #A88B6F, #4D3826); }
+  .photo-card::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% 40%, rgba(255,240,220,0.25), transparent 70%),
+                radial-gradient(circle at 30% 70%, rgba(0,0,0,0.2), transparent 60%);
+  }
+  .photo-card .heart-tap { z-index: 3; bottom: 14px; right: 14px; }
+
+  /* Action bar bottom */
+  .action-bar {
+    position: absolute;
+    left: 16px; right: 16px; bottom: 72px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .ab-btn {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 1.5px solid var(--black);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(28,20,10,0.10);
+  }
+  .ab-btn svg { width: 22px; height: 22px; stroke: var(--black); stroke-width: 2.5; fill: none; }
+  .ab-btn.heart { background: var(--black); }
+  .ab-btn.heart svg { stroke: var(--paper); fill: var(--paper); }
+
+  /* Tab bar */
+  .tab-bar { height: 60px; background: var(--cream); border-top: 0.5px solid var(--divider); display: flex; align-items: center; justify-content: space-around; padding: 4px 6px 14px; flex-shrink: 0; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--stone); font-size: 9px; font-weight: 500; font-family: var(--display); letter-spacing: 0.2px; }
+  .tab.active { color: var(--black); }
+  .tab svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+  .tab.active::after {
+    content: '';
+    width: 3px; height: 3px; border-radius: 50%;
+    background: var(--black);
+    margin-top: 1px;
+  }
+
+  /* Token sections */
+  .section { background: var(--paper); border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-family: var(--display); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--graphite); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 14px; min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 500; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: var(--paper); }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--body); margin-bottom: 2px; }
+  .swatch.light { color: var(--black); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--graphite); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--black); }
+  .t-display { font-family: var(--display); font-size: 32px; font-weight: 700; letter-spacing: -0.6px; }
+  .t-prompt-q { font-family: var(--display); font-size: 20px; font-weight: 500; font-style: italic; color: var(--graphite); }
+  .t-prompt-a { font-family: var(--display); font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-name { font-family: var(--display); font-size: 24px; font-weight: 700; letter-spacing: -0.4px; }
+  .t-section { font-family: var(--display); font-size: 18px; font-weight: 700; }
+  .t-body { font-family: var(--body); font-size: 16px; font-weight: 400; }
+  .t-chip { font-family: var(--body); font-size: 14px; font-weight: 500; }
+  .t-meta { font-family: var(--body); font-size: 13px; font-weight: 400; color: var(--graphite); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--display); font-size: 15px; font-weight: 700; padding: 14px 28px; border-radius: 28px; border: none; cursor: pointer; letter-spacing: 0.2px; }
+  .btn-primary { background: var(--black); color: var(--paper); }
+  .btn-rose { background: var(--black); color: var(--paper); border: 1px solid var(--rose); display: inline-flex; align-items: center; gap: 8px; }
+  .btn-rose svg { width: 14px; height: 14px; fill: var(--rose); }
+  .btn-outline { background: transparent; color: var(--black); border: 1.5px solid var(--black); padding: 12.5px 26.5px; }
+
+  /* Heart tap demo */
+  .heart-demo {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
+  .ht-big {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 1.5px solid var(--black);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .ht-big.filled {
+    background: var(--black);
+  }
+  .ht-big svg { width: 20px; height: 20px; fill: var(--black); }
+  .ht-big.filled svg { fill: var(--paper); }
+  .ht-label { font-family: var(--body); font-size: 13px; color: var(--graphite); }
+
+  /* Rose moment */
+  .rose-card {
+    background: var(--paper);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid var(--rose);
+    position: relative;
+    overflow: hidden;
+  }
+  .rose-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 28px;
+    background: var(--rose-light);
+  }
+  .rose-icon-big {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--rose-light);
+    display: flex; align-items: center; justify-content: center;
+    margin: 16px auto 12px;
+    position: relative;
+    z-index: 2;
+  }
+  .rose-icon-big svg { width: 28px; height: 28px; fill: var(--rose); }
+  .rose-title { font-family: var(--display); font-size: 17px; font-weight: 700; text-align: center; margin-bottom: 4px; }
+  .rose-sub { font-family: var(--body); font-size: 13px; color: var(--graphite); text-align: center; margin-bottom: 16px; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--black); color: var(--paper); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-20 { border-radius: 20px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Hinge iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">Warm cream paper canvas `#FDF8F2`. Hinge Black `#1A1A1A` — never pure black — for type and CTAs. Single sacred gold `#E8A04D` reserved exclusively for Standouts and Roses. Sailec for prompts, Inter for chrome. The app reads like a printed journal.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="header">
+            <div class="h-mark">H</div>
+            <div class="h-title">Discover</div>
+            <div class="h-icon"><svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg></div>
+          </div>
+
+          <div class="profile-scroll">
+            <div class="name-row">
+              <div class="name-text">Sigrún, 28</div>
+              <div class="name-meta">2 mi away</div>
+            </div>
+
+            <div class="chips">
+              <div class="chip"><svg viewBox="0 0 24 24"><line x1="5" y1="3" x2="5" y2="21"/><polyline points="2 8 8 8"/></svg>5'9"</div>
+              <div class="chip"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a4 4 0 0 1 8 0v2"/></svg>Engineer<svg class="verified" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10" stroke="white" stroke-width="2" fill="none"/></svg></div>
+              <div class="chip"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>SF</div>
+            </div>
+
+            <div class="prompt-card">
+              <div class="prompt-q">I geek out on _</div>
+              <div class="prompt-a">Specialty coffee, vintage Vespas, and the chess opening called the Sicilian Najdorf.</div>
+              <div class="heart-tap"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+            </div>
+
+            <div class="photo-card p2">
+              <div class="heart-tap"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+            </div>
+
+            <div class="prompt-card">
+              <div class="prompt-q">My simple pleasures</div>
+              <div class="prompt-a">Sunday mornings with a record on.</div>
+              <div class="heart-tap"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+            </div>
+          </div>
+
+          <div class="action-bar">
+            <div class="ab-btn"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+            <div class="ab-btn heart"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg><span>Discover</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg><span>Likes You</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>Standouts</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/></svg><span>Matches</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch light" style="background:#FDF8F2;"><div class="name">Cream Canvas</div>#FDF8F2</div>
+          <div class="swatch light" style="background:#FAF6F0;"><div class="name">Paper White</div>#FAF6F0</div>
+          <div class="swatch light" style="background:#F2EBE0;"><div class="name">Surface Sand</div>#F2EBE0</div>
+          <div class="swatch light" style="background:#E0D6C5;"><div class="name">Divider Bone</div>#E0D6C5</div>
+          <div class="swatch" style="background:#1A1A1A;"><div class="name">Hinge Black</div>#1A1A1A</div>
+          <div class="swatch" style="background:#4A4239;"><div class="name">Graphite</div>#4A4239</div>
+          <div class="swatch" style="background:#7A7268;"><div class="name">Stone</div>#7A7268</div>
+          <div class="swatch" style="background:#B0A89C; color:#000;"><div class="name">Bone</div>#B0A89C</div>
+          <div class="swatch" style="background:#E8A04D;"><div class="name">Rose Gold</div>#E8A04D</div>
+          <div class="swatch" style="background:#C57E2E;"><div class="name">Rose Deep</div>#C57E2E</div>
+          <div class="swatch light" style="background:#F5D9A8;"><div class="name">Rose Light</div>#F5D9A8</div>
+          <div class="swatch" style="background:#2D7A4B;"><div class="name">Match Green</div>#2D7A4B</div>
+          <div class="swatch" style="background:#B33A2F;"><div class="name">Error</div>#B33A2F</div>
+          <div class="swatch" style="background:#16130E;"><div class="name">Dark Canvas</div>#16130E</div>
+          <div class="swatch" style="background:#F0B05C;"><div class="name">Rose Dark</div>#F0B05C</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Sailec + Inter</div>
+        <div class="type-row"><div class="type-meta">Display · 36pt · 700</div><div class="type-sample t-display">It's a match!</div></div>
+        <div class="type-row"><div class="type-meta">Name · 28pt · 700</div><div class="type-sample t-name">Sigrún, 28</div></div>
+        <div class="type-row"><div class="type-meta">Prompt Q · 22pt · 500 italic</div><div class="type-sample t-prompt-q">I geek out on _</div></div>
+        <div class="type-row"><div class="type-meta">Prompt A · 24pt · 700</div><div class="type-sample t-prompt-a">Specialty coffee and chess.</div></div>
+        <div class="type-row"><div class="type-meta">Section · 18pt · 700</div><div class="type-sample t-section">Vitals</div></div>
+        <div class="type-row"><div class="type-meta">Body · Inter 16pt · 400</div><div class="type-sample t-body">A short note about what to expect.</div></div>
+        <div class="type-row"><div class="type-meta">Chip · Inter 14pt · 500</div><div class="type-sample t-chip">Engineer</div></div>
+        <div class="type-row"><div class="type-meta">Meta · Inter 13pt · 400</div><div class="type-sample t-meta">Liked your prompt · 2h ago</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Send Like</button>
+          <button class="btn btn-rose"><svg viewBox="0 0 24 24"><path d="M12 2C10 6 14 8 12 12C10 16 14 18 12 22"/></svg>Send a Rose</button>
+          <button class="btn btn-outline">Skip</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive — Heart Tap</div>
+        <div class="heart-demo">
+          <div class="ht-big"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+          <div class="ht-label">Default — `#FAF6F0` fill, 1pt `#1A1A1A` stroke</div>
+        </div>
+        <div class="heart-demo" style="margin-top: 14px;">
+          <div class="ht-big filled"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+          <div class="ht-label">Pressed — solid black, opens comment sheet</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive — Send a Rose Sheet</div>
+        <div class="rose-card">
+          <div class="rose-icon-big"><svg viewBox="0 0 24 24"><path d="M12 2C10 6 14 8 12 12C10 16 14 18 12 22"/></svg></div>
+          <div class="rose-title">Send Sigrún a Rose?</div>
+          <div class="rose-sub">You have 3 Roses · Roses stand out 3× more than likes</div>
+          <button class="btn btn-rose" style="width:100%; justify-content:center;"><svg viewBox="0 0 24 24"><path d="M12 2C10 6 14 8 12 12C10 16 14 18 12 22"/></svg>Send Rose</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
