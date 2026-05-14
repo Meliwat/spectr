@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Apple Maps iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --map-cream: #F6F1E6;
+    --map-water: #B9D9EB;
+    --map-park: #D6E5C9;
+    --map-road: #FFFFFF;
+    --map-road-outline: #D5CFC0;
+    --map-highway: #FFD966;
+    --map-building: #EFE9DD;
+    --map-label: #594F3F;
+
+    --canvas: #FFFFFF;
+    --surface: #F2F2F7;
+    --surface-2: #E5E5EA;
+    --divider: #C7C7CC;
+
+    --blue: #0A84FF;
+    --blue-pressed: #0967D2;
+    --red: #FF3B30;
+    --food: #FF9500;
+    --coffee: #A5694C;
+    --drinks: #5AC8FA;
+    --shopping: #FFCC00;
+    --parking: #AF52DE;
+    --transit: #0A84FF;
+    --success: #34C759;
+
+    --ink: #000000;
+    --secondary: #3C3C43;
+
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #E8E2D2; color: var(--ink); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--blue); color: #fff; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 4px; letter-spacing: 0.4px; text-transform: uppercase; }
+  .page-subtitle { color: var(--secondary); opacity: 0.7; font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.4); position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--map-cream); position: relative; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Map */
+  .map { position: absolute; inset: 0; overflow: hidden; background: var(--map-cream); }
+  .water {
+    position: absolute;
+    inset: -30% 50% 40% -30%;
+    background: var(--map-water);
+    border-radius: 40% 60% 50% 50%;
+    transform: rotate(-12deg);
+  }
+  .park {
+    position: absolute;
+    top: 20%; right: 8%;
+    width: 80px; height: 90px;
+    background: var(--map-park);
+    border-radius: 60% 40% 50% 50%;
+  }
+  .road { position: absolute; background: var(--map-road); border: 0.5px solid var(--map-road-outline); }
+  .road.h1 { top: 32%; left: -5%; width: 110%; height: 14px; transform: rotate(-6deg); }
+  .road.h2 { top: 52%; left: -5%; width: 110%; height: 8px; transform: rotate(4deg); }
+  .road.v1 { top: -5%; left: 25%; width: 12px; height: 80%; transform: rotate(8deg); }
+  .road.v2 { top: -5%; left: 70%; width: 8px; height: 75%; transform: rotate(-6deg); }
+
+  .highway { position: absolute; background: var(--map-highway); height: 6px; }
+  .highway.h1 { top: 33%; left: -5%; width: 110%; transform: rotate(-6deg); }
+
+  /* Buildings */
+  .building { position: absolute; background: var(--map-building); border: 0.5px solid var(--map-road-outline); }
+  .b1 { top: 25%; left: 30%; width: 32px; height: 24px; }
+  .b2 { top: 27%; left: 50%; width: 24px; height: 32px; }
+  .b3 { top: 42%; left: 35%; width: 28px; height: 28px; }
+  .b4 { top: 60%; left: 55%; width: 38px; height: 28px; }
+  .b5 { top: 65%; left: 18%; width: 32px; height: 36px; }
+
+  /* Route polyline */
+  .route { position: absolute; top: 35%; left: 28%; width: 38%; height: 5px; background: var(--blue); border-radius: 3px; transform: rotate(14deg); box-shadow: 0 0 0 1px rgba(0,0,0,0.1); }
+  .route::after { content: ''; position: absolute; right: -2px; top: 50%; width: 5px; height: 30px; background: var(--blue); border-radius: 3px; transform: translateY(-50%) rotate(72deg); transform-origin: left center; }
+
+  /* Map labels */
+  .map-label { position: absolute; font-size: 11px; font-weight: 500; color: var(--map-label); pointer-events: none; }
+  .label-1 { top: 18%; left: 36%; font-size: 13px; font-weight: 600; }
+  .label-2 { top: 48%; left: 22%; }
+  .label-3 { top: 68%; left: 60%; }
+
+  /* Current location puck */
+  .puck-wrap {
+    position: absolute;
+    top: 38%; left: 45%;
+    width: 60px; height: 60px;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .puck-pulse {
+    position: absolute;
+    inset: 15px;
+    border-radius: 50%;
+    background: var(--blue);
+    opacity: 0.3;
+    animation: puck-pulse 2s ease-out infinite;
+  }
+  @keyframes puck-pulse {
+    0% { transform: scale(1); opacity: 0.3; }
+    100% { transform: scale(1.8); opacity: 0; }
+  }
+  .puck {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--blue);
+    border: 3px solid #fff;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    z-index: 2;
+  }
+
+  /* Map controls */
+  .map-controls {
+    position: absolute;
+    top: 60px; right: 12px;
+    display: flex; flex-direction: column;
+    gap: 8px;
+    z-index: 10;
+  }
+  .ctrl {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+    border: 0.5px solid rgba(255,255,255,0.4);
+  }
+  .ctrl svg { width: 18px; height: 18px; stroke: var(--ink); stroke-width: 2; fill: none; }
+
+  /* Search card */
+  .search-card {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 10px 10px 0 0;
+    padding: 8px 16px 20px;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
+    z-index: 11;
+  }
+  .grabber { width: 36px; height: 5px; background: rgba(60,60,67,0.30); border-radius: 3px; margin: 0 auto 12px; }
+  .search-input {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--surface);
+    height: 44px;
+    border-radius: 10px;
+    padding: 0 14px;
+    margin-bottom: 14px;
+  }
+  .search-input svg { width: 17px; height: 17px; stroke: rgba(60,60,67,0.6); stroke-width: 2; fill: none; flex-shrink: 0; }
+  .search-input .ph { flex: 1; color: rgba(60,60,67,0.45); font-size: 16px; font-weight: 400; }
+  .search-input .mic svg { width: 16px; stroke: rgba(60,60,67,0.6); }
+
+  /* Categories */
+  .cats { display: flex; gap: 10px; overflow: hidden; padding-bottom: 4px; }
+  .cat {
+    width: 60px; height: 80px;
+    flex-shrink: 0;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 6px;
+  }
+  .cat-icon { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; }
+  .cat-icon svg { width: 26px; height: 26px; fill: currentColor; }
+  .cat-food { color: var(--food); }
+  .cat-coffee { color: var(--coffee); }
+  .cat-drinks { color: var(--drinks); }
+  .cat-shopping { color: var(--shopping); }
+  .cat-parking { color: var(--parking); }
+  .cat-label { font-size: 12px; font-weight: 500; color: var(--ink); }
+
+  /* Token sections */
+  .section { background: #fff; border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: rgba(60,60,67,0.6); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 14px; min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 500; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--ink); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: rgba(60,60,67,0.6); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--ink); }
+  .t-28 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+  .t-22 { font-size: 22px; font-weight: 600; letter-spacing: -0.2px; }
+  .t-17 { font-size: 17px; font-weight: 600; }
+  .t-17-r { font-size: 17px; font-weight: 400; }
+  .t-15 { font-size: 15px; font-weight: 400; color: rgba(60,60,67,0.6); }
+  .t-13 { font-size: 13px; font-weight: 400; font-variant-numeric: tabular-nums; color: rgba(60,60,67,0.6); }
+  .t-13-up { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; color: rgba(60,60,67,0.6); }
+
+  /* Category demo */
+  .cat-demo-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .cat-d { width: 64px; height: 88px; background: #fff; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.10); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+  .cat-d-icon { width: 28px; height: 28px; }
+  .cat-d-icon svg { width: 28px; height: 28px; }
+  .cat-d-label { font-size: 12px; font-weight: 500; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 16px; font-weight: 600; padding: 12px 22px; border-radius: 22px; border: none; cursor: pointer; }
+  .btn-filled { background: var(--blue); color: #fff; }
+  .btn-outline { background: #fff; color: var(--blue); border: 1px solid var(--blue); padding: 11px 21px; }
+  .btn-rect { border-radius: 8px; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 14px; flex-wrap: wrap; }
+  .radius-box { width: 64px; height: 64px; background: var(--blue); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-8 { border-radius: 8px; }
+  .r-10 { border-radius: 10px; }
+  .r-14 { border-radius: 14px; }
+  .r-22 { border-radius: 22px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Apple Maps iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">Cream parchment cartography. Land `#F6F1E6`, water `#B9D9EB`, parks `#D6E5C9`. Maps Blue `#0A84FF` for the directions polyline and the pulsing current-location puck. Translucent `.regularMaterial` blur on the sliding search card and floating top-right map controls. SF Pro system font, tabular figures on all distances and times.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="map">
+            <div class="water"></div>
+            <div class="park"></div>
+            <div class="highway h1"></div>
+            <div class="road h1"></div>
+            <div class="road h2"></div>
+            <div class="road v1"></div>
+            <div class="road v2"></div>
+            <div class="building b1"></div>
+            <div class="building b2"></div>
+            <div class="building b3"></div>
+            <div class="building b4"></div>
+            <div class="building b5"></div>
+
+            <div class="route"></div>
+
+            <div class="map-label label-1">Mission District</div>
+            <div class="map-label label-2">Folsom St</div>
+            <div class="map-label label-3">Dolores Park</div>
+
+            <div class="puck-wrap">
+              <div class="puck-pulse"></div>
+              <div class="puck"></div>
+            </div>
+          </div>
+
+          <div class="map-controls">
+            <div class="ctrl"><svg viewBox="0 0 24 24"><polygon points="12 2 22 8.5 12 15 2 8.5"/><polyline points="2 15.5 12 22 22 15.5"/></svg></div>
+            <div class="ctrl"><svg viewBox="0 0 24 24" fill="var(--ink)" stroke="var(--ink)"><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg></div>
+            <div class="ctrl"><svg viewBox="0 0 24 24"><polyline points="3 12 8 7 13 12 13 17 18 17"/><polygon points="18 5 22 9 18 13" fill="var(--ink)"/></svg></div>
+          </div>
+
+          <div class="search-card">
+            <div class="grabber"></div>
+            <div class="search-input">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <div class="ph">Search Maps</div>
+              <div class="mic"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></div>
+            </div>
+            <div class="cats">
+              <div class="cat"><div class="cat-icon cat-food"><svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4l-1 10h2L11 11h2c1.1 0 2-.9 2-2V2"/><path d="M21 2v20"/><path d="M21 9c-2 0-3-1.5-3-4 0-2 1-3 3-3"/></svg></div><div class="cat-label">Food</div></div>
+              <div class="cat"><div class="cat-icon cat-coffee"><svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4z"/></svg></div><div class="cat-label">Coffee</div></div>
+              <div class="cat"><div class="cat-icon cat-drinks"><svg viewBox="0 0 24 24"><path d="M8 22h8"/><path d="M12 11v11"/><path d="M5 2h14l-3 9H8z"/></svg></div><div class="cat-label">Drinks</div></div>
+              <div class="cat"><div class="cat-icon cat-shopping"><svg viewBox="0 0 24 24"><path d="M6 2l.75 3.25h10.5L18 2"/><path d="M5 5h14l-1 15a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/></svg></div><div class="cat-label">Shopping</div></div>
+              <div class="cat"><div class="cat-icon cat-parking"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="3"/><text x="12" y="18" text-anchor="middle" font-family="Arial" font-weight="700" font-size="14" fill="white">P</text></svg></div><div class="cat-label">Parking</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette · Map Cartography</div>
+        <div class="swatches">
+          <div class="swatch light" style="background:#F6F1E6;"><div class="name">Map Cream</div>#F6F1E6</div>
+          <div class="swatch light" style="background:#B9D9EB;"><div class="name">Map Water</div>#B9D9EB</div>
+          <div class="swatch light" style="background:#D6E5C9;"><div class="name">Map Park</div>#D6E5C9</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Map Road</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#FFD966;"><div class="name">Highway</div>#FFD966</div>
+          <div class="swatch light" style="background:#EFE9DD;"><div class="name">Building 2D</div>#EFE9DD</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Color Palette · UI & Categories</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0A84FF;"><div class="name">Maps Blue</div>#0A84FF</div>
+          <div class="swatch" style="background:#0967D2;"><div class="name">Blue Pressed</div>#0967D2</div>
+          <div class="swatch" style="background:#FF3B30;"><div class="name">Maps Red · Pin</div>#FF3B30</div>
+          <div class="swatch" style="background:#FF9500;"><div class="name">Food</div>#FF9500</div>
+          <div class="swatch" style="background:#A5694C;"><div class="name">Coffee</div>#A5694C</div>
+          <div class="swatch" style="background:#5AC8FA;"><div class="name">Drinks</div>#5AC8FA</div>
+          <div class="swatch" style="background:#FFCC00;"><div class="name">Shopping</div>#FFCC00</div>
+          <div class="swatch" style="background:#AF52DE;"><div class="name">Parking</div>#AF52DE</div>
+          <div class="swatch" style="background:#34C759;"><div class="name">EV / Success</div>#34C759</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Card Canvas</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#F2F2F7;"><div class="name">Surface</div>#F2F2F7</div>
+          <div class="swatch" style="background:#000000;"><div class="name">Ink</div>#000000</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — SF Pro System</div>
+        <div class="type-row"><div class="type-meta">Place Title · 28pt · 700</div><div class="type-sample t-28">Tartine Bakery</div></div>
+        <div class="type-row"><div class="type-meta">Step Title · 22pt · 600</div><div class="type-sample t-22">Turn right onto Market St</div></div>
+        <div class="type-row"><div class="type-meta">Button · 17pt · 600</div><div class="type-sample t-17">Directions</div></div>
+        <div class="type-row"><div class="type-meta">List Title · 17pt · 400</div><div class="type-sample t-17-r">Search Maps</div></div>
+        <div class="type-row"><div class="type-meta">Subtitle · 15pt · 400</div><div class="type-sample t-15">Bakery · French · $$</div></div>
+        <div class="type-row"><div class="type-meta">Distance tnum · 13pt</div><div class="type-sample t-13">0.4 mi · 2 min · arriving 6:14 PM</div></div>
+        <div class="type-row"><div class="type-meta">Section · 13pt UC · 600</div><div class="type-sample t-13-up">OVERVIEW</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Category Pills</div>
+        <div class="cat-demo-row">
+          <div class="cat-d"><div class="cat-d-icon" style="color:var(--food);"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 2v7c0 1.1.9 2 2 2h4l-1 10h2L11 11h2c1.1 0 2-.9 2-2V2"/><path d="M21 2v20"/></svg></div><div class="cat-d-label">Food</div></div>
+          <div class="cat-d"><div class="cat-d-icon" style="color:var(--coffee);"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4z"/><path d="M18 8h1a4 4 0 0 1 0 8h-1"/></svg></div><div class="cat-d-label">Coffee</div></div>
+          <div class="cat-d"><div class="cat-d-icon" style="color:var(--drinks);"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 2h14l-3 9H8z"/><path d="M12 11v11M8 22h8"/></svg></div><div class="cat-d-label">Drinks</div></div>
+          <div class="cat-d"><div class="cat-d-icon" style="color:var(--shopping);"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 5h14l-1 15a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/></svg></div><div class="cat-d-label">Shopping</div></div>
+          <div class="cat-d"><div class="cat-d-icon" style="color:var(--parking);"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="3"/><text x="12" y="17" text-anchor="middle" font-weight="700" font-size="14" fill="white">P</text></svg></div><div class="cat-d-label">Parking</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-filled">Directions</button>
+          <button class="btn btn-outline">Call</button>
+          <button class="btn btn-outline">Share</button>
+          <button class="btn btn-filled btn-rect">Continue</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-22">22</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

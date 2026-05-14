@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Waze iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple: #7E55BE;
+    --purple-deep: #5B3C9A;
+    --purple-tint: #E8DEF5;
+    --cyan: #33CCFF;
+    --cyan-deep: #0099E5;
+    --police-red: #EF6A65;
+    --traffic-orange: #F69833;
+    --closure-yellow: #F9C42E;
+    --cleared-green: #75C73E;
+    --hazard-brown: #8B6F47;
+    --camera-gray: #6B6B6B;
+    --map-cream: #FFFCF2;
+    --map-water: #9BDEEF;
+    --map-park: #C5E89B;
+    --map-road: #FFFFFF;
+    --map-road-minor: #F5F0E5;
+    --map-highway: #FFD970;
+    --map-building: #E8E2D1;
+    --canvas: #FFFFFF;
+    --surface: #F5F5F7;
+    --divider: #D6D6D9;
+    --ink: #1A1A1A;
+    --secondary: #6B6B6B;
+    --tertiary: #A0A0A0;
+    --font: 'Quicksand', -apple-system, BlinkMacSystemFont, 'SF Pro Rounded', 'AvenirNext-DemiBold', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #EBE4F2; color: var(--ink); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; color: var(--purple); }
+  .page-chip { background: var(--purple); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--secondary); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(126,85,190,0.4); position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--map-cream); position: relative; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 30; }
+
+  /* Map cartography */
+  .map { position: absolute; inset: 0; overflow: hidden; background: var(--map-cream); }
+  .water { position: absolute; inset: -30% 55% 40% -30%; background: var(--map-water); border-radius: 40% 60% 50% 50%; transform: rotate(-12deg); }
+  .park-1 { position: absolute; top: 18%; right: 12%; width: 90px; height: 100px; background: var(--map-park); border-radius: 60% 40% 50% 50%; }
+  .park-2 { position: absolute; bottom: 25%; left: 12%; width: 70px; height: 60px; background: var(--map-park); border-radius: 50%; }
+
+  .road { position: absolute; background: var(--map-road); border: 1px solid var(--map-road-minor); }
+  .road.highway { background: var(--map-highway); border: 1px solid var(--map-road-minor); height: 12px; }
+  .road.h1 { top: 38%; left: -5%; width: 110%; height: 16px; transform: rotate(-6deg); }
+  .road.h2 { top: 56%; left: -5%; width: 110%; height: 8px; transform: rotate(4deg); }
+  .road.v1 { top: -5%; left: 25%; width: 14px; height: 80%; transform: rotate(8deg); }
+  .road.v2 { top: -5%; left: 70%; width: 10px; height: 75%; transform: rotate(-6deg); }
+
+  .building { position: absolute; background: var(--map-building); border: 1px solid #D5CFC0; }
+  .b1 { top: 30%; left: 30%; width: 32px; height: 26px; }
+  .b2 { top: 33%; left: 50%; width: 26px; height: 34px; }
+  .b3 { top: 48%; left: 38%; width: 30px; height: 30px; }
+  .b4 { top: 60%; left: 56%; width: 36px; height: 30px; }
+
+  /* Route polyline */
+  .route { position: absolute; top: 38%; left: 28%; width: 40%; height: 6px; background: var(--purple); border-radius: 3px; transform: rotate(12deg); box-shadow: 0 0 0 1px rgba(0,0,0,0.1); }
+  .route::after { content: ''; position: absolute; right: -4px; top: 50%; width: 6px; height: 32px; background: var(--purple); border-radius: 3px; transform: translateY(-50%) rotate(72deg); transform-origin: left center; }
+
+  /* Hazard bubbles */
+  .hazard-pin { position: absolute; display: flex; flex-direction: column; align-items: center; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.20)); z-index: 12; }
+  .hazard {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 10px;
+    border-radius: 14px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 12px;
+  }
+  .hazard svg { width: 16px; height: 16px; fill: #fff; stroke: #fff; }
+  .hazard-tail { width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; }
+  .hazard.police { background: var(--police-red); }
+  .hazard.traffic { background: var(--traffic-orange); }
+  .hazard.cleared { background: var(--cleared-green); }
+  .police + .hazard-tail { border-top: 8px solid var(--police-red); }
+  .traffic + .hazard-tail { border-top: 8px solid var(--traffic-orange); }
+  .cleared + .hazard-tail { border-top: 8px solid var(--cleared-green); }
+
+  /* Location puck — Waze cyan arrow */
+  .puck-wrap { position: absolute; top: 50%; left: 48%; transform: translate(-50%, -50%); width: 60px; height: 60px; pointer-events: none; z-index: 11; }
+  .puck-pulse {
+    position: absolute;
+    inset: 10px;
+    border-radius: 50%;
+    background: var(--cyan);
+    opacity: 0.15;
+    animation: puck-pulse 2s ease-out infinite;
+  }
+  @keyframes puck-pulse {
+    0% { transform: scale(1); opacity: 0.15; }
+    100% { transform: scale(1.8); opacity: 0; }
+  }
+  .puck-arrow {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(10deg);
+    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.30));
+  }
+
+  /* Next-turn card */
+  .next-turn {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    background: var(--purple);
+    padding: 48px 16px 16px;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: #fff;
+    z-index: 22;
+  }
+  .nt-arrow {
+    width: 56px; height: 56px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .nt-arrow svg { width: 44px; height: 44px; stroke: #fff; stroke-width: 3; fill: none; }
+  .nt-content { flex: 1; }
+  .nt-distance {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .nt-street {
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 4px;
+    letter-spacing: -0.2px;
+  }
+  .nt-sub {
+    font-size: 12px;
+    color: rgba(255,255,255,0.85);
+    margin-top: 4px;
+  }
+
+  /* Speed tile */
+  .speed-tile {
+    position: absolute;
+    bottom: 100px;
+    left: 14px;
+    width: 70px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.10);
+    z-index: 11;
+  }
+  .sl-label { font-size: 8px; font-weight: 700; color: var(--ink); letter-spacing: 0.4px; text-transform: uppercase; }
+  .sl-circle {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .sl-divider { width: 60%; height: 1px; background: var(--divider); }
+  .cs-row { display: flex; align-items: baseline; gap: 3px; }
+  .cs-num { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .cs-mph { font-size: 9px; color: var(--secondary); }
+
+  /* FAB */
+  .fab {
+    position: absolute;
+    bottom: 100px;
+    right: 14px;
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--purple);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 16px rgba(126,85,190,0.40), 0 2px 4px rgba(126,85,190,0.30);
+    z-index: 12;
+  }
+  .fab svg { width: 26px; height: 26px; stroke: #fff; stroke-width: 2.5; fill: #fff; }
+
+  /* ETA bar */
+  .eta-bar {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: #fff;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px 12px;
+    gap: 12px;
+    z-index: 11;
+    border-top: 0.5px solid var(--divider);
+  }
+  .eta-left { display: flex; flex-direction: column; gap: 2px; }
+  .eta-time { font-size: 22px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; line-height: 1; }
+  .eta-dist { font-size: 13px; color: var(--secondary); font-variant-numeric: tabular-nums; }
+  .eta-save { margin-left: auto; background: var(--cleared-green); padding: 6px 12px; border-radius: 500px; color: #fff; font-size: 12px; font-weight: 700; }
+  .eta-end { padding: 8px 14px; border-radius: 500px; background: #fff; border: 1.5px solid var(--police-red); color: var(--police-red); font-size: 14px; font-weight: 700; }
+
+  /* Token sections */
+  .section { background: #fff; border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 14px; min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 500; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--ink); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--ink); }
+  .t-32 { font-size: 32px; font-weight: 700; letter-spacing: -0.4px; }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-22 { font-size: 22px; font-weight: 700; }
+  .t-17 { font-size: 17px; font-weight: 700; }
+  .t-15 { font-size: 15px; font-weight: 400; color: var(--secondary); }
+  .t-13 { font-size: 13px; font-weight: 400; font-variant-numeric: tabular-nums; color: var(--secondary); }
+  .t-13-up { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--secondary); }
+
+  /* Hazard demo */
+  .hazard-demo-row { display: flex; gap: 14px; flex-wrap: wrap; }
+  .hazard-demo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+  }
+  .hd-bubble {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 12px;
+    border-radius: 14px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .hd-bubble svg { width: 18px; height: 18px; fill: #fff; stroke: #fff; }
+  .hd-tail { width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; }
+  .hd-police { background: var(--police-red); } .hd-police + .hd-tail { border-top: 8px solid var(--police-red); }
+  .hd-traffic { background: var(--traffic-orange); } .hd-traffic + .hd-tail { border-top: 8px solid var(--traffic-orange); }
+  .hd-closure { background: var(--closure-yellow); } .hd-closure + .hd-tail { border-top: 8px solid var(--closure-yellow); }
+  .hd-cleared { background: var(--cleared-green); } .hd-cleared + .hd-tail { border-top: 8px solid var(--cleared-green); }
+  .hd-pothole { background: var(--hazard-brown); } .hd-pothole + .hd-tail { border-top: 8px solid var(--hazard-brown); }
+  .hd-camera { background: var(--camera-gray); } .hd-camera + .hd-tail { border-top: 8px solid var(--camera-gray); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 17px; font-weight: 700; padding: 16px 32px; border-radius: 500px; border: none; cursor: pointer; }
+  .btn-go { background: var(--purple); color: #fff; box-shadow: 0 4px 12px rgba(126,85,190,0.30); }
+  .btn-secondary { background: #fff; color: var(--purple); border: 1.5px solid var(--purple); padding: 14.5px 30.5px; }
+  .btn-cancel { background: #fff; color: var(--police-red); border: 1.5px solid var(--police-red); padding: 14.5px 30.5px; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 14px; flex-wrap: wrap; }
+  .radius-box { width: 64px; height: 64px; background: var(--purple); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-14 { border-radius: 14px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Waze iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">Cartoon, community, color. Waze Purple `#7E55BE` + Waze Cyan `#33CCFF` — the electric brand duo. Chunky speech-bubble hazard reports with triangular tails. Cyan arrow puck, never a dot. Loud saturated cartography. Boing rounded typography; tabular figures on every distance, time, and speed.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="map">
+            <div class="water"></div>
+            <div class="park-1"></div>
+            <div class="park-2"></div>
+            <div class="road highway h1"></div>
+            <div class="road h2"></div>
+            <div class="road v1"></div>
+            <div class="road v2"></div>
+            <div class="building b1"></div>
+            <div class="building b2"></div>
+            <div class="building b3"></div>
+            <div class="building b4"></div>
+            <div class="route"></div>
+
+            <div class="hazard-pin" style="top: 30%; left: 30%;">
+              <div class="hazard police">
+                <svg viewBox="0 0 24 24"><path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/></svg>
+                Police
+              </div>
+              <div class="hazard-tail"></div>
+            </div>
+
+            <div class="hazard-pin" style="top: 58%; left: 60%;">
+              <div class="hazard traffic">
+                <svg viewBox="0 0 24 24"><path d="M12 2L1 21h22M12 6l9 14H3L12 6m0 8v-2"/></svg>
+                Traffic
+              </div>
+              <div class="hazard-tail"></div>
+            </div>
+
+            <div class="hazard-pin" style="top: 25%; right: 18%;">
+              <div class="hazard cleared">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                Cleared
+              </div>
+              <div class="hazard-tail"></div>
+            </div>
+
+            <div class="puck-wrap">
+              <div class="puck-pulse"></div>
+              <div class="puck-arrow">
+                <svg width="32" height="36" viewBox="0 0 32 36">
+                  <path d="M16 0 L32 32 L16 26 L0 32 Z" fill="#33CCFF" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="next-turn">
+            <div class="nt-arrow">
+              <svg viewBox="0 0 24 24" style="transform: rotate(30deg);"><polyline points="9 6 15 12 9 18"/></svg>
+            </div>
+            <div class="nt-content">
+              <div class="nt-distance">0.4 mi</div>
+              <div class="nt-street">Market Street</div>
+              <div class="nt-sub">then turn left in 0.6 mi</div>
+            </div>
+          </div>
+
+          <div class="speed-tile">
+            <div class="sl-label">SPEED LIMIT</div>
+            <div class="sl-circle">35</div>
+            <div class="sl-divider"></div>
+            <div class="cs-row">
+              <div class="cs-num">42</div>
+              <div class="cs-mph">mph</div>
+            </div>
+          </div>
+
+          <div class="fab">
+            <svg viewBox="0 0 24 24" fill="#fff" stroke="#fff" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" fill="none"/><line x1="12" y1="9" x2="12" y2="13" stroke="#fff" stroke-width="2"/><circle cx="12" cy="16" r="0.8" fill="#fff"/></svg>
+          </div>
+
+          <div class="eta-bar">
+            <div class="eta-left">
+              <div class="eta-time">12 min</div>
+              <div class="eta-dist">5.2 mi · 6:14 PM</div>
+            </div>
+            <div class="eta-save">Save 3 min</div>
+            <div class="eta-end">End</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette · Brand</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#7E55BE;"><div class="name">Waze Purple</div>#7E55BE</div>
+          <div class="swatch" style="background:#5B3C9A;"><div class="name">Purple Deep</div>#5B3C9A</div>
+          <div class="swatch light" style="background:#E8DEF5;"><div class="name">Purple Tint</div>#E8DEF5</div>
+          <div class="swatch" style="background:#33CCFF;"><div class="name">Waze Cyan</div>#33CCFF</div>
+          <div class="swatch" style="background:#0099E5;"><div class="name">Cyan Deep</div>#0099E5</div>
+          <div class="swatch light" style="background:#FFFCF2;"><div class="name">Map Cream</div>#FFFCF2</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Color Palette · Hazards & Map</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#EF6A65;"><div class="name">Police Red</div>#EF6A65</div>
+          <div class="swatch" style="background:#F69833;"><div class="name">Traffic Orange</div>#F69833</div>
+          <div class="swatch" style="background:#F9C42E;"><div class="name">Closure Yellow</div>#F9C42E</div>
+          <div class="swatch" style="background:#75C73E;"><div class="name">Cleared Green</div>#75C73E</div>
+          <div class="swatch" style="background:#8B6F47;"><div class="name">Hazard Brown</div>#8B6F47</div>
+          <div class="swatch" style="background:#6B6B6B;"><div class="name">Camera Gray</div>#6B6B6B</div>
+          <div class="swatch light" style="background:#9BDEEF;"><div class="name">Map Water</div>#9BDEEF</div>
+          <div class="swatch light" style="background:#C5E89B;"><div class="name">Map Park</div>#C5E89B</div>
+          <div class="swatch light" style="background:#FFD970;"><div class="name">Highway</div>#FFD970</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Hazard Speech Bubbles</div>
+        <div class="hazard-demo-row">
+          <div class="hazard-demo">
+            <div class="hd-bubble hd-police"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/></svg>Police</div>
+            <div class="hd-tail"></div>
+          </div>
+          <div class="hazard-demo">
+            <div class="hd-bubble hd-traffic"><svg viewBox="0 0 24 24" fill="#fff" stroke="#fff" stroke-width="2"><path d="M12 4l-10 16h20L12 4z" fill="#fff"/></svg>Traffic</div>
+            <div class="hd-tail"></div>
+          </div>
+          <div class="hazard-demo">
+            <div class="hd-bubble hd-closure"><svg viewBox="0 0 24 24" fill="#fff" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="9" fill="#fff" stroke="none"/><line x1="6" y1="18" x2="18" y2="6" stroke="var(--closure-yellow)" stroke-width="3"/></svg>Closure</div>
+            <div class="hd-tail"></div>
+          </div>
+          <div class="hazard-demo">
+            <div class="hd-bubble hd-cleared"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Cleared</div>
+            <div class="hd-tail"></div>
+          </div>
+          <div class="hazard-demo">
+            <div class="hd-bubble hd-pothole"><svg viewBox="0 0 24 24" fill="#fff"><circle cx="12" cy="12" r="9"/></svg>Pothole</div>
+            <div class="hd-tail"></div>
+          </div>
+          <div class="hazard-demo">
+            <div class="hd-bubble hd-camera"><svg viewBox="0 0 24 24" fill="#fff" stroke="#fff" stroke-width="2"><rect x="3" y="6" width="18" height="14" rx="2" fill="#fff" stroke="none"/><circle cx="12" cy="13" r="4" fill="var(--camera-gray)"/></svg>Camera</div>
+            <div class="hd-tail"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Boing / SF Pro Rounded</div>
+        <div class="type-row"><div class="type-meta">Hero Street · 32pt · 700</div><div class="type-sample t-32">Market Street</div></div>
+        <div class="type-row"><div class="type-meta">Place Title · 26pt · 700</div><div class="type-sample t-26">Tartine Bakery</div></div>
+        <div class="type-row"><div class="type-meta">Step / ETA · 22pt · 700</div><div class="type-sample t-22">Turn right onto Market St</div></div>
+        <div class="type-row"><div class="type-meta">Button · 17pt · 700</div><div class="type-sample t-17">Go</div></div>
+        <div class="type-row"><div class="type-meta">Subtitle · 15pt · 400</div><div class="type-sample t-15">Bakery · French · $$</div></div>
+        <div class="type-row"><div class="type-meta">Tabular · 13pt · 400</div><div class="type-sample t-13">5.2 mi · 12 min · 6:14 PM</div></div>
+        <div class="type-row"><div class="type-meta">Section · 13pt UC · 700</div><div class="type-sample t-13-up">RECENT</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-go">Go</button>
+          <button class="btn btn-secondary">Save</button>
+          <button class="btn btn-cancel">Cancel</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

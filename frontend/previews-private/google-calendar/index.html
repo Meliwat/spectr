@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Google Calendar iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --surface: #F1F3F4;
+    --surface-2: #F8F9FA;
+    --divider: #DADCE0;
+    --ink: #202124;
+    --secondary: #5F6368;
+    --tertiary: #80868B;
+    --blue: #1A73E8;
+    --blue-pressed: #1557B0;
+    --blue-tint: #E8F0FE;
+    --red: #D93025;
+    --yellow: #F9AB00;
+    --green: #188038;
+    --tomato: #D50000;
+    --blueberry: #3F51B5;
+    --sage: #33B679;
+    --peacock: #039BE5;
+    --grape: #8E24AA;
+    --banana: #F6BF26;
+    --tangerine: #F4511E;
+    --lavender: #7986CB;
+    --font: 'Roboto', 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #ECEFF1; color: var(--ink); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 500; letter-spacing: -0.4px; color: var(--ink); }
+  .page-chip { background: var(--blue); color: #fff; font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 4px; letter-spacing: 0.4px; text-transform: uppercase; }
+  .page-subtitle { color: var(--secondary); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.4); position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Top app bar */
+  .appbar { padding: 48px 16px 8px; flex-shrink: 0; display: flex; align-items: center; gap: 12px; background: var(--canvas); }
+  .appbar-menu svg { width: 22px; height: 22px; stroke: var(--secondary); stroke-width: 2; fill: none; }
+  .appbar-title { font-size: 20px; font-weight: 500; color: var(--ink); flex: 1; letter-spacing: -0.2px; }
+  .appbar-icon svg { width: 20px; height: 20px; stroke: var(--secondary); stroke-width: 1.8; fill: none; }
+
+  /* Schedule list */
+  .schedule { flex: 1; overflow: hidden; background: var(--canvas); padding-bottom: 80px; }
+
+  .day-banner { display: flex; align-items: center; padding: 14px 16px 8px; gap: 16px; }
+  .day-banner-left { display: flex; flex-direction: column; gap: 4px; }
+  .day-label { font-size: 11px; font-weight: 500; color: var(--secondary); letter-spacing: 0.6px; text-transform: uppercase; }
+  .day-number { font-size: 28px; font-weight: 400; color: var(--ink); letter-spacing: -0.4px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .day-number-today {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--blue);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 500;
+    font-size: 22px;
+  }
+  .day-weather { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+  .day-weather svg { width: 18px; height: 18px; fill: var(--yellow); }
+  .day-temp { font-size: 13px; font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  /* Event card */
+  .event {
+    display: flex;
+    margin: 4px 12px;
+    border-radius: 6px;
+    background: var(--canvas);
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(60,64,67,0.10), 0 1px 3px rgba(60,64,67,0.15);
+  }
+  .event-bar { width: 4px; flex-shrink: 0; }
+  .event-body { padding: 10px 12px; flex: 1; min-width: 0; }
+  .event-title { font-size: 13px; font-weight: 500; color: var(--ink); line-height: 1.3; }
+  .event-time { font-size: 12px; color: var(--secondary); margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .event-location { font-size: 12px; color: var(--secondary); margin-top: 2px; display: flex; align-items: center; gap: 4px; }
+  .event-location svg { width: 10px; height: 10px; stroke: var(--secondary); stroke-width: 1.8; fill: none; flex-shrink: 0; }
+  .event-meet { background: var(--blue-tint); border-radius: 4px; padding: 3px 8px; font-size: 11px; font-weight: 500; color: var(--blue); display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; }
+  .event-meet svg { width: 11px; height: 11px; stroke: var(--blue); stroke-width: 2; fill: none; }
+
+  .event-tinted {
+    flex: 1;
+    margin: 0;
+    background: rgba(63,81,181,0.20);
+  }
+  .event-tinted .event-title { color: var(--blueberry); font-size: 12px; }
+  .event-tinted .event-time { color: var(--blueberry); opacity: 0.85; }
+
+  /* FAB */
+  .fab {
+    position: absolute;
+    bottom: 80px;
+    right: 16px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--blue);
+    box-shadow: 0 4px 8px rgba(60,64,67,0.15), 0 1px 2px rgba(60,64,67,0.30);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    z-index: 10;
+  }
+  .fab svg { width: 24px; height: 24px; stroke: #fff; stroke-width: 2.2; fill: none; }
+
+  /* Tab bar */
+  .tab-bar { height: 60px; background: var(--canvas); border-top: 0.5px solid var(--divider); display: flex; align-items: center; justify-content: space-around; padding: 4px 6px 14px; flex-shrink: 0; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--secondary); font-size: 10px; font-weight: 500; }
+  .tab.active { color: var(--blue); }
+  .tab svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: #fff; border: 1px solid var(--divider); border-radius: 8px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.6px; color: var(--secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 6px; padding: 14px; min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 400; font-family: 'Roboto Mono', 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 500; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--ink); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'Roboto Mono', 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--ink); }
+  .t-36 { font-size: 36px; font-weight: 400; letter-spacing: -0.4px; line-height: 1; }
+  .t-22 { font-size: 22px; font-weight: 500; letter-spacing: -0.2px; }
+  .t-14 { font-size: 14px; font-weight: 500; }
+  .t-13-up { font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; color: var(--secondary); }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--secondary); font-variant-numeric: tabular-nums; }
+  .t-btn { font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.4px; color: var(--blue); }
+
+  /* Calendar palette dots */
+  .palette { display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; }
+  .pdot { aspect-ratio: 1; border-radius: 50%; }
+
+  /* Mini month grid */
+  .mini-month { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+  .mh { font-size: 10px; font-weight: 500; color: var(--secondary); text-align: center; padding: 4px 0; text-transform: uppercase; letter-spacing: 0.4px; }
+  .mc { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 400; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .mc.other { color: var(--tertiary); }
+  .mc.today { background: var(--blue); color: #fff; border-radius: 50%; font-weight: 500; width: 28px; height: 28px; align-self: center; justify-self: center; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 14px; font-weight: 500; padding: 10px 24px; border-radius: 4px; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 0.4px; }
+  .btn-filled { background: var(--blue); color: #fff; }
+  .btn-tonal { background: var(--blue-tint); color: var(--blue); }
+  .btn-text { background: transparent; color: var(--blue); padding: 10px 12px; }
+  .btn-outline { background: transparent; color: var(--blue); border: 1px solid var(--divider); padding: 9px 23px; }
+
+  /* RSVP pills */
+  .rsvp-row { display: flex; gap: 8px; }
+  .rsvp { padding: 10px 24px; border-radius: 500px; font-size: 14px; font-weight: 500; }
+  .rsvp.selected { background: var(--blue); color: #fff; }
+  .rsvp.un { border: 1px solid var(--divider); color: var(--secondary); }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 14px; flex-wrap: wrap; }
+  .radius-box { width: 64px; height: 64px; background: var(--blue); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Roboto Mono', 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 500; }
+  .r-0 { border-radius: 0; }
+  .r-2 { border-radius: 2px; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-16 { border-radius: 16px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Google Calendar iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">Material on iOS. Google Blue `#1A73E8` for the FAB and "Today" highlight. Four-color event system: Blue meetings, Red declined, Yellow tasks, Green goals. 24-swatch user calendar palette. Material Level 6 dual-shadow under the FAB; Google Sans Display headers, SF Pro Text body.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="appbar">
+            <div class="appbar-menu"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
+            <div class="appbar-title">May 2026</div>
+            <div class="appbar-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+            <div class="appbar-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><circle cx="12" cy="13" r="3" fill="var(--blue)" stroke="var(--blue)"/></svg></div>
+          </div>
+
+          <div class="schedule">
+            <div class="day-banner">
+              <div class="day-number-today">14</div>
+              <div class="day-banner-left">
+                <div class="day-label">Thu · May</div>
+                <div style="font-size:11px;color:var(--secondary);">Today</div>
+              </div>
+              <div class="day-weather">
+                <svg viewBox="0 0 24 24" fill="var(--yellow)"><circle cx="12" cy="12" r="4"/><line x1="12" y1="3" x2="12" y2="5" stroke="var(--yellow)" stroke-width="2"/><line x1="12" y1="19" x2="12" y2="21" stroke="var(--yellow)" stroke-width="2"/><line x1="5" y1="12" x2="3" y2="12" stroke="var(--yellow)" stroke-width="2"/><line x1="21" y1="12" x2="19" y2="12" stroke="var(--yellow)" stroke-width="2"/></svg>
+                <span class="day-temp">72°</span>
+              </div>
+            </div>
+
+            <div class="event">
+              <div class="event-bar" style="background:var(--blueberry)"></div>
+              <div class="event-body">
+                <div class="event-title">Stand-up</div>
+                <div class="event-time">9:00 – 9:30 AM</div>
+                <div class="event-meet">
+                  <svg viewBox="0 0 24 24"><rect x="2" y="6" width="14" height="12" rx="2"/><polygon points="16 10 22 6 22 18 16 14" fill="var(--blue)"/></svg>
+                  Join with Google Meet
+                </div>
+              </div>
+            </div>
+
+            <div class="event">
+              <div class="event-bar" style="background:var(--grape)"></div>
+              <div class="event-body">
+                <div class="event-title">Design review · Calendar v4</div>
+                <div class="event-time">10:30 – 11:30 AM</div>
+                <div class="event-location">
+                  <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  Conference Room B
+                </div>
+              </div>
+            </div>
+
+            <div class="event">
+              <div class="event-bar" style="background:var(--tangerine)"></div>
+              <div class="event-body">
+                <div class="event-title">Lunch with Kira</div>
+                <div class="event-time">12:30 – 1:30 PM</div>
+                <div class="event-location">
+                  <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  Tartine, Mission
+                </div>
+              </div>
+            </div>
+
+            <div class="event">
+              <div class="event-bar" style="background:var(--banana)"></div>
+              <div class="event-body">
+                <div class="event-title">Pay car insurance</div>
+                <div class="event-time">3:00 PM · Task</div>
+              </div>
+            </div>
+
+            <div class="event">
+              <div class="event-bar" style="background:var(--sage)"></div>
+              <div class="event-body">
+                <div class="event-title">Yoga · 30 min</div>
+                <div class="event-time">6:30 – 7:00 PM</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="fab"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1.5" fill="currentColor"/><circle cx="4" cy="12" r="1.5" fill="currentColor"/><circle cx="4" cy="18" r="1.5" fill="currentColor"/></svg><span>Schedule</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg><span>Day</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="7" y1="14" x2="7" y2="18"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="17" y1="14" x2="17" y2="18"/></svg><span>Week</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><span>Month</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#1A73E8;"><div class="name">Google Blue</div>#1A73E8</div>
+          <div class="swatch" style="background:#1557B0;"><div class="name">Blue Pressed</div>#1557B0</div>
+          <div class="swatch light" style="background:#E8F0FE;"><div class="name">Blue Tint</div>#E8F0FE</div>
+          <div class="swatch" style="background:#D93025;"><div class="name">Event Red</div>#D93025</div>
+          <div class="swatch" style="background:#F9AB00;"><div class="name">Event Yellow</div>#F9AB00</div>
+          <div class="swatch" style="background:#188038;"><div class="name">Event Green</div>#188038</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Canvas</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#F1F3F4;"><div class="name">Surface</div>#F1F3F4</div>
+          <div class="swatch light" style="background:#DADCE0;"><div class="name">Divider</div>#DADCE0</div>
+          <div class="swatch" style="background:#202124;"><div class="name">Ink</div>#202124</div>
+          <div class="swatch" style="background:#5F6368;"><div class="name">Secondary</div>#5F6368</div>
+          <div class="swatch light" style="background:#80868B;"><div class="name">Tertiary</div>#80868B</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">User Calendar Palette · 24 swatches</div>
+        <div class="palette">
+          <div class="pdot" style="background:#D50000;" title="Tomato"></div>
+          <div class="pdot" style="background:#E67C73;" title="Flamingo"></div>
+          <div class="pdot" style="background:#F4511E;" title="Tangerine"></div>
+          <div class="pdot" style="background:#F6BF26;" title="Banana"></div>
+          <div class="pdot" style="background:#33B679;" title="Sage"></div>
+          <div class="pdot" style="background:#0B8043;" title="Basil"></div>
+          <div class="pdot" style="background:#039BE5;" title="Peacock"></div>
+          <div class="pdot" style="background:#3F51B5;" title="Blueberry"></div>
+          <div class="pdot" style="background:#7986CB;" title="Lavender"></div>
+          <div class="pdot" style="background:#8E24AA;" title="Grape"></div>
+          <div class="pdot" style="background:#616161;" title="Graphite"></div>
+          <div class="pdot" style="background:#A79B8E;" title="Birch"></div>
+          <div class="pdot" style="background:#16A765;" title="Eucalyptus"></div>
+          <div class="pdot" style="background:#0277BD;" title="Cobalt"></div>
+          <div class="pdot" style="background:#FAD165;" title="Cherry Blossom"></div>
+          <div class="pdot" style="background:#7CB342;" title="Avocado"></div>
+          <div class="pdot" style="background:#C0CA33;" title="Citron"></div>
+          <div class="pdot" style="background:#9CCC65;" title="Pistachio"></div>
+          <div class="pdot" style="background:#5C6BC0;" title="Wisteria"></div>
+          <div class="pdot" style="background:#AB47BC;" title="Amethyst"></div>
+          <div class="pdot" style="background:#D81B60;" title="Rose"></div>
+          <div class="pdot" style="background:#795548;" title="Cocoa"></div>
+          <div class="pdot" style="background:#9E9E9E;" title="Slate"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Google Sans + SF Pro</div>
+        <div class="type-row"><div class="type-meta">Day Number · 36pt · 400</div><div class="type-sample t-36">14</div></div>
+        <div class="type-row"><div class="type-meta">Nav Title · 22pt · 500</div><div class="type-sample t-22">May 2026</div></div>
+        <div class="type-row"><div class="type-meta">Event Title · 14pt · 500</div><div class="type-sample t-14">Design review · Calendar v4</div></div>
+        <div class="type-row"><div class="type-meta">Day Label · 13pt UC · 500</div><div class="type-sample t-13-up">THU · MAY</div></div>
+        <div class="type-row"><div class="type-meta">Time tnum · 13pt · 400</div><div class="type-sample t-13">10:30 – 11:30 AM</div></div>
+        <div class="type-row"><div class="type-meta">Button · 14pt UC · 500</div><div class="type-sample t-btn">Save</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Mini Month — Today Ring</div>
+        <div class="mini-month">
+          <div class="mh">S</div><div class="mh">M</div><div class="mh">T</div><div class="mh">W</div><div class="mh">T</div><div class="mh">F</div><div class="mh">S</div>
+          <div class="mc other">27</div><div class="mc other">28</div><div class="mc other">29</div><div class="mc other">30</div><div class="mc">1</div><div class="mc">2</div><div class="mc">3</div>
+          <div class="mc">4</div><div class="mc">5</div><div class="mc">6</div><div class="mc">7</div><div class="mc">8</div><div class="mc">9</div><div class="mc">10</div>
+          <div class="mc">11</div><div class="mc">12</div><div class="mc">13</div><div class="mc"><span class="mc today">14</span></div><div class="mc">15</div><div class="mc">16</div><div class="mc">17</div>
+          <div class="mc">18</div><div class="mc">19</div><div class="mc">20</div><div class="mc">21</div><div class="mc">22</div><div class="mc">23</div><div class="mc">24</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons & RSVP</div>
+        <div class="btn-row">
+          <button class="btn btn-filled">Save</button>
+          <button class="btn btn-tonal">Add to my calendar</button>
+          <button class="btn btn-outline">Cancel</button>
+          <button class="btn btn-text">Skip</button>
+        </div>
+        <div class="rsvp-row" style="margin-top:16px;">
+          <div class="rsvp selected">Yes</div>
+          <div class="rsvp un">No</div>
+          <div class="rsvp un">Maybe</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-2">2</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

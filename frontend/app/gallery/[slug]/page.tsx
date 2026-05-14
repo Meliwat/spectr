@@ -721,6 +721,466 @@ const APP_COPY: Record<AppSlug, AppCopy> = {
       'Library',
     ],
   },
+  'apple-maps': {
+    tagline: 'Apple Maps design blueprint — build a native-feel mapping app',
+    blurb:
+      'A full spec of the Apple Maps iOS app — search, directions, transit, lookaround, and the sliding bottom card — captured with the exact cream parchment cartography and HIG-correct system blue at every interaction.',
+    pitch:
+      'The starting point for any maps, navigation, or location-aware app that wants to feel native to iOS. Covers the search card detents, route polyline, and pulsing current-location puck at pixel fidelity.',
+    keywords: [
+      'apple maps clone',
+      'mapping app template',
+      'ios navigation app design',
+      'react native maps ui kit',
+      'build a maps app',
+    ],
+    sector: 'Maps & navigation',
+    screens: [
+      'Map + search card',
+      'Search results',
+      'Place detail',
+      'Directions overview',
+      'Turn-by-turn',
+      'Saved + Guides',
+    ],
+  },
+  'apple-notes': {
+    tagline: 'Apple Notes design blueprint — build a calm, paper-warm note app',
+    blurb:
+      'A complete spec of the Apple Notes iOS app — note list, editor, folder hierarchy, tags, pinned notes — with the warm cream canvas, orange folder strokes, and SF Pro hierarchy intact.',
+    pitch:
+      'A reference blueprint for any minimalist note-taking, journaling, or writing app. Every list row, swipe action, and inline formatting toolbar is documented with exact spacing and type metrics.',
+    keywords: [
+      'apple notes clone',
+      'note taking app template',
+      'minimalist writing app design',
+      'react native notes ui kit',
+      'build a note app',
+    ],
+    sector: 'Productivity & notes',
+    screens: [
+      'Notes list',
+      'Note editor',
+      'Folders + pinned',
+      'Tag browse',
+      'Search',
+      'Sharing + lock',
+    ],
+  },
+  'apple-wallet': {
+    tagline: 'Apple Wallet design blueprint — build a premium card-stack app',
+    blurb:
+      'A full spec of the Apple Wallet iOS app — the iconic peek-stack card view, card detail, transaction list, and Apple Card titanium gradient — captured down to envelope corner radii and stack offsets.',
+    pitch:
+      'The reference for any wallet, loyalty, ticketing, or pass-management app. The stacked-card metaphor, gesture-driven expand/collapse, and per-card chrome are all documented for clean reuse.',
+    keywords: [
+      'apple wallet clone',
+      'wallet app template',
+      'card stack ui pattern',
+      'loyalty pass app design',
+      'build a wallet app',
+    ],
+    sector: 'Wallet & passes',
+    screens: [
+      'Card stack',
+      'Card detail',
+      'Transaction list',
+      'Add card flow',
+      'Apple Pay sheet',
+      'Settings + sharing',
+    ],
+  },
+  bumble: {
+    tagline: 'Bumble design blueprint — build a women-first dating app',
+    blurb:
+      'A complete spec of the Bumble iOS app — swipe deck, hexagon match notification, profile builder, the 24-hour countdown chip — captured with the saturated Bumble Yellow, hexagon iconography, and confident Brando weights.',
+    pitch:
+      'The starting blueprint for any swipe-deck dating, friendship, or networking app. Every gesture, animation, and gating mechanic (24-hour reply window) is documented.',
+    keywords: [
+      'bumble clone',
+      'dating app template',
+      'swipe deck ui kit',
+      'react native dating app',
+      'build a bumble clone',
+    ],
+    sector: 'Dating & social',
+    screens: [
+      'Swipe deck',
+      'Profile detail',
+      'Match notification',
+      'Conversations',
+      'Profile builder',
+      'Filters + settings',
+    ],
+  },
+  'cash-app': {
+    tagline: 'Cash App design blueprint — build a stark money-movement app',
+    blurb:
+      'A full spec of the Cash App iOS app — the giant $-amount keypad, icon-only tab bar, Cash Card, Investing, Bitcoin — captured with the pure-black canvas and single Cash Green accent intact.',
+    pitch:
+      'The reference blueprint for any peer-to-peer payments, neobank, or money-movement app. The 96pt amount entry, $cashtag handles, and tabbed money/card/pay/activity/invest pattern are all documented.',
+    keywords: [
+      'cash app clone',
+      'p2p payments template',
+      'neobank ui kit',
+      'react native fintech',
+      'build a cash app clone',
+    ],
+    sector: 'Payments & banking',
+    screens: [
+      'Money + keypad',
+      'Cash Card',
+      'Pay / Request',
+      'Activity feed',
+      'Investing',
+      'Bitcoin',
+    ],
+  },
+  claude: {
+    tagline: 'Claude design blueprint — build a warm AI chat app',
+    blurb:
+      'A complete spec of the Claude iOS app — chat thread, artifact tray, projects, the asterisk-star mark — captured with the cream paper canvas, Claude Orange terracotta, and Tiempos serif body that defines the brand.',
+    pitch:
+      'A starting blueprint for any AI assistant, writing-companion, or document-grounded chat app. Streaming cursor, artifact tray, code blocks, and warm-dark mode are all documented.',
+    keywords: [
+      'claude clone',
+      'ai chat app template',
+      'llm chat ui kit',
+      'react native ai assistant',
+      'build a claude clone',
+    ],
+    sector: 'AI & assistants',
+    screens: [
+      'Chat thread',
+      'New conversation',
+      'Artifact tray',
+      'Projects',
+      'History',
+      'Settings',
+    ],
+  },
+  coinbase: {
+    tagline: 'Coinbase design blueprint — build a clean crypto exchange app',
+    blurb:
+      'A full spec of the Coinbase iOS app — portfolio, asset detail with sparkline, buy/sell/send/receive quad, market list — captured with Coinbase Blue, the brand-color asset icons, and Coinbase Sans/Display/Mono.',
+    pitch:
+      'The blueprint for any crypto exchange, brokerage, or portfolio-tracking app. Every asset row, mini sparkline, and 4-up action quad is documented at pixel fidelity.',
+    keywords: [
+      'coinbase clone',
+      'crypto exchange template',
+      'portfolio app ui kit',
+      'react native crypto',
+      'build a coinbase clone',
+    ],
+    sector: 'Crypto & investing',
+    screens: [
+      'Portfolio',
+      'Asset detail + chart',
+      'Buy / Sell',
+      'Send / Receive',
+      'Market list',
+      'Account + earn',
+    ],
+  },
+  figma: {
+    tagline: 'Figma design blueprint — build a companion design-collab app',
+    blurb:
+      'A full spec of the Figma iOS app — file browser, project list, comments, version history — captured with the five iconic brand cubes, Action Blue, Inter at 11–16pt density, and the dark canvas that matches the Editor.',
+    pitch:
+      'A starting blueprint for any design-collaboration, file-viewer, or design-system-companion app. Cursor sharing, comment threads, and the brand-cube visual identity are all documented.',
+    keywords: [
+      'figma clone',
+      'design collab template',
+      'design system viewer ui kit',
+      'react native design tool',
+      'build a figma clone',
+    ],
+    sector: 'Design & collaboration',
+    screens: [
+      'File browser',
+      'Recents + drafts',
+      'File preview',
+      'Comments',
+      'Version history',
+      'Profile + teams',
+    ],
+  },
+  'google-calendar': {
+    tagline: 'Google Calendar design blueprint — build a Material calendar app',
+    blurb:
+      'A full spec of the Google Calendar iOS app — Schedule view, Month view, Day view, event detail, the FAB-driven create flow — captured with the Material primaries, 24-color event palette, and Google Sans + SF Pro hybrid stack.',
+    pitch:
+      'The blueprint for any scheduling, calendar, or event-management app. Material on iOS done right — FAB elevation, the today-pill, swipeable views, and category-colored events at pixel fidelity.',
+    keywords: [
+      'google calendar clone',
+      'calendar app template',
+      'scheduling app ui kit',
+      'react native calendar',
+      'build a calendar app',
+    ],
+    sector: 'Calendar & scheduling',
+    screens: [
+      'Schedule view',
+      'Month view',
+      'Day view',
+      'Event detail',
+      'Create event',
+      'Settings + calendars',
+    ],
+  },
+  headspace: {
+    tagline: 'Headspace design blueprint — build a warm meditation + sleep app',
+    blurb:
+      'A complete spec of the Headspace iOS app — Today screen, meditation player with the breathing sphere, Sleep tab with Sage tint, course detail — captured with the butter-cream canvas and Marigold + Aurora gradient wash.',
+    pitch:
+      'The starting blueprint for any meditation, wellness, sleep, or guided-audio app. The 234pt breathing sphere on a 12s cycle, illustrative tile system, and title-case typography are all documented.',
+    keywords: [
+      'headspace clone',
+      'meditation app template',
+      'wellness app ui kit',
+      'react native sleep app',
+      'build a meditation app',
+    ],
+    sector: 'Health & wellness',
+    screens: [
+      'Today',
+      'Meditate library',
+      'Player + breathing sphere',
+      'Sleep tab',
+      'Course detail',
+      'Profile + streaks',
+    ],
+  },
+  hinge: {
+    tagline: 'Hinge design blueprint — build a relationship-intent dating app',
+    blurb:
+      'A complete spec of the Hinge iOS app — vertical-scroll profile, prompt cards in Sailec Bold, the 44pt heart-tap on every reactive surface, Rose Gold for Standouts and Roses — captured on the warm cream paper canvas.',
+    pitch:
+      'A blueprint for any vertical-profile dating, relationship, or community app. The like-with-a-comment pattern, prompt cards, and serious editorial typographic hierarchy are all documented.',
+    keywords: [
+      'hinge clone',
+      'dating app template',
+      'profile-first dating ui kit',
+      'react native dating app',
+      'build a hinge clone',
+    ],
+    sector: 'Dating & social',
+    screens: [
+      'Discover stack',
+      'Profile detail',
+      'Likes received',
+      'Match modal',
+      'Conversations',
+      'Profile editor',
+    ],
+  },
+  myfitnesspal: {
+    tagline: 'MyFitnessPal design blueprint — build a clinical calorie + macro app',
+    blurb:
+      'A full spec of the MyFitnessPal iOS app — diary, calorie ring, macro trio, barcode scan, food search — captured with the MFP Blue heritage palette, locked macro colors, and color-flipping calorie ring.',
+    pitch:
+      'A starting blueprint for any calorie-tracking, macro-counting, nutrition, or meal-logging app. The 220pt ring that color-flips by state and the locked Carbs/Fat/Protein trio are documented in full.',
+    keywords: [
+      'myfitnesspal clone',
+      'calorie tracker template',
+      'nutrition app ui kit',
+      'react native fitness',
+      'build a calorie tracking app',
+    ],
+    sector: 'Health & wellness',
+    screens: [
+      'Dashboard',
+      'Diary',
+      'Quick log',
+      'Food search',
+      'Barcode scan',
+      'Progress + plans',
+    ],
+  },
+  'nike-run-club': {
+    tagline: 'Nike Run Club design blueprint — build a bold run-coaching app',
+    blurb:
+      'A full spec of the Nike Run Club iOS app — run tracking, guided runs, achievement medals, the 280pt progress ring on Volt — captured with the true-black canvas, Trade Gothic Heavy Condensed type, and hexagonal medal language.',
+    pitch:
+      'The blueprint for any running, cycling, or activity-coaching app. Big bold confident type, voice-coached sessions, hexagonal achievements, and a heavy-haptic START RUN are all documented.',
+    keywords: [
+      'nike run club clone',
+      'running app template',
+      'fitness tracking ui kit',
+      'react native run app',
+      'build a running app',
+    ],
+    sector: 'Fitness & activity',
+    screens: [
+      'Run today',
+      'Run-in-progress',
+      'Run summary',
+      'Guided runs',
+      'Achievements',
+      'Profile + activity',
+    ],
+  },
+  paypal: {
+    tagline: 'PayPal design blueprint — build a trusted institutional fintech app',
+    blurb:
+      'A complete spec of the PayPal iOS app — wallet balance card, send/request flow, transaction list, the dual-blue P-P wordmark — captured with PayPal Sans Big/Small and the soft-pill CTA pattern.',
+    pitch:
+      'The starting point for any wallet, peer payments, or fintech app that needs to feel institutional and trustworthy. The balance-anchor pattern and color-coded activity icons are all documented.',
+    keywords: [
+      'paypal clone',
+      'fintech app template',
+      'wallet app ui kit',
+      'react native payments',
+      'build a paypal clone',
+    ],
+    sector: 'Payments & banking',
+    screens: [
+      'Wallet + balance',
+      'Send money',
+      'Request money',
+      'Activity feed',
+      'Transaction detail',
+      'Profile + settings',
+    ],
+  },
+  perplexity: {
+    tagline: 'Perplexity design blueprint — build an answer engine with citations',
+    blurb:
+      'A complete spec of the Perplexity iOS app — search input, the cited answer surface, source card row, follow-up suggestions, library — captured with the dark canvas and the brand-defining inline citation chips.',
+    pitch:
+      'A blueprint for any AI answer engine, research assistant, or citation-grounded search app. The inline `[1][2][3]` chips, horizontal source-card row, and FK Grotesk + Inter encyclopedic register are all documented.',
+    keywords: [
+      'perplexity clone',
+      'ai search template',
+      'research assistant ui kit',
+      'react native ai search',
+      'build a perplexity clone',
+    ],
+    sector: 'AI & search',
+    screens: [
+      'New search',
+      'Answer + citations',
+      'Source list',
+      'Follow-up suggestions',
+      'Library',
+      'Profile + spaces',
+    ],
+  },
+  robinhood: {
+    tagline: 'Robinhood design blueprint — build a clean investing app',
+    blurb:
+      'A full spec of the Robinhood iOS app — portfolio with the draggable chart scrubber, asset detail, watchlist, buy/sell flow — captured with the green-up / orange-down chart language and Capsule Sans Text tabular numerals.',
+    pitch:
+      'The blueprint for any brokerage, stock, ETF, or investing app. The portfolio chart scrubber, asset rows, options chains, and Cards/Account flow are all documented at pixel fidelity.',
+    keywords: [
+      'robinhood clone',
+      'investing app template',
+      'brokerage ui kit',
+      'react native stocks',
+      'build an investing app',
+    ],
+    sector: 'Investing & brokerage',
+    screens: [
+      'Portfolio + chart',
+      'Asset detail',
+      'Buy / Sell',
+      'Watchlist',
+      'Search + discover',
+      'Account + cash',
+    ],
+  },
+  strava: {
+    tagline: 'Strava design blueprint — build a social activity-tracking app',
+    blurb:
+      'A complete spec of the Strava iOS app — activity feed with route maps, kudos, segment leaderboards, record button, post-activity summary — captured with the Strava Orange single-accent system and tabular-numeral stat grids.',
+    pitch:
+      'The blueprint for any activity-tracking, fitness-social, or sport-community app. Route polylines, the 3-up DISTANCE/TIME/PACE grid, and the segment leaderboard pattern are all documented.',
+    keywords: [
+      'strava clone',
+      'activity tracking template',
+      'fitness social ui kit',
+      'react native run cycle',
+      'build a strava clone',
+    ],
+    sector: 'Fitness & activity',
+    screens: [
+      'Activity feed',
+      'Record',
+      'Activity detail',
+      'Segment leaderboard',
+      'Maps + routes',
+      'Profile + training',
+    ],
+  },
+  todoist: {
+    tagline: 'Todoist design blueprint — build a fast tasks + projects app',
+    blurb:
+      'A full spec of the Todoist iOS app — Inbox, Today, Upcoming, projects sidebar, quick-add with smart parsing, four-tier priority — captured with the Todoist Red brand and the tinted-red FAB shadow.',
+    pitch:
+      'The blueprint for any task-management, to-do, or project-tracking app. Natural-language quick-add, edge-to-edge task rows, swipe complete/postpone, and the priority hierarchy are all documented.',
+    keywords: [
+      'todoist clone',
+      'todo app template',
+      'task management ui kit',
+      'react native productivity',
+      'build a todoist clone',
+    ],
+    sector: 'Productivity & tasks',
+    screens: [
+      'Inbox',
+      'Today / Upcoming',
+      'Project detail',
+      'Quick add',
+      'Task detail',
+      'Labels + filters',
+    ],
+  },
+  waze: {
+    tagline: 'Waze design blueprint — build a community-driven navigation app',
+    blurb:
+      'A full spec of the Waze iOS app — drive view, hazard reports, route planning, ETA share, the cyan arrow puck — captured with Waze Purple + Cyan, the speech-bubble report tails, and the loud cartoon cartography.',
+    pitch:
+      'The blueprint for any community-driven navigation, hazard-reporting, or driving app. The chunky speech-bubble report system, cyan arrow puck, and tinted shadows are all documented.',
+    keywords: [
+      'waze clone',
+      'navigation app template',
+      'community driving ui kit',
+      'react native maps',
+      'build a waze clone',
+    ],
+    sector: 'Maps & navigation',
+    screens: [
+      'Drive view',
+      'Report hazard',
+      'Route planning',
+      'ETA share',
+      'Search destination',
+      'Profile + scores',
+    ],
+  },
+  whoop: {
+    tagline: 'WHOOP design blueprint — build a cockpit-grade body coach app',
+    blurb:
+      'A complete spec of the WHOOP iOS app — Strain, Recovery, and Sleep rings, daily overview, journal, the neon-on-pitch-black aesthetic — captured with DIN 2014 ALL CAPS, tabular numerals, and glow-as-elevation.',
+    pitch:
+      'The blueprint for any biometric, recovery-coaching, sleep-tracking, or athlete-performance app. The Strain/Recovery/Sleep ring trio and the cockpit-grade data-density are all documented.',
+    keywords: [
+      'whoop clone',
+      'biometrics app template',
+      'recovery tracking ui kit',
+      'react native wearable',
+      'build a whoop clone',
+    ],
+    sector: 'Health & wellness',
+    screens: [
+      'Overview',
+      'Strain detail',
+      'Recovery detail',
+      'Sleep detail',
+      'Journal',
+      'Coaching + community',
+    ],
+  },
 }
 
 type Params = { slug: string }

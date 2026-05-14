@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by PayPal iOS — Light</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --surface-gray: #F5F7FA;
+    --surface-gray-2: #EEF1F4;
+    --divider: #E5E8ED;
+    --text: #001435;
+    --text-secondary: #2C2E2F;
+    --text-muted: #687173;
+    --text-tertiary: #9DA3A6;
+    --paypal-blue: #003087;
+    --paypal-sky: #0070BA;
+    --paypal-cobalt: #001C64;
+    --success: #1C8B43;
+    --success-bg: #E4F5EA;
+    --error: #D20021;
+    --error-bg: #FCE5E8;
+    --warning: #FFB81C;
+    --warning-bg: #FFF6E0;
+    --warning-text: #A06B00;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #F0F2F5; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; color: var(--text); }
+  .page-chip { background: var(--paypal-blue); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 4px; letter-spacing: 0.6px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-muted); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.4), 0 0 0 2px rgba(0,0,0,0.08) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--surface-gray); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Top nav */
+  .nav-top { padding: 44px 16px 12px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; background: var(--canvas); border-bottom: 0.5px solid var(--divider); }
+  .nav-logo { position: relative; width: 36px; height: 28px; }
+  .nav-logo .p-sky { position: absolute; left: 0; font-family: var(--font); font-weight: 900; font-style: italic; font-size: 28px; color: var(--paypal-sky); line-height: 1; }
+  .nav-logo .p-blue { position: absolute; left: 12px; font-family: var(--font); font-weight: 900; font-style: italic; font-size: 28px; color: var(--paypal-blue); line-height: 1; }
+  .nav-icons { display: flex; gap: 14px; color: var(--text); }
+  .nav-icons svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Content scroll */
+  .content { flex: 1; overflow: hidden; padding: 16px 0; }
+
+  /* Balance card */
+  .balance-card { background: var(--canvas); border-radius: 16px; padding: 18px; margin: 0 16px 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid var(--divider); }
+  .balance-label { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+  .balance-amount { font-size: 36px; font-weight: 700; color: var(--text); margin-top: 8px; letter-spacing: -0.5px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .balance-actions { display: flex; gap: 8px; margin-top: 14px; }
+  .b-btn { flex: 1; height: 40px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+  .b-btn-fill { background: var(--paypal-blue); color: #fff; }
+  .b-btn-out { background: transparent; color: var(--paypal-blue); border: 1.5px solid var(--paypal-blue); }
+
+  /* Filter chips */
+  .filter-row { display: flex; gap: 8px; padding: 0 16px 12px; overflow: hidden; }
+  .chip { padding: 7px 14px; border-radius: 16px; font-size: 12px; font-weight: 500; flex-shrink: 0; }
+  .chip-default { background: var(--surface-gray-2); color: var(--text-muted); }
+  .chip-active { background: var(--paypal-blue); color: #fff; }
+
+  /* Activity rows */
+  .activity-list { padding: 0 16px; background: var(--canvas); border-radius: 12px; margin: 0 16px; border: 1px solid var(--divider); }
+  .a-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 0.5px solid var(--divider); }
+  .a-row:last-child { border-bottom: none; }
+  .a-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #fff; }
+  .a-icon svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2.5; fill: none; }
+  .a-icon.sent { background: var(--paypal-blue); }
+  .a-icon.received { background: var(--success); }
+  .a-icon.card { background: var(--paypal-sky); }
+  .a-icon.reward { background: var(--warning); color: var(--text); }
+  .a-info { flex: 1; min-width: 0; }
+  .a-name { font-size: 14px; font-weight: 500; color: var(--text); }
+  .a-sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+  .a-amt { font-size: 15px; font-weight: 500; color: var(--text); font-variant-numeric: tabular-nums; }
+  .a-amt.up { color: var(--success); }
+
+  /* Tab bar */
+  .tab-bar { height: 56px; background: var(--canvas); border-top: 0.5px solid var(--divider); display: flex; align-items: center; justify-content: space-around; padding: 4px 6px 14px; flex-shrink: 0; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--text-muted); font-size: 10px; font-weight: 500; letter-spacing: 0.1px; }
+  .tab.active { color: var(--paypal-blue); }
+  .tab svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--canvas); border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 14px; min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 500; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--text); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-muted); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); }
+  .t-balance { font-size: 36px; font-weight: 700; letter-spacing: -0.5px; font-variant-numeric: tabular-nums; }
+  .t-send { font-size: 52px; font-weight: 700; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
+  .t-title { font-size: 24px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-section { font-size: 18px; font-weight: 700; }
+  .t-card { font-size: 16px; font-weight: 500; }
+  .t-activity { font-size: 15px; font-weight: 500; }
+  .t-sub { font-size: 13px; color: var(--text-muted); }
+  .t-amount { font-size: 16px; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .t-button { font-size: 17px; font-weight: 700; color: #fff; background: var(--paypal-blue); padding: 4px 8px; border-radius: 4px; display: inline-block; }
+  .t-link { font-size: 15px; font-weight: 500; color: var(--paypal-sky); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 17px; font-weight: 700; padding: 14px 28px; border-radius: 24px; border: none; cursor: pointer; }
+  .btn-primary { background: var(--paypal-blue); color: #fff; }
+  .btn-outline { background: transparent; color: var(--paypal-blue); border: 1.5px solid var(--paypal-blue); padding: 12.5px 26.5px; }
+  .btn-link { background: transparent; color: var(--paypal-sky); padding: 14px 0; font-size: 15px; }
+  .pill-completed { background: var(--success-bg); color: var(--success); padding: 4px 10px; border-radius: 4px; font-weight: 500; font-size: 12px; }
+  .pill-pending { background: var(--warning-bg); color: var(--warning-text); padding: 4px 10px; border-radius: 4px; font-weight: 500; font-size: 12px; }
+  .pill-failed { background: var(--error-bg); color: var(--error); padding: 4px 10px; border-radius: 4px; font-weight: 500; font-size: 12px; }
+
+  /* Wordmark */
+  .wordmark { position: relative; width: 88px; height: 56px; }
+  .wordmark .p-sky { position: absolute; left: 0; font-family: var(--font); font-weight: 900; font-style: italic; font-size: 56px; color: var(--paypal-sky); line-height: 1; }
+  .wordmark .p-blue { position: absolute; left: 24px; font-family: var(--font); font-weight: 900; font-style: italic; font-size: 56px; color: var(--paypal-blue); line-height: 1; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--paypal-blue); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-24 { border-radius: 24px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">PayPal iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">Trusted, institutional fintech. Dual-blue P-P wordmark: PayPal Sky <code>#0070BA</code> behind, PayPal Blue <code>#003087</code> front. PayPal Sans Big for hero, PayPal Sans Small for body. Balance card as wallet anchor, rich circular icons on activity, gentle elevation.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="nav-top">
+            <div class="nav-logo">
+              <div class="p-sky">P</div>
+              <div class="p-blue">P</div>
+            </div>
+            <div class="nav-icons">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16" y2="16"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            </div>
+          </div>
+
+          <div class="content">
+            <div class="balance-card">
+              <div class="balance-label">PayPal balance</div>
+              <div class="balance-amount">$1,247.92</div>
+              <div class="balance-actions">
+                <div class="b-btn b-btn-fill">Add Money</div>
+                <div class="b-btn b-btn-out">Transfer</div>
+              </div>
+            </div>
+
+            <div class="filter-row">
+              <div class="chip chip-active">All</div>
+              <div class="chip chip-default">Sent</div>
+              <div class="chip chip-default">Received</div>
+              <div class="chip chip-default">Pending</div>
+            </div>
+
+            <div class="activity-list">
+              <div class="a-row">
+                <div class="a-icon received">
+                  <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19,12 12,19 5,12"/></svg>
+                </div>
+                <div class="a-info">
+                  <div class="a-name">Sarah Kim</div>
+                  <div class="a-sub">Today, 2:18 PM · Completed</div>
+                </div>
+                <div class="a-amt up">+$42.00</div>
+              </div>
+              <div class="a-row">
+                <div class="a-icon sent">
+                  <svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5,12 12,5 19,12"/></svg>
+                </div>
+                <div class="a-info">
+                  <div class="a-name">Marcus Lin</div>
+                  <div class="a-sub">Yesterday · Completed</div>
+                </div>
+                <div class="a-amt">$18.50</div>
+              </div>
+              <div class="a-row">
+                <div class="a-icon card">
+                  <svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                </div>
+                <div class="a-info">
+                  <div class="a-name">Whole Foods Market</div>
+                  <div class="a-sub">Dec 1 · Visa debit ·· 4242</div>
+                </div>
+                <div class="a-amt">$67.84</div>
+              </div>
+              <div class="a-row">
+                <div class="a-icon reward">
+                  <svg viewBox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+                </div>
+                <div class="a-info">
+                  <div class="a-name">Cashback Reward</div>
+                  <div class="a-sub">Nov 28 · From PayPal</div>
+                </div>
+                <div class="a-amt up">+$3.42</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg><span>Send</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="14" rx="2"/><line x1="2" y1="11" x2="22" y2="11"/></svg><span>Wallet</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12,7 12,12 15,14"/></svg><span>Activity</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><polyline points="22,12 18,6 12,14 7,9 2,16"/></svg><span>Finances</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#003087;"><div class="name">PayPal Blue</div>#003087</div>
+          <div class="swatch" style="background:#0070BA;"><div class="name">PayPal Sky</div>#0070BA</div>
+          <div class="swatch" style="background:#001C64;"><div class="name">PayPal Cobalt</div>#001C64</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Canvas</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#F5F7FA;"><div class="name">Surface Gray</div>#F5F7FA</div>
+          <div class="swatch light" style="background:#EEF1F4;"><div class="name">Surface Gray 2</div>#EEF1F4</div>
+          <div class="swatch light" style="background:#E5E8ED;"><div class="name">Divider</div>#E5E8ED</div>
+          <div class="swatch" style="background:#001435;"><div class="name">Text Primary</div>#001435</div>
+          <div class="swatch" style="background:#687173;"><div class="name">Text Muted</div>#687173</div>
+          <div class="swatch" style="background:#1C8B43;"><div class="name">Success</div>#1C8B43</div>
+          <div class="swatch light" style="background:#E4F5EA;"><div class="name">Success Bg</div>#E4F5EA</div>
+          <div class="swatch" style="background:#D20021;"><div class="name">Error</div>#D20021</div>
+          <div class="swatch light" style="background:#FCE5E8;"><div class="name">Error Bg</div>#FCE5E8</div>
+          <div class="swatch light" style="background:#FFB81C;"><div class="name">Warning</div>#FFB81C</div>
+          <div class="swatch light" style="background:#FFF6E0;"><div class="name">Warning Bg</div>#FFF6E0</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Brand Wordmark</div>
+        <div style="display: flex; align-items: center; gap: 24px;">
+          <div class="wordmark">
+            <div class="p-sky">P</div>
+            <div class="p-blue">P</div>
+          </div>
+          <div style="color: var(--text-muted); font-size: 13px; line-height: 1.5;">Italicized P in PayPal Sky <code>#0070BA</code> behind a second P in PayPal Blue <code>#003087</code>. The overlap creates the brand's iconic darker blend zone. Never render in a single color.</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — PayPal Sans Big / Small</div>
+        <div class="type-row"><div class="type-meta">Balance Hero · Big 36pt · 700 tab</div><div class="type-sample t-balance">$1,247.92</div></div>
+        <div class="type-row"><div class="type-meta">Send Amount · Big 52pt · 700 tab</div><div class="type-sample t-send">$42.00</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · Big 24pt · 700</div><div class="type-sample t-title">Wallet</div></div>
+        <div class="type-row"><div class="type-meta">Section · Big 18pt · 700</div><div class="type-sample t-section">Recent activity</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · Big 16pt · 500</div><div class="type-sample t-card">Visa debit ·· 4242</div></div>
+        <div class="type-row"><div class="type-meta">Activity Title · Small 15pt · 500</div><div class="type-sample t-activity">Sarah Kim</div></div>
+        <div class="type-row"><div class="type-meta">Activity Sub · Small 13pt · 400</div><div class="type-sample t-sub">Yesterday, 3:42 PM · Completed</div></div>
+        <div class="type-row"><div class="type-meta">Activity Amount · Big 16pt · 500 tab</div><div class="type-sample t-amount">+$42.00</div></div>
+        <div class="type-row"><div class="type-meta">Link · Small 15pt · 500</div><div class="type-sample t-link">Add a payment method</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons & Pills</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Send</button>
+          <button class="btn btn-outline">Cancel</button>
+          <button class="btn btn-link">Learn more</button>
+        </div>
+        <div class="btn-row" style="margin-top: 16px;">
+          <span class="pill-completed">Completed</span>
+          <span class="pill-pending">Pending</span>
+          <span class="pill-failed">Failed</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-24">24</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

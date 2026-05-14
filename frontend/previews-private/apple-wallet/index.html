@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Apple Wallet iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #000000;
+    --surface-1: #1C1C1E;
+    --surface-2: #2C2C2E;
+    --glass: rgba(255,255,255,0.12);
+    --hairline: #262629;
+    --text: #FFFFFF;
+    --text-2: #A0A0A5;
+    --text-3: #636368;
+    --titanium-hi: #E8E8EB;
+    --titanium-mid: #A8A8AD;
+    --titanium-lo: #3D3D3F;
+    --chip-gold: #C7AC73;
+    --daily-cash: #FF3B30;
+    --system-blue: #0A84FF;
+    --success: #30D158;
+    --error: #FF453A;
+    --chase-blue: #1A2D4F;
+    --amex: #A7B0B7;
+    --visa: #1A1F71;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+    --mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #050505; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; }
+  .page-chip { background: var(--text); color: #000; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 4px; letter-spacing: 0.6px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-2); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Header */
+  .header { padding: 56px 16px 8px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .wallet-title { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; color: var(--text); }
+  .add-btn { width: 32px; height: 32px; border-radius: 50%; background: var(--glass); display: flex; align-items: center; justify-content: center; }
+  .add-btn svg { width: 14px; height: 14px; stroke: var(--text); stroke-width: 2.5; fill: none; }
+
+  /* Card stack */
+  .stack { padding: 8px 16px 0; flex: 1; position: relative; }
+  .card {
+    height: 180px;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: -120px; /* peek = card height - 60pt */
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 0.5px;
+    background: rgba(255,255,255,0.12);
+    z-index: 3;
+  }
+  .card-content {
+    position: absolute; inset: 0;
+    padding: 12px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    z-index: 2;
+  }
+  .card-top, .card-bottom { display: flex; align-items: center; justify-content: space-between; }
+
+  /* Apple Card */
+  .apple-card {
+    background: linear-gradient(135deg, var(--titanium-hi) 0%, var(--titanium-mid) 50%, var(--titanium-lo) 100%);
+  }
+  .apple-card::after {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      repeating-linear-gradient(115deg, rgba(255,255,255,0.06) 0px, rgba(255,255,255,0.06) 1px, transparent 1px, transparent 3px);
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .chip { width: 22px; height: 17px; border-radius: 3px; background: linear-gradient(135deg, #D4B783, var(--chip-gold)); position: relative; }
+  .chip::after { content: ''; position: absolute; inset: 2px; border: 0.5px solid rgba(0,0,0,0.2); border-radius: 2px; }
+  .apple-logo { color: #fff; font-size: 18px; line-height: 1; }
+  .cardholder { font-size: 9px; font-weight: 500; letter-spacing: 0.4px; color: #1A1A1A; }
+  .dc-chip { width: 22px; height: 22px; border-radius: 50%; background: var(--daily-cash); color: #fff; font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; }
+
+  /* Chase Sapphire */
+  .chase-card { background: linear-gradient(135deg, var(--chase-blue), #0E1B30); }
+  .issuer { font-size: 13px; font-weight: 600; color: #fff; letter-spacing: -0.1px; }
+  .network { font-size: 11px; font-weight: 800; font-style: italic; color: #fff; }
+  .last4 { font-family: var(--mono); font-size: 11px; font-weight: 500; color: #fff; letter-spacing: 0.5px; font-variant-numeric: tabular-nums; }
+  .cardholder-light { font-size: 9px; font-weight: 500; letter-spacing: 0.4px; color: rgba(255,255,255,0.9); }
+
+  /* AmEx */
+  .amex-card {
+    background: linear-gradient(135deg, var(--amex), #5A6068);
+  }
+  .amex-card::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 30%, transparent 70%, rgba(0,0,0,0.1) 100%);
+    pointer-events: none;
+  }
+
+  /* Visa Debit (Bank of America style) */
+  .visa-card { background: linear-gradient(135deg, #B40000 0%, #850000 100%); }
+
+  /* Boarding Pass — peek only */
+  .boarding-card {
+    background: linear-gradient(135deg, #0B5394 0%, #0A4178 100%);
+    height: 200px;
+  }
+  .boarding-card::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    top: 72%;
+    height: 1px;
+    border-top: 1.5px dashed rgba(255,255,255,0.35);
+    z-index: 2;
+  }
+  .route { font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -0.3px; }
+  .route .arrow { opacity: 0.65; font-weight: 400; margin: 0 6px; }
+  .airline { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.85); letter-spacing: 0.8px; text-transform: uppercase; }
+
+  /* Card stack — adjust z-index so top card is on top */
+  .stack .card:nth-child(1) { z-index: 5; }
+  .stack .card:nth-child(2) { z-index: 4; }
+  .stack .card:nth-child(3) { z-index: 3; }
+  .stack .card:nth-child(4) { z-index: 2; }
+
+  /* Token sections */
+  .section { background: #0E0E10; border: 1px solid var(--hairline); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-2); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 14px; min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 500; font-family: var(--mono); border: 1px solid var(--hairline); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #000; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--hairline); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: var(--mono); font-size: 11px; color: var(--text-2); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); }
+  .t-balance { font-size: 36px; font-weight: 700; letter-spacing: -0.4px; font-variant-numeric: tabular-nums; }
+  .t-title { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+  .t-sheet { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-issuer { font-size: 17px; font-weight: 600; }
+  .t-body { font-size: 15px; font-weight: 400; letter-spacing: -0.3px; }
+  .t-meta { font-size: 13px; font-weight: 400; color: var(--text-2); letter-spacing: -0.08px; }
+  .t-cap { font-size: 11px; font-weight: 600; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.5px; }
+  .t-mono { font-family: var(--mono); font-size: 14px; font-weight: 500; letter-spacing: 0.5px; font-variant-numeric: tabular-nums; }
+
+  /* Transaction rows */
+  .tx-list { background: var(--surface-1); border-radius: 10px; overflow: hidden; }
+  .tx-row { display: flex; align-items: center; padding: 12px 16px; border-bottom: 0.5px solid var(--hairline); }
+  .tx-row:last-child { border-bottom: none; }
+  .tx-logo { width: 32px; height: 32px; border-radius: 50%; background: var(--surface-2); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+  .tx-info { flex: 1; margin-left: 12px; }
+  .tx-merchant { font-size: 14px; font-weight: 400; color: var(--text); }
+  .tx-date { font-size: 11px; font-weight: 400; color: var(--text-2); margin-top: 2px; }
+  .tx-right { text-align: right; }
+  .tx-amount { font-size: 14px; font-weight: 500; color: var(--text); font-variant-numeric: tabular-nums; }
+  .tx-dc { font-size: 10px; font-weight: 400; color: var(--daily-cash); margin-top: 2px; font-variant-numeric: tabular-nums; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 14px; font-weight: 600; padding: 12px 24px; border-radius: 14px; border: none; cursor: pointer; letter-spacing: -0.2px; }
+  .btn-pay { background: #fff; color: #000; }
+  .btn-applepay { background: #000; color: #fff; border: 1px solid var(--hairline); display: inline-flex; align-items: center; gap: 6px; border-radius: 8px; }
+  .btn-applepay::before { content: ''; }
+  .btn-link { background: transparent; color: var(--system-blue); padding: 8px 0; font-weight: 400; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--titanium-mid); color: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; font-weight: 700; }
+  .r-8 { border-radius: 8px; }
+  .r-10 { border-radius: 10px; }
+  .r-14 { border-radius: 14px; }
+  .r-50 { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Apple Wallet iOS — Design Tokens</div>
+    <div class="page-chip">Dark</div>
+  </div>
+  <p class="page-subtitle">A vault rendered as a stage. True-black canvas `#000000` so the cards float. Each card is a 10pt-radius envelope with a heavy `rgba(0,0,0,0.5)` shadow and a paper-thin glass-edge highlight. Stack peek interval: 80pt. The Apple Card's titanium gradient is the signature object.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="header">
+            <div class="wallet-title">Wallet</div>
+            <div class="add-btn">
+              <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+          </div>
+
+          <div class="stack">
+            <!-- Apple Card -->
+            <div class="card apple-card">
+              <div class="card-content">
+                <div class="card-top">
+                  <div class="chip"></div>
+                  <div class="apple-logo">&#xF8FF;</div>
+                </div>
+                <div class="card-bottom">
+                  <div class="cardholder">MELIWAT</div>
+                  <div class="dc-chip">$</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Chase Sapphire -->
+            <div class="card chase-card">
+              <div class="card-content">
+                <div class="card-top">
+                  <div class="issuer">Chase Sapphire</div>
+                  <div class="network">VISA</div>
+                </div>
+                <div class="card-bottom">
+                  <div class="cardholder-light">MELIWAT</div>
+                  <div class="last4">•••• 4521</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- AmEx Platinum -->
+            <div class="card amex-card">
+              <div class="card-content">
+                <div class="card-top">
+                  <div class="issuer" style="color:#1A1A1A;">American Express</div>
+                  <div class="network" style="color:#1A1A1A;">PLATINUM</div>
+                </div>
+                <div class="card-bottom">
+                  <div class="cardholder-light" style="color:rgba(0,0,0,0.85);">MELIWAT</div>
+                  <div class="last4" style="color:#1A1A1A;">•••• 1003</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Boarding pass peek -->
+            <div class="card boarding-card">
+              <div class="card-content">
+                <div class="card-top">
+                  <div>
+                    <div class="airline">Delta · DL 1487</div>
+                    <div class="route">BOS<span class="arrow">→</span>SFO</div>
+                  </div>
+                  <div style="text-align:right;">
+                    <div class="airline">Gate</div>
+                    <div style="font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.2px;">B14</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#000000;border-color:#222;"><div class="name">True Black</div>#000000</div>
+          <div class="swatch" style="background:#1C1C1E;"><div class="name">Surface 1</div>#1C1C1E</div>
+          <div class="swatch" style="background:#2C2C2E;"><div class="name">Surface 2</div>#2C2C2E</div>
+          <div class="swatch light" style="background:linear-gradient(135deg,#E8E8EB,#A8A8AD,#3D3D3F);"><div class="name">Titanium</div>#E8E8EB→#3D3D3F</div>
+          <div class="swatch light" style="background:#C7AC73;"><div class="name">Chip Gold</div>#C7AC73</div>
+          <div class="swatch" style="background:#FF3B30;"><div class="name">Daily Cash</div>#FF3B30</div>
+          <div class="swatch" style="background:#1A2D4F;"><div class="name">Chase Blue</div>#1A2D4F</div>
+          <div class="swatch light" style="background:#A7B0B7;"><div class="name">AmEx Silver</div>#A7B0B7</div>
+          <div class="swatch" style="background:#1A1F71;"><div class="name">Visa Navy</div>#1A1F71</div>
+          <div class="swatch" style="background:#0A84FF;"><div class="name">System Blue</div>#0A84FF</div>
+          <div class="swatch" style="background:#30D158;"><div class="name">Success</div>#30D158</div>
+          <div class="swatch" style="background:#FF453A;"><div class="name">Error</div>#FF453A</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — SF Pro Display & Text</div>
+        <div class="type-row"><div class="type-meta">Balance Hero · 40pt · 700</div><div class="type-sample t-balance">$1,284.20</div></div>
+        <div class="type-row"><div class="type-meta">Wallet Title · 34pt · 700</div><div class="type-sample t-title">Wallet</div></div>
+        <div class="type-row"><div class="type-meta">Sheet Title · 28pt · 700</div><div class="type-sample t-sheet">Card Details</div></div>
+        <div class="type-row"><div class="type-meta">Card Issuer · 17pt · 600</div><div class="type-sample t-issuer">Apple Card</div></div>
+        <div class="type-row"><div class="type-meta">Body · 17pt · 400</div><div class="type-sample t-body">Latest Transactions</div></div>
+        <div class="type-row"><div class="type-meta">Footnote · 13pt · 400</div><div class="type-sample t-meta">Aug 12, 2025 · Visa ••• 4521</div></div>
+        <div class="type-row"><div class="type-meta">Section Hdr · 13pt · 600 UPPER</div><div class="type-sample t-cap">Payments</div></div>
+        <div class="type-row"><div class="type-meta">Card Last4 · SF Mono 17pt · 500</div><div class="type-sample t-mono">•••• 4521</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Latest Transactions</div>
+        <div class="tx-list">
+          <div class="tx-row">
+            <div class="tx-logo">U</div>
+            <div class="tx-info">
+              <div class="tx-merchant">Uber</div>
+              <div class="tx-date">Yesterday · 9:42 PM</div>
+            </div>
+            <div class="tx-right">
+              <div class="tx-amount">$24.50</div>
+              <div class="tx-dc">Daily Cash $0.74</div>
+            </div>
+          </div>
+          <div class="tx-row">
+            <div class="tx-logo">A</div>
+            <div class="tx-info">
+              <div class="tx-merchant">Apple Services</div>
+              <div class="tx-date">Aug 12 · 2:14 AM</div>
+            </div>
+            <div class="tx-right">
+              <div class="tx-amount">$9.99</div>
+              <div class="tx-dc">Daily Cash $0.30</div>
+            </div>
+          </div>
+          <div class="tx-row">
+            <div class="tx-logo">★</div>
+            <div class="tx-info">
+              <div class="tx-merchant">Starbucks</div>
+              <div class="tx-date">Aug 10 · 7:55 AM</div>
+            </div>
+            <div class="tx-right">
+              <div class="tx-amount">$5.45</div>
+              <div class="tx-dc">Daily Cash $0.16</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-pay">Pay Now</button>
+          <button class="btn btn-applepay">&#xF8FF; Pay</button>
+          <button class="btn btn-link">See All Transactions</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-50">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

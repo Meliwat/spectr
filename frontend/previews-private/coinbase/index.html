@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Coinbase iOS — Light</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --surface-gray: #F7F8FA;
+    --surface-gray-2: #EEF0F3;
+    --divider: #E1E4E8;
+    --text: #0A0B0D;
+    --text-secondary: #5B616E;
+    --text-tertiary: #80868F;
+    --cb-blue: #0052FF;
+    --cb-blue-pressed: #0040CC;
+    --cb-blue-tint: #E5EDFF;
+    --success: #05B169;
+    --success-tint: #E6F7EF;
+    --loss: #CF202F;
+    --loss-tint: #FCE7E9;
+    --warning: #F5A623;
+    --bitcoin: #F7931A;
+    --ethereum: #627EEA;
+    --usdc: #2775CA;
+    --solana: #9945FF;
+    --tether: #26A17B;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+    --mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #F0F2F5; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; color: var(--text); }
+  .page-chip { background: var(--cb-blue); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 4px; letter-spacing: 0.6px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.4), 0 0 0 2px rgba(0,0,0,0.08) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Top nav */
+  .nav-top { padding: 44px 16px 10px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .c-mark { width: 28px; height: 28px; position: relative; display: flex; align-items: center; justify-content: center; }
+  .c-mark::before { content: ''; position: absolute; inset: 0; border-radius: 50%; border: 4.4px solid var(--cb-blue); }
+  .c-mark::after { content: ''; width: 12px; height: 4px; background: var(--cb-blue); }
+  .nav-icons { display: flex; gap: 14px; color: var(--text); }
+  .nav-icons svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Hero */
+  .hero { padding: 4px 16px 6px; flex-shrink: 0; }
+  .hero-label { font-size: 10px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 4px; }
+  .hero-value { font-size: 36px; font-weight: 700; letter-spacing: -0.5px; color: var(--text); line-height: 1; font-variant-numeric: tabular-nums; }
+  .hero-change { margin-top: 4px; font-size: 14px; font-weight: 500; color: var(--success); font-variant-numeric: tabular-nums; }
+
+  /* Chart */
+  .chart { height: 90px; padding: 4px 0 0; flex-shrink: 0; }
+  .chart svg { width: 100%; height: 100%; }
+
+  /* Range chips */
+  .ranges { display: flex; justify-content: space-around; padding: 6px 16px 6px; flex-shrink: 0; }
+  .range-chip { min-width: 38px; height: 26px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; letter-spacing: 0.3px; color: var(--text-secondary); }
+  .range-chip.active { background: var(--surface-gray-2); color: var(--text); }
+
+  /* 4-up actions */
+  .actions-row { display: flex; gap: 6px; padding: 4px 16px 8px; flex-shrink: 0; }
+  .action-card { flex: 1; background: var(--surface-gray); border-radius: 10px; padding: 10px 0; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .action-card svg { width: 18px; height: 18px; stroke: var(--cb-blue); stroke-width: 2; fill: none; }
+  .action-card .lbl { font-size: 11px; font-weight: 500; color: var(--text); }
+
+  /* Assets section */
+  .assets-section { flex: 1; overflow: hidden; padding: 4px 0 0; }
+  .assets-title { padding: 4px 16px 6px; font-size: 14px; font-weight: 700; }
+  .a-row { display: flex; align-items: center; gap: 10px; padding: 8px 16px; border-bottom: 0.5px solid var(--divider); }
+  .a-row:last-child { border-bottom: none; }
+  .a-icon { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; flex-shrink: 0; font-size: 14px; }
+  .a-icon.btc { background: var(--bitcoin); }
+  .a-icon.eth { background: var(--ethereum); }
+  .a-icon.usdc { background: var(--usdc); }
+  .a-icon.sol { background: var(--solana); }
+  .a-info { flex: 1; min-width: 0; }
+  .a-name { font-size: 14px; font-weight: 600; color: var(--text); }
+  .a-meta { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
+  .a-ticker { font-weight: 500; letter-spacing: 0.3px; }
+  .a-spark { width: 40px; height: 14px; }
+  .a-spark svg { width: 100%; height: 100%; }
+  .a-val-block { text-align: right; }
+  .a-val { font-size: 13px; font-weight: 500; color: var(--text); font-variant-numeric: tabular-nums; }
+  .a-chg { font-size: 10px; font-weight: 500; font-variant-numeric: tabular-nums; margin-top: 1px; }
+  .a-chg.up { color: var(--success); }
+  .a-chg.dn { color: var(--loss); }
+
+  /* Tab bar */
+  .tab-bar { height: 56px; background: var(--canvas); border-top: 0.5px solid var(--divider); display: flex; align-items: center; justify-content: space-around; padding: 4px 6px 14px; flex-shrink: 0; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--text-secondary); font-size: 9px; font-weight: 600; letter-spacing: 0.1px; }
+  .tab.active { color: var(--cb-blue); }
+  .tab svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--canvas); border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 14px; min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 500; font-family: var(--mono); border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--text); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: var(--mono); font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); font-variant-numeric: tabular-nums; }
+  .t-hero { font-size: 40px; font-weight: 700; letter-spacing: -0.5px; }
+  .t-buy { font-size: 52px; font-weight: 700; letter-spacing: -1px; }
+  .t-title { font-size: 28px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-section { font-size: 20px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-asset { font-size: 16px; font-weight: 600; }
+  .t-price { font-size: 16px; font-weight: 500; }
+  .t-change { font-size: 13px; font-weight: 500; color: var(--success); }
+  .t-ticker { font-size: 13px; font-weight: 500; letter-spacing: 0.3px; color: var(--text-secondary); }
+  .t-caps { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-secondary); }
+  .t-mono { font-family: var(--mono); font-size: 13px; font-weight: 500; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 16px; font-weight: 600; padding: 14px 24px; border-radius: 12px; border: none; cursor: pointer; }
+  .btn-primary { background: var(--cb-blue); color: #fff; }
+  .btn-secondary { background: var(--surface-gray-2); color: var(--text); }
+  .pill-earn { background: var(--success-tint); color: var(--success); padding: 4px 10px; border-radius: 16px; font-weight: 600; font-size: 12px; }
+
+  /* Wallet address */
+  .wallet { background: var(--surface-gray); border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 13px; font-weight: 500; }
+  .wallet svg { width: 16px; height: 16px; stroke: var(--text-secondary); stroke-width: 2; fill: none; margin-left: auto; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--cb-blue); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Coinbase iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">Institutional crypto exchange. Coinbase Blue <code>#0052FF</code> as the single brand accent, the geometric C-mark logomark, Coinbase Sans / Display / Mono (Frere-Jones Type, 2021). Each asset gets a circular icon in its OFFICIAL brand color — Bitcoin orange, ETH purple, USDC blue.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="nav-top">
+            <div class="c-mark"></div>
+            <div class="nav-icons">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16" y2="16"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            </div>
+          </div>
+
+          <div class="hero">
+            <div class="hero-label">Portfolio Balance</div>
+            <div class="hero-value">$12,847.93</div>
+            <div class="hero-change">+$847.93 (+6.59%) Today</div>
+          </div>
+
+          <div class="chart">
+            <svg viewBox="0 0 320 90" preserveAspectRatio="none">
+              <polyline
+                fill="none"
+                stroke="#0052FF"
+                stroke-width="2"
+                points="0,60 18,55 36,58 54,50 72,52 90,48 108,42 126,46 144,38 162,40 180,32 198,30 216,28 234,22 252,24 270,18 288,14 306,16 320,10"
+              />
+            </svg>
+          </div>
+
+          <div class="ranges">
+            <div class="range-chip">1H</div>
+            <div class="range-chip active">1D</div>
+            <div class="range-chip">1W</div>
+            <div class="range-chip">1M</div>
+            <div class="range-chip">1Y</div>
+            <div class="range-chip">ALL</div>
+          </div>
+
+          <div class="actions-row">
+            <div class="action-card"><svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5,12 12,5 19,12"/></svg><div class="lbl">Buy</div></div>
+            <div class="action-card"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19,12 12,19 5,12"/></svg><div class="lbl">Sell</div></div>
+            <div class="action-card"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg><div class="lbl">Send</div></div>
+            <div class="action-card"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><line x1="14" y1="14" x2="21" y2="14"/><line x1="14" y1="21" x2="21" y2="21"/><line x1="17.5" y1="14" x2="17.5" y2="21"/></svg><div class="lbl">Receive</div></div>
+          </div>
+
+          <div class="assets-section">
+            <div class="assets-title">Your assets</div>
+            <div class="a-row">
+              <div class="a-icon btc">₿</div>
+              <div class="a-info">
+                <div class="a-name">Bitcoin</div>
+                <div class="a-meta"><span class="a-ticker">BTC</span> · 0.1842 BTC</div>
+              </div>
+              <div class="a-spark">
+                <svg viewBox="0 0 40 14" preserveAspectRatio="none"><polyline fill="none" stroke="#05B169" stroke-width="1.2" points="0,9 6,7 12,8 18,5 24,6 30,3 36,4 40,2"/></svg>
+              </div>
+              <div class="a-val-block">
+                <div class="a-val">$12,389.42</div>
+                <div class="a-chg up">+1.92%</div>
+              </div>
+            </div>
+            <div class="a-row">
+              <div class="a-icon eth">Ξ</div>
+              <div class="a-info">
+                <div class="a-name">Ethereum</div>
+                <div class="a-meta"><span class="a-ticker">ETH</span> · 0.62 ETH</div>
+              </div>
+              <div class="a-spark">
+                <svg viewBox="0 0 40 14" preserveAspectRatio="none"><polyline fill="none" stroke="#CF202F" stroke-width="1.2" points="0,4 6,5 12,3 18,7 24,6 30,9 36,8 40,11"/></svg>
+              </div>
+              <div class="a-val-block">
+                <div class="a-val">$1,847.62</div>
+                <div class="a-chg dn">−0.84%</div>
+              </div>
+            </div>
+            <div class="a-row">
+              <div class="a-icon usdc">$</div>
+              <div class="a-info">
+                <div class="a-name">USD Coin</div>
+                <div class="a-meta"><span class="a-ticker">USDC</span> · 420.00 USDC</div>
+              </div>
+              <div class="a-spark">
+                <svg viewBox="0 0 40 14" preserveAspectRatio="none"><polyline fill="none" stroke="#05B169" stroke-width="1.2" points="0,7 8,7 16,6 24,7 32,7 40,6"/></svg>
+              </div>
+              <div class="a-val-block">
+                <div class="a-val">$420.00</div>
+                <div class="a-chg up">+0.01%</div>
+              </div>
+            </div>
+            <div class="a-row">
+              <div class="a-icon sol">S</div>
+              <div class="a-info">
+                <div class="a-name">Solana</div>
+                <div class="a-meta"><span class="a-ticker">SOL</span> · 2.84 SOL</div>
+              </div>
+              <div class="a-spark">
+                <svg viewBox="0 0 40 14" preserveAspectRatio="none"><polyline fill="none" stroke="#05B169" stroke-width="1.2" points="0,11 6,8 12,9 18,5 24,7 30,3 36,5 40,2"/></svg>
+              </div>
+              <div class="a-val-block">
+                <div class="a-val">$590.81</div>
+                <div class="a-chg up">+3.42%</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><polyline points="17,10 21,6 17,2"/><polyline points="7,14 3,18 7,22"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg><span>Trade</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg><span>Cards</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><polyline points="22,12 18,6 12,14 7,9 2,16"/></svg><span>Earn</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><circle cx="17" cy="14" r="1.5" fill="currentColor"/></svg><span>Wallet</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0052FF;"><div class="name">Coinbase Blue</div>#0052FF</div>
+          <div class="swatch" style="background:#0040CC;"><div class="name">Blue Pressed</div>#0040CC</div>
+          <div class="swatch light" style="background:#E5EDFF;"><div class="name">Blue Tint</div>#E5EDFF</div>
+          <div class="swatch" style="background:#0A0B0D;"><div class="name">Coinbase Black</div>#0A0B0D</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Canvas</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#F7F8FA;"><div class="name">Surface Gray</div>#F7F8FA</div>
+          <div class="swatch light" style="background:#EEF0F3;"><div class="name">Surface Gray 2</div>#EEF0F3</div>
+          <div class="swatch light" style="background:#E1E4E8;"><div class="name">Divider</div>#E1E4E8</div>
+          <div class="swatch" style="background:#5B616E;"><div class="name">Text Secondary</div>#5B616E</div>
+          <div class="swatch" style="background:#05B169;"><div class="name">Success</div>#05B169</div>
+          <div class="swatch light" style="background:#E6F7EF;"><div class="name">Success Tint</div>#E6F7EF</div>
+          <div class="swatch" style="background:#CF202F;"><div class="name">Loss</div>#CF202F</div>
+          <div class="swatch light" style="background:#F7931A;"><div class="name">Bitcoin</div>#F7931A</div>
+          <div class="swatch" style="background:#627EEA;"><div class="name">Ethereum</div>#627EEA</div>
+          <div class="swatch" style="background:#2775CA;"><div class="name">USDC</div>#2775CA</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Coinbase Display / Sans / Mono</div>
+        <div class="type-row"><div class="type-meta">Portfolio Hero · Display 40pt · 700 tab</div><div class="type-sample t-hero">$12,847.93</div></div>
+        <div class="type-row"><div class="type-meta">Buy Amount · Display 52pt · 700 tab</div><div class="type-sample t-buy">$100</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · Display 28pt · 700</div><div class="type-sample t-title">Wallet</div></div>
+        <div class="type-row"><div class="type-meta">Section · Sans 20pt · 700</div><div class="type-sample t-section">Your assets</div></div>
+        <div class="type-row"><div class="type-meta">Asset Title · Sans 16pt · 600</div><div class="type-sample t-asset">Bitcoin</div></div>
+        <div class="type-row"><div class="type-meta">Asset Price · Sans 16pt · 500 tab</div><div class="type-sample t-price">$67,234.18</div></div>
+        <div class="type-row"><div class="type-meta">Ticker · Sans 13pt · 500 +0.3</div><div class="type-sample t-ticker">BTC</div></div>
+        <div class="type-row"><div class="type-meta">Change · Sans 13pt · 500 tab</div><div class="type-sample t-change">+$1,234.56 (+1.87%)</div></div>
+        <div class="type-row"><div class="type-meta">All-Caps · Sans 11pt · 700 +0.6</div><div class="type-sample t-caps">Portfolio Balance</div></div>
+        <div class="type-row"><div class="type-meta">Wallet Address · Mono 13pt · 500</div><div class="type-sample t-mono">0x742d35Cc...8b9b9d04</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Wallet Address</div>
+        <div class="wallet">0x742d35Cc6634C0532925a3b844Bc...8b9b9d04
+          <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons & Pills</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Buy Bitcoin</button>
+          <button class="btn btn-secondary">Sell</button>
+        </div>
+        <div class="btn-row" style="margin-top: 16px;">
+          <span class="pill-earn">Earn 5.10% APY</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Perplexity iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0A0A0A;
+    --surface-1: #171717;
+    --surface-2: #1F1F1F;
+    --surface-3: #2A2A2A;
+    --divider: #2A2A2A;
+    --text-primary: #FAFAFA;
+    --text-secondary: #A1A1A1;
+    --text-tertiary: #6E6E6E;
+    --text-muted: #4A4A4A;
+    --teal: #20B8CD;
+    --teal-bright: #3DD6EC;
+    --teal-deep: #1591A3;
+    --teal-soft: #0F3A42;
+    --code-bg: #0E0E0E;
+    --syntax-str: #A8E063;
+    --syntax-num: #F2A65A;
+    --syntax-fn: #B988F2;
+    --success: #22C55E;
+    --error: #EF4444;
+    --pro-gold: #E0B341;
+    --display: 'Inter', -apple-system, 'SF Pro Display', sans-serif;
+    --body: 'Inter', -apple-system, 'SF Pro Text', sans-serif;
+    --mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #050505; color: var(--text-primary); font-family: var(--body); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-family: var(--display); font-size: 28px; font-weight: 700; letter-spacing: -0.6px; color: var(--teal); }
+  .page-chip { background: var(--teal); color: var(--canvas); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 4px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.04) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Header */
+  .header { padding: 48px 16px 12px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .h-icon { color: var(--text-primary); }
+  .h-icon svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .h-title { font-family: var(--body); font-size: 14px; font-weight: 500; color: var(--text-primary); }
+
+  /* Scrollable area */
+  .scroll { flex: 1; overflow: hidden; padding: 0 14px; display: flex; flex-direction: column; }
+
+  /* Question */
+  .question {
+    font-family: var(--display);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+    padding: 4px 4px 10px;
+  }
+
+  /* Sources row */
+  .src-label {
+    font-family: var(--display);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    padding-left: 2px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .src-row { display: flex; gap: 8px; overflow: hidden; margin-bottom: 14px; padding-bottom: 4px; }
+  .src-card {
+    background: var(--surface-1);
+    border: 1px solid var(--surface-3);
+    border-radius: 12px;
+    width: 154px;
+    height: 78px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .src-top { display: flex; align-items: center; gap: 5px; }
+  .src-fav { width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0; }
+  .src-fav.wiki { background: #fff; color: #000; display: flex; align-items: center; justify-content: center; font-family: serif; font-weight: 700; font-size: 9px; }
+  .src-fav.arx { background: #B31B1B; color: #fff; font-family: var(--display); font-size: 7px; font-weight: 700; display: flex; align-items: center; justify-content: center; letter-spacing: -0.3px; }
+  .src-fav.gh { background: #FAFAFA; color: #000; font-family: var(--display); font-size: 8px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .src-domain { font-family: var(--body); font-size: 10px; color: var(--text-secondary); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .src-num {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    background: var(--surface-2);
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+  .src-title { font-family: var(--body); font-size: 11px; font-weight: 500; color: var(--text-primary); line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+  /* Answer */
+  .ans-header { display: flex; align-items: center; gap: 6px; padding: 6px 2px 6px; }
+  .mark-icon {
+    width: 16px; height: 16px;
+    flex-shrink: 0;
+  }
+  .mark-icon svg { width: 100%; height: 100%; }
+  .ans-label { font-family: var(--display); font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+  .ans-body {
+    font-family: var(--body);
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--text-primary);
+    padding: 0 2px;
+  }
+  .ans-body em { font-style: italic; }
+  .ans-body strong { font-weight: 600; }
+  .cite {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: var(--surface-2);
+    border: 1px solid var(--surface-3);
+    border-radius: 3px;
+    padding: 0 4px;
+    line-height: 14px;
+    vertical-align: 1px;
+    margin: 0 1px;
+  }
+  .cite.focus {
+    background: var(--teal-soft);
+    border-color: var(--teal);
+    color: var(--teal);
+  }
+  .cursor {
+    display: inline-block;
+    width: 5px;
+    height: 12px;
+    background: var(--teal-bright);
+    margin-left: 2px;
+    vertical-align: text-bottom;
+    animation: blink 0.5s infinite;
+  }
+  @keyframes blink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+  }
+
+  /* Search input */
+  .search-input {
+    position: absolute;
+    left: 12px; right: 12px; bottom: 76px;
+    background: var(--surface-1);
+    border: 1.5px solid var(--teal);
+    border-radius: 24px;
+    padding: 4px 6px 4px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 0 0 4px rgba(32, 184, 205, 0.25);
+  }
+  .si-text { flex: 1; color: var(--text-tertiary); font-size: 14px; padding: 12px 0; }
+  .si-attach svg { width: 18px; height: 18px; stroke: var(--text-secondary); stroke-width: 2; fill: none; }
+  .si-send {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--teal);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .si-send svg { width: 12px; height: 12px; stroke: var(--canvas); stroke-width: 3; fill: none; }
+
+  /* Tab bar */
+  .tab-bar {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 56px;
+    background: var(--canvas);
+    border-top: 0.5px solid var(--surface-3);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 4px 8px 12px;
+    z-index: 5;
+  }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--text-tertiary); font-size: 9px; font-weight: 500; font-family: var(--display); letter-spacing: 0.2px; }
+  .tab.active { color: var(--text-primary); }
+  .tab svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active::after {
+    content: '';
+    width: 3px; height: 3px; border-radius: 50%;
+    background: var(--teal);
+    margin-top: 1px;
+  }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--surface-3); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-family: var(--display); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 8px; padding: 14px; min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 500; font-family: var(--mono); border: 1px solid var(--surface-3); color: var(--text-primary); }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--display); margin-bottom: 2px; }
+  .swatch.light { color: var(--canvas); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--surface-3); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: var(--mono); font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-display { font-family: var(--display); font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+  .t-question { font-family: var(--display); font-size: 22px; font-weight: 600; letter-spacing: -0.3px; }
+  .t-section { font-family: var(--display); font-size: 18px; font-weight: 600; }
+  .t-body { font-family: var(--body); font-size: 16px; font-weight: 400; line-height: 1.5; }
+  .t-source { font-family: var(--body); font-size: 13px; font-weight: 500; }
+  .t-domain { font-family: var(--body); font-size: 11px; font-weight: 400; color: var(--text-secondary); }
+  .t-cite { font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--display); font-size: 14px; font-weight: 600; padding: 10px 18px; border-radius: 10px; border: 1px solid transparent; cursor: pointer; }
+  .btn-primary { background: var(--teal); color: var(--canvas); }
+  .btn-secondary { background: var(--surface-2); color: var(--text-primary); border-color: var(--surface-3); padding: 7px 14px; font-size: 13px; }
+  .btn-pro { background: var(--teal); color: var(--canvas); border-radius: 500px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.2px; }
+  .btn-pro svg { width: 10px; height: 10px; fill: var(--canvas); }
+  .btn-pro-off { background: var(--surface-2); color: var(--text-secondary); border: 1px solid var(--surface-3); border-radius: 500px; padding: 5px 11px; display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; }
+  .btn-pro-off svg { width: 10px; height: 10px; fill: var(--text-secondary); }
+
+  /* Searching indicator */
+  .searching {
+    display: inline-flex; align-items: center; gap: 10px;
+    color: var(--text-secondary);
+    font-family: var(--display);
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .searching .dots { display: flex; gap: 4px; }
+  .searching .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); animation: pulse 1.2s ease-in-out infinite; }
+  .searching .dot:nth-child(2) { animation-delay: 0.15s; }
+  .searching .dot:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3); } }
+
+  /* Steps card */
+  .steps-card { background: var(--teal-soft); border-radius: 12px; padding: 16px; }
+  .steps-header { display: flex; align-items: center; gap: 6px; }
+  .steps-header .star svg { width: 14px; height: 14px; fill: var(--teal); }
+  .steps-title { font-family: var(--display); font-size: 13px; font-weight: 500; color: var(--text-primary); }
+  .steps-count { font-family: var(--body); font-size: 12px; color: var(--text-secondary); }
+  .step-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+  .step-check { width: 14px; height: 14px; color: var(--teal); }
+  .step-check svg { width: 100%; height: 100%; fill: currentColor; }
+  .step-text { font-family: var(--body); font-size: 13px; color: var(--text-primary); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+  .radius-box { width: 72px; height: 72px; background: var(--teal); color: var(--canvas); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-24 { border-radius: 24px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+
+<!-- Reusable triple-circle Perplexity mark -->
+<svg width="0" height="0" style="position:absolute;">
+  <symbol id="pplx-mark" viewBox="0 0 24 24">
+    <g fill="currentColor">
+      <circle cx="12" cy="6" r="4"/>
+      <circle cx="6" cy="16" r="4"/>
+      <circle cx="18" cy="16" r="4"/>
+    </g>
+  </symbol>
+</svg>
+
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Perplexity iOS — Design Tokens</div>
+    <div class="page-chip">Dark</div>
+  </div>
+  <p class="page-subtitle">Dark-first canvas `#0A0A0A`. Single signature accent — Perplexity Teal `#20B8CD`, a cool cyan-teal — on send button, focus rings, citation chip outlines, and the triple-circle brand mark. Two-face typography: FK Grotesk for chrome, Inter for answer body. Encyclopedic register, not chat.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="header">
+            <div class="h-icon"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
+            <div class="h-title">Bayesian inference</div>
+            <div class="h-icon"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="19" cy="12" r="1.5" fill="currentColor"/></svg></div>
+          </div>
+
+          <div class="scroll">
+            <div class="question">What is Bayesian inference?</div>
+
+            <div class="src-label">
+              <span class="mark-icon" style="width:12px;height:12px;color:var(--teal)"><svg><use href="#pplx-mark"/></svg></span>
+              Sources
+            </div>
+            <div class="src-row">
+              <div class="src-card">
+                <div class="src-top">
+                  <div class="src-fav wiki">W</div>
+                  <div class="src-domain">wikipedia.org</div>
+                  <div class="src-num">1</div>
+                </div>
+                <div class="src-title">Bayesian inference — Wikipedia</div>
+              </div>
+              <div class="src-card">
+                <div class="src-top">
+                  <div class="src-fav arx">arXiv</div>
+                  <div class="src-domain">arxiv.org</div>
+                  <div class="src-num">2</div>
+                </div>
+                <div class="src-title">A gentle introduction to probabilistic reasoning</div>
+              </div>
+            </div>
+
+            <div class="ans-header">
+              <span class="mark-icon" style="color:var(--teal)"><svg><use href="#pplx-mark"/></svg></span>
+              <span class="ans-label">Answer</span>
+            </div>
+            <div class="ans-body">
+              Bayesian inference is a method of statistical inference in which Bayes' theorem is used to <strong>update</strong> the probability for a hypothesis as more evidence becomes available <span class="cite">1</span>. Unlike frequentist approaches, it treats probability as a degree of belief <span class="cite focus">2</span>.<span class="cursor"></span>
+            </div>
+          </div>
+
+          <div class="search-input">
+            <div class="si-text">Ask anything…</div>
+            <div class="si-attach"><svg viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></div>
+            <div class="si-send"><svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16,8 14,14 8,16 10,10" fill="currentColor" stroke="none"/></svg><span>Discover</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><span>Library</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><span>Spaces</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0A0A0A;"><div class="name">Canvas</div>#0A0A0A</div>
+          <div class="swatch" style="background:#171717;"><div class="name">Surface 1</div>#171717</div>
+          <div class="swatch" style="background:#1F1F1F;"><div class="name">Surface 2</div>#1F1F1F</div>
+          <div class="swatch" style="background:#2A2A2A;"><div class="name">Surface 3</div>#2A2A2A</div>
+          <div class="swatch light" style="background:#FAFAFA;"><div class="name">Text Primary</div>#FAFAFA</div>
+          <div class="swatch" style="background:#A1A1A1; color:#000"><div class="name">Text Secondary</div>#A1A1A1</div>
+          <div class="swatch" style="background:#6E6E6E;"><div class="name">Text Tertiary</div>#6E6E6E</div>
+          <div class="swatch" style="background:#20B8CD;"><div class="name">Perplexity Teal</div>#20B8CD</div>
+          <div class="swatch" style="background:#3DD6EC;"><div class="name">Teal Bright</div>#3DD6EC</div>
+          <div class="swatch" style="background:#1591A3;"><div class="name">Teal Deep</div>#1591A3</div>
+          <div class="swatch" style="background:#0F3A42;"><div class="name">Teal Soft</div>#0F3A42</div>
+          <div class="swatch" style="background:#0E0E0E;"><div class="name">Code BG</div>#0E0E0E</div>
+          <div class="swatch" style="background:#A8E063;"><div class="name">Syntax String</div>#A8E063</div>
+          <div class="swatch" style="background:#E0B341;"><div class="name">Pro Gold</div>#E0B341</div>
+          <div class="swatch" style="background:#EF4444;"><div class="name">Error</div>#EF4444</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — FK Grotesk + Inter</div>
+        <div class="type-row"><div class="type-meta">Display · FK 30pt · 700</div><div class="type-sample t-display">Discover</div></div>
+        <div class="type-row"><div class="type-meta">Question · FK 22pt · 600</div><div class="type-sample t-question">What is Bayesian inference?</div></div>
+        <div class="type-row"><div class="type-meta">Section · FK 18pt · 600</div><div class="type-sample t-section">Sources</div></div>
+        <div class="type-row"><div class="type-meta">Body · Inter 16pt · 400</div><div class="type-sample t-body">Bayesian inference uses Bayes' theorem to update beliefs.</div></div>
+        <div class="type-row"><div class="type-meta">Source Title · Inter 13pt · 500</div><div class="type-sample t-source">Bayesian inference — Wikipedia</div></div>
+        <div class="type-row"><div class="type-meta">Source Domain · Inter 11pt · 400</div><div class="type-sample t-domain">wikipedia.org</div></div>
+        <div class="type-row"><div class="type-meta">Citation · Mono 11pt · 500</div><div class="type-sample t-cite">[1] [2] [3]</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive — Searching indicator</div>
+        <div class="searching">
+          <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+          Searching the web…
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive — Pro Steps card</div>
+        <div class="steps-card">
+          <div class="steps-header">
+            <span class="star"><svg viewBox="0 0 24 24"><polygon points="12,2 14,9 21,9 16,14 18,21 12,17 6,21 8,14 3,9 10,9"/></svg></span>
+            <span class="steps-title">Steps</span>
+            <span class="steps-count">(3)</span>
+          </div>
+          <div class="step-row">
+            <span class="step-check"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10" stroke="#0F3A42" stroke-width="2" fill="none"/></svg></span>
+            <span class="step-text">Searching for: "Bayesian inference history"</span>
+          </div>
+          <div class="step-row">
+            <span class="step-check"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10" stroke="#0F3A42" stroke-width="2" fill="none"/></svg></span>
+            <span class="step-text">Reading 4 sources from Wikipedia, arxiv</span>
+          </div>
+          <div class="step-row">
+            <span class="step-check"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10" stroke="#0F3A42" stroke-width="2" fill="none"/></svg></span>
+            <span class="step-text">Synthesizing answer with citations</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Save to Library</button>
+          <button class="btn btn-secondary">Copy answer</button>
+          <button class="btn btn-pro"><svg viewBox="0 0 24 24"><polygon points="12,2 14,9 21,9 16,14 18,21 12,17 6,21 8,14 3,9 10,9"/></svg>Pro</button>
+          <button class="btn btn-pro-off"><svg viewBox="0 0 24 24"><polygon points="12,2 14,9 21,9 16,14 18,21 12,17 6,21 8,14 3,9 10,9"/></svg>Pro</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-24">24</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
