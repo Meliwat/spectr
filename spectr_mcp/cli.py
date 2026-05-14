@@ -1,9 +1,9 @@
 """Spectr CLI — standalone command-line entry point.
 
 Takes a screen recording (MP4/MOV/M4V), runs the Spectr pipeline,
-writes spec.md to disk. Same pipeline as the MCP server; no AI agent
-required to invoke it. Good for scripting, CI, batch jobs, or just
-preferring a CLI over chat.
+writes DESIGN.md to disk in the canonical "Awesome iOS DESIGN.md" format.
+Same pipeline as the MCP server; no AI agent required to invoke it. Good
+for scripting, CI, batch jobs, or just preferring a CLI over chat.
 
 Uses the user's Claude subscription via the `claude` CLI when available,
 or ANTHROPIC_API_KEY when set. No Spectr-side API key. No upload.
@@ -50,11 +50,11 @@ def _cmd_generate(args: argparse.Namespace) -> int:
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     print(
-        f"spectr: generating spec from {source.name} for {args.app!r}...",
+        f"spectr: generating DESIGN.md from {source.name} for {args.app!r}...",
         file=sys.stderr,
     )
     print(
-        "spectr: this takes 2–4 minutes. running vision passes + spec sections.",
+        "spectr: this takes 2–4 minutes. running vision passes + DESIGN.md generation.",
         file=sys.stderr,
     )
 
@@ -102,10 +102,11 @@ def main(argv: list[str] | None = None) -> int:
 
     p_gen = sub.add_parser(
         "generate",
-        help="Generate a spec.md from a screen recording",
+        help="Generate a DESIGN.md from a screen recording",
         description=(
             "Run the Spectr pipeline against a local screen recording. "
-            "Outputs a 7-section markdown spec ready for Claude Code."
+            "Outputs a 10-section DESIGN.md in the canonical Awesome iOS "
+            "DESIGN.md format, ready for Claude Code or any AI agent."
         ),
     )
     p_gen.add_argument(
@@ -135,8 +136,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     p_gen.add_argument(
         "-o", "--output",
-        default="./spec.md",
-        help="Where to write the spec.md (default: ./spec.md).",
+        default="./DESIGN.md",
+        help="Where to write the DESIGN.md (default: ./DESIGN.md).",
     )
     p_gen.set_defaults(func=_cmd_generate)
 

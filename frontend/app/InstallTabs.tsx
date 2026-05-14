@@ -70,8 +70,8 @@ const MCP_STEPS: Step[] = [
     command: 'Generate a spec from ./recording.mp4 for the Duolingo app',
   },
   {
-    title: 'Read the spec.md',
-    body: '5–10 minutes later, a 7-section markdown spec lands on disk. Exact hex codes, exact font weights, every screen state.',
+    title: 'Read the DESIGN.md',
+    body: '2–4 minutes later, a 10-section DESIGN.md lands on disk in the canonical Awesome iOS DESIGN.md format. Exact hex codes, exact font weights, every screen folded in.',
   },
 ]
 
@@ -97,8 +97,8 @@ const CLI_STEPS: Step[] = [
     command: 'npm install -g spectr-cli',
   },
   {
-    title: 'Read the spec.md',
-    body: 'Spec lands at ./spec.md by default. Pass -o to choose a different path. Exact tokens, every screen state.',
+    title: 'Read the DESIGN.md',
+    body: 'Spec lands at ./DESIGN.md by default. Pass -o to choose a different path. Exact tokens, every screen folded in.',
   },
 ]
 
@@ -119,7 +119,7 @@ const SKILL_STEPS: Step[] = [
   },
   {
     title: 'Spectr handles the rest',
-    body: 'The skill extracts frames, runs vision passes, writes spec.md to disk. Same 7-section output as the MCP and CLI paths.',
+    body: 'The skill extracts frames, runs vision passes, writes DESIGN.md to disk. Same 10-section output as the MCP and CLI paths.',
   },
 ]
 

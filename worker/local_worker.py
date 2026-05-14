@@ -1153,7 +1153,7 @@ def process_project_spec(project_id: str):
             )
 
         update_project(project_id, {"status": STATUS_STITCHING})
-        project_log(project_id, "  [3/3] Writing spec.md...")
+        project_log(project_id, "  [3/3] Writing DESIGN.md...")
         from fast_spec import generate_spec_fast
         clean_spec = generate_spec_fast(
             reference_app=reference_app,
@@ -1164,7 +1164,7 @@ def process_project_spec(project_id: str):
             output_dir=Path(tmpdir) / "spec_sections",
         )
 
-        spec_key = f"{project_id}/spec.md"
+        spec_key = f"{project_id}/DESIGN.md"
         client.storage.from_(BUCKET).upload(
             path=spec_key,
             file=clean_spec.encode("utf-8"),
@@ -1178,7 +1178,7 @@ def process_project_spec(project_id: str):
             "bundle_s3_key": None,
             "backend_spec": None,
         })
-        project_log(project_id, "  ✓ Done — spec.md uploaded to Storage")
+        project_log(project_id, "  ✓ Done — DESIGN.md uploaded to Storage")
         maybe_send_manual_completion_email(get_db(), project_id)
 
     except Exception as e:
@@ -1307,7 +1307,7 @@ def process_project_from_screenshots(project_id: str):
             )
 
         update_project(project_id, {"status": STATUS_STITCHING})
-        project_log(project_id, "  [3/3] Writing spec.md...")
+        project_log(project_id, "  [3/3] Writing DESIGN.md...")
         from fast_spec import generate_spec_fast
         clean_spec = generate_spec_fast(
             reference_app=reference_app,
@@ -1318,7 +1318,7 @@ def process_project_from_screenshots(project_id: str):
             output_dir=Path(tmpdir) / "spec_sections",
         )
 
-        spec_key = f"{project_id}/spec.md"
+        spec_key = f"{project_id}/DESIGN.md"
         client.storage.from_(BUCKET).upload(
             path=spec_key,
             file=clean_spec.encode("utf-8"),
@@ -1332,7 +1332,7 @@ def process_project_from_screenshots(project_id: str):
             "bundle_s3_key": None,
             "backend_spec": None,
         })
-        project_log(project_id, "  \u2713 Done \u2014 spec.md uploaded to Storage")
+        project_log(project_id, "  \u2713 Done \u2014 DESIGN.md uploaded to Storage")
         maybe_send_manual_completion_email(get_db(), project_id)
 
     except Exception as e:

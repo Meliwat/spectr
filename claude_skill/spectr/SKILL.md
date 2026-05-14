@@ -1,35 +1,31 @@
 ---
 name: spectr
-description: Turn a screen recording (.mp4 / .mov / .m4v) into a production-ready spec.md — 7 sections, exact hex codes, exact font weights, exact spacing. Use when the user has dropped a screen recording in chat and wants to clone or document the app.
+description: Turn a screen recording (.mp4 / .mov / .m4v) into a production-ready DESIGN.md — 10 sections, exact hex codes, exact font weights, exact spacing, every screen folded in. Drop-in compatible with the awesome-ios-design-md gallery format. Use when the user has dropped a screen recording in chat and wants to clone or document the app.
 ---
 
-# Spectr — screen recording → spec.md
+# Spectr — screen recording → DESIGN.md
 
-You are running the Spectr pipeline. The user has provided a screen recording of an iOS app and wants a developer-ready spec.
+You are running the Spectr pipeline. The user has provided a screen recording of an iOS app and wants a developer-ready design spec in the canonical "Awesome iOS DESIGN.md" format.
 
 ## When to use this skill
 
 Trigger when the user:
 - Drops a `.mp4`, `.mov`, or `.m4v` file in chat
 - Mentions a screen recording they want "specced" or "documented" or "cloned"
-- Asks to generate a spec from a video
+- Asks to generate a DESIGN.md (or spec) from a video
 - Mentions Spectr explicitly
 
 If the user has only screenshots (no video), tell them this skill is for screen recordings specifically and point them at the Spectr CLI's frame-based mode instead.
 
 ## How it works
 
-The pipeline is wrapped by the `spectr-cli` Python entry point, which is the same code path as the Spectr MCP server. The skill's job is to run it, then read the resulting `spec.md` back so you can summarize what landed.
+The pipeline is wrapped by the `spectr-cli` Python entry point, which is the same code path as the Spectr MCP server. The skill's job is to run it, then read the resulting `DESIGN.md` back so you can summarize what landed.
 
 ### Step 1 — Confirm the inputs
 
 You need two things before running:
 - The path to the recording (Bash: confirm it exists, is a video file)
 - The **reference app name** — the name of the app shown in the recording (e.g. "Duolingo", "DoorDash", "Spotify"). Ask the user if it's not obvious from context.
-
-Optional, only if the user supplies them:
-- A clone name (`--your-app`) — defaults to the reference app
-- Brand colors JSON (`--brand-colors`) — overrides the source app's palette in the spec
 
 ### Step 2 — Run `spectr-cli`
 
@@ -39,53 +35,56 @@ Run via Bash. `uvx` resolves and runs the latest CLI from PyPI. The first run in
 uvx --from spectr-mcp spectr-cli generate \
   "<path-to-recording>" \
   --app "<reference-app-name>" \
-  --output ./spec.md
+  --output ./DESIGN.md
 ```
 
-**CRITICAL: Pass `timeout: 600000` (10 minutes — the Bash tool maximum) when invoking the command.** The pipeline takes **2–4 minutes** for a typical recording; the Bash tool's default 2-minute timeout will kill it mid-run and leave you with no spec.md. Without an explicit timeout you will see the command get cancelled at the 2-minute mark with no output. Always set the timeout.
+**CRITICAL: Pass `timeout: 600000` (10 minutes — the Bash tool maximum) when invoking the command.** The pipeline takes **2–4 minutes** for a typical recording; the Bash tool's default 2-minute timeout will kill it mid-run and leave you with no DESIGN.md. Without an explicit timeout you will see the command get cancelled at the 2-minute mark with no output. Always set the timeout.
 
-The pipeline runs ffmpeg for frame extraction, two parallel Claude vision passes for screen + design-token analysis, then 5 spec-section generations in parallel (templates handle the boilerplate sections, Sonnet handles navigation and screens, Haiku reformats the design system and shared components). Tell the user up front it will take 2–4 minutes so they don't think the tool is hung.
+The pipeline runs ffmpeg for frame extraction, two parallel Claude vision passes for screen + design-token analysis, then one comprehensive Sonnet call that produces the full 10-section DESIGN.md in one coherent pass. Tell the user up front it will take 2–4 minutes so they don't think the tool is hung.
 
-While it runs, the CLI logs progress to stderr. Surface the highlights to the user (frame count, vision-pass status, section count).
+While it runs, the CLI logs progress to stderr. Surface the highlights to the user (frame count, vision-pass status, DESIGN.md byte count).
 
-### Step 3 — Read the spec.md back
+### Step 3 — Read the DESIGN.md back
 
-When the CLI finishes, the spec.md is on disk at the `--output` path. Read it with the Read tool, then give the user a brief summary:
-- App name and section count
-- Notable findings (color palette, font choices, navigation pattern)
+When the CLI finishes, the DESIGN.md is on disk at the `--output` path. Read it with the Read tool, then give the user a brief summary:
+- App name and section list
+- Notable findings (signature color palette, font family, key components)
 - Where the file landed
 
-Don't dump the entire spec.md inline — it's 80–150KB. Summarize and point at the file.
+Don't dump the entire DESIGN.md inline — it's typically 25–35 KB. Summarize and point at the file.
 
 ### Step 4 — Offer the natural next step
 
-Most users want to actually build the clone. After delivering the spec, offer:
-> "The spec is at `./spec.md`. Want me to scaffold an Expo / React Native project that follows it?"
+Most users want to actually build the clone. After delivering the DESIGN.md, offer:
+> "The DESIGN.md is at `./DESIGN.md`. Want me to scaffold an Expo / React Native (or SwiftUI) project that follows it?"
 
-If they say yes, read the spec.md fully (it has a built-in Claude Code prompt in the last section) and start scaffolding.
+If they say yes, read the DESIGN.md fully and start scaffolding from the design tokens, typography, and screen inventory.
 
 ## Requirements
 
 The skill requires:
 - **`ffmpeg`** on `PATH` (for frame extraction). On macOS: `brew install ffmpeg`. On Linux: apt/dnf install. If missing, the CLI's first run will fail and emit an actionable error.
 - **`uv` / `uvx`** on `PATH` (for the one-line installer). On macOS: `brew install uv` or `curl -LsSf https://astral.sh/uv/install.sh | sh`.
-- **The `claude` CLI logged in** — the pipeline uses the user's Claude subscription for vision + spec generation. No API key required. If the user has `ANTHROPIC_API_KEY` set, the SDK path takes over instead.
+- **The `claude` CLI logged in** — the pipeline uses the user's Claude subscription for vision + DESIGN.md generation. No API key required. If the user has `ANTHROPIC_API_KEY` set, the SDK path takes over instead.
 
 If any of these are missing, surface the install commands and ask the user to run them before trying again.
 
-## What the output spec contains
+## What the output DESIGN.md contains
 
-Seven sections, in order, each its own heading:
+Ten numbered sections in the canonical "Awesome iOS DESIGN.md" format:
 
-1. **App Overview** — what the app is, who it serves, primary value prop
-2. **Navigation Architecture** — tab structure, modals, screen graph
-3. **Screen Specifications** — every screen visible in the recording, with layout, components, states
-4. **Component Library** — reusable UI pieces, props, states
-5. **Design System** — exact hex codes, font families/sizes/weights/line-heights, spacing scale, radius/shadow tokens
-6. **Implementation Notes** — gotchas, edge cases, Expo / RN baseline assumptions
-7. **Claude Code Prompt** — a ready-to-paste prompt for the developer to start building
+1. **Visual Theme & Atmosphere** — mood, contrast model, signature moves, key characteristics
+2. **Color Palette & Roles** — Primary, Surface/Background, Text, Semantic, Dark Mode
+3. **Typography Rules** — font family, hierarchy table, principles
+4. **Component Stylings** — Buttons, Cards, Inputs, Lists, Nav, Tab Bars, Modals, etc.
+5. **Screen Inventory & Patterns** — every screen visible in the recording, with layout / modules / actions / states / motion, plus a Shared Patterns subsection
+6. **Layout & Spacing** — spacing scale, grid, padding tokens
+7. **Depth & Elevation** — level / treatment / use table with principles
+8. **Dos and Don'ts** — Do / Don't bullet lists with bold-principle format
+9. **Responsive / Adaptive Rules** — Mobile Standard / Larger Phones / iPad table with principles
+10. **Quick Reference Cheat Sheet** — compact build-oriented lookup
 
-Total: roughly 80–150 KB of structured markdown. Big enough to be complete, small enough to fit in a Claude Code context window.
+Total: typically 25–35 KB of structured markdown — drop-in compatible with the [awesome-ios-design-md](https://github.com/Meliwat/awesome-ios-design-md) gallery format.
 
 ## Errors to handle gracefully
 
@@ -94,5 +93,6 @@ Total: roughly 80–150 KB of structured markdown. Big enough to be complete, sm
 - **`claude CLI not authenticated and no ANTHROPIC_API_KEY`** → tell the user to run `claude login` or set the env var
 - **`Pipeline produced zero frames`** → the recording is corrupt or too short; suggest a longer / cleaner recording
 - **`Vision passes returned empty`** → likely network or auth issue; surface the underlying error from the CLI's stderr
+- **`DESIGN.md generation returned empty content`** → Sonnet returned an empty response; rerun (transient) and if it persists, surface the underlying error
 
 Do not silently swallow failures. If the CLI exits non-zero, show the user the stderr output verbatim and the suggested fix.
