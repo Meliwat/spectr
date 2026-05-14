@@ -1,6 +1,6 @@
 """Spectr CLI — standalone command-line entry point.
 
-Takes a screen recording (MP4/MOV/M4V), runs the full Spectr pipeline,
+Takes a screen recording (MP4/MOV/M4V), runs the Spectr pipeline,
 writes spec.md to disk. Same pipeline as the MCP server; no AI agent
 required to invoke it. Good for scripting, CI, batch jobs, or just
 preferring a CLI over chat.
@@ -19,6 +19,7 @@ import argparse
 import logging
 import os
 import sys
+import time
 from pathlib import Path
 
 from .pipeline import generate_spec as _generate_spec_impl
@@ -48,9 +49,16 @@ def _cmd_generate(args: argparse.Namespace) -> int:
     output_path = Path(args.output).expanduser().resolve()
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    print(f"spectr: generating spec from {source.name} for {args.app!r}...", file=sys.stderr)
-    print(f"spectr: this takes 5–10 minutes. running vision passes + spec sections.", file=sys.stderr)
+    print(
+        f"spectr: generating spec from {source.name} for {args.app!r}...",
+        file=sys.stderr,
+    )
+    print(
+        "spectr: this takes 2–4 minutes. running vision passes + spec sections.",
+        file=sys.stderr,
+    )
 
+    start = time.time()
     try:
         spec_md = _generate_spec_impl(
             str(source),
@@ -66,11 +74,13 @@ def _cmd_generate(args: argparse.Namespace) -> int:
         log.exception("generate_spec failed")
         print(f"error: pipeline failed: {e}", file=sys.stderr)
         return 1
+    elapsed = time.time() - start
 
     output_path.write_text(spec_md, encoding="utf-8")
     section_count = spec_md.count("\n## ")
     print(
-        f"spectr: wrote {output_path} ({len(spec_md):,} chars, {section_count} sections).",
+        f"spectr: wrote {output_path} ({len(spec_md):,} chars, {section_count} sections, "
+        f"elapsed={elapsed:.1f}s).",
         file=sys.stderr,
     )
     return 0
@@ -94,7 +104,7 @@ def main(argv: list[str] | None = None) -> int:
         "generate",
         help="Generate a spec.md from a screen recording",
         description=(
-            "Run the full Spectr pipeline against a local screen recording. "
+            "Run the Spectr pipeline against a local screen recording. "
             "Outputs a 7-section markdown spec ready for Claude Code."
         ),
     )

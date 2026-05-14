@@ -143,6 +143,10 @@ from prompts import (
     SPEC_SECTION_DEFINITIONS,
     build_spec_section_prompt,
 )
+# fast_spec is the active spec generator (imported lazily inside the
+# process_project_* functions to avoid a circular import — fast_spec needs
+# claude_text/project_log from this module). generate_sectioned_spec below
+# remains as the previous code path but is no longer wired into the pipeline.
 from constants import (
     STATUS_PENDING,
     STATUS_EXTRACTING,
@@ -1150,7 +1154,8 @@ def process_project_spec(project_id: str):
 
         update_project(project_id, {"status": STATUS_STITCHING})
         project_log(project_id, "  [3/3] Writing spec.md...")
-        clean_spec = generate_sectioned_spec(
+        from fast_spec import generate_spec_fast
+        clean_spec = generate_spec_fast(
             reference_app=reference_app,
             your_app_name=your_app_name,
             brand_colors=brand_colors,
@@ -1303,7 +1308,8 @@ def process_project_from_screenshots(project_id: str):
 
         update_project(project_id, {"status": STATUS_STITCHING})
         project_log(project_id, "  [3/3] Writing spec.md...")
-        clean_spec = generate_sectioned_spec(
+        from fast_spec import generate_spec_fast
+        clean_spec = generate_spec_fast(
             reference_app=reference_app,
             your_app_name=your_app_name,
             brand_colors=brand_colors,

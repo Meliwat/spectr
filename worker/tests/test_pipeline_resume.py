@@ -96,103 +96,47 @@ def _base_project(**kwargs):
     return base
 
 
-def _spec_section_outputs(app_name: str = "MyApp", reference_app: str = "TestApp"):
-    return [
-        "## App Overview\n\nMyApp is a React Native mobile app for iPhone and Android phones, with the base-model iPhone 15 as the baseline sizing reference, designed around a concise consumer product experience.",
-        "## Navigation Structure\n\nUsers move between Home, Browse, and Me with modal overlays for search and cart.",
-        "## Screen Specifications\n\n### Home Feed\n- Purpose: discover restaurants\n- Layout: sticky header, carousels, promos",
-        "## Shared Components\n\n### 1. SearchBar\nReusable search entry point used on Home and Browse.",
-        "\n".join(
-            [
-                "## Design System",
-                "",
-                "### Color Palette",
-                "#### Primary",
-                "- **Blue** (`#2032d5`): primary accent",
-                "",
-                "### Typography",
-                "| Role | Font | Size | Weight | Line Height | Letter Spacing | Notes |",
-                "|---|---|---|---|---|---|---|",
-                "| Body | SF Pro Text | `15px` | `400` | `20px` | `0` | Base copy |",
-                "",
-                "### Principles",
-                "- Consistency comes from native typography.",
-                "",
-                "### Spacing & Layout",
-                "| Token | Value | Usage |",
-                "|---|---|---|",
-                "| `--space-md` | `16px` | Screen inset |",
-                "",
-                "### Component Styles",
-                "Cards use `12px` radius and dark surfaces.",
-                "",
-                "### Elevation & Depth",
-                "| Level | Treatment | Use |",
-                "|---|---|---|",
-                "| 1 | `background: #191a1b` | Cards |",
-                "",
-                "### Responsive Breakpoints",
-                "| Name | Width | Key Changes |",
-                "|---|---|---|",
-                "| Mobile Standard | `375px` | Baseline layout |",
-                "",
-                "### Do's and Don'ts",
-                "- **Use one accent color** — it keeps call-to-action hierarchy clear",
-                "",
-                "### Design Principles",
-                "- Dark surfaces make content and photography pop.",
-            ]
-        ),
-        "\n".join(
-            [
-                "## Frontend Implementation Notes",
-                "",
-                "- Use Expo SDK 54 with React Native, TypeScript, React Navigation, Zustand, and react-native-svg.",
-                "- Prefer Animated and FlatList by default, and only reach for heavier libraries when clearly necessary.",
-                "- Install Expo-native packages with `npx expo install` and keep everything Expo Go compatible.",
-                "- Optimize the baseline layout for iPhone 15.",
-                "- When branding overrides only change colors, preserve restaurant photos, merchant banners, and merchant logos unless an explicit replacement logo is provided.",
-            ]
-        ),
-        "\n".join(
-            [
-                "## Claude Code Prompt",
-                "",
-                "Paste everything below this line into Claude Code:",
-                "",
-                f"Build a mobile-first frontend for {app_name}, a clone of {reference_app}.",
-                "- Expo SDK 54",
-                "- React Native",
-                "- TypeScript",
-                "- React Navigation",
-                "- Zustand",
-                "- react-native-svg",
-                "Implement Home, Browse, Restaurant Detail, Search, and Cart first.",
-                "Shared components from day one: BottomTabBar, SearchBar, SectionHeader, RestaurantCard, MenuItemCard.",
-                "Prefer Animated and FlatList by default, using reanimated or FlashList only when clearly necessary.",
-                "Install Expo-native packages only with `npx expo install`, using Expo-compatible package versions for SDK 54.",
-                "Prioritize Expo Go compatibility and runtime stability over exact animation fidelity.",
-                "Do not run iOS build, simulator, or npm commands at the end; final execution will be done manually by the user.",
-                "Treat the base-model iPhone 15 as the baseline device target.",
-                "Branding overrides should only change colors and an explicit replacement logo while preserving universal restaurant photos, merchant banners, and merchant logos.",
-                "Use local mocked JSON files for demo data.",
-                "Use the spec.md in this project as your source of truth for all screens, components, and visual rules.",
-            ]
-        ),
-    ]
+# Distinctive substrings for each of the 5 fast_spec dynamic prompts. Maps
+# the prompt's marker text to the canned mock response we return for it.
+FAST_SPEC_PROMPT_RESPONSES = {
+    "describing the product, its target user": (
+        "MyApp is a concise consumer product experience built around the core "
+        "task its users care about most. It is built for everyday users who "
+        "want something fast and uncluttered."
+    ),
+    "Document the primary navigation model": (
+        "## Navigation Structure\n\n"
+        "Users move between Home, Browse, and Me with modal overlays for "
+        "search and cart."
+    ),
+    "For every distinct screen documented": (
+        "## Screen Specifications\n\n"
+        "### Home Feed\n- Purpose: discover content\n- Layout: sticky header, carousels"
+    ),
+    "numbered shared-component catalog": (
+        "## Shared Components\n\n### 1. SearchBar\n"
+        "Reusable search entry point used on Home and Browse."
+    ),
+    "Reformat the DESIGN TOKENS block": (
+        "## Design System\n\n"
+        "### Color Palette\n#### Primary\n- **Blue** (`#2032d5`): primary accent\n\n"
+        "### Typography\n"
+        "| Role | Font | Size | Weight | Line Height | Letter Spacing | Notes |\n"
+        "|---|---|---|---|---|---|---|\n"
+        "| Body | SF Pro Text | `15px` | `400` | `20px` | `0` | Base copy |\n"
+    ),
+}
+
+# Number of model calls fast_spec makes for the dynamic sections.
+FAST_SPEC_DYNAMIC_SECTION_COUNT = len(FAST_SPEC_PROMPT_RESPONSES)
 
 
-def _spec_section_side_effect(app_name: str = "MyApp", reference_app: str = "TestApp"):
-    by_filename = {
-        section["filename"]: output
-        for section, output in zip(local_worker.SPEC_SECTION_DEFINITIONS, _spec_section_outputs(app_name, reference_app))
-    }
-
+def _fast_spec_side_effect():
     def _respond(prompt, **kwargs):
-        for filename, output in by_filename.items():
-            if f"`{filename}`" in prompt:
+        for marker, output in FAST_SPEC_PROMPT_RESPONSES.items():
+            if marker in prompt:
                 return output
-        raise AssertionError(f"Unexpected spec section prompt: {prompt[:120]}")
+        raise AssertionError(f"Unexpected fast_spec prompt: {prompt[:160]}")
 
     return _respond
 
@@ -224,7 +168,7 @@ class TestPipelineResume(unittest.TestCase):
         )
         client = _make_db_client(project_data)
         mock_get_db.return_value = client
-        mock_claude_text.side_effect = _spec_section_side_effect()
+        mock_claude_text.side_effect = _fast_spec_side_effect()
 
         process_project("proj-uuid-1234")
 
@@ -232,8 +176,8 @@ class TestPipelineResume(unittest.TestCase):
         mock_extract.assert_not_called()
         mock_dedup.assert_not_called()
 
-        # Section generation replaces the one-shot stitch
-        self.assertEqual(mock_claude_text.call_count, len(local_worker.SPEC_SECTION_DEFINITIONS))
+        # fast_spec issues one model call per dynamic section
+        self.assertEqual(mock_claude_text.call_count, FAST_SPEC_DYNAMIC_SECTION_COUNT)
 
         update_calls = client.table.return_value.update.call_args_list
         statuses_set = [c[0][0].get("status") for c in update_calls if "status" in c[0][0]]
@@ -250,44 +194,19 @@ class TestPipelineResume(unittest.TestCase):
         self.assertIn("## Claude Code Prompt", stored_specs[0])
 
     # ------------------------------------------------------------------
-    # 2. Invalid section output → project fails instead of storing a partial spec.
+    # 2. No stored analysis → full frontend-only spec pipeline runs.
     # ------------------------------------------------------------------
-    @patch.object(local_worker, "get_db")
-    @patch.object(local_worker, "claude_text")
-    @patch.object(local_worker, "extract_frames")
-    @patch.object(local_worker, "deduplicate_frames")
-    def test_invalid_section_output_marks_project_failed(
-        self, mock_dedup, mock_extract, mock_claude_text, mock_get_db
-    ):
-        project_data = _base_project(
-            frontend_spec="## Frontend",
-        )
-        client = _make_db_client(project_data)
-        mock_get_db.return_value = client
-        mock_claude_text.side_effect = lambda *args, **kwargs: "## Wrong Heading\n\nBad section"
-
-        with self.assertRaises(RuntimeError):
-            process_project("proj-uuid-5678")
-
-        mock_extract.assert_not_called()
-        mock_dedup.assert_not_called()
-
-        update_calls = client.table.return_value.update.call_args_list
-        statuses_set = [c[0][0].get("status") for c in update_calls if "status" in c[0][0]]
-        self.assertIn("failed", statuses_set)
-        self.assertNotIn("extracting", statuses_set)
-        self.assertNotIn("analyzing_frontend", statuses_set)
-
-    # ------------------------------------------------------------------
-    # 3. No stored analysis → full frontend-only spec pipeline runs.
-    # ------------------------------------------------------------------
+    # (The legacy "invalid section output marks project failed" test was
+    # removed when the pipeline migrated to fast_spec — fast_spec does not
+    # validate section headings, so that failure mode no longer exists.)
     @patch.object(local_worker, "get_db")
     @patch.object(local_worker, "claude_text")
     @patch.object(local_worker, "claude_vision", return_value="frontend batch result")
     @patch.object(local_worker, "extract_frames", return_value=["/tmp/f/frame_0001.jpg"])
     @patch.object(local_worker, "deduplicate_frames", return_value=["/tmp/f/frame_0001.jpg"])
+    @patch.object(local_worker, "fetch_app_research", return_value="")
     def test_no_specs_stored_runs_full_pipeline(
-        self, mock_dedup, mock_extract, mock_vision, mock_claude_text, mock_get_db
+        self, mock_research, mock_dedup, mock_extract, mock_vision, mock_claude_text, mock_get_db
     ):
         project_data = _base_project(
             frontend_spec=None,
@@ -301,7 +220,7 @@ class TestPipelineResume(unittest.TestCase):
         client.storage.from_.return_value.download.return_value = b"fake-mp4-bytes"
 
         mock_vision.side_effect = ["## Screen Batch", "## Design Tokens Batch"]
-        mock_claude_text.side_effect = _spec_section_side_effect()
+        mock_claude_text.side_effect = _fast_spec_side_effect()
 
         process_project("proj-uuid-9999")
 
@@ -309,7 +228,7 @@ class TestPipelineResume(unittest.TestCase):
         mock_extract.assert_called_once()
         mock_dedup.assert_called_once()
         self.assertEqual(mock_vision.call_count, 2)
-        self.assertEqual(mock_claude_text.call_count, len(local_worker.SPEC_SECTION_DEFINITIONS))
+        self.assertEqual(mock_claude_text.call_count, FAST_SPEC_DYNAMIC_SECTION_COUNT)
 
         expected_frames = ["/tmp/f/frame_0001.jpg"]
         seen_vision_calls = {
@@ -336,9 +255,10 @@ class TestPipelineResume(unittest.TestCase):
             },
         )
 
-        first_text_call = mock_claude_text.call_args_list[0]
-        self.assertEqual(first_text_call.kwargs["system"], local_worker.SPEC_SECTION_SYSTEM)
-        self.assertEqual(first_text_call.kwargs["model"], local_worker.STITCH_MODEL)
+        # fast_spec calls claude_text with only `model` and `timeout` kwargs.
+        # Verify every call uses one of the two models we route to.
+        for call in mock_claude_text.call_args_list:
+            self.assertIn(call.kwargs.get("model"), {"claude-haiku-4-5-20251001", "claude-sonnet-4-6"})
 
         frontend_updates = [
             c.args[0]["frontend_spec"]
