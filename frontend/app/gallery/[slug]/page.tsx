@@ -1181,6 +1181,841 @@ const APP_COPY: Record<AppSlug, AppCopy> = {
       'Coaching + community',
     ],
   },
+  bereal: {
+    tagline: 'BeReal UI blueprint — build an authentic dual-camera social app',
+    blurb:
+      'A complete spec of the BeReal iOS app — the 2-minute capture, dual front+back composite, friends feed, RealMojis, and memories — captured on a stark pure-black canvas with zero vanity metrics.',
+    pitch:
+      'The reference for any anti-filter, in-the-moment social app. The dual-lens composite card, countdown banner, late tag, and RealMoji reactions are all documented to the pixel.',
+    keywords: [
+      'bereal clone',
+      'dual camera social app',
+      'bereal ui kit',
+      'react native social template',
+      'build a bereal clone',
+    ],
+    sector: 'Social & community',
+    screens: [
+      'Dual-camera capture',
+      'Friends feed',
+      'RealMojis picker',
+      'Memories calendar',
+      'Discovery',
+      'Profile',
+    ],
+  },
+  mastodon: {
+    tagline: 'Mastodon design blueprint — build a federated social app',
+    blurb:
+      'A full spec of the Mastodon iOS app — home/local/federated timelines, the toot composer, content-warning spoilers, and boosts — captured with the purple accent and federated handle system.',
+    pitch:
+      'The blueprint for any decentralized or open-source social network. Every timeline switch, CW reveal, and boost-with-spin interaction is documented with exact tokens.',
+    keywords: [
+      'mastodon clone',
+      'fediverse app template',
+      'mastodon ui kit',
+      'decentralized social app',
+      'build a mastodon clone',
+    ],
+    sector: 'Social & community',
+    screens: [
+      'Home timeline',
+      'Local + federated',
+      'Toot composer',
+      'Thread detail',
+      'Notifications',
+      'Profile',
+    ],
+  },
+  bluesky: {
+    tagline: 'Bluesky UI blueprint — build a custom-feeds social app',
+    blurb:
+      'A complete spec of the Bluesky iOS app — switchable custom feeds, the skeet composer, reply controls, and the three-theme system — captured with the sky-blue accent and butterfly identity.',
+    pitch:
+      'The reference for any AT-Proto or feed-algorithm-choice social app. The pinned feed selector, reply-control chips, and light/dim/dark themes are documented in full.',
+    keywords: [
+      'bluesky clone',
+      'at protocol app template',
+      'bluesky ui kit',
+      'custom feed social app',
+      'build a bluesky clone',
+    ],
+    sector: 'Social & community',
+    screens: [
+      'Home + custom feeds',
+      'Discover feeds',
+      'Composer',
+      'Thread',
+      'Notifications',
+      'Profile',
+    ],
+  },
+  nextdoor: {
+    tagline: 'Nextdoor design blueprint — build a hyperlocal community app',
+    blurb:
+      'A full spec of the Nextdoor iOS app — the neighborhood feed, hyperlocal map, verified-neighbor badges, and post composer — captured on a warm cream canvas with the signature green.',
+    pitch:
+      'The blueprint for any local, neighborhood, or community-commerce app. The map-with-pins view, verified badges, and group chips are documented with exact spacing and color.',
+    keywords: [
+      'nextdoor clone',
+      'neighborhood app template',
+      'nextdoor ui kit',
+      'hyperlocal community app',
+      'build a nextdoor clone',
+    ],
+    sector: 'Social & community',
+    screens: [
+      'Neighborhood feed',
+      'Hyperlocal map',
+      'Post composer',
+      'Groups',
+      'Notifications',
+      'Inbox',
+    ],
+  },
+  tumblr: {
+    tagline: 'Tumblr UI blueprint — build a creative blogging social app',
+    blurb:
+      'A complete spec of the Tumblr iOS app — the infinite dashboard, reblog chains, tag bar, and notes — captured on the deep-navy canvas with the multi-accent brand trio.',
+    pitch:
+      'The reference for any blogging, fandom, or long-form social app. The reblog-with-comment chain, tag-driven discovery, and notes count are all documented.',
+    keywords: [
+      'tumblr clone',
+      'blogging app template',
+      'tumblr ui kit',
+      'react native social blog',
+      'build a tumblr clone',
+    ],
+    sector: 'Social & community',
+    screens: [
+      'Dashboard',
+      'Explore + tags',
+      'Post composer',
+      'Reblog chain',
+      'Activity',
+      'Blog profile',
+    ],
+  },
+  quora: {
+    tagline: 'Quora design blueprint — build a Q&A knowledge app',
+    blurb:
+      'A full spec of the Quora iOS app — the question feed, upvote/downvote, credentialed answers, and Spaces — captured with the serif-question / sans-answer split and Quora red.',
+    pitch:
+      'The blueprint for any Q&A, knowledge-sharing, or expert-network app. The voting pills, credential bylines, and Spaces carousel are documented to exact values.',
+    keywords: [
+      'quora clone',
+      'q&a app template',
+      'quora ui kit',
+      'knowledge sharing app',
+      'build a quora clone',
+    ],
+    sector: 'Social & community',
+    screens: ['Home feed', 'Question detail', 'Answer composer', 'Spaces', 'Search', 'Profile'],
+  },
+  signal: {
+    tagline: 'Signal UI blueprint — build a privacy-first messaging app',
+    blurb:
+      'A complete spec of the Signal iOS app — the chat list, encrypted bubbles, disappearing-message timers, and calls — captured with the single Signal-blue accent and zero-vanity minimalism.',
+    pitch:
+      'The reference for any encrypted, privacy-focused, or secure-comms app. The bubble system, disappearing timer chip, and sealed-sender glyphs are documented in full.',
+    keywords: [
+      'signal clone',
+      'encrypted messaging template',
+      'signal ui kit',
+      'private chat app',
+      'build a signal clone',
+    ],
+    sector: 'Messaging',
+    screens: ['Chat list', 'Conversation', 'Disappearing messages', 'Calls', 'Stories', 'Settings'],
+  },
+  messenger: {
+    tagline: 'Messenger design blueprint — build a rich chat app',
+    blurb:
+      'A full spec of the Messenger iOS app — gradient outgoing bubbles, chat-head avatars, the reactions popover, and active dots — captured with the multi-stop brand gradient.',
+    pitch:
+      'The blueprint for any social-chat or messaging app. The conversation-anchored gradient bubble, 6-emoji reactions, and one-tap-like send are all documented.',
+    keywords: [
+      'messenger clone',
+      'chat app template',
+      'messenger ui kit',
+      'react native messaging',
+      'build a messenger clone',
+    ],
+    sector: 'Messaging',
+    screens: ['Chats', 'Conversation', 'Reactions', 'Active now', 'Stories', 'Profile'],
+  },
+  line: {
+    tagline: 'LINE UI blueprint — build a sticker-first messaging app',
+    blurb:
+      'A complete spec of the LINE iOS app — oversized stickers, the friends list, official accounts, and the wallet hub — captured on the periwinkle backdrop with LINE green.',
+    pitch:
+      'The reference for any messaging-plus-platform app. The bubble-less giant stickers, official-account badges, and super-app tabs are documented to exact tokens.',
+    keywords: [
+      'line clone',
+      'sticker chat app template',
+      'line ui kit',
+      'messaging platform app',
+      'build a line clone',
+    ],
+    sector: 'Messaging',
+    screens: ['Home', 'Talk', 'Stickers', 'Official accounts', 'VOOM', 'Wallet'],
+  },
+  wechat: {
+    tagline: 'WeChat design blueprint — build a super-app messaging platform',
+    blurb:
+      'A full spec of the WeChat iOS app — tailed bubbles, the Discover hub, Moments feed, and Mini-Program grid — captured on the gray system canvas with WeChat green.',
+    pitch:
+      'The blueprint for any super-app or messaging-commerce platform. The Discover grouped-list hub, Moments feed, and red-packet card are all documented.',
+    keywords: [
+      'wechat clone',
+      'super app template',
+      'wechat ui kit',
+      'messaging commerce app',
+      'build a wechat clone',
+    ],
+    sector: 'Messaging',
+    screens: ['Chats', 'Conversation', 'Discover', 'Moments', 'Contacts', 'Me'],
+  },
+  soundcloud: {
+    tagline: 'SoundCloud UI blueprint — build a creator audio app',
+    blurb:
+      'A complete spec of the SoundCloud iOS app — the commentable waveform, track feed, reposts, and up-next queue — captured with the SoundCloud-orange accent.',
+    pitch:
+      'The reference for any music, podcast, or creator-audio app. The waveform scrubber with inline timestamped comments and the repost feed are documented in full.',
+    keywords: [
+      'soundcloud clone',
+      'audio streaming template',
+      'soundcloud ui kit',
+      'react native music player',
+      'build a soundcloud clone',
+    ],
+    sector: 'Music & audio',
+    screens: ['Home', 'Search', 'Waveform player', 'Library', 'Upload', 'Profile'],
+  },
+  tidal: {
+    tagline: 'TIDAL design blueprint — build a hi-fi music app',
+    blurb:
+      'A full spec of the TIDAL iOS app — square-art tiles, quality-tier badges, the now-playing screen, and mixes — captured on a pure-black canvas with cyan HiFi accents.',
+    pitch:
+      'The blueprint for any premium or lossless music app. The MASTER/HiFi quality badges and radically flat tonal-elevation layout are documented to exact values.',
+    keywords: [
+      'tidal clone',
+      'hifi music app template',
+      'tidal ui kit',
+      'lossless streaming app',
+      'build a tidal clone',
+    ],
+    sector: 'Music & audio',
+    screens: ['Home', 'Videos', 'Search', 'Now playing', 'My Collection', 'Album detail'],
+  },
+  shazam: {
+    tagline: 'Shazam UI blueprint — build a music-recognition app',
+    blurb:
+      'A complete spec of the Shazam iOS app — the giant pulsing tap-to-listen button, the result card, and recent shazams — captured on a radial-blue gradient with glass surfaces.',
+    pitch:
+      'The reference for any audio-recognition or single-action utility app. The concentric pulse rings, result reveal, and library sheet are documented in full.',
+    keywords: [
+      'shazam clone',
+      'music recognition template',
+      'shazam ui kit',
+      'audio fingerprint app',
+      'build a shazam clone',
+    ],
+    sector: 'Music & audio',
+    screens: ['Listen hero', 'Recognizing', 'Result card', 'Recent shazams', 'Library', 'Charts'],
+  },
+  audible: {
+    tagline: 'Audible design blueprint — build an audiobook app',
+    blurb:
+      'A full spec of the Audible iOS app — the cover hero, the speed-dial + 30s-skip player, chapters, and Captions — captured with the Playfair/Inter pairing on warm charcoal.',
+    pitch:
+      'The blueprint for any audiobook, spoken-word, or long-form audio app. The progress-ring cover, speed dial, and chapter list are documented to exact values.',
+    keywords: [
+      'audible clone',
+      'audiobook app template',
+      'audible ui kit',
+      'spoken audio player',
+      'build an audible clone',
+    ],
+    sector: 'Music & audio',
+    screens: ['Home', 'Library', 'Player', 'Chapters', 'Discover', 'Profile'],
+  },
+  'disney-plus': {
+    tagline: 'Disney+ UI blueprint — build a premium streaming app',
+    blurb:
+      'A complete spec of the Disney+ iOS app — the starfield billboard, brand-portal tile row, 16:9 content rails, and hero auto-trailer — captured on the deep space-navy canvas.',
+    pitch:
+      'The reference for any premium video-streaming app. The brand-portal gateway tiles, glow-and-scale focus language, and watchlist are documented in full.',
+    keywords: [
+      'disney plus clone',
+      'streaming app template',
+      'disney+ ui kit',
+      'react native video app',
+      'build a disney plus clone',
+    ],
+    sector: 'Video & streaming',
+    screens: ['Home billboard', 'Brand portals', 'Details', 'Search', 'Watchlist', 'Downloads'],
+  },
+  hulu: {
+    tagline: 'Hulu design blueprint — build a content-dense streaming app',
+    blurb:
+      'A full spec of the Hulu iOS app — the electric-green Watch CTA, 16:9 tiles, hub chips, and continue-watching — captured on a near-black canvas with the signature green.',
+    pitch:
+      'The blueprint for any TV, live-TV, or on-demand streaming app. The green CTA, hub rails, and progress bars are documented to exact tokens.',
+    keywords: [
+      'hulu clone',
+      'streaming app template',
+      'hulu ui kit',
+      'react native tv app',
+      'build a hulu clone',
+    ],
+    sector: 'Video & streaming',
+    screens: ['Home', 'Hubs', 'Details', 'Search', 'My Stuff', 'Account'],
+  },
+  max: {
+    tagline: 'Max UI blueprint — build a prestige streaming app',
+    blurb:
+      'A complete spec of the Max iOS app — the gradient wordmark, auto-trailer billboard, prestige rows, and profile gate — captured on the deep-purple branded environment.',
+    pitch:
+      'The reference for any premium or prestige video-streaming app. The gradient hero, crossfade trailer, and content rows are documented in full.',
+    keywords: [
+      'max clone',
+      'hbo max ui kit',
+      'streaming app template',
+      'react native video app',
+      'build a max clone',
+    ],
+    sector: 'Video & streaming',
+    screens: ['Home billboard', 'Series detail', 'Search', 'My List', 'Profiles', 'Downloads'],
+  },
+  twitch: {
+    tagline: 'Twitch design blueprint — build a live-streaming app',
+    blurb:
+      'A full spec of the Twitch iOS app — live thumbnails with LIVE pills, the stream view with docked chat, channel cards, and emotes — captured with Twitch purple and live red.',
+    pitch:
+      'The blueprint for any live-streaming, creator, or watch-together app. The chat column, theater overlay, and strict purple/red color split are documented.',
+    keywords: [
+      'twitch clone',
+      'live streaming template',
+      'twitch ui kit',
+      'react native streaming app',
+      'build a twitch clone',
+    ],
+    sector: 'Video & streaming',
+    screens: ['Following', 'Browse', 'Stream + chat', 'Channel', 'Search', 'Profile'],
+  },
+  'prime-video': {
+    tagline: 'Prime Video UI blueprint — build a streaming app with X-Ray',
+    blurb:
+      'A complete spec of the Prime Video iOS app — the hero billboard, the X-Ray cast overlay, channel rows, and watchlist — captured on Amazon blue-slate navy with Prime blue.',
+    pitch:
+      'The reference for any video-on-demand or channel-aggregator app. The X-Ray slide-up overlay, hero, and category rows are documented to exact values.',
+    keywords: [
+      'prime video clone',
+      'streaming app template',
+      'prime video ui kit',
+      'react native video app',
+      'build a prime video clone',
+    ],
+    sector: 'Video & streaming',
+    screens: ['Home', 'Store', 'Player + X-Ray', 'Details', 'Find', 'Downloads'],
+  },
+  'uber-eats': {
+    tagline: 'Uber Eats design blueprint — build a food-delivery app',
+    blurb:
+      'A full spec of the Uber Eats iOS app — photo-first restaurant cards, category pills, the sticky cart bar, and live map tracking — captured on a clean white canvas with the green accent.',
+    pitch:
+      'The blueprint for any food-delivery, courier, or on-demand marketplace app. The merchant cards, cart bar, and live order map are documented in full.',
+    keywords: [
+      'uber eats clone',
+      'food delivery template',
+      'uber eats ui kit',
+      'react native delivery app',
+      'build an uber eats clone',
+    ],
+    sector: 'Food & delivery',
+    screens: ['Home', 'Browse', 'Restaurant', 'Cart', 'Order tracking', 'Account'],
+  },
+  instacart: {
+    tagline: 'Instacart UI blueprint — build a grocery-delivery app',
+    blurb:
+      'A complete spec of the Instacart iOS app — store cards, aisle browse, the qty stepper, replacement preferences, and the green cart bar — captured with Instacart green and carrot orange.',
+    pitch:
+      'The reference for any grocery, retail-delivery, or shopper-marketplace app. The − n + stepper, replacement flow, and store rows are documented to exact tokens.',
+    keywords: [
+      'instacart clone',
+      'grocery delivery template',
+      'instacart ui kit',
+      'react native shopping app',
+      'build an instacart clone',
+    ],
+    sector: 'Food & delivery',
+    screens: ['Stores', 'Aisle browse', 'Item detail', 'Cart', 'Replacements', 'Account'],
+  },
+  chipotle: {
+    tagline: 'Chipotle design blueprint — build a QSR ordering app',
+    blurb:
+      'A full spec of the Chipotle iOS app — the build-your-burrito ingredient stepper, foil-texture hero, ALL-CAPS headers, and rewards ring — captured on a cream kraft canvas.',
+    pitch:
+      'The blueprint for any quick-service-restaurant or food-customization app. The sectioned ingredient stepper and rewards points ring are documented in full.',
+    keywords: [
+      'chipotle clone',
+      'restaurant ordering template',
+      'chipotle ui kit',
+      'qsr app design',
+      'build a chipotle clone',
+    ],
+    sector: 'Food & delivery',
+    screens: ['Order start', 'Build entrée', 'Customize', 'Bag', 'Rewards', 'Scan'],
+  },
+  dominos: {
+    tagline: "Domino's UI blueprint — build a pizza-ordering app",
+    blurb:
+      "A complete spec of the Domino's iOS app — the 5-stage pizza tracker, build-your-pizza layout, deal cards, and the domino logo — captured with red action and blue info color logic.",
+    pitch:
+      'The reference for any food-ordering app with live order status. The pizza-tracker stepper and topping builder are documented to exact values.',
+    keywords: [
+      'dominos clone',
+      'pizza ordering template',
+      'dominos ui kit',
+      'food tracker app',
+      'build a dominos clone',
+    ],
+    sector: 'Food & delivery',
+    screens: ['Order', 'Build pizza', 'Deals', 'Tracker', 'Checkout', 'Account'],
+  },
+  lyft: {
+    tagline: 'Lyft design blueprint — build a ride-hailing app',
+    blurb:
+      'A full spec of the Lyft iOS app — the full-screen map, pickup pin, very-rounded ride-type selector sheet, and ETA — captured with the single Lyft-pink accent.',
+    pitch:
+      'The blueprint for any ride-hailing, mobility, or on-demand-transport app. The map-as-hero layout and springy ride-type bottom sheet are documented in full.',
+    keywords: [
+      'lyft clone',
+      'ride hailing template',
+      'lyft ui kit',
+      'react native rideshare app',
+      'build a lyft clone',
+    ],
+    sector: 'Travel & mobility',
+    screens: ['Map + where to', 'Ride types', 'Matching', 'En route', 'Receipt', 'Profile'],
+  },
+  booking: {
+    tagline: 'Booking.com UI blueprint — build a travel-booking app',
+    blurb:
+      'A complete spec of the Booking.com iOS app — the review-score badge, dense property cards, search form, and Genius banner — captured with the navy/bright-blue split.',
+    pitch:
+      'The reference for any hotel, stay, or travel-marketplace app. The score badge, filter chips, and map toggle are documented to exact tokens.',
+    keywords: [
+      'booking.com clone',
+      'hotel booking template',
+      'booking ui kit',
+      'travel marketplace app',
+      'build a booking clone',
+    ],
+    sector: 'Travel & mobility',
+    screens: ['Search', 'Results', 'Property detail', 'Map', 'Bookings', 'Profile'],
+  },
+  tripadvisor: {
+    tagline: 'Tripadvisor design blueprint — build a travel-reviews app',
+    blurb:
+      'A full spec of the Tripadvisor iOS app — the 5-circle bubble rating, place cards with traveler photos, Travelers Choice badges, and the owl — captured with the signature green.',
+    pitch:
+      'The blueprint for any reviews, places, or travel-discovery app. The bubble rating system and category tiles are documented in full.',
+    keywords: [
+      'tripadvisor clone',
+      'travel reviews template',
+      'tripadvisor ui kit',
+      'places discovery app',
+      'build a tripadvisor clone',
+    ],
+    sector: 'Travel & mobility',
+    screens: ['Explore', 'Search', 'Place detail', 'Reviews', 'Trips', 'Profile'],
+  },
+  hopper: {
+    tagline: 'Hopper UI blueprint — build a price-prediction travel app',
+    blurb:
+      'A complete spec of the Hopper iOS app — the price-prediction calendar heatmap, watch toggle, fare cards, and the bunny mascot — captured with the Hopper-red accent.',
+    pitch:
+      'The reference for any flight, hotel, or price-tracking travel app. The buy/wait calendar heatmap and watch-price flow are documented to exact values.',
+    keywords: [
+      'hopper clone',
+      'flight price template',
+      'hopper ui kit',
+      'travel prediction app',
+      'build a hopper clone',
+    ],
+    sector: 'Travel & mobility',
+    screens: ['Home', 'Price calendar', 'Fare detail', 'Watches', 'Trips', 'Profile'],
+  },
+  flighty: {
+    tagline: 'Flighty design blueprint — build a flight-tracking app',
+    blurb:
+      'A full spec of the Flighty iOS app — the live great-circle flight arc, flight cards with on-time stats, the status bar, and delay timeline — captured on a deep-black aviation canvas.',
+    pitch:
+      'The blueprint for any flight-tracker, travel-status, or Live-Activity app. The map arc, status semantics, and tabular flight times are documented in full.',
+    keywords: [
+      'flighty clone',
+      'flight tracker template',
+      'flighty ui kit',
+      'travel status app',
+      'build a flighty clone',
+    ],
+    sector: 'Travel & mobility',
+    screens: ['Flights', 'Flight map', 'Flight detail', 'Airport', 'Search', 'Profile'],
+  },
+  etsy: {
+    tagline: 'Etsy UI blueprint — build a handmade-marketplace app',
+    blurb:
+      'A complete spec of the Etsy iOS app — handmade product cards, the favorite heart, shop banners, and review stars — captured on a warm-cream canvas with Etsy orange.',
+    pitch:
+      'The reference for any handmade, vintage, or creator-commerce marketplace app. The favorite-heart bounce and shop-front warmth are documented to exact tokens.',
+    keywords: [
+      'etsy clone',
+      'marketplace app template',
+      'etsy ui kit',
+      'react native shop app',
+      'build an etsy clone',
+    ],
+    sector: 'Shopping & finance',
+    screens: ['Home', 'Search', 'Listing detail', 'Shop', 'Favorites', 'Cart'],
+  },
+  ebay: {
+    tagline: 'eBay design blueprint — build an auction marketplace app',
+    blurb:
+      'A full spec of the eBay iOS app — listing cards with bid/Buy-It-Now badges, the watch heart, condition tags, and the time-left countdown — captured with the four-color identity.',
+    pitch:
+      'The blueprint for any auction, resale, or C2C-marketplace app. The bid-vs-BIN distinction and countdown timer are documented in full.',
+    keywords: [
+      'ebay clone',
+      'auction app template',
+      'ebay ui kit',
+      'marketplace app design',
+      'build an ebay clone',
+    ],
+    sector: 'Shopping & finance',
+    screens: ['Home', 'Search results', 'Listing detail', 'Watchlist', 'My eBay', 'Selling'],
+  },
+  walmart: {
+    tagline: 'Walmart UI blueprint — build a big-box retail app',
+    blurb:
+      'A complete spec of the Walmart iOS app — product cards with the Rollback tag, the spark logo, category grid, and pickup/delivery toggle — captured with Walmart blue and spark yellow.',
+    pitch:
+      'The reference for any retail, grocery, or omnichannel-commerce app. The Rollback price tag and fulfillment toggle are documented to exact values.',
+    keywords: [
+      'walmart clone',
+      'retail app template',
+      'walmart ui kit',
+      'ecommerce app design',
+      'build a walmart clone',
+    ],
+    sector: 'Shopping & finance',
+    screens: ['Shop', 'Category', 'Product detail', 'Cart', 'Services', 'Account'],
+  },
+  revolut: {
+    tagline: 'Revolut design blueprint — build a neobank app',
+    blurb:
+      'A full spec of the Revolut iOS app — the metal-card hero with sheen, multi-currency tiles, the analytics donut, and transaction rows — captured on a cool near-black canvas.',
+    pitch:
+      'The blueprint for any neobank, fintech, or multi-currency app. The card carousel, spend analytics, and account switcher are documented in full.',
+    keywords: [
+      'revolut clone',
+      'neobank app template',
+      'revolut ui kit',
+      'fintech app design',
+      'build a revolut clone',
+    ],
+    sector: 'Shopping & finance',
+    screens: ['Home', 'Cards', 'Analytics', 'Invest', 'Crypto', 'Transactions'],
+  },
+  wise: {
+    tagline: 'Wise UI blueprint — build a multi-currency money app',
+    blurb:
+      'A complete spec of the Wise iOS app — multi-currency balances with flag chips, the transparent fee-breakdown card, the mid-market rate, and the send flow — captured with forest/bright-green.',
+    pitch:
+      'The reference for any cross-border payments or multi-currency app. The fee-transparency breakdown and send-money stepper are documented to exact tokens.',
+    keywords: [
+      'wise clone',
+      'money transfer template',
+      'wise ui kit',
+      'fintech transfer app',
+      'build a wise clone',
+    ],
+    sector: 'Shopping & finance',
+    screens: ['Home', 'Balances', 'Send money', 'Recipients', 'Card', 'Account'],
+  },
+  klarna: {
+    tagline: 'Klarna design blueprint — build a BNPL shopping app',
+    blurb:
+      'A full spec of the Klarna iOS app — the pay-in-4 schedule timeline, the in-app shopping browser, soft pink CTAs, and the order list — captured with the Klarna-pink identity.',
+    pitch:
+      'The blueprint for any buy-now-pay-later, shopping, or installment-finance app. The 4-payment schedule timeline and shopping browser are documented in full.',
+    keywords: [
+      'klarna clone',
+      'bnpl app template',
+      'klarna ui kit',
+      'installment payment app',
+      'build a klarna clone',
+    ],
+    sector: 'Shopping & finance',
+    screens: ['Shop', 'Browser', 'Payment schedule', 'Payments', 'Rewards', 'Profile'],
+  },
+  trello: {
+    tagline: 'Trello UI blueprint — build a kanban project app',
+    blurb:
+      'A complete spec of the Trello iOS app — horizontal kanban lists, draggable cards with the lift, label color rows, and board backgrounds — captured with the Trello-blue accent.',
+    pitch:
+      'The reference for any kanban, project-management, or task-board app. The card drag-lift and board-as-canvas layout are documented to exact values.',
+    keywords: [
+      'trello clone',
+      'kanban app template',
+      'trello ui kit',
+      'project management app',
+      'build a trello clone',
+    ],
+    sector: 'Productivity',
+    screens: ['Boards', 'Board view', 'Card detail', 'Lists', 'Activity', 'Profile'],
+  },
+  linear: {
+    tagline: 'Linear design blueprint — build a fast issue-tracker app',
+    blurb:
+      'A full spec of the Linear iOS app — the dense issue list, the Cmd+K command menu, cycle bars, status icons, and label pills — captured on a near-OLED canvas with Linear purple.',
+    pitch:
+      'The blueprint for any issue-tracking, dev-tool, or keyboard-first productivity app. The command menu and ultra-dense list are documented in full.',
+    keywords: [
+      'linear clone',
+      'issue tracker template',
+      'linear ui kit',
+      'project tool app',
+      'build a linear clone',
+    ],
+    sector: 'Productivity',
+    screens: ['Inbox', 'Issue list', 'Issue detail', 'Command menu', 'Cycles', 'Profile'],
+  },
+  zoom: {
+    tagline: 'Zoom UI blueprint — build a video-meeting app',
+    blurb:
+      'A complete spec of the Zoom iOS app — the gallery video grid, the in-call control bar, active-speaker highlight, and raised-hand — captured in the committed dark theater theme.',
+    pitch:
+      'The reference for any video-conferencing, telehealth, or live-collab app. The gallery grid and floating control bar are documented to exact tokens.',
+    keywords: [
+      'zoom clone',
+      'video call template',
+      'zoom ui kit',
+      'react native video meeting',
+      'build a zoom clone',
+    ],
+    sector: 'Productivity',
+    screens: ['Meetings', 'In-call gallery', 'Controls', 'Team Chat', 'Schedule', 'Settings'],
+  },
+  'microsoft-teams': {
+    tagline: 'Microsoft Teams design blueprint — build a work-collab app',
+    blurb:
+      'A full spec of the Microsoft Teams iOS app — the activity feed, the Teams→Channels tree, message cards with reactions, and the meeting join bar — captured with Teams purple.',
+    pitch:
+      'The blueprint for any enterprise-collaboration or team-chat app. The channels tree, presence dots, and join bar are documented in full.',
+    keywords: [
+      'microsoft teams clone',
+      'team collaboration template',
+      'teams ui kit',
+      'enterprise chat app',
+      'build a teams clone',
+    ],
+    sector: 'Productivity',
+    screens: ['Activity', 'Chat', 'Teams + channels', 'Channel', 'Calendar', 'Calls'],
+  },
+  'things-3': {
+    tagline: 'Things 3 UI blueprint — build a serene task app',
+    blurb:
+      'A complete spec of the Things 3 iOS app — the circular checkbox fill, the Magic Plus, the Today star, project pie-progress, and generous whitespace — captured on a pure-white canvas.',
+    pitch:
+      'The reference for any to-do, GTD, or personal-productivity app. The checkbox spring, Magic-Plus drag, and calm layout are documented to exact values.',
+    keywords: [
+      'things 3 clone',
+      'todo app template',
+      'things ui kit',
+      'gtd task app',
+      'build a things 3 clone',
+    ],
+    sector: 'Productivity',
+    screens: ['Today', 'Upcoming', 'Project', 'Task detail', 'Areas', 'Logbook'],
+  },
+  obsidian: {
+    tagline: 'Obsidian design blueprint — build a knowledge-graph app',
+    blurb:
+      'A full spec of the Obsidian iOS app — the physics graph view, the backlinks pane, the markdown editor, file tree, and tag pills — captured on a charcoal canvas with Obsidian purple.',
+    pitch:
+      'The blueprint for any note-taking, PKM, or markdown-editor app. The knowledge-graph view and backlinks pane are documented in full.',
+    keywords: [
+      'obsidian clone',
+      'note taking template',
+      'obsidian ui kit',
+      'markdown editor app',
+      'build an obsidian clone',
+    ],
+    sector: 'Productivity',
+    screens: ['Vault', 'Note editor', 'Graph view', 'Backlinks', 'Search', 'Settings'],
+  },
+  dropbox: {
+    tagline: 'Dropbox UI blueprint — build a cloud-storage app',
+    blurb:
+      'A complete spec of the Dropbox iOS app — colored file-type rows, the preview grid, the upload FAB, and the share sheet — captured on a warm paper-white canvas with Dropbox blue.',
+    pitch:
+      'The reference for any cloud-storage, file-sync, or document app. The file-type list, preview thumbnails, and upload progress are documented to exact tokens.',
+    keywords: [
+      'dropbox clone',
+      'cloud storage template',
+      'dropbox ui kit',
+      'file sync app',
+      'build a dropbox clone',
+    ],
+    sector: 'Productivity',
+    screens: ['Home', 'Files', 'Preview', 'Photos', 'Offline', 'Account'],
+  },
+  grindr: {
+    tagline: 'Grindr design blueprint — build a proximity dating app',
+    blurb:
+      'A full spec of the Grindr iOS app — the dense proximity thumbnail cascade, online dots, distance overlays, the profile sheet, and Taps — captured on true black with Grindr yellow.',
+    pitch:
+      'The blueprint for any location-based dating or social-discovery app. The cascade grid and profile sheet are documented in full.',
+    keywords: [
+      'grindr clone',
+      'dating app template',
+      'grindr ui kit',
+      'location dating app',
+      'build a grindr clone',
+    ],
+    sector: 'Dating',
+    screens: ['Browse grid', 'Profile sheet', 'Taps', 'Messages', 'Filters', 'My profile'],
+  },
+  okcupid: {
+    tagline: 'OkCupid UI blueprint — build a question-based dating app',
+    blurb:
+      'A complete spec of the OkCupid iOS app — the match-% badge, the DoubleTake stack, question cards, and playful illustration — captured on a clean white canvas with OkCupid magenta.',
+    pitch:
+      'The reference for any dating, compatibility, or matchmaking app. The match-% count-up and question-driven flow are documented to exact values.',
+    keywords: [
+      'okcupid clone',
+      'dating app template',
+      'okcupid ui kit',
+      'matchmaking app design',
+      'build an okcupid clone',
+    ],
+    sector: 'Dating',
+    screens: ['DoubleTake', 'Profile', 'Match %', 'Likes', 'Messages', 'My profile'],
+  },
+  gemini: {
+    tagline: 'Google Gemini design blueprint — build an AI assistant app',
+    blurb:
+      'A full spec of the Google Gemini iOS app — the gradient sparkle, the document-not-feed conversation, streaming shimmer, and the prompt bar — captured with the Gemini gradient.',
+    pitch:
+      'The blueprint for any LLM, assistant, or generative-AI app. The user-chip/assistant-text asymmetry and streaming gradient are documented in full.',
+    keywords: [
+      'gemini clone',
+      'ai assistant template',
+      'gemini ui kit',
+      'llm chat app',
+      'build a gemini clone',
+    ],
+    sector: 'AI',
+    screens: ['Conversation', 'Prompt bar', 'Streaming answer', 'History', 'Gems', 'Settings'],
+  },
+  copilot: {
+    tagline: 'Microsoft Copilot UI blueprint — build an AI companion app',
+    blurb:
+      'A complete spec of the Microsoft Copilot iOS app — the flourish logo, Fluent acrylic surfaces, the tone selector, prompt chips, and voice — captured with the Copilot gradient + Fluent blue.',
+    pitch:
+      'The reference for any AI-assistant or copilot-style app. The acrylic surfaces, tone toggle, and prompt-suggestion chips are documented to exact tokens.',
+    keywords: [
+      'copilot clone',
+      'ai assistant template',
+      'copilot ui kit',
+      'llm companion app',
+      'build a copilot clone',
+    ],
+    sector: 'AI',
+    screens: ['Conversation', 'Prompt bar', 'Tone selector', 'Voice mode', 'History', 'Settings'],
+  },
+  grok: {
+    tagline: 'Grok design blueprint — build a real-time AI chat app',
+    blurb:
+      'A full spec of the Grok iOS app — the monochrome conversation, the real-time X citation card, the mode toggle, and the streaming cursor — captured on a true-black canvas.',
+    pitch:
+      'The blueprint for any real-time AI, news-aware assistant, or chat app. The citation card and regular/fun mode toggle are documented in full.',
+    keywords: [
+      'grok clone',
+      'ai chat template',
+      'grok ui kit',
+      'realtime assistant app',
+      'build a grok clone',
+    ],
+    sector: 'AI',
+    screens: ['Conversation', 'Citation card', 'Mode toggle', 'Prompt bar', 'History', 'Settings'],
+  },
+  calm: {
+    tagline: 'Calm UI blueprint — build a meditation & sleep app',
+    blurb:
+      'A complete spec of the Calm iOS app — the nature-photo backdrop, the breathe bubble, the Daily Calm card, and sleep-story rows — captured on a night-sky gradient with serene serif type.',
+    pitch:
+      'The reference for any meditation, sleep, or mindfulness app. The 4-7-8 breathe bubble and session timer are documented to exact values.',
+    keywords: [
+      'calm clone',
+      'meditation app template',
+      'calm ui kit',
+      'sleep app design',
+      'build a calm clone',
+    ],
+    sector: 'Health & utility',
+    screens: ['Home', 'Breathe', 'Meditate', 'Sleep stories', 'Music', 'Profile'],
+  },
+  oura: {
+    tagline: 'Oura design blueprint — build a health-ring app',
+    blurb:
+      'A full spec of the Oura iOS app — the tri-domain score rings, contributor bars, the ring-battery, and trend graphs — captured on a cool-charcoal instrument-panel canvas.',
+    pitch:
+      'The blueprint for any wearable, recovery, or health-scoring app. The Readiness/Sleep/Activity rings and contributor lists are documented in full.',
+    keywords: [
+      'oura clone',
+      'health ring template',
+      'oura ui kit',
+      'wearable app design',
+      'build an oura clone',
+    ],
+    sector: 'Health & utility',
+    screens: ['Today', 'Readiness', 'Sleep', 'Activity', 'Trends', 'Profile'],
+  },
+  flo: {
+    tagline: 'Flo UI blueprint — build a cycle-tracking app',
+    blurb:
+      'A complete spec of the Flo iOS app — the rotating cycle-phase wheel, symptom-log chips, prediction cards, and soft rounded surfaces — captured with the Flo-coral + lavender palette.',
+    pitch:
+      'The reference for any period, fertility, or women-health app. The cycle phase wheel and reassuring prediction cards are documented to exact tokens.',
+    keywords: [
+      'flo clone',
+      'cycle tracker template',
+      'flo ui kit',
+      'period app design',
+      'build a flo clone',
+    ],
+    sector: 'Health & utility',
+    screens: ['Today', 'Cycle wheel', 'Symptom log', 'Insights', 'Partner', 'Profile'],
+  },
+  alltrails: {
+    tagline: 'AllTrails design blueprint — build a hiking & trails app',
+    blurb:
+      'A full spec of the AllTrails iOS app — the trail card with difficulty pills and stats, the topo-map base, the record button, and photo reviews — captured with the AllTrails-green accent.',
+    pitch:
+      'The blueprint for any outdoor, maps, or activity-recording app. The difficulty color scale and map-first explore are documented in full.',
+    keywords: [
+      'alltrails clone',
+      'hiking app template',
+      'alltrails ui kit',
+      'outdoor maps app',
+      'build an alltrails clone',
+    ],
+    sector: 'Health & utility',
+    screens: ['Explore', 'Trail detail', 'Map', 'Record', 'Saved', 'Profile'],
+  },
 }
 
 type Params = { slug: string }

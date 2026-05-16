@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Calm iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --grad-top: #2A6FD6;
+    --grad-mid: #1A4A8F;
+    --grad-bottom: #0B1E3F;
+    --scrim: #091830;
+    --glass: rgba(255,255,255,0.08);
+    --glass-raised: rgba(255,255,255,0.12);
+    --glass-divider: rgba(255,255,255,0.12);
+    --glass-hover: rgba(255,255,255,0.16);
+    --text: #FFFFFF;
+    --text-secondary: #B8C4D8;
+    --text-tertiary: #8794A8;
+    --calm-blue: #2A6FD6;
+    --calm-blue-pressed: #1F57AB;
+    --calm-blue-soft: #4A85E0;
+    --streak-gold: #F2C94C;
+    --serif: 'Lora', Georgia, 'Times New Roman', serif;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+    --mono: 'SF Mono', ui-monospace, Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #07142a; color: var(--text); font-family: var(--sans); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-family: var(--serif); font-size: 30px; font-weight: 600; letter-spacing: -0.4px; }
+  .page-chip { background: var(--calm-blue); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 660px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: linear-gradient(180deg, var(--grad-top) 0%, var(--grad-mid) 45%, var(--grad-bottom) 100%); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .top-bar { padding: 52px 20px 8px; display: flex; align-items: center; justify-content: space-between; }
+  .avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #6FA8E8, #2A6FD6); }
+  .greet { font-family: var(--serif); font-size: 18px; font-weight: 600; }
+  .streak { display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+  .streak svg { width: 16px; height: 16px; fill: var(--streak-gold); }
+
+  .scroll-body { flex: 1; overflow: hidden; padding: 12px 20px 16px; display: flex; flex-direction: column; gap: 18px; }
+
+  /* Daily Calm hero */
+  .hero { height: 188px; border-radius: 20px; overflow: hidden; position: relative; background: linear-gradient(160deg, #3A6EA8 0%, #244C7A 50%, #14305A 100%); }
+  .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 70% 25%, rgba(255,255,255,0.18), transparent 55%); }
+  .hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, rgba(9,24,48,0.85) 100%); }
+  .hero-content { position: absolute; left: 0; right: 0; bottom: 0; padding: 20px; display: flex; align-items: flex-end; gap: 12px; z-index: 2; }
+  .hero-texts { flex: 1; }
+  .hero-label { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+  .hero-title { font-family: var(--serif); font-size: 24px; font-weight: 600; margin-bottom: 4px; }
+  .hero-sub { font-size: 15px; color: var(--text-secondary); }
+  .hero-play { width: 44px; height: 44px; border-radius: 50%; background: var(--glass-hover); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .hero-play svg { width: 18px; height: 18px; fill: #fff; }
+
+  /* Breathe bubble */
+  .breathe-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 0; }
+  .breathe { width: 110px; height: 110px; border-radius: 50%; background: rgba(255,255,255,0.92); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 40px 8px rgba(74,133,224,0.55); animation: breathe 19s ease-in-out infinite; }
+  .breathe span { font-family: var(--serif); font-size: 18px; color: var(--grad-bottom); }
+  @keyframes breathe {
+    0% { transform: scale(1); }
+    21% { transform: scale(1.7); }
+    58% { transform: scale(1.7); }
+    100% { transform: scale(1); }
+  }
+
+  /* Sleep story rows */
+  .rows { background: var(--glass); border: 1px solid var(--glass-divider); border-radius: 20px; overflow: hidden; }
+  .srow { display: flex; align-items: center; gap: 14px; height: 72px; padding: 0 18px; border-bottom: 1px solid var(--glass-divider); }
+  .srow:last-child { border-bottom: none; }
+  .srow-thumb { width: 52px; height: 52px; border-radius: 12px; flex-shrink: 0; }
+  .st1 { background: linear-gradient(135deg, #4A6FA8, #1E3A66); }
+  .st2 { background: linear-gradient(135deg, #6A8FB8, #2E5280); }
+  .srow-info { flex: 1; }
+  .srow-title { font-size: 16px; font-weight: 600; }
+  .srow-sub { font-size: 14px; color: var(--text-secondary); margin-top: 2px; }
+  .srow-dl { color: rgba(255,255,255,0.8); }
+  .srow-dl svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Tab bar */
+  .tab-bar { height: 60px; background: rgba(11,30,63,0.72); backdrop-filter: saturate(180%) blur(20px); display: flex; align-items: center; justify-content: space-around; padding: 4px 8px 14px; border-top: 1px solid var(--glass-divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; color: rgba(255,255,255,0.6); font-size: 11px; font-weight: 600; }
+  .tab.active { color: var(--calm-blue); }
+  .tab svg { width: 23px; height: 23px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--glass); border: 1px solid var(--glass-divider); border-radius: 20px; padding: 24px; margin-bottom: 24px; backdrop-filter: blur(12px); }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 90px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: var(--mono); border: 1px solid var(--glass-divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--sans); margin-bottom: 2px; }
+  .swatch.light { color: var(--grad-bottom); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 13px 0; border-bottom: 1px solid var(--glass-divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: var(--mono); font-size: 11px; color: var(--text-secondary); width: 210px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); }
+  .t-greet { font-family: var(--serif); font-size: 30px; font-weight: 600; letter-spacing: -0.4px; }
+  .t-daily { font-family: var(--serif); font-size: 24px; font-weight: 600; }
+  .t-card { font-family: var(--serif); font-size: 19px; font-weight: 600; }
+  .t-body { font-size: 17px; font-weight: 400; line-height: 1.5; }
+  .t-sub { font-size: 15px; font-weight: 400; color: var(--text-secondary); }
+  .t-cue { font-family: var(--serif); font-size: 22px; font-weight: 400; letter-spacing: 0.5px; }
+  .t-timer { font-size: 44px; font-weight: 300; }
+  .t-label { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--sans); cursor: pointer; border: none; letter-spacing: 0.1px; display: inline-flex; align-items: center; gap: 8px; }
+  .btn-primary { background: var(--calm-blue); color: #fff; font-size: 17px; font-weight: 600; padding: 16px 40px; border-radius: 999px; }
+  .btn-primary:active { background: var(--calm-blue-pressed); transform: scale(0.97); }
+  .btn-primary svg { width: 16px; height: 16px; fill: #fff; }
+  .btn-glass { background: var(--glass-raised); color: #fff; border: 1px solid var(--glass-hover); font-size: 16px; font-weight: 600; padding: 14px 28px; border-radius: 999px; }
+  .chip { padding: 12px 20px; background: rgba(255,255,255,0.10); color: #fff; font-size: 14px; font-weight: 500; border-radius: 24px; }
+  .chip.active { background: var(--calm-blue); }
+
+  /* Breathe demo */
+  .breathe-demo { display: flex; align-items: center; justify-content: center; padding: 16px 0; }
+  .bd-bubble { width: 90px; height: 90px; border-radius: 50%; background: rgba(255,255,255,0.92); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 36px 6px rgba(74,133,224,0.5); animation: breathe 19s ease-in-out infinite; }
+  .bd-bubble span { font-family: var(--serif); font-size: 16px; color: var(--grad-bottom); }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--calm-blue); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-20 { border-radius: 20px; }
+  .r-26 { border-radius: 26px; }
+  .r-pill { border-radius: 999px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Calm iOS — Design Tokens</div>
+    <div class="page-chip">Night Sky</div>
+  </div>
+  <p class="page-subtitle">Full-screen night-sky gradient (#2A6FD6 → #0B1E3F). Glass cards let the sky show through. Lora serif for headlines, Inter sans for body. The breathe bubble runs a true 4-7-8 ease-in-out cycle.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="top-bar">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div class="avatar"></div>
+              <div class="greet">Good evening</div>
+            </div>
+            <div class="streak"><svg viewBox="0 0 24 24"><path d="M12 2c1 4-2 5-2 8a4 4 0 0 0 8 0c0-1-.5-2-1-3 2 1 3 4 3 6a6 6 0 0 1-12 0c0-5 4-7 4-11z"/></svg>214</div>
+          </div>
+          <div class="scroll-body">
+            <div class="hero">
+              <div class="hero-content">
+                <div class="hero-texts">
+                  <div class="hero-label">Daily Calm</div>
+                  <div class="hero-title">Letting Go of Worry</div>
+                  <div class="hero-sub">Today · 10 min</div>
+                </div>
+                <div class="hero-play"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></div>
+              </div>
+            </div>
+            <div class="breathe-wrap">
+              <div class="breathe"><span>Breathe in</span></div>
+            </div>
+            <div class="rows">
+              <div class="srow">
+                <div class="srow-thumb st1"></div>
+                <div class="srow-info">
+                  <div class="srow-title">The Nordland Night Train</div>
+                  <div class="srow-sub">Narrated by Erik Braa · 42 min</div>
+                </div>
+                <div class="srow-dl"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><polyline points="7,10 12,15 17,10"/><path d="M5 21h14"/></svg></div>
+              </div>
+              <div class="srow">
+                <div class="srow-thumb st2"></div>
+                <div class="srow-info">
+                  <div class="srow-title">Still Lake at Dusk</div>
+                  <div class="srow-sub">Narrated by Tamara · 32 min</div>
+                </div>
+                <div class="srow-dl"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><polyline points="7,10 12,15 17,10"/><path d="M5 21h14"/></svg></div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span>Sleep</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M12 3c-3 4-7 5-7 10a7 7 0 0 0 14 0c0-5-4-6-7-10z"/></svg><span>Meditate</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/><path d="M9 18V5l12-2v13"/></svg><span>Music</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg><span>More</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#2A6FD6;"><div class="name">Gradient Top</div>#2A6FD6</div>
+          <div class="swatch" style="background:#1A4A8F;"><div class="name">Gradient Mid</div>#1A4A8F</div>
+          <div class="swatch" style="background:#0B1E3F;"><div class="name">Gradient Bottom</div>#0B1E3F</div>
+          <div class="swatch" style="background:#091830;"><div class="name">Scrim Navy</div>#091830</div>
+          <div class="swatch" style="background:rgba(255,255,255,0.10);"><div class="name">Glass Surface</div>rgba 0.08</div>
+          <div class="swatch" style="background:rgba(255,255,255,0.14);"><div class="name">Glass Raised</div>rgba 0.12</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Text Primary</div>#FFFFFF</div>
+          <div class="swatch" style="background:#B8C4D8; color:#0B1E3F;"><div class="name">Text Secondary</div>#B8C4D8</div>
+          <div class="swatch" style="background:#8794A8;"><div class="name">Text Tertiary</div>#8794A8</div>
+          <div class="swatch" style="background:#2A6FD6;"><div class="name">Calm Blue</div>#2A6FD6</div>
+          <div class="swatch" style="background:#1F57AB;"><div class="name">Blue Pressed</div>#1F57AB</div>
+          <div class="swatch" style="background:#F2C94C; color:#3A2E00;"><div class="name">Streak Gold</div>#F2C94C</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Lora (serif) + Inter (sans)</div>
+        <div class="type-row"><div class="type-meta">Greeting · Lora · 30pt · 600</div><div class="type-sample t-greet">Good evening, Sam</div></div>
+        <div class="type-row"><div class="type-meta">Daily Calm · Lora · 24pt · 600</div><div class="type-sample t-daily">Letting Go of Worry</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · Lora · 19pt · 600</div><div class="type-sample t-card">Still Lake at Dusk</div></div>
+        <div class="type-row"><div class="type-meta">Body · Inter · 17pt · 400</div><div class="type-sample t-body">Find a comfortable position and let your breath settle.</div></div>
+        <div class="type-row"><div class="type-meta">Subtitle · Inter · 15pt · 400</div><div class="type-sample t-sub">Narrated by Tamara · 32 min</div></div>
+        <div class="type-row"><div class="type-meta">Breathe Cue · Lora · 22pt · 400</div><div class="type-sample t-cue">Breathe in</div></div>
+        <div class="type-row"><div class="type-meta">Timer · Inter · 44pt · 300</div><div class="type-sample t-timer">09:58</div></div>
+        <div class="type-row"><div class="type-meta">Label · Inter · 12pt · 700 UP</div><div class="type-sample t-label">Daily Calm</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons & Chips</div>
+        <div class="btn-row">
+          <button class="btn btn-primary"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg>Play</button>
+          <button class="btn btn-glass">Add to favorites</button>
+          <div class="chip active">Calm</div>
+          <div class="chip">Anxious</div>
+          <div class="chip">Tired</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Breathe Bubble (4-7-8 ease-in-out)</div>
+        <div class="breathe-demo">
+          <div class="bd-bubble"><span>Breathe in</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-26">26</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

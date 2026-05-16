@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Wise iOS — Light</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --surface: #F7F7F7;
+    --surface-sunken: #EFEFEF;
+    --divider: #E5E5E5;
+    --border: #D2D2D2;
+    --text: #0E0F0C;
+    --text-secondary: #6B6F66;
+    --text-tertiary: #9A9D95;
+    --bright: #9FE870;
+    --bright-pressed: #8AD45C;
+    --bright-tint: #EAF9DC;
+    --forest: #163300;
+    --forest-hover: #0E2200;
+    --success: #2F8F4E;
+    --pending: #B5781E;
+    --error: #D4332B;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #E8EFE3; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--forest); }
+  .page-chip { background: var(--bright); color: var(--forest); font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(14,34,0,0.45), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text); }
+
+  /* Top bar */
+  .top-bar { display: flex; align-items: center; gap: 10px; padding: 4px 16px 12px; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--forest); color: var(--bright); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; flex-shrink: 0; }
+  .top-name { flex: 1; font-size: 16px; font-weight: 800; color: var(--forest); }
+  .top-icon { color: var(--text-secondary); }
+  .top-icon svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Forest hero */
+  .hero-wrap { padding: 0 16px 16px; }
+  .hero { background: var(--forest-hover); border-radius: 20px; padding: 22px; box-shadow: 0 12px 32px rgba(14,34,0,0.25); }
+  .hero-label { font-size: 11px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase; color: var(--bright); margin-bottom: 6px; }
+  .hero-total { font-size: 38px; font-weight: 800; letter-spacing: -0.6px; color: #FFF; font-variant-numeric: tabular-nums; }
+  .hero-add { display: flex; align-items: center; gap: 8px; margin-top: 12px; color: var(--bright); font-size: 15px; font-weight: 600; }
+  .hero-add svg { width: 16px; height: 16px; stroke: var(--bright); stroke-width: 2.4; fill: none; }
+
+  /* Quick actions */
+  .qa-row { display: flex; justify-content: space-between; padding: 0 24px 16px; }
+  .qa { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .qa-circle { width: 50px; height: 50px; border-radius: 50%; background: var(--surface); display: flex; align-items: center; justify-content: center; }
+  .qa-circle.primary { background: var(--bright); }
+  .qa-circle svg { width: 21px; height: 21px; stroke: var(--forest); stroke-width: 2; fill: none; }
+  .qa-label { font-size: 12px; color: var(--text-secondary); }
+
+  /* Section label */
+  .sec-label { padding: 4px 16px 8px; font-size: 22px; font-weight: 800; color: var(--forest); letter-spacing: -0.3px; }
+
+  /* Currency rows */
+  .crows { flex: 1; overflow-y: auto; scrollbar-width: none; }
+  .crows::-webkit-scrollbar { display: none; }
+  .crow { display: flex; align-items: center; gap: 12px; height: 64px; padding: 0 16px; border-bottom: 1px solid var(--divider); }
+  .flag { width: 32px; height: 32px; border-radius: 50%; background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+  .crow-info { flex: 1; }
+  .crow-code { font-size: 16px; font-weight: 600; color: var(--text); }
+  .crow-name { font-size: 13px; color: var(--text-secondary); }
+  .crow-bal { font-size: 22px; font-weight: 800; color: var(--text); font-variant-numeric: tabular-nums; }
+
+  /* Tab bar */
+  .tab-bar { height: 58px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: var(--canvas); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-secondary); font-size: 11px; font-weight: 600; gap: 3px; position: relative; }
+  .tab.active { color: var(--forest); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+  .tab.active::after { content: ''; position: absolute; bottom: -8px; width: 18px; height: 3px; border-radius: 2px; background: var(--bright); }
+
+  /* Token sections */
+  .section { background: var(--canvas); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--forest); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); }
+  .t-40 { font-size: 38px; font-weight: 800; letter-spacing: -0.6px; color: var(--forest); font-variant-numeric: tabular-nums; }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; color: var(--forest); }
+  .t-22 { font-size: 22px; font-weight: 800; letter-spacing: -0.3px; color: var(--forest); }
+  .t-18 { font-size: 18px; font-weight: 600; }
+  .t-16 { font-size: 16px; font-weight: 600; }
+  .t-15 { font-size: 15px; font-weight: 400; color: var(--text-secondary); }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 800; cursor: pointer; border: none; letter-spacing: 0; font-size: 16px; }
+  .btn-primary { background: var(--bright); color: var(--forest); padding: 15px 28px; border-radius: 16px; }
+  .btn-primary:active { background: var(--bright-pressed); transform: scale(0.98); }
+  .btn-forest { background: var(--forest); color: #FFF; padding: 15px 28px; border-radius: 16px; }
+  .btn-forest:active { background: var(--forest-hover); }
+  .btn-outline { background: transparent; color: var(--forest); border: 1.5px solid var(--forest); padding: 14px 26px; border-radius: 16px; }
+
+  /* Fee card */
+  .fee-card { border: 1px solid var(--divider); border-radius: 16px; padding: 20px; }
+  .fee-line { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .fee-line:last-child { border-bottom: none; }
+  .fee-line .lbl { font-size: 15px; color: var(--text-secondary); }
+  .fee-line .val { font-size: 16px; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+  .fee-line.emph { background: var(--bright-tint); border-radius: 10px; padding: 14px 12px; border: none; margin-top: 6px; }
+  .fee-line.emph .lbl { color: var(--forest); font-size: 16px; font-weight: 600; }
+  .fee-line.emph .val { color: var(--forest); font-size: 18px; font-weight: 800; }
+
+  /* Stepper */
+  .stepper { display: flex; align-items: center; }
+  .step-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; flex-shrink: 0; }
+  .step-dot.done { background: var(--bright); color: var(--forest); }
+  .step-dot.active { background: var(--forest); color: #FFF; }
+  .step-dot.todo { background: var(--divider); color: var(--text-secondary); }
+  .step-dot svg { width: 14px; height: 14px; stroke: var(--forest); stroke-width: 3; fill: none; }
+  .step-rail { flex: 1; height: 2px; }
+  .step-rail.done { background: var(--forest); }
+  .step-rail.todo { background: var(--divider); }
+  .step-labels { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: var(--text-secondary); }
+
+  /* Rate ticker */
+  .rate { display: flex; align-items: center; gap: 8px; font-size: 15px; }
+  .rate .pair { font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+  .rate .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+  .rate .guar { font-size: 11px; color: var(--text-secondary); }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--forest); color: var(--bright); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-20 { border-radius: 20px; }
+  .r-24 { border-radius: 24px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Wise iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">Bright white canvas (#FFFFFF) with one forest anchor — the dark account hero (#0E2200). Forest green (#163300) is the structural ink; Bright Green (#9FE870) is action and highlight, always with forest text, never white. Money is tabular and decimal-aligned.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="top-bar">
+            <div class="avatar">AM</div>
+            <div class="top-name">Home</div>
+            <div class="top-icon"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
+            <div class="top-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.3l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2.3-1.3L13.8 2h-3.6l-.4 2.6a7 7 0 0 0-2.3 1.3l-2.4-1-2 3.4 2 1.6A7 7 0 0 0 5 12c0 .4 0 .9.1 1.3l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2.3 1.3l.4 2.4h3.6l.4-2.6a7 7 0 0 0 2.3-1.3l2.4 1 2-3.4-2-1.6c.1-.4.1-.9.1-1.3z"/></svg></div>
+          </div>
+
+          <div class="hero-wrap">
+            <div class="hero">
+              <div class="hero-label">Total balance</div>
+              <div class="hero-total">£12,480.65</div>
+              <div class="hero-add"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add money</div>
+            </div>
+          </div>
+
+          <div class="qa-row">
+            <div class="qa"><div class="qa-circle primary"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg></div><div class="qa-label">Send</div></div>
+            <div class="qa"><div class="qa-circle"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div class="qa-label">Add</div></div>
+            <div class="qa"><div class="qa-circle"><svg viewBox="0 0 24 24"><path d="M12 19V5"/><polyline points="6,13 12,19 18,13"/></svg></div><div class="qa-label">Request</div></div>
+            <div class="qa"><div class="qa-circle"><svg viewBox="0 0 24 24"><path d="M7 10l-4 4 4 4"/><path d="M3 14h14"/><path d="M17 14l4-4-4-4"/><path d="M21 10H7"/></svg></div><div class="qa-label">Convert</div></div>
+          </div>
+
+          <div class="sec-label">Your accounts</div>
+          <div class="crows">
+            <div class="crow">
+              <div class="flag">🇬🇧</div>
+              <div class="crow-info"><div class="crow-code">GBP</div><div class="crow-name">British Pound</div></div>
+              <div class="crow-bal">£8,240.10</div>
+            </div>
+            <div class="crow">
+              <div class="flag">🇪🇺</div>
+              <div class="crow-info"><div class="crow-code">EUR</div><div class="crow-name">Euro</div></div>
+              <div class="crow-bal">€3,180.55</div>
+            </div>
+            <div class="crow">
+              <div class="flag">🇺🇸</div>
+              <div class="crow-info"><div class="crow-code">USD</div><div class="crow-name">US Dollar</div></div>
+              <div class="crow-bal">$1,060.00</div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg><span>Card</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="3.5"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5"/><circle cx="17" cy="9" r="2.5"/><path d="M16 15c3 0 5 2 5 5"/></svg><span>Recipients</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M7 10l-4 4 4 4"/><path d="M3 14h14"/><path d="M17 14l4-4-4-4"/><path d="M21 10H7"/></svg><span>Payments</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M6 19c1-3 3.5-4 6-4s5 1 6 4"/></svg><span>Account</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Canvas</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#F7F7F7;"><div class="name">Surface</div>#F7F7F7</div>
+          <div class="swatch light" style="background:#E5E5E5;"><div class="name">Divider</div>#E5E5E5</div>
+          <div class="swatch light" style="background:#D2D2D2;"><div class="name">Border</div>#D2D2D2</div>
+          <div class="swatch" style="background:#0E0F0C;"><div class="name">Text Primary</div>#0E0F0C</div>
+          <div class="swatch" style="background:#6B6F66;"><div class="name">Text Secondary</div>#6B6F66</div>
+          <div class="swatch" style="background:#163300;"><div class="name">Forest</div>#163300</div>
+          <div class="swatch" style="background:#0E2200;"><div class="name">Forest Hero</div>#0E2200</div>
+          <div class="swatch light" style="background:#9FE870;"><div class="name">Bright Green</div>#9FE870</div>
+          <div class="swatch light" style="background:#EAF9DC;"><div class="name">Bright Tint</div>#EAF9DC</div>
+          <div class="swatch" style="background:#2F8F4E;"><div class="name">Success</div>#2F8F4E</div>
+          <div class="swatch" style="background:#D4332B;"><div class="name">Error</div>#D4332B</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Wise Sans (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Balance · 40pt · 800 tnum</div><div class="type-sample t-40">£12,480.65</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 800</div><div class="type-sample t-32">Recipients</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 800</div><div class="type-sample t-22">Your accounts</div></div>
+        <div class="type-row"><div class="type-meta">Subsection · 18pt · 600</div><div class="type-sample t-18">You send</div></div>
+        <div class="type-row"><div class="type-meta">Title · 16pt · 600</div><div class="type-sample t-16">Marie Dubois</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 400</div><div class="type-sample t-15">We use the mid-market rate with no markup.</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 400</div><div class="type-sample t-13">Sent 12 May · GBP → EUR</div></div>
+        <div class="type-row"><div class="type-meta">Label · 11pt · 800 UP</div><div class="type-sample t-11">You send</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Send money</button>
+          <button class="btn btn-forest">Add money</button>
+          <button class="btn btn-outline">Details</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Fee-Transparency Card (signature)</div>
+        <div class="fee-card">
+          <div class="fee-line"><span class="lbl">You send</span><span class="val">£1,000.00</span></div>
+          <div class="fee-line"><span class="lbl">Our fee</span><span class="val">£4.31</span></div>
+          <div class="fee-line"><span class="lbl">Amount we convert</span><span class="val">£995.69</span></div>
+          <div class="fee-line"><span class="lbl">Guaranteed rate</span><span class="val">1.1632</span></div>
+          <div class="fee-line emph"><span class="lbl">Recipient gets</span><span class="val">€1,158.10</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Send-Money Stepper &amp; Rate Ticker</div>
+        <div class="stepper">
+          <div class="step-dot done"><svg viewBox="0 0 24 24"><polyline points="5,12 10,17 19,7"/></svg></div>
+          <div class="step-rail done"></div>
+          <div class="step-dot done"><svg viewBox="0 0 24 24"><polyline points="5,12 10,17 19,7"/></svg></div>
+          <div class="step-rail done"></div>
+          <div class="step-dot active">3</div>
+          <div class="step-rail todo"></div>
+          <div class="step-dot todo">4</div>
+        </div>
+        <div class="step-labels"><span>Recipient</span><span>Amount</span><span>Review</span><span>Pay</span></div>
+        <div style="margin-top:20px;" class="rate">
+          <span class="pair">1 GBP = 1.1632 EUR</span>
+          <span class="dot"></span>
+          <span class="guar">guaranteed for 24h</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-24">24</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Light Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Wise is bright and open with a single dark anchor — the forest account hero at <code>#0E2200</code>. Forest <code>#163300</code> is the structural ink for titles and primary numbers; Bright Green <code>#9FE870</code> is action and highlight, always carrying forest text, <em>never</em> white — that contrast is the brand. The itemized fee-transparency card with the highlighted "Recipient gets" line in <code>#EAF9DC</code> is the signature object: the cost is never hidden. Every figure is tabular and decimal-aligned.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

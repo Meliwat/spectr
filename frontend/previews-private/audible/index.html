@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Audible iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #1A1A1A;
+    --surface-1: #2A2A2A;
+    --surface-2: #343434;
+    --divider: #3A3A3A;
+    --text: #FFFFFF;
+    --text-secondary: #B0B0B0;
+    --text-tertiary: #6E6E6E;
+    --orange: #FF9900;
+    --orange-pressed: #E68A00;
+    --orange-glow: rgba(255,153,0,0.28);
+    --error: #E5484D;
+    --serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #0f0f0f; color: var(--text); font-family: var(--sans); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-family: var(--serif); font-size: 30px; font-weight: 700; }
+  .page-chip { background: var(--orange); color: #1A1A1A; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.6px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 660px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .app-nav { padding: 52px 16px 6px; display: flex; align-items: center; justify-content: space-between; }
+  .nav-title { font-family: var(--serif); font-size: 20px; font-weight: 700; }
+  .nav-ico { color: var(--text-secondary); display: flex; gap: 16px; }
+  .nav-ico svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  .scroll-body { flex: 1; padding: 14px 16px 16px; display: flex; flex-direction: column; align-items: center; }
+
+  /* Cover + progress ring */
+  .cover-wrap { position: relative; width: 226px; height: 226px; margin: 14px 0 22px; display: flex; align-items: center; justify-content: center; }
+  .cover-ring { position: absolute; inset: 0; transform: rotate(-90deg); }
+  .cover { width: 200px; height: 200px; border-radius: 10px; background: linear-gradient(150deg, #C97A2B 0%, #8A4B1F 45%, #4A2812 100%); box-shadow: 0 14px 36px rgba(0,0,0,0.5); position: relative; overflow: hidden; }
+  .cover::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 30% 28%, rgba(255,255,255,0.18), transparent 60%); }
+  .cover-band { position: absolute; left: 0; right: 0; top: 38%; height: 26%; background: rgba(255,255,255,0.10); }
+
+  .book-title { font-family: var(--serif); font-size: 26px; font-weight: 700; text-align: center; line-height: 1.2; }
+  .book-author { font-size: 14px; color: var(--text-secondary); margin: 6px 0 2px; text-align: center; }
+  .book-narrator { font-size: 13px; font-weight: 600; color: var(--text-secondary); letter-spacing: 0.2px; margin-bottom: 22px; text-align: center; }
+
+  .transport { display: flex; align-items: center; justify-content: center; gap: 36px; }
+  .skip { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; position: relative; color: #fff; }
+  .skip svg { width: 30px; height: 30px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .skip span { position: absolute; font-size: 9px; font-weight: 700; }
+  .play-btn { width: 72px; height: 72px; border-radius: 50%; background: var(--orange); display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 22px var(--orange-glow); }
+  .play-btn svg { width: 32px; height: 32px; fill: var(--canvas); }
+
+  .time-left { font-size: 13px; color: var(--text-secondary); margin: 18px 0; font-variant-numeric: tabular-nums; }
+
+  .action-row { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0 4px; }
+  .speed-pill { background: var(--surface-2); color: var(--orange); font-size: 15px; font-weight: 700; padding: 8px 14px; border-radius: 500px; font-variant-numeric: tabular-nums; }
+  .act-ico { color: var(--text-secondary); }
+  .act-ico svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Mini bar + tab bar */
+  .mini-bar { background: var(--surface-1); height: 56px; display: flex; align-items: center; padding: 0 12px; gap: 12px; position: relative; }
+  .mini-progress { position: absolute; top: 0; left: 0; height: 3px; width: 34%; background: var(--orange); }
+  .mini-cover { width: 40px; height: 40px; border-radius: 6px; background: linear-gradient(150deg, #C97A2B, #4A2812); }
+  .mini-text { flex: 1; min-width: 0; }
+  .mini-title { font-family: var(--serif); font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mini-author { font-size: 11px; color: var(--text-secondary); }
+  .mini-ctrl { display: flex; align-items: center; gap: 14px; color: var(--text); }
+  .mini-ctrl svg { width: 22px; height: 22px; fill: currentColor; }
+  .mini-ctrl .sk { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  .tab-bar { height: 60px; background: rgba(26,26,26,0.96); backdrop-filter: saturate(180%) blur(20px); display: flex; align-items: center; justify-content: space-around; padding: 6px 8px 14px; border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-secondary); font-size: 10px; font-weight: 600; }
+  .tab.active { color: var(--orange); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 16px; min-height: 90px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 700; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--sans); margin-bottom: 2px; }
+  .swatch.light { color: #1A1A1A; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; }
+  .t-30 { font-family: var(--serif); font-size: 30px; font-weight: 700; }
+  .t-26 { font-family: var(--serif); font-size: 26px; font-weight: 700; }
+  .t-22 { font-family: var(--serif); font-size: 22px; font-weight: 700; }
+  .t-17 { font-family: var(--serif); font-size: 17px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 600; }
+  .t-15 { font-size: 15px; font-weight: 400; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-cap { font-size: 18px; font-weight: 400; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--sans); font-weight: 700; cursor: pointer; border: none; }
+  .btn-primary { background: var(--orange); color: #1A1A1A; font-size: 16px; padding: 13px 28px; border-radius: 8px; letter-spacing: 0.2px; }
+  .btn-primary:active { background: var(--orange-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: #fff; border: 1px solid var(--text-secondary); font-size: 14px; font-weight: 600; padding: 13px 24px; border-radius: 8px; }
+  .play-btn-demo { width: 60px; height: 60px; border-radius: 50%; background: var(--orange); display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; box-shadow: 0 6px 22px var(--orange-glow); }
+  .play-btn-demo svg { width: 26px; height: 26px; fill: var(--canvas); }
+  .chip { padding: 8px 18px; background: var(--surface-2); color: #fff; font-size: 14px; font-weight: 600; border-radius: 8px; }
+  .chip.active { background: var(--orange); color: #1A1A1A; }
+
+  /* Chapter list demo */
+  .chap { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--divider); }
+  .chap:last-child { border-bottom: none; }
+  .chap-bar { width: 3px; height: 24px; background: transparent; }
+  .chap.playing .chap-bar { background: var(--orange); }
+  .chap-n { font-size: 14px; color: var(--text-secondary); width: 22px; }
+  .chap-t { flex: 1; font-size: 16px; font-weight: 600; }
+  .chap.playing .chap-t { color: var(--orange); }
+  .chap-check { color: var(--orange); }
+  .chap-check svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 3; fill: none; }
+  .chap-dur { font-size: 13px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+
+  /* Speed dial demo */
+  .speed-demo { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+  .speed-val { font-size: 22px; font-weight: 700; color: var(--orange); font-variant-numeric: tabular-nums; }
+  .speed-track { width: 100%; height: 4px; background: var(--divider); border-radius: 2px; position: relative; }
+  .speed-fill { height: 100%; width: 33%; background: var(--orange); border-radius: 2px; }
+  .speed-thumb { position: absolute; left: 33%; top: 50%; transform: translate(-50%,-50%); width: 16px; height: 16px; border-radius: 50%; background: var(--orange); }
+  .speed-presets { display: flex; gap: 10px; }
+  .sp-chip { padding: 8px 16px; border-radius: 8px; background: var(--surface-2); color: #fff; font-size: 15px; font-weight: 700; }
+  .sp-chip.active { background: var(--orange); color: #1A1A1A; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--orange); color: #1A1A1A; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-10 { border-radius: 10px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Audible iOS — Design Tokens</div>
+    <div class="page-chip">Warm Dark</div>
+  </div>
+  <p class="page-subtitle">Warm charcoal canvas (#1A1A1A) — a paper-at-night reading room. Audible Orange (#FF9900) as the only accent. Serif headers (Playfair Display) + sans body (Inter); 30s-skip + speed-dial player.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="app-nav">
+            <div class="nav-title">Now Playing</div>
+            <div class="nav-ico">
+              <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+              <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="19" cy="12" r="1.5" fill="currentColor"/></svg>
+            </div>
+          </div>
+          <div class="scroll-body">
+            <div class="cover-wrap">
+              <svg class="cover-ring" viewBox="0 0 226 226">
+                <circle cx="113" cy="113" r="111" stroke="#3A3A3A" stroke-width="4" fill="none"/>
+                <circle cx="113" cy="113" r="111" stroke="#FF9900" stroke-width="4" fill="none" stroke-linecap="round" stroke-dasharray="697" stroke-dashoffset="460"/>
+              </svg>
+              <div class="cover"><div class="cover-band"></div></div>
+            </div>
+            <div class="book-title">The Song of Achilles</div>
+            <div class="book-author">By Madeline Miller</div>
+            <div class="book-narrator">Narrated by Frazer Douglas</div>
+            <div class="transport">
+              <div class="skip"><svg viewBox="0 0 24 24"><path d="M11 4L4 9l7 5"/><path d="M4 9h9a7 7 0 1 1 0 14H8"/></svg><span style="bottom:6px;left:13px;">30</span></div>
+              <button class="play-btn"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></button>
+              <div class="skip"><svg viewBox="0 0 24 24"><path d="M13 4l7 5-7 5"/><path d="M20 9h-9a7 7 0 1 0 0 14h5"/></svg><span style="bottom:6px;left:11px;">30</span></div>
+            </div>
+            <div class="time-left">8 hrs 14 min left</div>
+            <div class="action-row">
+              <div class="speed-pill">1.5×</div>
+              <div class="act-ico"><svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></div>
+              <div class="act-ico"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
+              <div class="act-ico"><svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></div>
+              <div class="act-ico"><svg viewBox="0 0 24 24"><path d="M5 17h14l-1.5-9h-11z"/><circle cx="8" cy="20" r="1.5"/><circle cx="16" cy="20" r="1.5"/></svg></div>
+            </div>
+          </div>
+          <div class="mini-bar">
+            <div class="mini-progress"></div>
+            <div class="mini-cover"></div>
+            <div class="mini-text">
+              <div class="mini-title">The Song of Achilles</div>
+              <div class="mini-author">Madeline Miller</div>
+            </div>
+            <div class="mini-ctrl">
+              <svg class="sk" viewBox="0 0 24 24"><path d="M11 4L4 9l7 5"/><path d="M4 9h9a7 7 0 1 1 0 14H8"/></svg>
+              <svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+            </div>
+          </div>
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 4h12a2 2 0 0 1 2 2v14H6a2 2 0 0 1-2-2z"/><path d="M18 4h2v16h-2"/></svg><span>Library</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Discover</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M6 19c1-3 3.5-4 6-4s5 1 6 4"/></svg><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#1A1A1A;"><div class="name">Canvas Charcoal</div>#1A1A1A</div>
+          <div class="swatch" style="background:#2A2A2A;"><div class="name">Surface 1</div>#2A2A2A</div>
+          <div class="swatch" style="background:#343434;"><div class="name">Surface 2</div>#343434</div>
+          <div class="swatch" style="background:#3A3A3A;"><div class="name">Divider</div>#3A3A3A</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Text Primary</div>#FFFFFF</div>
+          <div class="swatch" style="background:#B0B0B0; color:#1A1A1A;"><div class="name">Text Secondary</div>#B0B0B0</div>
+          <div class="swatch" style="background:#6E6E6E;"><div class="name">Text Tertiary</div>#6E6E6E</div>
+          <div class="swatch" style="background:#FF9900; color:#1A1A1A;"><div class="name">Audible Orange</div>#FF9900</div>
+          <div class="swatch" style="background:#E68A00; color:#1A1A1A;"><div class="name">Orange Pressed</div>#E68A00</div>
+          <div class="swatch" style="background:#E5484D;"><div class="name">Error</div>#E5484D</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Playfair Display (titles) + Inter (body)</div>
+        <div class="type-row"><div class="type-meta">Title Screen · Serif · 30 · 700</div><div class="type-sample t-30">The Song of Achilles</div></div>
+        <div class="type-row"><div class="type-meta">Book Title · Serif · 26 · 700</div><div class="type-sample t-26">Circe</div></div>
+        <div class="type-row"><div class="type-meta">Section · Serif · 22 · 700</div><div class="type-sample t-22">Continue Listening</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · Serif · 17 · 700</div><div class="type-sample t-17">Project Hail Mary</div></div>
+        <div class="type-row"><div class="type-meta">Chapter · Inter · 16 · 600</div><div class="type-sample t-16">Chapter Seven</div></div>
+        <div class="type-row"><div class="type-meta">Captions · Inter · 18 · 400</div><div class="type-sample t-cap">"He could outrun us all."</div></div>
+        <div class="type-row"><div class="type-meta">Author / Sub · Inter · 14 · 400</div><div class="type-sample t-14">By Madeline Miller</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="play-btn-demo"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></button>
+          <button class="btn btn-primary">Add to Library</button>
+          <button class="btn btn-outline">Sample</button>
+          <div class="chip active">All</div>
+          <div class="chip">Unfinished</div>
+          <div class="chip">Downloaded</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Speed Dial (0.5×–3.5×)</div>
+        <div class="speed-demo">
+          <div class="speed-val">1.5×</div>
+          <div class="speed-track"><div class="speed-fill"></div><div class="speed-thumb"></div></div>
+          <div class="speed-presets">
+            <div class="sp-chip">1.0×</div>
+            <div class="sp-chip">1.25×</div>
+            <div class="sp-chip active">1.5×</div>
+            <div class="sp-chip">2.0×</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Chapter List (active = orange)</div>
+        <div class="chap"><div class="chap-bar"></div><div class="chap-n">5.</div><div class="chap-t">The Lyre</div><div class="chap-check"><svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg></div><div class="chap-dur">22:14</div></div>
+        <div class="chap"><div class="chap-bar"></div><div class="chap-n">6.</div><div class="chap-t">The Wedding</div><div class="chap-check"><svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg></div><div class="chap-dur">31:08</div></div>
+        <div class="chap playing"><div class="chap-bar"></div><div class="chap-n">7.</div><div class="chap-t">Exile</div><div class="chap-check"></div><div class="chap-dur">28:46</div></div>
+        <div class="chap"><div class="chap-bar"></div><div class="chap-n">8.</div><div class="chap-t">The Sea</div><div class="chap-check"></div><div class="chap-dur">19:33</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Instacart iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --surface: #F6F7F8;
+    --divider: #E8E9EB;
+    --text: #242529;
+    --text-secondary: #72757E;
+    --text-tertiary: #A6A8AE;
+    --green: #0AAD0A;
+    --green-pressed: #098F09;
+    --green-tint: #E6F6E6;
+    --carrot: #FF7009;
+    --carrot-tint: #FFF0E6;
+    --error: #D6203A;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #ECEEF0; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; color: var(--green); }
+  .page-chip { background: var(--green); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.5), 0 0 0 2px rgba(0,0,0,0.08) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Top location + search */
+  .top { padding: 46px 16px 10px; background: var(--canvas); flex-shrink: 0; }
+  .loc { display: flex; align-items: center; gap: 6px; font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+  .loc svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2.5; fill: none; }
+  .search { display: flex; align-items: center; height: 44px; border-radius: 12px; background: var(--surface); padding: 0 14px; gap: 10px; }
+  .search svg { width: 17px; height: 17px; stroke: var(--text-secondary); stroke-width: 2; fill: none; }
+  .search span { color: var(--text-secondary); font-size: 15px; }
+
+  /* Scroll body */
+  .scroll-body { flex: 1; overflow: hidden; padding: 14px 16px 0; }
+  .sec-head { font-size: 18px; font-weight: 700; color: var(--text); margin: 4px 0 12px; }
+
+  /* Store row */
+  .store-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .store-logo { width: 52px; height: 52px; border-radius: 12px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 18px; }
+  .sl-1 { background: linear-gradient(135deg, #0AAD0A, #067A06); }
+  .sl-2 { background: linear-gradient(135deg, #E03A3E, #A8161A); }
+  .store-info { flex: 1; }
+  .store-name { font-size: 17px; font-weight: 700; color: var(--text); }
+  .store-meta { font-size: 13px; color: var(--text-secondary); margin-top: 3px; }
+  .store-chev { color: var(--text-tertiary); font-size: 18px; }
+
+  /* Product grid */
+  .prod-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+  .prod { background: var(--canvas); }
+  .prod-photo { width: 100%; aspect-ratio: 1; border-radius: 12px; position: relative; overflow: hidden; }
+  .pp-1 { background: linear-gradient(150deg, #E8556B 0%, #C8203A 60%, #8A1226 100%); }
+  .pp-1::after { content: ''; position: absolute; inset: 28% 22% 22% 22%; background: radial-gradient(circle at 38% 35%, #FF8FA0, #C8203A 70%); border-radius: 50%; }
+  .pp-2 { background: linear-gradient(150deg, #FFE08A 0%, #F5B400 55%, #C98A00 100%); }
+  .pp-2::after { content: ''; position: absolute; left: 26%; right: 26%; bottom: 18%; top: 32%; background: linear-gradient(180deg, #FFD24D, #E0A000); border-radius: 12px 12px 40% 40%; }
+  .deal-flag { position: absolute; top: 8px; left: 8px; background: var(--carrot); color: #fff; font-size: 12px; font-weight: 700; letter-spacing: 0.2px; padding: 4px 8px; border-radius: 500px; }
+  .add-pill { position: absolute; right: 8px; bottom: 8px; height: 32px; padding: 0 16px; border-radius: 500px; background: var(--canvas); border: 1.5px solid var(--green); color: var(--green); font-size: 14px; font-weight: 700; display: flex; align-items: center; box-shadow: 0 1px 3px rgba(20,21,25,0.12); }
+  .stepper-mini { position: absolute; right: 8px; bottom: 8px; height: 32px; border-radius: 500px; background: var(--green); display: flex; align-items: center; color: #fff; box-shadow: 0 1px 3px rgba(20,21,25,0.12); }
+  .stepper-mini .g { width: 30px; text-align: center; font-size: 17px; font-weight: 700; }
+  .stepper-mini .n { min-width: 18px; text-align: center; font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .prod-price { font-size: 15px; font-weight: 700; color: var(--text); margin-top: 8px; font-variant-numeric: tabular-nums; }
+  .prod-price.sale { color: var(--carrot); }
+  .prod-unit { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+  .prod-title { font-size: 15px; font-weight: 400; color: var(--text); margin-top: 2px; line-height: 1.35; }
+
+  /* Cart bar */
+  .cart-bar { position: absolute; left: 16px; right: 16px; bottom: 72px; height: 56px; background: var(--green); border-radius: 12px; display: flex; align-items: center; padding: 0 16px; box-shadow: 0 4px 12px rgba(10,173,10,0.32); }
+  .cart-count { background: #fff; color: var(--green); font-size: 13px; font-weight: 700; padding: 6px 12px; border-radius: 500px; font-variant-numeric: tabular-nums; }
+  .cart-view { flex: 1; text-align: right; color: #fff; font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  /* Tab bar */
+  .tab-bar { height: 60px; background: #fff; border-top: 0.5px solid var(--divider); display: flex; align-items: center; justify-content: space-around; padding: 4px 6px 14px; flex-shrink: 0; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--text-secondary); font-size: 10px; font-weight: 600; position: relative; }
+  .tab.active { color: var(--green); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+  .tab-badge { position: absolute; top: -3px; right: 6px; background: var(--green); color: #fff; font-size: 9px; font-weight: 700; min-width: 16px; height: 16px; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+
+  /* Token sections */
+  .section { background: #fff; border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 14px; min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 500; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--text); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 210px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.4px; }
+  .t-20 { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-17 { font-size: 17px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-15 { font-size: 15px; font-weight: 400; line-height: 1.45; }
+  .t-15b { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 600; color: var(--text-secondary); letter-spacing: 0.1px; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 16px; font-weight: 700; padding: 14px 28px; border-radius: 12px; border: none; cursor: pointer; }
+  .btn-primary { background: var(--green); color: #fff; }
+  .btn-primary:active { background: var(--green-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--text); border: 1.5px solid var(--text); font-size: 15px; font-weight: 600; padding: 11px 20px; }
+  .add-demo { height: 32px; padding: 0 20px; border-radius: 500px; background: #fff; border: 1.5px solid var(--green); color: var(--green); font-size: 14px; font-weight: 700; cursor: pointer; }
+  .chip { padding: 8px 16px; background: var(--surface); color: var(--text); font-size: 14px; font-weight: 600; border-radius: 500px; }
+  .chip.active { background: var(--text); color: #fff; }
+
+  /* Stepper demo */
+  .stepper-demo { display: inline-flex; align-items: center; height: 36px; border-radius: 500px; background: var(--green); color: #fff; }
+  .stepper-demo .g { width: 40px; text-align: center; font-size: 20px; font-weight: 700; cursor: pointer; }
+  .stepper-demo .n { min-width: 28px; text-align: center; font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  /* Replacement radio */
+  .repl { display: flex; flex-direction: column; gap: 10px; }
+  .repl-opt { display: flex; align-items: center; padding: 14px 16px; border-radius: 12px; border: 1.5px solid var(--divider); font-size: 15px; color: var(--text); }
+  .repl-opt.sel { border-color: var(--green); }
+  .repl-opt .lbl { flex: 1; }
+  .radio { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--divider); display: flex; align-items: center; justify-content: center; }
+  .repl-opt.sel .radio { border-color: var(--green); }
+  .radio .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--green); display: none; }
+  .repl-opt.sel .radio .dot { display: block; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--green); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Instacart iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">Pure white grocery shelf (#FFFFFF). Instacart Green #0AAD0A is the action color — Add buttons, the − n + stepper, and the persistent cart bar. Carrot orange #FF7009 is the deal/savings color.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="top">
+            <div class="loc">Wegmans · 1700 Elm St <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+            <div class="search">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+              <span>Search Wegmans</span>
+            </div>
+          </div>
+
+          <div class="scroll-body">
+            <div class="sec-head">Nearby stores</div>
+            <div class="store-row">
+              <div class="store-logo sl-1">W</div>
+              <div class="store-info">
+                <div class="store-name">Wegmans</div>
+                <div class="store-meta">Delivery by 2:00pm · $3.99 delivery</div>
+              </div>
+              <div class="store-chev">›</div>
+            </div>
+            <div class="store-row">
+              <div class="store-logo sl-2">C</div>
+              <div class="store-info">
+                <div class="store-name">Costco</div>
+                <div class="store-meta">Delivery by 4:30pm · $5.99 delivery</div>
+              </div>
+              <div class="store-chev">›</div>
+            </div>
+
+            <div class="prod-grid">
+              <div class="prod">
+                <div class="prod-photo pp-1">
+                  <div class="deal-flag">20% off</div>
+                  <div class="stepper-mini"><span class="g">−</span><span class="n">2</span><span class="g">＋</span></div>
+                </div>
+                <div class="prod-price sale">$3.99</div>
+                <div class="prod-unit">$0.25/oz</div>
+                <div class="prod-title">Organic Strawberries 1 lb</div>
+              </div>
+              <div class="prod">
+                <div class="prod-photo pp-2">
+                  <div class="add-pill">Add</div>
+                </div>
+                <div class="prod-price">$2.49</div>
+                <div class="prod-unit">$0.42/oz</div>
+                <div class="prod-title">Bananas, bunch</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="cart-bar">
+            <div class="cart-count">8 items</div>
+            <div class="cart-view">View cart  $64.20</div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg><span>Stores</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg><span>Buy again</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg><span>Lists</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21c0-4 3.5-6 7-6s7 2 7 6"/></svg><span>Account</span></div>
+            <div class="tab"><span class="tab-badge">8</span><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1.5"/><circle cx="18" cy="21" r="1.5"/><path d="M2 3h3l2.6 13.4a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L23 7H6"/></svg><span>Cart</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0AAD0A;"><div class="name">Instacart Green</div>#0AAD0A</div>
+          <div class="swatch" style="background:#098F09;"><div class="name">Green Pressed</div>#098F09</div>
+          <div class="swatch light" style="background:#E6F6E6;"><div class="name">Green Tint</div>#E6F6E6</div>
+          <div class="swatch" style="background:#FF7009;"><div class="name">Carrot Orange</div>#FF7009</div>
+          <div class="swatch light" style="background:#FFF0E6;"><div class="name">Carrot Tint</div>#FFF0E6</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Canvas</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#F6F7F8;"><div class="name">Surface</div>#F6F7F8</div>
+          <div class="swatch light" style="background:#E8E9EB;"><div class="name">Divider</div>#E8E9EB</div>
+          <div class="swatch" style="background:#242529;"><div class="name">Text Primary</div>#242529</div>
+          <div class="swatch" style="background:#72757E;"><div class="name">Text Secondary</div>#72757E</div>
+          <div class="swatch" style="background:#A6A8AE;"><div class="name">Text Tertiary</div>#A6A8AE</div>
+          <div class="swatch" style="background:#D6203A;"><div class="name">Error / Sale</div>#D6203A</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 26pt · 700</div><div class="type-sample t-26">Stores</div></div>
+        <div class="type-row"><div class="type-meta">Section · 20pt · 700</div><div class="type-sample t-20">Buy it again</div></div>
+        <div class="type-row"><div class="type-meta">Store Name · 17pt · 700</div><div class="type-sample t-17">Wegmans</div></div>
+        <div class="type-row"><div class="type-meta">Price · 15pt · 700 tnum</div><div class="type-sample t-15b">$4.99</div></div>
+        <div class="type-row"><div class="type-meta">Item Title · 15pt · 400</div><div class="type-sample t-15">Organic Strawberries 1 lb</div></div>
+        <div class="type-row"><div class="type-meta">Meta / Unit · 13pt · 400</div><div class="type-sample t-13">$0.42/oz · Delivery by 2pm</div></div>
+        <div class="type-row"><div class="type-meta">Tab Label · 11pt · 600</div><div class="type-sample t-11">Buy again</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Add to cart</button>
+          <button class="btn btn-outline">Save for later</button>
+          <button class="add-demo">Add</button>
+          <div class="chip active">On sale</div>
+          <div class="chip">Organic</div>
+          <div class="chip">EBT</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive — Quantity Stepper</div>
+        <div class="btn-row">
+          <div class="stepper-demo"><span class="g">−</span><span class="n">1</span><span class="g">＋</span></div>
+          <div class="stepper-demo"><span class="g">−</span><span class="n">3</span><span class="g">＋</span></div>
+          <div class="stepper-demo"><span class="g">−</span><span class="n">12</span><span class="g">＋</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive — Replacement Preference</div>
+        <div class="repl">
+          <div class="repl-opt sel"><div class="lbl">Best match</div><div class="radio"><div class="dot"></div></div></div>
+          <div class="repl-opt"><div class="lbl">Pick a specific replacement</div><div class="radio"><div class="dot"></div></div></div>
+          <div class="repl-opt"><div class="lbl">Don't replace this item</div><div class="radio"><div class="dot"></div></div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

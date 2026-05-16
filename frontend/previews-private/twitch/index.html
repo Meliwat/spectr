@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Twitch iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0E0E10;
+    --surface-1: #18181B;
+    --surface-2: #1F1F23;
+    --surface-3: #2A2A2D;
+    --divider: #2A2A2D;
+    --text: #EFEFF1;
+    --text-secondary: #ADADB8;
+    --text-tertiary: #6F6F7B;
+    --purple: #9146FF;
+    --purple-pressed: #772CE8;
+    --live: #EB0400;
+    --live-pressed: #C20300;
+    --online: #00C16E;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+  .page-chip { background: var(--purple); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  /* Stream player */
+  .player { width: 100%; aspect-ratio: 16/9; margin-top: 44px; background: linear-gradient(135deg, #3A2A5E 0%, #221842 50%, #15102B 100%); position: relative; }
+  .player::before { content: ''; position: absolute; top: 30%; left: 38%; width: 24%; height: 30%; background: radial-gradient(circle, #6B4AAE, #2C1666 70%); border-radius: 50%; }
+  .live-pill { position: absolute; top: 10px; left: 10px; display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 8px; border-radius: 4px; background: var(--live); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 0.4px; }
+  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: #fff; animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.6); } }
+  .viewer-pill { position: absolute; bottom: 10px; left: 10px; display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 8px; border-radius: 4px; background: rgba(0,0,0,0.6); color: #fff; font-size: 11px; font-weight: 700; }
+  .viewer-pill svg { width: 9px; height: 9px; fill: #fff; }
+
+  /* Channel bar */
+  .ch-bar { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 0.5px solid var(--divider); }
+  .ch-ring { padding: 2px; border-radius: 50%; border: 2px solid var(--live); }
+  .ch-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #6B4AAE, #2C1666); display: block; }
+  .ch-info { flex: 1; }
+  .ch-name { font-size: 16px; font-weight: 700; }
+  .ch-meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .follow-btn { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border-radius: 6px; background: var(--purple); color: #fff; font-size: 14px; font-weight: 700; border: none; box-shadow: 0 6px 18px rgba(145,70,255,0.35); }
+  .follow-btn svg { width: 14px; height: 14px; fill: #fff; }
+
+  /* Chat column */
+  .chat { flex: 1; background: var(--surface-1); display: flex; flex-direction: column; overflow: hidden; }
+  .chat-head { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-secondary); padding: 10px 12px 6px; }
+  .chat-body { flex: 1; overflow: hidden; padding: 0 0 4px; }
+  .chat-line { padding: 4px 12px; font-size: 14px; line-height: 1.35; }
+  .chat-line.mention { background: rgba(145,70,255,0.20); border-left: 2px solid var(--purple); }
+  .cu { font-weight: 700; }
+  .emote { display: inline-block; width: 18px; height: 18px; border-radius: 3px; background: linear-gradient(135deg, #9146FF, #772CE8); vertical-align: -4px; margin: 0 1px; }
+  .chat-input { display: flex; align-items: center; gap: 8px; margin: 8px 12px; height: 40px; padding: 0 12px; border-radius: 8px; background: var(--surface-2); color: var(--text-secondary); font-size: 14px; }
+  .chat-input svg { width: 18px; height: 18px; stroke: var(--text-secondary); stroke-width: 2; fill: none; }
+  .chat-input .send { margin-left: auto; }
+  .chat-input .send svg { fill: var(--purple); stroke: none; }
+
+  /* Tab bar */
+  .tab-bar { height: 60px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: rgba(14,14,16,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-secondary); font-size: 10px; font-weight: 600; gap: 3px; letter-spacing: 0.2px; position: relative; }
+  .tab.active { color: var(--purple); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; }
+  .tab .dot { position: absolute; top: -2px; right: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--live); }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #0E0E10; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); }
+  .t-28 { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-20 { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-16 { font-size: 16px; font-weight: 600; }
+  .t-15 { font-size: 15px; font-weight: 400; }
+  .t-14 { font-size: 14px; font-weight: 400; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--purple); color: #fff; font-size: 15px; font-weight: 700; padding: 11px 18px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 6px 18px rgba(145,70,255,0.35); }
+  .btn-primary svg { width: 14px; height: 14px; fill: #fff; }
+  .btn-primary:active { background: var(--purple-pressed); transform: scale(0.97); }
+  .btn-following { background: var(--surface-2); color: var(--text); font-size: 14px; font-weight: 600; padding: 11px 18px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; }
+  .btn-following svg { width: 14px; height: 14px; fill: var(--purple); }
+  .chip { background: var(--surface-2); color: var(--text); font-size: 14px; font-weight: 600; padding: 9px 16px; border-radius: 500px; }
+  .chip.active { background: var(--purple); color: #fff; }
+
+  /* Live card demo */
+  .lc { width: 220px; }
+  .lc-thumb { width: 220px; height: 124px; border-radius: 6px; position: relative; overflow: hidden; background: linear-gradient(135deg, #3A2A5E, #15102B); }
+  .lc-meta { display: flex; gap: 8px; margin-top: 8px; }
+  .lc-av { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #6B4AAE, #2C1666); flex-shrink: 0; }
+  .lc-title { font-size: 15px; font-weight: 600; }
+  .lc-ch { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+  /* Status / emote demo */
+  .status-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .pres { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-secondary); }
+  .pres-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--online); }
+  .emote-lg { width: 28px; height: 28px; border-radius: 4px; background: linear-gradient(135deg, #9146FF, #772CE8); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--purple); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Twitch iOS — Design Tokens</div>
+    <div class="page-chip">Dark</div>
+  </div>
+  <p class="page-subtitle">Near-black canvas (#0E0E10) with a faint cool tint. Strict color split: Twitch Purple (#9146FF) for brand + action, Live Red (#EB0400) for liveness only. Stream view docks a continuously-scrolling chat column under the video.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="player">
+            <div class="live-pill"><span class="live-dot"></span>LIVE</div>
+            <div class="viewer-pill"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>12.4K</div>
+          </div>
+
+          <div class="ch-bar">
+            <div class="ch-ring"><span class="ch-avatar"></span></div>
+            <div class="ch-info">
+              <div class="ch-name">novaplays</div>
+              <div class="ch-meta">Just Chatting · 12.4K</div>
+            </div>
+            <button class="follow-btn"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>Follow</button>
+          </div>
+
+          <div class="chat">
+            <div class="chat-head">Stream Chat</div>
+            <div class="chat-body">
+              <div class="chat-line"><span class="cu" style="color:#FF7EDB">pixelgremlin</span>: that clutch was insane <span class="emote"></span></div>
+              <div class="chat-line"><span class="cu" style="color:#5BC8FF">harborwave</span>: GG well played</div>
+              <div class="chat-line mention"><span class="cu" style="color:#7BE38A">modbot</span>: @you welcome to the stream!</div>
+              <div class="chat-line"><span class="cu" style="color:#FFB454">kellen_v</span>: <span class="emote"></span><span class="emote"></span> let's gooo</div>
+              <div class="chat-line"><span class="cu" style="color:#C792EA">hana.r</span>: what rank is this</div>
+              <div class="chat-line"><span class="cu" style="color:#FF6B6B">drift_</span>: pog moment honestly</div>
+              <div class="chat-line"><span class="cu" style="color:#5BC8FF">harborwave</span>: subbed for 6 months <span class="emote"></span></div>
+            </div>
+            <div class="chat-input">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1" fill="currentColor"/><circle cx="15" cy="9" r="1" fill="currentColor"/></svg>
+              Send a message
+              <span class="send"><svg viewBox="0 0 24 24"><path d="M3 11l18-8-8 18-2-7-8-3z"/></svg></span>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg><span>Following</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><polygon points="10,9 16,12 10,15"/></svg><span>Browse</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+            <div class="tab"><span class="dot"></span><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span>Alerts</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M6 19c1-3 3.5-4 6-4s5 1 6 4"/></svg><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0E0E10;"><div class="name">Canvas</div>#0E0E10</div>
+          <div class="swatch" style="background:#18181B;"><div class="name">Surface 1</div>#18181B</div>
+          <div class="swatch" style="background:#1F1F23;"><div class="name">Surface 2</div>#1F1F23</div>
+          <div class="swatch" style="background:#2A2A2D;"><div class="name">Surface 3 / Divider</div>#2A2A2D</div>
+          <div class="swatch" style="background:#EFEFF1; color:#0E0E10;"><div class="name">Text Primary</div>#EFEFF1</div>
+          <div class="swatch" style="background:#ADADB8; color:#0E0E10;"><div class="name">Text Secondary</div>#ADADB8</div>
+          <div class="swatch" style="background:#6F6F7B;"><div class="name">Text Tertiary</div>#6F6F7B</div>
+          <div class="swatch" style="background:#9146FF;"><div class="name">Twitch Purple</div>#9146FF</div>
+          <div class="swatch" style="background:#772CE8;"><div class="name">Purple Pressed</div>#772CE8</div>
+          <div class="swatch" style="background:#EB0400;"><div class="name">Live Red</div>#EB0400</div>
+          <div class="swatch" style="background:#C20300;"><div class="name">Live Pressed</div>#C20300</div>
+          <div class="swatch" style="background:#00C16E;"><div class="name">Online Green</div>#00C16E</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Roobert (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 28pt · 700</div><div class="type-sample t-28">Browse</div></div>
+        <div class="type-row"><div class="type-meta">Channel Name · 22pt · 700</div><div class="type-sample t-22">novaplays</div></div>
+        <div class="type-row"><div class="type-meta">Section Header · 20pt · 700</div><div class="type-sample t-20">Live channels</div></div>
+        <div class="type-row"><div class="type-meta">Stream Title · 16pt · 600</div><div class="type-sample t-16">Ranked grind to Masters</div></div>
+        <div class="type-row"><div class="type-meta">Chat Username · 14pt · 700</div><div class="type-sample t-14" style="color:#FF7EDB">pixelgremlin</div></div>
+        <div class="type-row"><div class="type-meta">Chat Message · 14pt · 400</div><div class="type-sample t-14">that clutch was insane</div></div>
+        <div class="type-row"><div class="type-meta">Metadata · 13pt · 400</div><div class="type-sample t-13">Just Chatting · 12.4K viewers</div></div>
+        <div class="type-row"><div class="type-meta">Label · 11pt · 700 UP</div><div class="type-sample t-11">Live channels</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>Follow</button>
+          <button class="btn btn-following"><svg viewBox="0 0 24 24"><polyline points="5,12 10,17 19,7" fill="none" stroke="var(--purple)" stroke-width="3"/></svg>Following</button>
+          <div class="chip active">Just Chatting</div>
+          <div class="chip">Valorant</div>
+          <div class="chip">IRL</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Live Thumbnail Card</div>
+        <div class="lc">
+          <div class="lc-thumb">
+            <div class="live-pill"><span class="live-dot"></span>LIVE</div>
+            <div class="viewer-pill"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>12.4K</div>
+          </div>
+          <div class="lc-meta">
+            <div class="lc-av"></div>
+            <div>
+              <div class="lc-title">Ranked grind to Masters</div>
+              <div class="lc-ch">novaplays · Just Chatting</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Presence &amp; Emote Chips</div>
+        <div class="status-row">
+          <div class="pres"><span class="pres-dot"></span>Online</div>
+          <div class="live-pill" style="position:static;"><span class="live-dot"></span>LIVE</div>
+          <div class="emote-lg"></div>
+          <div class="emote-lg"></div>
+          <div class="emote-lg"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

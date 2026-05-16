@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Nextdoor iOS — Light</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF9F6;
+    --surface-1: #FFFFFF;
+    --surface-2: #F2F0EB;
+    --divider: #E4E2DD;
+    --text: #221E1F;
+    --text-secondary: #6B6864;
+    --text-tertiary: #9C9893;
+    --green: #00B246;
+    --green-pressed: #007A30;
+    --link: #006B3C;
+    --alert: #E58A00;
+    --error: #D93A2B;
+    --event: #1B6FB3;
+    --forsale: #6E4FA3;
+    --font: 'Lato', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #ECE9E2; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; }
+  .page-chip { background: var(--green); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 680px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(34,30,31,0.4), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--cream); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  .topbar { height: 48px; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 18px 6px; background: var(--cream); }
+  .nbhd { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+  .nbhd svg { width: 14px; height: 14px; stroke: var(--text); stroke-width: 2.5; fill: none; }
+  .topbar-actions { display: flex; gap: 14px; color: var(--text-secondary); }
+  .topbar-actions svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Group chip row */
+  .chips { display: flex; gap: 8px; padding: 8px 16px 12px; overflow-x: auto; scrollbar-width: none; background: var(--cream); }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip { flex-shrink: 0; padding: 8px 16px; border-radius: 500px; background: var(--surface-2); color: var(--text); font-size: 14px; font-weight: 700; }
+  .chip.active { background: var(--green); color: #fff; }
+
+  .feed { flex: 1; overflow-y: auto; scrollbar-width: none; padding-top: 4px; }
+  .feed::-webkit-scrollbar { display: none; }
+
+  /* Feed card */
+  .card { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 16px; margin: 0 16px 12px; box-shadow: 0 1px 3px rgba(34,30,31,0.06); }
+  .card-head { display: flex; gap: 12px; }
+  .avatar { width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0; }
+  .av-1 { background: linear-gradient(135deg, #7FBF9A, #2E8E5A); }
+  .av-2 { background: linear-gradient(135deg, #C9A06E, #8E5E2E); }
+  .card-id { flex: 1; min-width: 0; }
+  .card-name { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+  .verified { width: 15px; height: 15px; fill: var(--green); }
+  .card-loc { font-size: 13px; color: var(--text-secondary); margin-top: 1px; }
+  .card-more { color: var(--text-secondary); }
+  .card-more svg { width: 20px; height: 20px; }
+  .card-more circle { fill: currentColor; }
+  .card-body { font-size: 16px; line-height: 1.45; color: var(--text); margin-top: 10px; }
+  .card-body .lnk { color: var(--link); font-weight: 700; }
+  .card-photo { width: 100%; height: 130px; border-radius: 12px; margin-top: 10px; background: linear-gradient(150deg, #C9D6BE 0%, #8FAE78 55%, #5E7E4A 100%); }
+
+  .card-divider { height: 1px; background: var(--divider); margin: 12px 0; }
+  .card-actions { display: flex; justify-content: space-between; }
+  .act { display: flex; align-items: center; gap: 6px; color: var(--text-secondary); font-size: 14px; font-weight: 700; }
+  .act svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .act.reacted { color: var(--green); }
+  .act.reacted svg { fill: var(--green); stroke: var(--green); }
+
+  /* Tab bar with center FAB */
+  .tab-bar { height: 64px; background: var(--surface-1); display: flex; align-items: flex-start; justify-content: space-around; padding: 8px 6px 14px; border-top: 0.5px solid var(--divider); position: relative; z-index: 8; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--text-secondary); font-size: 10px; font-weight: 700; }
+  .tab.active { color: var(--green); }
+  .tab svg { width: 26px; height: 26px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; }
+  .fab { width: 56px; height: 56px; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center; margin-top: -16px; box-shadow: 0 6px 18px rgba(0,178,70,0.32); }
+  .fab svg { width: 26px; height: 26px; stroke: #fff; stroke-width: 3; fill: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 90px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 700; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--text); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 210px; flex-shrink: 0; }
+  .type-sample { flex: 1; }
+  .t-28 { font-size: 28px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16b { font-size: 16px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; line-height: 1.45; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 16px; font-weight: 700; padding: 12px 24px; border-radius: 24px; border: none; cursor: pointer; }
+  .btn-primary { background: var(--green); color: #FFF; }
+  .btn-primary:active { background: var(--green-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--green); border: 1.5px solid var(--green); padding: 10px 20px; }
+  .fab-demo { width: 56px; height: 56px; border-radius: 50%; background: var(--green); border: none; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 6px 18px rgba(0,178,70,0.32); cursor: pointer; }
+  .fab-demo svg { width: 26px; height: 26px; stroke: #fff; stroke-width: 3; fill: none; }
+
+  /* Map pins demo */
+  .pins-row { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+  .pin { padding: 6px 12px; border-radius: 500px; color: #fff; font-size: 12px; font-weight: 700; box-shadow: 0 2px 6px rgba(34,30,31,0.25); }
+  .pin-rec { background: var(--green); }
+  .pin-event { background: var(--event); }
+  .pin-sale { background: var(--forsale); }
+  .pin-alert { background: var(--alert); }
+  .pin-sel { background: var(--green); border: 2px solid #fff; outline: 2px solid var(--green); outline-offset: 2px; transform: scale(1.15); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--green); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-24 { border-radius: 24px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Nextdoor iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">Warm cream canvas (#FAF9F6) with crisp white cards — paper, not screen. Nextdoor Green (#00B246) for actions and the center Post FAB. Every name carries a location line; the hyperlocal map is the hero.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="topbar">
+            <div class="nbhd">Maple Heights <svg viewBox="0 0 24 24"><polyline points="6,9 12,15 18,9"/></svg></div>
+            <div class="topbar-actions">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+              <svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="10" y1="18" x2="14" y2="18"/></svg>
+            </div>
+          </div>
+
+          <div class="chips">
+            <div class="chip active">For You</div>
+            <div class="chip">Recommendations</div>
+            <div class="chip">For Sale &amp; Free</div>
+            <div class="chip">Crime &amp; Safety</div>
+            <div class="chip">Events</div>
+          </div>
+
+          <div class="feed">
+            <div class="card">
+              <div class="card-head">
+                <div class="avatar av-1"></div>
+                <div class="card-id">
+                  <div class="card-name">Dana R.
+                    <svg class="verified" viewBox="0 0 24 24"><path d="M12 1l2.6 2.1 3.3-.4 1 3.2 3 1.5-1.2 3.1L23 14l-2.3 2.4.7 3.3-3.3.7-1.8 2.9L12 22l-3.3 1.3-1.8-2.9-3.3-.7.7-3.3L2 12l1.5-3.5L2.3 5.4l3-1.5 1-3.2 3.3.4z"/><polyline points="8.5,12 11,14.5 16,9" fill="none" stroke="#fff" stroke-width="2"/></svg>
+                  </div>
+                  <div class="card-loc">0.3 mi · Maple Heights · 2h</div>
+                </div>
+                <div class="card-more"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></div>
+              </div>
+              <div class="card-body">Anyone know a reliable handyman near <span class="lnk">Birch &amp; 4th</span>? Need a fence panel replaced before the weekend. Thanks neighbors!</div>
+              <div class="card-divider"></div>
+              <div class="card-actions">
+                <div class="act reacted"><svg viewBox="0 0 24 24"><path d="M7 11v9H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1zM7 11l4-7a2 2 0 0 1 2 2v3h5a2 2 0 0 1 2 2.3l-1.3 7A2 2 0 0 1 16.7 20H7"/></svg>React</div>
+                <div class="act"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.5 9 9 0 0 1-4-1L3 20l1-4.5a8.4 8.4 0 0 1-1-4A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg>Reply</div>
+                <div class="act"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16,6 12,2 8,6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share</div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head">
+                <div class="avatar av-2"></div>
+                <div class="card-id">
+                  <div class="card-name">Marcus T.
+                    <svg class="verified" viewBox="0 0 24 24"><path d="M12 1l2.6 2.1 3.3-.4 1 3.2 3 1.5-1.2 3.1L23 14l-2.3 2.4.7 3.3-3.3.7-1.8 2.9L12 22l-3.3 1.3-1.8-2.9-3.3-.7.7-3.3L2 12l1.5-3.5L2.3 5.4l3-1.5 1-3.2 3.3.4z"/><polyline points="8.5,12 11,14.5 16,9" fill="none" stroke="#fff" stroke-width="2"/></svg>
+                  </div>
+                  <div class="card-loc">0.6 mi · Cedar Park · 5h</div>
+                </div>
+                <div class="card-more"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></div>
+              </div>
+              <div class="card-body">Free firewood — stacked by the driveway, first come first served. Bring a truck 🌲</div>
+              <div class="card-photo"></div>
+              <div class="card-divider"></div>
+              <div class="card-actions">
+                <div class="act"><svg viewBox="0 0 24 24"><path d="M7 11v9H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1zM7 11l4-7a2 2 0 0 1 2 2v3h5a2 2 0 0 1 2 2.3l-1.3 7A2 2 0 0 1 16.7 20H7"/></svg>React</div>
+                <div class="act"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.5 9 9 0 0 1-4-1L3 20l1-4.5a8.4 8.4 0 0 1-1-4A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg>Reply</div>
+                <div class="act"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16,6 12,2 8,6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><polygon points="3,7 9,4 15,7 21,4 21,17 15,20 9,17 3,20"/><line x1="9" y1="4" x2="9" y2="17"/><line x1="15" y1="7" x2="15" y2="20"/></svg><span>Map</span></div>
+            <div class="fab"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span>Alerts</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><polyline points="3,7 12,13 21,7"/></svg><span>Inbox</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch light" style="background:#FAF9F6;"><div class="name">Cream Canvas</div>#FAF9F6</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Surface 1</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#F2F0EB;"><div class="name">Surface 2</div>#F2F0EB</div>
+          <div class="swatch" style="background:#E4E2DD; color:#221E1F;"><div class="name">Divider</div>#E4E2DD</div>
+          <div class="swatch" style="background:#221E1F;"><div class="name">Text Primary</div>#221E1F</div>
+          <div class="swatch" style="background:#6B6864;"><div class="name">Text Secondary</div>#6B6864</div>
+          <div class="swatch" style="background:#00B246;"><div class="name">Nextdoor Green</div>#00B246</div>
+          <div class="swatch" style="background:#007A30;"><div class="name">Green Pressed</div>#007A30</div>
+          <div class="swatch" style="background:#006B3C;"><div class="name">Link Forest</div>#006B3C</div>
+          <div class="swatch" style="background:#E58A00;"><div class="name">Alert Amber</div>#E58A00</div>
+          <div class="swatch" style="background:#1B6FB3;"><div class="name">Event Blue (pin)</div>#1B6FB3</div>
+          <div class="swatch" style="background:#6E4FA3;"><div class="name">For-Sale (pin)</div>#6E4FA3</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Lato</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 28pt · 700</div><div class="type-sample t-28">Neighborhood</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">For Sale &amp; Free</div></div>
+        <div class="type-row"><div class="type-meta">Post Title · 18pt · 700</div><div class="type-sample t-18">Lost cat near Birch St</div></div>
+        <div class="type-row"><div class="type-meta">Neighbor Name · 16pt · 700</div><div class="type-sample t-16b">Dana R.</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400 · 1.45</div><div class="type-sample t-16">Anyone know a reliable handyman near 4th?</div></div>
+        <div class="type-row"><div class="type-meta">Location / Meta · 13pt · 400</div><div class="type-sample t-13">0.3 mi · Maple Heights · 2h</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Post</button>
+          <button class="btn btn-outline">Following</button>
+          <button class="fab-demo"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Hyperlocal Map Pins (category-colored)</div>
+        <div class="pins-row">
+          <div class="pin pin-rec">Tip</div>
+          <div class="pin pin-event">Event</div>
+          <div class="pin pin-sale">$45</div>
+          <div class="pin pin-alert">Alert</div>
+          <div class="pin pin-sel">$45</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-24">24</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Hopper iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --surface: #F5F5F7;
+    --divider: #E5E5EA;
+    --surface-pressed: #EBEBF0;
+    --text: #1D1D1F;
+    --text-secondary: #6E6E73;
+    --text-tertiary: #A1A1A6;
+    --red: #FA4747;
+    --red-pressed: #E03A3A;
+    --buy-green: #34C759;
+    --buy-best: #34C759;
+    --buy-good: #A8E6B8;
+    --neutral: #F5F5F7;
+    --wait-high: #FFC7C7;
+    --wait-worst: #FA4747;
+    --price-drop: #34C759;
+    --error: #D70015;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #ECECEC; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 700; letter-spacing: -0.6px; color: var(--text); }
+  .page-chip { background: var(--red); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.45), 0 0 0 2px rgba(0,0,0,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text); }
+  .scroll-body { flex: 1; overflow-y: auto; scrollbar-width: none; padding: 0 16px 16px; }
+  .scroll-body::-webkit-scrollbar { display: none; }
+
+  .nav-row { display: flex; align-items: center; justify-content: space-between; padding: 0 0 12px; }
+  .nav-title { font-size: 26px; font-weight: 700; letter-spacing: -0.4px; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #FA4747, #E03A3A); }
+
+  /* Route summary */
+  .route-summary { display: flex; align-items: center; gap: 8px; font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+  .route-sub { font-size: 13px; color: var(--text-secondary); margin-bottom: 14px; }
+
+  /* Calendar legend */
+  .legend { margin-bottom: 8px; }
+  .legend-bar { height: 6px; border-radius: 3px; background: linear-gradient(90deg, #34C759, #A8E6B8, #F5F5F7, #FFC7C7, #FA4747); }
+  .legend-labels { display: flex; justify-content: space-between; margin-top: 4px; font-size: 12px; }
+  .legend-buy { color: var(--buy-green); font-weight: 600; }
+  .legend-wait { color: var(--red); font-weight: 600; }
+
+  /* Calendar grid */
+  .cal-dows { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin: 8px 0 4px; }
+  .cal-dow { text-align: center; font-size: 11px; font-weight: 600; color: var(--text-tertiary); }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .cell { height: 44px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .cell .d { font-size: 14px; font-weight: 600; }
+  .cell .p { font-size: 10px; font-weight: 600; opacity: 0.85; }
+  .c-best { background: var(--buy-best); color: #FFF; }
+  .c-good { background: var(--buy-good); color: var(--text); }
+  .c-neutral { background: var(--neutral); color: var(--text-tertiary); }
+  .c-high { background: var(--wait-high); color: var(--text); }
+  .c-worst { background: var(--wait-worst); color: #FFF; }
+  .cell.empty { background: transparent; }
+  .cell.sel { border: 2px solid var(--text); }
+
+  /* Fare card */
+  .fare-card { background: var(--canvas); border: 1px solid var(--divider); border-radius: 16px; padding: 18px; margin-top: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+  .fare-route { font-size: 17px; font-weight: 700; }
+  .fare-sub { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+  .fare-price-row { display: flex; align-items: baseline; gap: 10px; margin-top: 12px; }
+  .fare-price { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+  .verdict { display: inline-flex; align-items: center; gap: 4px; padding: 5px 12px; border-radius: 999px; color: #FFF; font-size: 13px; font-weight: 700; letter-spacing: 0.2px; }
+  .verdict .det { font-weight: 400; opacity: 0.9; }
+  .verdict-buy { background: var(--buy-green); }
+  .verdict-wait { background: var(--red); }
+  .conf { margin-top: 14px; }
+  .conf-bar { display: flex; gap: 4px; }
+  .conf-seg { flex: 1; height: 6px; border-radius: 3px; background: var(--divider); }
+  .conf-seg.on { background: var(--buy-green); }
+  .conf-label { font-size: 13px; color: var(--text-secondary); margin-top: 6px; }
+  .fare-cta { margin-top: 14px; background: var(--red); color: #FFF; font-size: 16px; font-weight: 700; padding: 14px; border-radius: 14px; text-align: center; border: none; width: 100%; cursor: pointer; }
+  .fare-cta:active { background: var(--red-pressed); transform: scale(0.98); }
+
+  /* Tab bar */
+  .tab-bar { height: 64px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: rgba(255,255,255,0.96); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-secondary); font-size: 11px; font-weight: 600; gap: 3px; letter-spacing: 0.2px; }
+  .tab.active { color: var(--red); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: #FFF; border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #1D1D1F; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); }
+  .t-28 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-17 { font-size: 17px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 600; }
+  .t-15 { font-size: 15px; font-weight: 400; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-13b { font-size: 13px; font-weight: 700; letter-spacing: 0.2px; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--red); color: #FFF; font-size: 16px; padding: 14px 28px; border-radius: 14px; }
+  .btn-primary:active { background: var(--red-pressed); transform: scale(0.98); }
+  .btn-secondary { background: var(--surface); color: var(--text); font-size: 15px; font-weight: 600; padding: 12px 24px; border-radius: 14px; border: none; cursor: pointer; }
+  .btn-text { background: transparent; color: var(--red); font-size: 15px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Toggle demo */
+  .toggle-demo { display: flex; gap: 24px; align-items: center; }
+  .tg { width: 52px; height: 32px; border-radius: 16px; padding: 2px; display: flex; align-items: center; }
+  .tg-off { background: var(--divider); justify-content: flex-start; }
+  .tg-on { background: var(--red); justify-content: flex-end; }
+  .tg-knob { width: 28px; height: 28px; border-radius: 50%; background: #FFF; box-shadow: 0 2px 4px rgba(0,0,0,0.12); display: flex; align-items: center; justify-content: center; }
+  .tg-knob svg { width: 12px; height: 12px; fill: var(--red); }
+  .tg-label { font-size: 13px; color: var(--text-secondary); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--red); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-8 { border-radius: 8px; }
+  .r-14 { border-radius: 14px; }
+  .r-16 { border-radius: 16px; }
+  .r-20 { border-radius: 20px; }
+  .r-pill { border-radius: 999px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Hopper iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">Clean white canvas (#FFFFFF) with friendly Hopper Red (#FA4747). The price-prediction calendar heatmap — green=buy, red=wait — is the core mechanic; every predicted price gets a colored verdict pill.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="scroll-body">
+            <div class="nav-row">
+              <div class="nav-title">When to book</div>
+              <div class="avatar"></div>
+            </div>
+
+            <div class="route-summary">SFO &rarr; JFK</div>
+            <div class="route-sub">Oct 12 – 19 · 1 traveler · Nonstop</div>
+
+            <div class="legend">
+              <div class="legend-bar"></div>
+              <div class="legend-labels"><span class="legend-buy">Buy</span><span class="legend-wait">Wait</span></div>
+            </div>
+
+            <div class="cal-dows">
+              <div class="cal-dow">S</div><div class="cal-dow">M</div><div class="cal-dow">T</div><div class="cal-dow">W</div><div class="cal-dow">T</div><div class="cal-dow">F</div><div class="cal-dow">S</div>
+            </div>
+            <div class="cal-grid">
+              <div class="cell empty"></div><div class="cell empty"></div>
+              <div class="cell c-worst"><span class="d">1</span><span class="p">$420</span></div>
+              <div class="cell c-high"><span class="d">2</span><span class="p">$360</span></div>
+              <div class="cell c-high"><span class="d">3</span><span class="p">$340</span></div>
+              <div class="cell c-neutral"><span class="d">4</span><span class="p">$290</span></div>
+              <div class="cell c-neutral"><span class="d">5</span><span class="p">$285</span></div>
+              <div class="cell c-good"><span class="d">6</span><span class="p">$240</span></div>
+              <div class="cell c-good"><span class="d">7</span><span class="p">$235</span></div>
+              <div class="cell c-best"><span class="d">8</span><span class="p">$199</span></div>
+              <div class="cell c-best sel"><span class="d">9</span><span class="p">$189</span></div>
+              <div class="cell c-best"><span class="d">10</span><span class="p">$205</span></div>
+              <div class="cell c-good"><span class="d">11</span><span class="p">$232</span></div>
+              <div class="cell c-neutral"><span class="d">12</span><span class="p">$278</span></div>
+              <div class="cell c-neutral"><span class="d">13</span><span class="p">$284</span></div>
+              <div class="cell c-high"><span class="d">14</span><span class="p">$345</span></div>
+              <div class="cell c-high"><span class="d">15</span><span class="p">$352</span></div>
+              <div class="cell c-worst"><span class="d">16</span><span class="p">$418</span></div>
+              <div class="cell c-worst"><span class="d">17</span><span class="p">$430</span></div>
+              <div class="cell c-high"><span class="d">18</span><span class="p">$338</span></div>
+              <div class="cell c-good"><span class="d">19</span><span class="p">$228</span></div>
+            </div>
+
+            <div class="fare-card">
+              <div class="fare-route">SFO &rarr; JFK</div>
+              <div class="fare-sub">JetBlue · Nonstop · 5h 42m</div>
+              <div class="fare-price-row">
+                <div class="fare-price">$189</div>
+                <span class="verdict verdict-buy">BUY <span class="det">· won't drop</span></span>
+              </div>
+              <div class="conf">
+                <div class="conf-bar">
+                  <div class="conf-seg on"></div><div class="conf-seg on"></div><div class="conf-seg on"></div><div class="conf-seg"></div>
+                </div>
+                <div class="conf-label">Hopper is 87% confident — based on 1B+ trips</div>
+              </div>
+              <button class="fare-cta">Watch this trip</button>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span>Watches</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg><span>Trips</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/></svg><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Canvas</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#F5F5F7;"><div class="name">Surface</div>#F5F5F7</div>
+          <div class="swatch light" style="background:#E5E5EA;"><div class="name">Divider</div>#E5E5EA</div>
+          <div class="swatch" style="background:#1D1D1F;"><div class="name">Text Primary</div>#1D1D1F</div>
+          <div class="swatch" style="background:#6E6E73;"><div class="name">Text Secondary</div>#6E6E73</div>
+          <div class="swatch" style="background:#FA4747;"><div class="name">Hopper Red</div>#FA4747</div>
+          <div class="swatch" style="background:#E03A3A;"><div class="name">Red Pressed</div>#E03A3A</div>
+          <div class="swatch" style="background:#34C759;"><div class="name">Buy Green</div>#34C759</div>
+          <div class="swatch light" style="background:#A8E6B8;"><div class="name">Buy (Good)</div>#A8E6B8</div>
+          <div class="swatch light" style="background:#FFC7C7;"><div class="name">Wait (High)</div>#FFC7C7</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Hopper Sans (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Predicted Price · 28pt · 700</div><div class="type-sample t-28">$189</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">When to book</div></div>
+        <div class="type-row"><div class="type-meta">Route · 17pt · 700</div><div class="type-sample t-17">SFO &rarr; JFK</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 16pt · 600</div><div class="type-sample t-16">Your watches</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 400</div><div class="type-sample t-15">Prices are likely to stay flat for the next 7 days.</div></div>
+        <div class="type-row"><div class="type-meta">Verdict · 13pt · 700</div><div class="type-sample t-13b">BUY · WAIT</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 400</div><div class="type-sample t-13">JetBlue · Nonstop · 5h 42m</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Fare Verdict Pills (the decision pair)</div>
+        <div class="btn-row">
+          <span class="verdict verdict-buy">BUY <span class="det">· prices won't drop</span></span>
+          <span class="verdict verdict-wait">WAIT <span class="det">· likely cheaper soon</span></span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons & Watch Toggle</div>
+        <div class="btn-row" style="margin-bottom:20px;">
+          <button class="btn btn-primary">Watch this trip</button>
+          <button class="btn-secondary">See all flights</button>
+          <button class="btn-text">Why this prediction?</button>
+        </div>
+        <div class="toggle-demo">
+          <div class="tg tg-off"><div class="tg-knob"></div></div>
+          <div class="tg tg-on"><div class="tg-knob"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9zM13.7 21a2 2 0 0 1-3.4 0"/></svg></div></div>
+          <span class="tg-label">Watch price — off / armed</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Light Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Hopper's canvas is pure <code>#FFFFFF</code> — a bright, data-forward decision surface. The calendar heatmap is the core mechanic: cells run a strict scale from buy-green <code>#34C759</code> through neutral <code>#F5F5F7</code> to wait-red <code>#FA4747</code>. Cells stay flat — their color is the signal, never shadow. Hopper Red <code>#FA4747</code> drives the CTA, active tab, and bunny; buy-green is reserved for positive verdicts and price drops. Every predicted price is paired with a colored "BUY"/"WAIT" pill so the decision is the strongest glance on the screen.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

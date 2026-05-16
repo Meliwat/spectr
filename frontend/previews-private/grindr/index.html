@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Grindr iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #000000;
+    --surface-1: #1A1A1A;
+    --surface-2: #222222;
+    --surface-3: #2C2C2C;
+    --divider: #2C2C2C;
+    --text-primary: #FFFFFF;
+    --text-secondary: #999999;
+    --text-tertiary: #5C5C5C;
+    --yellow: #FFDE00;
+    --yellow-pressed: #E6C700;
+    --yellow-tint: #FFF2A8;
+    --online: #4CD964;
+    --error: #FF3B30;
+    --info: #3D8BFF;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+  .mask { width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center; }
+  .mask svg { width: 100%; height: 100%; fill: var(--yellow); }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+  .page-chip { background: var(--yellow); color: #000; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 660px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .top-bar { padding: 52px 14px 10px; display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 3; }
+  .tb-left { display: flex; align-items: center; gap: 8px; }
+  .tb-mask { width: 22px; height: 22px; fill: var(--yellow); }
+  .tb-title { font-size: 18px; font-weight: 700; }
+  .tb-icons { display: flex; gap: 14px; color: #FFF; }
+  .tb-icons svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Cascade grid */
+  .cascade { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; overflow: hidden; align-content: start; }
+  .tile { aspect-ratio: 1; position: relative; overflow: hidden; }
+  .tp1 { background: linear-gradient(150deg, #6B5544 0%, #3A2A20 100%); }
+  .tp2 { background: linear-gradient(150deg, #44566B 0%, #1F2A33 100%); }
+  .tp3 { background: linear-gradient(150deg, #5A4466 0%, #2D1F33 100%); }
+  .tp4 { background: linear-gradient(150deg, #4D5A44 0%, #28331F 100%); }
+  .tp5 { background: linear-gradient(150deg, #6B4455 0%, #331F28 100%); }
+  .tp6 { background: linear-gradient(150deg, #445E6B 0%, #1F2E33 100%); }
+  .tp7 { background: linear-gradient(150deg, #5E5544 0%, #2E2A20 100%); }
+  .tp8 { background: linear-gradient(150deg, #4F446B 0%, #261F33 100%); }
+  .tp9 { background: linear-gradient(150deg, #6B5A44 0%, #332B20 100%); }
+  .tile::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 45%; background: linear-gradient(180deg, transparent, rgba(0,0,0,0.65)); }
+  .tile-dot { position: absolute; top: 8px; right: 8px; width: 10px; height: 10px; border-radius: 50%; background: var(--online); border: 2px solid #000; z-index: 2; }
+  .tile-info { position: absolute; left: 8px; bottom: 8px; right: 8px; z-index: 2; }
+  .tile-name { font-size: 15px; font-weight: 700; color: #FFF; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tile-dist { font-size: 12px; font-weight: 700; color: #FFF; letter-spacing: 0.2px; }
+
+  /* Tab bar */
+  .tab-bar { height: 56px; background: rgba(0,0,0,0.94); backdrop-filter: saturate(180%) blur(20px); display: flex; align-items: center; justify-content: space-around; padding: 4px 8px 12px; border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--text-secondary); font-size: 10px; font-weight: 700; letter-spacing: 0.2px; position: relative; }
+  .tab.active { color: var(--yellow); }
+  .tab svg { width: 26px; height: 26px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+  .tab-badge { position: absolute; top: -4px; right: 6px; background: var(--yellow); color: #000; font-size: 9px; font-weight: 700; min-width: 16px; height: 16px; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 16px; min-height: 90px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.dark-text { color: #000; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 200px; flex-shrink: 0; }
+  .type-sample { flex: 1; }
+  .t-24 { font-size: 24px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 700; }
+  .t-15 { font-size: 15px; font-weight: 400; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 700; letter-spacing: 0.2px; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 16px; font-weight: 700; padding: 12px 28px; border-radius: 500px; border: none; cursor: pointer; letter-spacing: 0.2px; }
+  .btn-primary { background: var(--yellow); color: #000; }
+  .btn-primary:active { background: var(--yellow-pressed); transform: scale(0.97); }
+  .btn-outline { background: transparent; color: #FFF; border: 1px solid var(--text-secondary); font-size: 15px; padding: 12px 24px; }
+  .tap-btn { width: 56px; height: 56px; border-radius: 50%; background: var(--yellow); display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; }
+  .tap-btn svg { width: 24px; height: 24px; fill: #000; }
+  .chip { padding: 8px 16px; background: var(--surface-1); color: #FFF; font-size: 13px; font-weight: 700; border-radius: 500px; border: 1px solid var(--divider); }
+  .chip.active { background: var(--yellow); color: #000; border-color: var(--yellow); }
+
+  /* Chat bubble demo */
+  .chat { display: flex; flex-direction: column; gap: 8px; }
+  .bubble { max-width: 76%; padding: 10px 14px; font-size: 16px; line-height: 1.35; }
+  .bubble.in { align-self: flex-start; background: var(--surface-2); color: #FFF; border-radius: 18px 18px 18px 4px; }
+  .bubble.out { align-self: flex-end; background: var(--yellow); color: #000; border-radius: 18px 18px 4px 18px; }
+
+  /* Distinctive: presence dot demo */
+  .presence-demo { display: flex; gap: 24px; align-items: center; }
+  .pd { display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 12px; color: var(--text-secondary); }
+  .pd-avatar { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(150deg, #5A4466, #2D1F33); position: relative; }
+  .pd-avatar.online::after { content: ''; position: absolute; top: 2px; right: 2px; width: 14px; height: 14px; border-radius: 50%; background: var(--online); border: 2px solid #000; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--yellow); color: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-12 { border-radius: 12px; }
+  .r-18 { border-radius: 18px; }
+  .r-22 { border-radius: 22px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="mask">
+      <svg viewBox="0 0 32 32"><path d="M16 3c-5 0-9 3.4-9 8.5 0 3.2 1.6 5.8 3.6 8.2 1.6 2 3.4 3.9 5.4 6.2.7-3 2-5.6 3.6-7.9-1.2-.3-2.3-1-2.9-2 1.1.5 2.4.6 3.6.3 1.9-.5 3.1-2.1 3.1-4.1 0-1.3-.6-2.4-1.6-3.1.4 1 .3 2.2-.4 3-.8 1-2.1 1.4-3.3 1.1.9-.6 1.5-1.6 1.5-2.8 0-1.9-1.5-3.4-3.4-3.4-.6 0-1.2.2-1.7.4 1.4-1.6 3.5-2.6 5.8-2.6 1 0 1.9.2 2.8.5C22.7 4.3 19.6 3 16 3z"/></svg>
+    </span>
+    <div class="page-title">Grindr iOS — Design Tokens</div>
+    <div class="page-chip">Dark</div>
+  </div>
+  <p class="page-subtitle">True-black canvas (#000000) — the proximity photo cascade is the interface. Grindr Yellow (#FFDE00) is the single accent (Tap, active tab, badges). Overlay text sits on a bottom scrim; the green dot (#4CD964) means online now.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="top-bar">
+            <div class="tb-left">
+              <svg class="tb-mask" viewBox="0 0 32 32"><path d="M16 3c-5 0-9 3.4-9 8.5 0 3.2 1.6 5.8 3.6 8.2 1.6 2 3.4 3.9 5.4 6.2.7-3 2-5.6 3.6-7.9-1.2-.3-2.3-1-2.9-2 1.1.5 2.4.6 3.6.3 1.9-.5 3.1-2.1 3.1-4.1 0-1.3-.6-2.4-1.6-3.1.4 1 .3 2.2-.4 3-.8 1-2.1 1.4-3.3 1.1.9-.6 1.5-1.6 1.5-2.8 0-1.9-1.5-3.4-3.4-3.4-.6 0-1.2.2-1.7.4 1.4-1.6 3.5-2.6 5.8-2.6 1 0 1.9.2 2.8.5C22.7 4.3 19.6 3 16 3z"/></svg>
+              <span class="tb-title">Nearby</span>
+            </div>
+            <div class="tb-icons">
+              <svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="9" cy="6" r="2" fill="currentColor"/><circle cx="15" cy="12" r="2" fill="currentColor"/><circle cx="9" cy="18" r="2" fill="currentColor"/></svg>
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.3l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2.2-1.3L14 2h-4l-.3 2.4a7 7 0 0 0-2.2 1.3l-2.4-1-2 3.4 2 1.6A7 7 0 0 0 5 12c0 .4 0 .9.1 1.3l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2.2 1.3L10 22h4l.3-2.4a7 7 0 0 0 2.2-1.3l2.4 1 2-3.4-2-1.6c.1-.4.1-.9.1-1.3z"/></svg>
+            </div>
+          </div>
+
+          <div class="cascade">
+            <div class="tile tp1"><div class="tile-dot"></div><div class="tile-info"><div class="tile-name">Marco</div><div class="tile-dist">220 ft</div></div></div>
+            <div class="tile tp2"><div class="tile-dot"></div><div class="tile-info"><div class="tile-name">Dev</div><div class="tile-dist">0.2 mi</div></div></div>
+            <div class="tile tp3"><div class="tile-info"><div class="tile-name">Sam</div><div class="tile-dist">0.3 mi</div></div></div>
+            <div class="tile tp4"><div class="tile-dot"></div><div class="tile-info"><div class="tile-name">Theo</div><div class="tile-dist">0.4 mi</div></div></div>
+            <div class="tile tp5"><div class="tile-info"><div class="tile-name">Luca</div><div class="tile-dist">0.5 mi</div></div></div>
+            <div class="tile tp6"><div class="tile-dot"></div><div class="tile-info"><div class="tile-name">Ash</div><div class="tile-dist">0.6 mi</div></div></div>
+            <div class="tile tp7"><div class="tile-info"><div class="tile-name">Rio</div><div class="tile-dist">0.8 mi</div></div></div>
+            <div class="tile tp8"><div class="tile-dot"></div><div class="tile-info"><div class="tile-name">Kai</div><div class="tile-dist">0.9 mi</div></div></div>
+            <div class="tile tp9"><div class="tile-info"><div class="tile-name">Nico</div><div class="tile-dist">1.1 mi</div></div></div>
+            <div class="tile tp2"><div class="tile-dot"></div><div class="tile-info"><div class="tile-name">Eli</div><div class="tile-dist">1.2 mi</div></div></div>
+            <div class="tile tp5"><div class="tile-info"><div class="tile-name">Ben</div><div class="tile-dist">1.4 mi</div></div></div>
+            <div class="tile tp3"><div class="tile-dot"></div><div class="tile-info"><div class="tile-name">Max</div><div class="tile-dist">1.5 mi</div></div></div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><span>Browse</span></div>
+            <div class="tab"><span class="tab-badge">3</span><svg viewBox="0 0 24 24"><path d="M12 2c1 4-2 5-2 8a4 4 0 0 0 8 0c0-3-2-4-2-7 3 2 5 5 5 9a7 7 0 0 1-14 0c0-5 4-7 5-10z"/></svg><span>Taps</span></div>
+            <div class="tab"><span class="tab-badge">5</span><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Messages</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 21c1-4 3.5-6 7-6s6 2 7 6"/></svg><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#000000;"><div class="name">Canvas</div>#000000</div>
+          <div class="swatch" style="background:#1A1A1A;"><div class="name">Surface 1</div>#1A1A1A</div>
+          <div class="swatch" style="background:#222222;"><div class="name">Surface 2</div>#222222</div>
+          <div class="swatch" style="background:#2C2C2C;"><div class="name">Surface 3 / Divider</div>#2C2C2C</div>
+          <div class="swatch" style="background:#FFFFFF; color:#000;"><div class="name">Text Primary</div>#FFFFFF</div>
+          <div class="swatch" style="background:#999999;"><div class="name">Text Secondary</div>#999999</div>
+          <div class="swatch" style="background:#5C5C5C;"><div class="name">Text Tertiary</div>#5C5C5C</div>
+          <div class="swatch dark-text" style="background:#FFDE00;"><div class="name">Grindr Yellow</div>#FFDE00</div>
+          <div class="swatch dark-text" style="background:#E6C700;"><div class="name">Yellow Pressed</div>#E6C700</div>
+          <div class="swatch dark-text" style="background:#FFF2A8;"><div class="name">Yellow Tint</div>#FFF2A8</div>
+          <div class="swatch" style="background:#4CD964; color:#000;"><div class="name">Online Green</div>#4CD964</div>
+          <div class="swatch" style="background:#FF3B30;"><div class="name">Error</div>#FF3B30</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter (Grindr grotesque fallback)</div>
+        <div class="type-row"><div class="type-meta">Profile Name · 24pt · 700</div><div class="type-sample t-24">Marco, 28</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 22pt · 700</div><div class="type-sample t-22">Messages</div></div>
+        <div class="type-row"><div class="type-meta">Section · 18pt · 700</div><div class="type-sample t-18">Online now</div></div>
+        <div class="type-row"><div class="type-meta">List Row · 16pt · 700</div><div class="type-sample t-16">Jordan</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 400</div><div class="type-sample t-15">Tap a photo to view the profile</div></div>
+        <div class="type-row"><div class="type-meta">Metadata · 13pt · 400</div><div class="type-sample t-13">Active 5 min ago</div></div>
+        <div class="type-row"><div class="type-meta">Distance · 12pt · 700</div><div class="type-sample t-12">220 FT</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="tap-btn"><svg viewBox="0 0 24 24"><path d="M12 2c1 4-2 5-2 8a4 4 0 0 0 8 0c0-3-2-4-2-7 3 2 5 5 5 9a7 7 0 0 1-14 0c0-5 4-7 5-10z"/></svg></button>
+          <button class="btn btn-primary">Send Tap</button>
+          <button class="btn btn-outline">Tapped</button>
+          <div class="chip active">Online</div>
+          <div class="chip">New here</div>
+          <div class="chip">Photos</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Chat Bubbles</div>
+        <div class="chat">
+          <div class="bubble in">Hey, what are you up to tonight?</div>
+          <div class="bubble out">Just got back from the gym — you?</div>
+          <div class="bubble in">Same, want to grab a drink nearby?</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive — Online Presence Dot</div>
+        <div class="presence-demo">
+          <div class="pd"><div class="pd-avatar online"></div><span>Online now</span></div>
+          <div class="pd"><div class="pd-avatar"></div><span>Offline (no dot)</span></div>
+        </div>
+        <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.5; margin-top: 16px;">A 10pt <code>#4CD964</code> dot with a 2pt black ring sits top-right of every tile and avatar. Solid = online now; <strong>absence</strong> of the dot is the offline state — Grindr never shows a gray "offline" dot.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-18">18</div>
+          <div class="radius-box r-22">22</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

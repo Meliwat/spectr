@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Trello iOS — Light</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --action: #0C66E4;
+    --action-pressed: #0055CC;
+    --action-tint: #E9F2FF;
+    --board-blue: #0079BF;
+    --card: #FFFFFF;
+    --list: #F1F2F4;
+    --sunken: #EBECF0;
+    --divider: #DFE1E6;
+    --border: #C1C7D0;
+    --text: #172B4D;
+    --text-secondary: #5E6C84;
+    --text-tertiary: #8993A4;
+    --label-green: #4BCE97;
+    --label-yellow: #F5CD47;
+    --label-orange: #FEA362;
+    --label-red: #F87168;
+    --label-purple: #9F8FEF;
+    --label-blue: #579DFF;
+    --success: #1F845A;
+    --due-soon: #B65C02;
+    --overdue: #C9372C;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #E4EDF4; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 700; letter-spacing: -0.6px; color: var(--text); }
+  .page-chip { background: var(--action); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(9,30,66,0.5), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--board-blue); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: #FFF; }
+
+  /* On-board top bar (no bottom tab) */
+  .board-bar { display: flex; align-items: center; gap: 10px; padding: 4px 12px 12px; }
+  .board-bar .back { color: #FFF; }
+  .board-bar .back svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2.4; fill: none; }
+  .board-name { flex: 1; font-size: 20px; font-weight: 700; color: #FFF; letter-spacing: -0.2px; }
+  .members { display: flex; }
+  .member { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--board-blue); margin-left: -8px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #FFF; }
+  .member.m1 { background: #6554C0; } .member.m2 { background: #E2483D; } .member.m3 { background: #1F845A; }
+  .chip-on-board { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.16); color: #FFF; border-radius: 8px; padding: 0 12px; height: 32px; font-size: 12px; font-weight: 600; }
+  .chip-on-board svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .board-bar .menu { color: #FFF; }
+  .board-bar .menu svg { width: 20px; height: 20px; fill: currentColor; }
+
+  /* Board horizontal scroll */
+  .board { flex: 1; display: flex; gap: 8px; padding: 4px 8px 12px; overflow-x: auto; align-items: flex-start; scrollbar-width: none; }
+  .board::-webkit-scrollbar { display: none; }
+  .col { width: 232px; flex-shrink: 0; background: var(--list); border-radius: 12px; box-shadow: 0 1px 2px rgba(9,30,66,0.08); display: flex; flex-direction: column; max-height: 100%; }
+  .col-head { display: flex; align-items: center; gap: 6px; padding: 10px 10px 6px; }
+  .col-title { font-size: 15px; font-weight: 600; color: var(--text); }
+  .col-count { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+  .col-more { margin-left: auto; color: var(--text-secondary); }
+  .col-more svg { width: 16px; height: 16px; fill: currentColor; }
+  .col-body { padding: 0 8px 4px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; scrollbar-width: none; }
+  .col-body::-webkit-scrollbar { display: none; }
+  .tcard { background: var(--card); border-radius: 8px; padding: 8px 10px; box-shadow: 0 1px 1px rgba(9,30,66,0.13), 0 0 1px rgba(9,30,66,0.06); }
+  .tcard.dragging { transform: scale(1.03) rotate(-1.5deg); box-shadow: 0 12px 24px rgba(9,30,66,0.25); }
+  .placeholder { height: 44px; border-radius: 8px; background: rgba(9,30,66,0.14); }
+  .labels { display: flex; gap: 4px; margin-bottom: 6px; }
+  .lbl { width: 32px; height: 8px; border-radius: 4px; }
+  .tcard-title { font-size: 15px; font-weight: 600; color: var(--text); line-height: 1.35; }
+  .tcard-badges { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+  .badge { display: flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 600; }
+  .badge svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .badge.due { color: var(--due-soon); }
+  .badge.check { color: var(--text-secondary); }
+  .badge-av { width: 22px; height: 22px; border-radius: 50%; background: #6554C0; margin-left: auto; }
+  .col-add { padding: 10px; display: flex; align-items: center; gap: 8px; color: var(--text-secondary); font-size: 15px; }
+  .col-add svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2.4; fill: none; }
+  /* Composer (expanded) */
+  .composer { padding: 8px; display: flex; flex-direction: column; gap: 8px; }
+  .composer textarea { font-family: var(--font); font-size: 15px; color: var(--text); background: var(--card); border: 2px solid var(--action); border-radius: 8px; padding: 8px; resize: none; height: 56px; }
+  .composer-actions { display: flex; align-items: center; gap: 8px; }
+  .add-card-btn { background: var(--action); color: #FFF; border: none; border-radius: 8px; height: 34px; padding: 0 16px; font-family: var(--font); font-size: 14px; font-weight: 600; cursor: pointer; }
+  .composer .x { color: var(--text-secondary); font-size: 18px; }
+  .add-list { width: 200px; flex-shrink: 0; background: rgba(255,255,255,0.16); color: #FFF; border-radius: 12px; height: 40px; display: flex; align-items: center; padding: 0 14px; font-size: 15px; font-weight: 600; }
+
+  /* Token sections */
+  .section { background: var(--card); border: 1px solid var(--divider); border-radius: 12px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 16px; min-height: 96px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--text); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 210px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); }
+  .t-24 { font-size: 24px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-20 { font-size: 20px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-17 { font-size: 17px; font-weight: 700; }
+  .t-15s { font-size: 15px; font-weight: 600; }
+  .t-15 { font-size: 15px; font-weight: 400; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 600; cursor: pointer; border: none; letter-spacing: 0; font-size: 16px; }
+  .btn-primary { background: var(--action); color: #FFF; padding: 12px 22px; border-radius: 8px; }
+  .btn-primary:active { background: var(--action-pressed); transform: scale(0.98); }
+  .btn-subtle { background: rgba(9,30,66,0.06); color: var(--text); padding: 12px 22px; border-radius: 8px; }
+  .btn-onboard { background: var(--board-blue); color: #FFF; padding: 12px 22px; border-radius: 8px; }
+  .btn-onboard .inner { background: rgba(255,255,255,0.16); margin: -12px -22px; padding: 12px 22px; border-radius: 8px; }
+
+  /* Label palette demo */
+  .label-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+  .label-chip { padding: 5px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; color: var(--text); }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--action); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Trello iOS — Design Tokens</div>
+    <div class="page-chip">Board Backdrop</div>
+  </div>
+  <p class="page-subtitle">No fixed canvas — the board background (solid #0079BF, gradient, or photo) sets the screen. Pale lists (#F1F2F4) of white cards float on the backdrop. Action blue is #0C66E4; there is no bottom tab bar — the board scrolls horizontally and cards lift on drag.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="board-bar">
+            <div class="back"><svg viewBox="0 0 24 24"><polyline points="15,5 8,12 15,19"/></svg></div>
+            <div class="board-name">Sprint 12</div>
+            <div class="members"><span class="member m1">AM</span><span class="member m2">JL</span><span class="member m3">PK</span></div>
+            <div class="chip-on-board"><svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="10" y1="17" x2="14" y2="17"/></svg>Filter</div>
+            <div class="menu"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></div>
+          </div>
+
+          <div class="board">
+            <div class="col">
+              <div class="col-head"><span class="col-title">To Do</span><span class="col-count">4</span><span class="col-more"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></span></div>
+              <div class="col-body">
+                <div class="tcard">
+                  <div class="labels"><span class="lbl" style="background:var(--label-green)"></span><span class="lbl" style="background:var(--label-yellow)"></span></div>
+                  <div class="tcard-title">Design the onboarding flow</div>
+                  <div class="tcard-badges">
+                    <div class="badge due"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Jun 14</div>
+                    <div class="badge check"><svg viewBox="0 0 24 24"><polyline points="20,6 9,17 4,12"/></svg>3/8</div>
+                    <div class="badge-av"></div>
+                  </div>
+                </div>
+                <div class="tcard">
+                  <div class="labels"><span class="lbl" style="background:var(--label-blue)"></span></div>
+                  <div class="tcard-title">Audit color contrast on dark mode</div>
+                </div>
+                <div class="placeholder"></div>
+              </div>
+              <div class="col-add"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add a card</div>
+            </div>
+
+            <div class="col">
+              <div class="col-head"><span class="col-title">In Progress</span><span class="col-count">2</span><span class="col-more"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></span></div>
+              <div class="col-body">
+                <div class="tcard dragging">
+                  <div class="labels"><span class="lbl" style="background:var(--label-purple)"></span><span class="lbl" style="background:var(--label-orange)"></span></div>
+                  <div class="tcard-title">Build the kanban drag interaction</div>
+                  <div class="tcard-badges">
+                    <div class="badge check"><svg viewBox="0 0 24 24"><polyline points="20,6 9,17 4,12"/></svg>5/6</div>
+                    <div class="badge-av"></div>
+                  </div>
+                </div>
+                <div class="tcard">
+                  <div class="labels"><span class="lbl" style="background:var(--label-red)"></span></div>
+                  <div class="tcard-title">Fix list horizontal scroll jank</div>
+                </div>
+              </div>
+              <div class="composer">
+                <textarea placeholder="Enter a title for this card…"></textarea>
+                <div class="composer-actions">
+                  <button class="add-card-btn">Add card</button>
+                  <span class="x">×</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="col-head"><span class="col-title">Done</span><span class="col-count">3</span><span class="col-more"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></span></div>
+              <div class="col-body">
+                <div class="tcard">
+                  <div class="labels"><span class="lbl" style="background:var(--label-green)"></span></div>
+                  <div class="tcard-title">Ship the board backdrop system</div>
+                </div>
+              </div>
+              <div class="col-add"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add a card</div>
+            </div>
+
+            <div class="add-list">+ Add list</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0079BF;"><div class="name">Board Blue (backdrop)</div>#0079BF</div>
+          <div class="swatch" style="background:#0C66E4;"><div class="name">Action Blue</div>#0C66E4</div>
+          <div class="swatch" style="background:#0055CC;"><div class="name">Action Pressed</div>#0055CC</div>
+          <div class="swatch light" style="background:#F1F2F4;"><div class="name">List Surface</div>#F1F2F4</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Card</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#DFE1E6;"><div class="name">Divider</div>#DFE1E6</div>
+          <div class="swatch" style="background:#172B4D;"><div class="name">Text Primary</div>#172B4D</div>
+          <div class="swatch" style="background:#5E6C84;"><div class="name">Text Secondary</div>#5E6C84</div>
+          <div class="swatch light" style="background:#4BCE97;"><div class="name">Label Green</div>#4BCE97</div>
+          <div class="swatch light" style="background:#F5CD47;"><div class="name">Label Yellow</div>#F5CD47</div>
+          <div class="swatch light" style="background:#F87168;"><div class="name">Label Red</div>#F87168</div>
+          <div class="swatch light" style="background:#579DFF;"><div class="name">Label Blue</div>#579DFF</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — System (SF Pro / Inter)</div>
+        <div class="type-row"><div class="type-meta">Sheet Title · 24pt · 700</div><div class="type-sample t-24">Build the kanban drag</div></div>
+        <div class="type-row"><div class="type-meta">Board Name · 20pt · 700</div><div class="type-sample t-20">Sprint 12</div></div>
+        <div class="type-row"><div class="type-meta">Section · 17pt · 700</div><div class="type-sample t-17">Checklist</div></div>
+        <div class="type-row"><div class="type-meta">List / Card Title · 15pt · 600</div><div class="type-sample t-15s">Design the onboarding flow</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 400</div><div class="type-sample t-15">Drag cards between lists to move work forward.</div></div>
+        <div class="type-row"><div class="type-meta">Subtitle · 13pt · 400</div><div class="type-sample t-13">Updated 2h ago</div></div>
+        <div class="type-row"><div class="type-meta">Badge · 12pt · 600</div><div class="type-sample t-12">3/8 · Jun 14</div></div>
+        <div class="type-row"><div class="type-meta">Label · 11pt · 700 UP</div><div class="type-sample t-11">Members</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons (8pt rounded rects, not pills)</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Create</button>
+          <button class="btn btn-subtle">Cancel</button>
+          <button class="btn btn-onboard"><span class="inner">Filter (on board)</span></button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Card Label Palette (functional — the one free-color zone)</div>
+        <div class="label-grid">
+          <span class="label-chip" style="background:#BAF3DB">Green</span>
+          <span class="label-chip" style="background:#F8E6A0">Yellow</span>
+          <span class="label-chip" style="background:#FEDEC8">Orange</span>
+          <span class="label-chip" style="background:#FFD5D2">Red</span>
+          <span class="label-chip" style="background:#DFD8FD">Purple</span>
+          <span class="label-chip" style="background:#CCE0FF">Blue</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Board Backdrop Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Trello has no fixed canvas — the <strong>board background</strong> (solid <code>#0079BF</code>, a gradient, or a photo) owns the screen, and pale <code>#F1F2F4</code> lists of white cards float on it. There is <em>no bottom tab bar</em>: the board scrolls horizontally and the top bar holds navigation. Card text stays navy <code>#172B4D</code> for legibility over any backdrop; the six-color label palette is the one place color is free, because there it is data. Shadows use the navy tint <code>rgba(9,30,66,…)</code> so depth reads on both color backdrops and pale lists — and a card's shadow jumps dramatically the instant you pick it up.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

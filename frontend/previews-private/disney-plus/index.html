@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Disney+ iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0A0E2A;
+    --surface-1: #12152E;
+    --surface-2: #1A1F3D;
+    --divider: #2A3050;
+    --text: #FFFFFF;
+    --text-secondary: #A0A6C0;
+    --text-tertiary: #5A6080;
+    --blue: #0063E5;
+    --glow-blue: #1A75FF;
+    --blue-pressed: #0052BD;
+    --live-red: #E5484D;
+    --focus-glow: rgba(26,117,255,0.30);
+    --font: 'Inter', 'Avenir Next', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #06081A; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 30px; font-weight: 700; letter-spacing: -0.4px; }
+  .page-chip { background: var(--blue); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.6px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 660px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.95), 0 0 0 2px rgba(255,255,255,0.05) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Starfield billboard */
+  .billboard { height: 360px; position: relative; flex-shrink: 0; background: linear-gradient(150deg, #21407A 0%, #16264E 45%, #0A0E2A 100%); overflow: hidden; }
+  .stars { position: absolute; inset: 0; }
+  .star { position: absolute; background: #fff; border-radius: 50%; }
+  .billboard-scrim { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 0%, transparent 45%, var(--canvas) 100%); }
+  .bb-content { position: absolute; left: 0; right: 0; bottom: 16px; display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 0 16px; z-index: 2; }
+  .bb-logo { font-size: 30px; font-weight: 700; letter-spacing: 4px; text-shadow: 0 2px 12px rgba(0,0,0,0.5); }
+  .bb-meta { font-size: 13px; font-weight: 600; letter-spacing: 0.3px; color: var(--text-secondary); }
+  .bb-actions { display: flex; gap: 12px; width: 100%; }
+  .bb-play { flex: 1; height: 44px; border-radius: 8px; background: #fff; color: var(--canvas); display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; font-weight: 700; letter-spacing: 0.3px; box-shadow: 0 6px 22px var(--focus-glow); }
+  .bb-play svg { width: 16px; height: 16px; fill: var(--canvas); }
+  .bb-sec { flex: 1; height: 44px; border-radius: 8px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.24); color: #fff; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 600; }
+  .bb-sec svg { width: 16px; height: 16px; stroke: #fff; stroke-width: 2.5; fill: none; }
+  .mute-toggle { position: absolute; right: 16px; bottom: 96px; width: 32px; height: 32px; border-radius: 50%; background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center; z-index: 3; }
+  .mute-toggle svg { width: 16px; height: 16px; stroke: #fff; stroke-width: 2; fill: none; }
+
+  /* Brand portals */
+  .portals { display: flex; gap: 12px; padding: 16px; overflow-x: auto; scrollbar-width: none; }
+  .portals::-webkit-scrollbar { display: none; }
+  .portal { width: 132px; height: 80px; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; letter-spacing: 1px; border: 1px solid var(--divider); position: relative; }
+  .portal.p-disney { background: linear-gradient(135deg, #1B3A8F, #0A1A4A); }
+  .portal.p-pixar { background: linear-gradient(135deg, #1E73BE, #0B3358); }
+  .portal.p-marvel { background: linear-gradient(135deg, #B3122B, #5A0913); color: #fff; }
+  .portal.p-starwars { background: linear-gradient(135deg, #2B2B2B, #000); color: #E8C547; }
+  .portal.p-natgeo { background: linear-gradient(135deg, #2A2A2A, #111); color: #FFCC00; }
+  .portal.focused { border: 2px solid var(--glow-blue); box-shadow: 0 0 24px rgba(26,117,255,0.35); transform: scale(1.04); }
+
+  /* Content row */
+  .row-head { font-size: 18px; font-weight: 700; padding: 8px 16px 12px; }
+  .card-row { display: flex; gap: 12px; padding: 0 16px 16px; overflow-x: auto; scrollbar-width: none; }
+  .card-row::-webkit-scrollbar { display: none; }
+  .card { width: 200px; height: 113px; border-radius: 6px; flex-shrink: 0; position: relative; overflow: hidden; }
+  .card.c1 { background: linear-gradient(135deg, #3A5BA0, #16264E); }
+  .card.c2 { background: linear-gradient(135deg, #8A2436, #3A0F17); }
+  .card.c3 { background: linear-gradient(135deg, #2E6E8A, #143540); }
+  .card.focused { border: 2px solid var(--glow-blue); box-shadow: 0 0 24px var(--focus-glow); }
+  .card-prog { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(255,255,255,0.25); }
+  .card-prog .fill { height: 100%; background: var(--blue); }
+  .card-play { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+  .card-play svg { width: 34px; height: 34px; fill: rgba(255,255,255,0.9); }
+
+  /* Tab bar */
+  .tab-bar { height: 58px; background: rgba(10,14,42,0.96); backdrop-filter: saturate(180%) blur(20px); display: flex; align-items: center; justify-content: space-around; padding: 6px 8px 12px; border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-secondary); font-size: 10px; font-weight: 600; position: relative; }
+  .tab.active { color: #fff; }
+  .tab.active::after { content: ''; position: absolute; top: -6px; width: 5px; height: 5px; border-radius: 50%; background: var(--blue); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 16px; min-height: 90px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 700; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #0A0E2A; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 210px; flex-shrink: 0; }
+  .type-sample { flex: 1; }
+  .t-30 { font-size: 30px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-20 { font-size: 20px; font-weight: 700; letter-spacing: -0.1px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-15 { font-size: 15px; font-weight: 400; color: var(--text-secondary); }
+  .t-14 { font-size: 14px; font-weight: 600; }
+  .t-13 { font-size: 13px; font-weight: 600; letter-spacing: 0.3px; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; }
+  .btn-primary { background: #fff; color: var(--canvas); font-size: 16px; padding: 13px 28px; border-radius: 8px; letter-spacing: 0.3px; box-shadow: 0 6px 22px var(--focus-glow); }
+  .btn-primary:active { background: #E8EAF2; transform: scale(0.98); }
+  .btn-glass { background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.24); font-size: 14px; font-weight: 600; padding: 13px 24px; border-radius: 8px; }
+  .chip { padding: 8px 18px; background: var(--surface-2); color: #fff; font-size: 14px; font-weight: 600; border-radius: 8px; }
+  .chip.active { background: var(--blue); color: #fff; }
+
+  /* Brand portal demo */
+  .portal-demo { display: flex; gap: 12px; flex-wrap: wrap; }
+  .pd { width: 110px; height: 66px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; letter-spacing: 1px; border: 1px solid var(--divider); }
+  .pd.sel { border: 2px solid var(--glow-blue); box-shadow: 0 0 20px rgba(26,117,255,0.35); transform: scale(1.04); }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--blue); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-10 { border-radius: 10px; }
+  .r-16 { border-radius: 16px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Disney+ iOS — Design Tokens</div>
+    <div class="page-chip">Dark</div>
+  </div>
+  <p class="page-subtitle">Deep space-navy canvas (#0A0E2A) with a faint starfield behind the hero. Disney Blue (#0063E5) primary, glow blue (#1A75FF) for focus. Brand-portal tiles and 16:9 cards.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="scroll-body">
+            <div class="billboard">
+              <div class="stars" id="stars"></div>
+              <div class="billboard-scrim"></div>
+              <div class="mute-toggle"><svg viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg></div>
+              <div class="bb-content">
+                <div class="bb-logo">ANDOR</div>
+                <div class="bb-meta">Action · Sci-Fi · TV-14 · 2024</div>
+                <div class="bb-actions">
+                  <div class="bb-play"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg>Play</div>
+                  <div class="bb-sec"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Watchlist</div>
+                </div>
+              </div>
+            </div>
+            <div class="portals">
+              <div class="portal p-disney">DISNEY</div>
+              <div class="portal p-pixar focused">PIXAR</div>
+              <div class="portal p-marvel">MARVEL</div>
+              <div class="portal p-starwars">STAR WARS</div>
+              <div class="portal p-natgeo">NAT GEO</div>
+            </div>
+            <div class="row-head">Continue Watching</div>
+            <div class="card-row">
+              <div class="card c1 focused">
+                <div class="card-play"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="rgba(255,255,255,0.9)"/><polygon points="10,8 17,12 10,16" fill="#0A0E2A"/></svg></div>
+                <div class="card-prog"><div class="fill" style="width:42%;"></div></div>
+              </div>
+              <div class="card c2">
+                <div class="card-play"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="rgba(255,255,255,0.9)"/><polygon points="10,8 17,12 10,16" fill="#0A0E2A"/></svg></div>
+                <div class="card-prog"><div class="fill" style="width:68%;"></div></div>
+              </div>
+              <div class="card c3"></div>
+            </div>
+          </div>
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/><rect x="3" y="3" width="18" height="18" rx="2" fill="none"/></svg><span>Watchlist</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><polyline points="7,10 12,15 17,10"/><path d="M5 21h14"/></svg><span>Downloads</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M6 19c1-3 3.5-4 6-4s5 1 6 4"/></svg><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0A0E2A;"><div class="name">Canvas Navy</div>#0A0E2A</div>
+          <div class="swatch" style="background:#12152E;"><div class="name">Surface 1</div>#12152E</div>
+          <div class="swatch" style="background:#1A1F3D;"><div class="name">Surface 2</div>#1A1F3D</div>
+          <div class="swatch" style="background:#2A3050;"><div class="name">Divider</div>#2A3050</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Text Primary</div>#FFFFFF</div>
+          <div class="swatch" style="background:#A0A6C0; color:#0A0E2A;"><div class="name">Text Secondary</div>#A0A6C0</div>
+          <div class="swatch" style="background:#5A6080;"><div class="name">Text Tertiary</div>#5A6080</div>
+          <div class="swatch" style="background:#0063E5;"><div class="name">Disney Blue</div>#0063E5</div>
+          <div class="swatch" style="background:#1A75FF;"><div class="name">Glow Blue</div>#1A75FF</div>
+          <div class="swatch" style="background:#0052BD;"><div class="name">Blue Pressed</div>#0052BD</div>
+          <div class="swatch" style="background:#E5484D;"><div class="name">Live Red</div>#E5484D</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Avenir Next (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Billboard · 30 · 700</div><div class="type-sample t-30">The Mandalorian</div></div>
+        <div class="type-row"><div class="type-meta">Detail Title · 26 · 700</div><div class="type-sample t-26">Loki</div></div>
+        <div class="type-row"><div class="type-meta">Section · 20 · 700</div><div class="type-sample t-20">Recommended For You</div></div>
+        <div class="type-row"><div class="type-meta">Row Header · 18 · 700</div><div class="type-sample t-18">Because you watched Andor</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 14 · 600</div><div class="type-sample t-14">Toy Story 4</div></div>
+        <div class="type-row"><div class="type-meta">Metadata · 13 · 600</div><div class="type-sample t-13">Action · PG-13 · 2024 · 2h 11m</div></div>
+        <div class="type-row"><div class="type-meta">Synopsis · 15 · 400</div><div class="type-sample t-15">A lone bounty hunter in the outer reaches of the galaxy.</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">▶ Play</button>
+          <button class="btn btn-glass">+ Watchlist</button>
+          <div class="chip active">Movies</div>
+          <div class="chip">Series</div>
+          <div class="chip">Originals</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Brand-Portal Tiles (focus = #1A75FF glow + scale 1.04)</div>
+        <div class="portal-demo">
+          <div class="pd p-disney">DISNEY</div>
+          <div class="pd p-pixar sel">PIXAR</div>
+          <div class="pd p-marvel">MARVEL</div>
+          <div class="pd p-starwars">STAR WARS</div>
+          <div class="pd p-natgeo">NAT GEO</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">16:9 Content Cards (focus glow · continue progress)</div>
+        <div class="card-row" style="padding:0;">
+          <div class="card c1 focused" style="width:180px; height:101px;">
+            <div class="card-prog"><div class="fill" style="width:42%;"></div></div>
+          </div>
+          <div class="card c2" style="width:180px; height:101px;">
+            <div class="card-prog"><div class="fill" style="width:68%;"></div></div>
+          </div>
+          <div class="card c3" style="width:180px; height:101px;"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  // Faint scattered starfield behind the hero billboard
+  (function () {
+    var el = document.getElementById('stars');
+    if (!el) return;
+    for (var i = 0; i < 90; i++) {
+      var s = document.createElement('div');
+      s.className = 'star';
+      var size = 1 + Math.random();
+      s.style.width = size + 'px';
+      s.style.height = size + 'px';
+      s.style.left = (Math.random() * 100) + '%';
+      s.style.top = (Math.random() * 100) + '%';
+      s.style.opacity = (Math.random() * 0.5).toFixed(2);
+      el.appendChild(s);
+    }
+  })();
+</script>
+</body>
+</html>

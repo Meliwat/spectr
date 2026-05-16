@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by LINE iOS — Light</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --backdrop: #8CABD9;
+    --canvas: #FFFFFF;
+    --surface: #F7F7F7;
+    --divider: #E5E5E5;
+    --text: #000000;
+    --text-secondary: #8C8C8C;
+    --text-tertiary: #B3B3B3;
+    --green: #06C755;
+    --green-pressed: #05A647;
+    --green-wash: #F1FBF3;
+    --incoming: #FFFFFF;
+    --outgoing: #C5F0B1;
+    --notif: #FF334B;
+    --link: #1F8FFF;
+    --font: 'Noto Sans', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #DCE3EE; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1180px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; flex-wrap: wrap; }
+  .mark { width: 36px; height: 36px; border-radius: 10px; background: var(--green); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #FFF; font-size: 18px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.3px; }
+  .page-chip { background: var(--green); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.55; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #0c0c0c; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.55), 0 0 0 2px rgba(0,0,0,0.08) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--backdrop); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 700; color: var(--text); background: var(--canvas); }
+
+  /* Thread header */
+  .thread-head { display: flex; align-items: center; gap: 10px; padding: 6px 16px 12px; background: var(--canvas); border-bottom: 1px solid var(--divider); }
+  .th-back svg { width: 22px; height: 22px; stroke: #000; stroke-width: 2.5; fill: none; }
+  .th-name { font-size: 17px; font-weight: 700; }
+  .th-badge { display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; }
+  .th-badge svg { width: 15px; height: 15px; fill: var(--green); }
+  .th-actions { margin-left: auto; display: flex; gap: 16px; }
+  .th-actions svg { width: 22px; height: 22px; stroke: #000; stroke-width: 2; fill: none; }
+
+  /* Thread on periwinkle backdrop */
+  .thread { flex: 1; overflow-y: auto; padding: 16px 0; scrollbar-width: none; display: flex; flex-direction: column; gap: 4px; }
+  .thread::-webkit-scrollbar { display: none; }
+
+  .row { display: flex; align-items: flex-end; gap: 6px; padding: 0 8px; }
+  .row.out { justify-content: flex-end; }
+  .row.in { justify-content: flex-start; }
+  .avatar-sm { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #C9A06C, #8F5B2E); flex-shrink: 0; }
+  .bubble { max-width: 70%; padding: 9px 12px; font-size: 16px; line-height: 1.45; box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+  .bubble.in  { background: var(--incoming); color: var(--text); border-radius: 4px 16px 16px 16px; }
+  .bubble.out { background: var(--outgoing); color: var(--text); border-radius: 16px 4px 16px 16px; }
+  .meta { display: flex; flex-direction: column; font-size: 11px; color: var(--text-secondary); }
+  .meta.out { align-items: flex-end; }
+  .meta .read { font-size: 11px; color: var(--text-secondary); }
+
+  /* Oversized bubble-less sticker */
+  .sticker-row { display: flex; align-items: flex-end; gap: 6px; padding: 10px 12px; }
+  .sticker-row.out { justify-content: flex-end; }
+  .sticker { width: 140px; height: 140px; border-radius: 24px; background: radial-gradient(circle at 50% 38%, #FFE9A8 0 30%, #F7C948 31% 56%, transparent 57%), linear-gradient(160deg, #8B5A2B 0%, #6B4423 100%); position: relative; display: flex; align-items: flex-end; justify-content: center; }
+  .sticker::before { content: ''; position: absolute; top: 30%; left: 28%; width: 10px; height: 14px; background: #2A1A0E; border-radius: 50%; box-shadow: 44px 0 0 #2A1A0E; }
+  .sticker::after { content: ''; position: absolute; top: 52%; left: 50%; transform: translateX(-50%); width: 32px; height: 16px; border-bottom: 4px solid #2A1A0E; border-radius: 0 0 20px 20px; }
+  .sticker-cheek { position: absolute; bottom: 8px; font-size: 11px; font-weight: 700; color: #2A1A0E; background: rgba(255,255,255,0.6); padding: 2px 8px; border-radius: 8px; }
+
+  /* Composer */
+  .composer { display: flex; align-items: flex-end; gap: 10px; padding: 8px 8px 12px; background: var(--backdrop); }
+  .comp-plus svg { width: 24px; height: 24px; stroke: #FFF; stroke-width: 2; fill: none; }
+  .comp-pill { flex: 1; display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 12px; border-radius: 18px; background: #FFF; }
+  .comp-ph { flex: 1; font-size: 16px; color: var(--text-tertiary); padding: 8px 0; }
+  .comp-pill svg { width: 22px; height: 22px; stroke: var(--text-secondary); stroke-width: 2; fill: none; }
+  .comp-cam svg { width: 20px; height: 20px; }
+  .send-mic svg { width: 22px; height: 22px; stroke: #FFF; stroke-width: 2; fill: none; }
+
+  /* Tab bar (super-app) */
+  .tab-bar { height: 56px; display: flex; align-items: center; padding: 4px 4px 8px; justify-content: space-around; background: var(--canvas); border-top: 1px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--text-secondary); font-size: 10px; font-weight: 400; }
+  .tab.active { color: var(--green); }
+  .tab svg { width: 24px; height: 24px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--canvas); border: 1px solid var(--divider); border-radius: 14px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 96px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 700; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #000; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; }
+  .t-24 { font-size: 24px; font-weight: 700; }
+  .t-17 { font-size: 17px; font-weight: 700; }
+  .t-16r { font-size: 16px; font-weight: 400; }
+  .t-16b { font-size: 16px; font-weight: 400; line-height: 1.45; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-13b { font-size: 13px; font-weight: 700; letter-spacing: 0.2px; }
+  .t-12 { font-size: 12px; font-weight: 400; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--green); color: #FFF; font-size: 16px; font-weight: 700; padding: 13px 24px; border-radius: 8px; }
+  .btn-primary:active { background: var(--green-pressed); transform: scale(0.98); }
+  .btn-outline { background: #FFF; color: var(--green); border: 1px solid var(--green); font-size: 16px; font-weight: 700; padding: 12px 22px; border-radius: 8px; }
+  .btn-pill { background: var(--green); color: #FFF; font-size: 15px; font-weight: 700; padding: 9px 22px; border-radius: 22px; }
+  .btn-text { background: transparent; color: var(--green); font-size: 15px; font-weight: 700; padding: 12px 0; border: none; cursor: pointer; }
+  .send-circle { width: 30px; height: 30px; border-radius: 50%; background: var(--green); display: inline-flex; align-items: center; justify-content: center; }
+  .send-circle svg { width: 16px; height: 16px; stroke: #FFF; stroke-width: 3; fill: none; }
+
+  /* Sticker shop tile */
+  .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .shop-tile { background: var(--surface); border-radius: 12px; padding: 12px; }
+  .shop-prev { height: 88px; border-radius: 8px; background: radial-gradient(circle at 50% 40%, #FFE9A8 0 32%, #F7C948 33% 58%, #FFF 59%); margin-bottom: 8px; }
+  .shop-title { font-size: 14px; font-weight: 700; }
+  .shop-author { font-size: 12px; color: var(--text-secondary); margin: 2px 0 8px; }
+  .shop-price { display: flex; justify-content: flex-end; }
+  .shop-price span { font-size: 13px; font-weight: 700; color: var(--green); border: 1px solid var(--green); padding: 5px 14px; border-radius: 999px; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--green); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-18 { border-radius: 18px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="mark">L</span>
+    <div class="page-title">LINE iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">A messaging surface built around the sticker. Stickers render bubble-less and oversized (~140pt) directly on the periwinkle chat backdrop (#8CABD9). Outgoing bubbles are pale chat-green (#C5F0B1); LINE Green (#06C755) is reserved for "go" chrome.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="thread-head">
+            <span class="th-back"><svg viewBox="0 0 24 24"><polyline points="15,18 9,12 15,6"/></svg></span>
+            <div class="th-name">Brown</div>
+            <span class="th-badge"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 2.4 3.4-.6.6 3.4L21 12l-2.6 4.8-.6 3.4-3.4-.6L12 22l-2.4-2.4-3.4.6-.6-3.4L3 12l2.6-4.8.6-3.4 3.4.6z"/><polyline points="9,12 11,14 15,10" fill="none" stroke="#FFF" stroke-width="2"/></svg></span>
+            <div class="th-actions">
+              <svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 1.9.6 2.8a2 2 0 0 1-.4 2.1L8 9.8a16 16 0 0 0 6 6l1.2-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.5 2.8.6a2 2 0 0 1 1.9 2z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+              <svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+            </div>
+          </div>
+
+          <div class="thread">
+            <div class="row in">
+              <div class="avatar-sm"></div>
+              <div class="bubble in">Did you see the new sticker pack?</div>
+              <div class="meta"><span>9:35</span></div>
+            </div>
+            <div class="row out">
+              <div class="meta out"><span class="read">Read</span><span>9:36</span></div>
+              <div class="bubble out">Not yet — send me one!</div>
+            </div>
+
+            <div class="sticker-row in">
+              <div class="avatar-sm"></div>
+              <div class="sticker"><span class="sticker-cheek">Hello!</span></div>
+              <div class="meta"><span>9:37</span></div>
+            </div>
+
+            <div class="row out">
+              <div class="meta out"><span class="read">Read</span><span>9:38</span></div>
+              <div class="bubble out">😂 That's perfect</div>
+            </div>
+          </div>
+
+          <div class="composer">
+            <span class="comp-plus"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+            <div class="comp-pill">
+              <span class="comp-ph">Aa</span>
+              <span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></span>
+              <span class="comp-cam"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>
+            </div>
+            <span class="send-mic"><svg viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3"/></svg></span>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7A8.38 8.38 0 0 1 4 11.5 8.5 8.5 0 0 1 21 11.5z"/></svg><span>Talk</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16"/></svg><span>VOOM</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg><span>News</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 10h20M6 15h4"/></svg><span>Wallet</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#8CABD9;"><div class="name">Chat Backdrop</div>#8CABD9</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Canvas / Incoming</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#C5F0B1; color:#000;"><div class="name">Outgoing Bubble</div>#C5F0B1</div>
+          <div class="swatch light" style="background:#F7F7F7;"><div class="name">Surface</div>#F7F7F7</div>
+          <div class="swatch light" style="background:#E5E5E5;"><div class="name">Divider</div>#E5E5E5</div>
+          <div class="swatch" style="background:#000000;"><div class="name">Text Primary</div>#000000</div>
+          <div class="swatch" style="background:#8C8C8C;"><div class="name">Text Secondary</div>#8C8C8C</div>
+          <div class="swatch" style="background:#B3B3B3;"><div class="name">Text Tertiary</div>#B3B3B3</div>
+          <div class="swatch" style="background:#06C755;"><div class="name">LINE Green</div>#06C755</div>
+          <div class="swatch" style="background:#05A647;"><div class="name">Green Pressed</div>#05A647</div>
+          <div class="swatch" style="background:#FF334B;"><div class="name">Notification</div>#FF334B</div>
+          <div class="swatch" style="background:#1F8FFF;"><div class="name">Link Blue</div>#1F8FFF</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Noto Sans (400 / 700)</div>
+        <div class="type-row"><div class="type-meta">Large Title · 24 · 700</div><div class="type-sample t-24">Talk</div></div>
+        <div class="type-row"><div class="type-meta">Thread Title · 17 · 700</div><div class="type-sample t-17">Brown &amp; Friends</div></div>
+        <div class="type-row"><div class="type-meta">Friend Name · 16 · 400</div><div class="type-sample t-16r">Cony</div></div>
+        <div class="type-row"><div class="type-meta">Message Body · 16 · 400 · 1.45</div><div class="type-sample t-16b">Not yet — send me one of the new ones!</div></div>
+        <div class="type-row"><div class="type-meta">Status · 13 · 400</div><div class="type-sample t-13">Out of office until Monday</div></div>
+        <div class="type-row"><div class="type-meta">Section · 13 · 700</div><div class="type-sample t-13b">Friends</div></div>
+        <div class="type-row"><div class="type-meta">Timestamp · 12 · 400</div><div class="type-sample t-12">9:41</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons &amp; Send</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Add Friend</button>
+          <button class="btn btn-outline">Cancel</button>
+          <button class="btn btn-pill">Get</button>
+          <button class="btn-text">More</button>
+          <span class="send-circle"><svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="6,11 12,5 18,11"/></svg></span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Sticker Shop Tiles</div>
+        <div class="shop-grid">
+          <div class="shop-tile">
+            <div class="shop-prev"></div>
+            <div class="shop-title">Brown &amp; Friends</div>
+            <div class="shop-author">LINE</div>
+            <div class="shop-price"><span>🪙 120</span></div>
+          </div>
+          <div class="shop-tile">
+            <div class="shop-prev" style="background: radial-gradient(circle at 50% 40%, #FFD6E8 0 32%, #FF8FB8 33% 58%, #FFF 59%);"></div>
+            <div class="shop-title">Sally Hops</div>
+            <div class="shop-author">LINE</div>
+            <div class="shop-price"><span>Free</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-4">4<br>notch</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16<br>bubble</div>
+          <div class="radius-box r-18">18<br>pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

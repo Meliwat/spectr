@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Klarna iOS — Light</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --surface-pink: #FFF2F5;
+    --surface-neutral: #F6F4F8;
+    --divider: #F0DDE3;
+    --border: #E2D2D8;
+    --text: #0B051D;
+    --text-secondary: #6E6878;
+    --text-tertiary: #9B96A3;
+    --pink: #FFB3C7;
+    --pink-pressed: #F49CB4;
+    --pink-tint: #FFF2F5;
+    --black: #0B051D;
+    --black-hover: #1A1330;
+    --success: #0E8A4F;
+    --upcoming: #A9700E;
+    --error: #C8102E;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #FCE9EF; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 700; letter-spacing: -0.6px; color: var(--black); }
+  .page-chip { background: var(--pink); color: var(--black); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(11,5,29,0.4), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text); }
+
+  /* Top bar */
+  .top-bar { display: flex; align-items: center; gap: 10px; padding: 4px 20px 14px; }
+  .top-name { flex: 1; font-size: 28px; font-weight: 700; color: var(--black); letter-spacing: -0.4px; }
+  .top-icon { color: var(--text-secondary); }
+  .top-icon svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Black hero */
+  .hero-wrap { padding: 0 20px 16px; }
+  .hero { background: var(--black); border-radius: 24px; padding: 22px; box-shadow: 0 12px 32px rgba(11,5,29,0.18); }
+  .hero-label { font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--pink); margin-bottom: 8px; }
+  .hero-amount { font-size: 34px; font-weight: 700; letter-spacing: -0.5px; color: #FFF; font-variant-numeric: tabular-nums; }
+  .hero-next { font-size: 13px; color: var(--text-tertiary); margin-top: 6px; }
+  .hero-pay { display: flex; align-items: center; gap: 8px; margin-top: 14px; color: var(--pink); font-size: 16px; font-weight: 600; }
+  .hero-pay svg { width: 15px; height: 15px; stroke: var(--pink); stroke-width: 2; fill: none; }
+
+  /* Schedule card */
+  .sched-wrap { padding: 0 20px 16px; }
+  .sched-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+  .sched-card { background: var(--canvas); border: 1px solid var(--divider); border-radius: 20px; padding: 20px; }
+  .sched-row { display: flex; align-items: flex-start; }
+  .sched-step { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; }
+  .sched-step .rail { position: absolute; top: 13px; left: 50%; right: -50%; height: 2px; }
+  .sched-step .rail.paid { background: var(--pink); }
+  .sched-step .rail.todo { background: var(--divider); }
+  .dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #FFF; z-index: 1; }
+  .dot.paid { background: var(--pink); }
+  .dot.paid svg { width: 14px; height: 14px; stroke: var(--black); stroke-width: 3; fill: none; }
+  .dot.next { border: 2px solid var(--black); }
+  .dot.upcoming { border: 2px solid var(--divider); }
+  .sched-date { font-size: 13px; color: var(--text-secondary); margin-top: 8px; }
+  .sched-amt { font-size: 15px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+
+  /* Order rows */
+  .ord-title { padding: 4px 20px 8px; font-size: 13px; font-weight: 700; color: var(--text); }
+  .orows { flex: 1; overflow-y: auto; scrollbar-width: none; }
+  .orows::-webkit-scrollbar { display: none; }
+  .orow { display: flex; align-items: center; gap: 12px; height: 72px; padding: 0 20px; border-bottom: 1px solid var(--divider); }
+  .ologo { width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; }
+  .ologo.a { background: #1B1330; color: #FFF; }
+  .ologo.h { background: #FFE3D6; color: #C04A1C; }
+  .ologo.n { background: #E8EFE6; color: #2E5B2A; }
+  .orow-info { flex: 1; }
+  .orow-merch { font-size: 16px; font-weight: 600; color: var(--text); }
+  .orow-meta { font-size: 13px; color: var(--text-secondary); }
+  .orow-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+  .orow-amt { font-size: 16px; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+  .pill { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+  .pill.paid { color: var(--success); background: #E4F3EB; }
+  .pill.due { color: var(--upcoming); background: #F8EFDC; }
+
+  /* Tab bar */
+  .tab-bar { height: 58px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: var(--canvas); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 11px; font-weight: 600; gap: 3px; position: relative; }
+  .tab.active { color: var(--black); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+  .tab.active::after { content: ''; position: absolute; bottom: -8px; width: 6px; height: 6px; border-radius: 50%; background: var(--pink); }
+
+  /* Token sections */
+  .section { background: var(--canvas); border: 1px solid var(--divider); border-radius: 20px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--black); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); }
+  .t-36 { font-size: 36px; font-weight: 700; letter-spacing: -0.5px; font-variant-numeric: tabular-nums; }
+  .t-28 { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-18 { font-size: 18px; font-weight: 600; }
+  .t-16 { font-size: 16px; font-weight: 600; }
+  .t-15 { font-size: 15px; font-weight: 400; color: var(--text-secondary); }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; font-size: 16px; }
+  .btn-primary { background: var(--pink); color: var(--black); padding: 16px 30px; border-radius: 28px; }
+  .btn-primary:active { background: var(--pink-pressed); transform: scale(0.98); }
+  .btn-black { background: var(--black); color: #FFF; padding: 16px 30px; border-radius: 28px; }
+  .btn-black:active { background: var(--black-hover); }
+  .btn-outline { background: transparent; color: var(--black); border: 1.5px solid var(--black); padding: 15px 28px; border-radius: 28px; }
+
+  /* Browser footer demo */
+  .browser { border: 1px solid var(--divider); border-radius: 16px; overflow: hidden; }
+  .browser-bar { height: 40px; display: flex; align-items: center; justify-content: center; background: var(--surface-neutral); }
+  .url-pill { background: #FFF; border: 1px solid var(--border); border-radius: 999px; padding: 5px 14px; font-size: 12px; color: var(--text-secondary); }
+  .browser-page { height: 80px; background: var(--surface-pink); display: flex; align-items: center; justify-content: center; color: var(--text-tertiary); font-size: 13px; }
+  .browser-footer { height: 52px; background: var(--pink); color: var(--black); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--pink); color: var(--black); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-20 { border-radius: 20px; }
+  .r-24 { border-radius: 24px; }
+  .r-28 { border-radius: 28px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Klarna iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">Soft bright canvas (#FFFFFF) with a pink-tinted surface (#FFF2F5). Klarna Pink (#FFB3C7) is the single action color — always with near-black text, never white. Near-black ink (#0B051D) is the structural color; one dark hero anchors the soft layout.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="top-bar">
+            <div class="top-name">Payments</div>
+            <div class="top-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg></div>
+            <div class="top-icon"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
+          </div>
+
+          <div class="hero-wrap">
+            <div class="hero">
+              <div class="hero-label">Total due</div>
+              <div class="hero-amount">£128.40</div>
+              <div class="hero-next">Next payment 14 Jun</div>
+              <div class="hero-pay"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> Pay now</div>
+            </div>
+          </div>
+
+          <div class="sched-wrap">
+            <div class="sched-title">Pay in 4 · ASOS order</div>
+            <div class="sched-card">
+              <div class="sched-row">
+                <div class="sched-step">
+                  <div class="rail paid"></div>
+                  <div class="dot paid"><svg viewBox="0 0 24 24"><polyline points="5,12 10,17 19,7"/></svg></div>
+                  <div class="sched-date">1 Jun</div>
+                  <div class="sched-amt">£32.10</div>
+                </div>
+                <div class="sched-step">
+                  <div class="rail todo"></div>
+                  <div class="dot next"></div>
+                  <div class="sched-date">14 Jun</div>
+                  <div class="sched-amt">£32.10</div>
+                </div>
+                <div class="sched-step">
+                  <div class="rail todo"></div>
+                  <div class="dot upcoming"></div>
+                  <div class="sched-date">28 Jun</div>
+                  <div class="sched-amt">£32.10</div>
+                </div>
+                <div class="sched-step">
+                  <div class="dot upcoming"></div>
+                  <div class="sched-date">12 Jul</div>
+                  <div class="sched-amt">£32.10</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ord-title">Your orders</div>
+          <div class="orows">
+            <div class="orow">
+              <div class="ologo a">A</div>
+              <div class="orow-info"><div class="orow-merch">ASOS</div><div class="orow-meta">2 items · Pay in 4</div></div>
+              <div class="orow-right"><div class="orow-amt">£128.40</div><span class="pill due">Due 14 Jun</span></div>
+            </div>
+            <div class="orow">
+              <div class="ologo h">H</div>
+              <div class="orow-info"><div class="orow-merch">H&amp;M</div><div class="orow-meta">1 item · Pay in 30 days</div></div>
+              <div class="orow-right"><div class="orow-amt">£42.00</div><span class="pill paid">Paid</span></div>
+            </div>
+            <div class="orow">
+              <div class="ologo n">N</div>
+              <div class="orow-info"><div class="orow-merch">Nike</div><div class="orow-meta">3 items · Pay in 4</div></div>
+              <div class="orow-right"><div class="orow-amt">£96.00</div><span class="pill paid">Paid</span></div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M6 7h12l1 13H5zM9 7a3 3 0 0 1 6 0"/></svg><span>Shop</span></div>
+            <div class="tab active"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg><span>Payments</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M3 12h18M12 8V21M12 8c-2-4-6-4-6-1 0 1 2 1 6 1zM12 8c2-4 6-4 6-1 0 1-2 1-6 1z"/></svg><span>Rewards</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M6 19c1-3 3.5-4 6-4s5 1 6 4"/></svg><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Canvas</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#FFF2F5;"><div class="name">Surface Pink</div>#FFF2F5</div>
+          <div class="swatch light" style="background:#F6F4F8;"><div class="name">Surface Neutral</div>#F6F4F8</div>
+          <div class="swatch light" style="background:#F0DDE3;"><div class="name">Divider</div>#F0DDE3</div>
+          <div class="swatch light" style="background:#E2D2D8;"><div class="name">Border</div>#E2D2D8</div>
+          <div class="swatch" style="background:#0B051D;"><div class="name">Text / Black</div>#0B051D</div>
+          <div class="swatch" style="background:#6E6878;"><div class="name">Text Secondary</div>#6E6878</div>
+          <div class="swatch light" style="background:#FFB3C7;"><div class="name">Klarna Pink</div>#FFB3C7</div>
+          <div class="swatch light" style="background:#F49CB4;"><div class="name">Pink Pressed</div>#F49CB4</div>
+          <div class="swatch" style="background:#0E8A4F;"><div class="name">Success</div>#0E8A4F</div>
+          <div class="swatch" style="background:#A9700E;"><div class="name">Upcoming</div>#A9700E</div>
+          <div class="swatch" style="background:#C8102E;"><div class="name">Error</div>#C8102E</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Klarna Text (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Amount Hero · 36pt · 700 tnum</div><div class="type-sample t-36">£128.40</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 28pt · 700</div><div class="type-sample t-28">Payments</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Your orders</div></div>
+        <div class="type-row"><div class="type-meta">Subsection · 18pt · 600</div><div class="type-sample t-18">Upcoming payments</div></div>
+        <div class="type-row"><div class="type-meta">Title · 16pt · 600</div><div class="type-sample t-16">ASOS</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 400</div><div class="type-sample t-15">No interest if you pay on time. Split into 4.</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 400</div><div class="type-sample t-13">2 items · Pay in 4 · biweekly</div></div>
+        <div class="type-row"><div class="type-meta">Label · 11pt · 700 UP</div><div class="type-sample t-11">Total due</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Pay now</button>
+          <button class="btn btn-black">Add card</button>
+          <button class="btn btn-outline">See details</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">In-App Shopping Browser (signature)</div>
+        <div class="browser">
+          <div class="browser-bar"><div class="url-pill">🔒 asos.com</div></div>
+          <div class="browser-page">Merchant store wrapped in Klarna chrome</div>
+          <div class="browser-footer">Pay with Klarna</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale (notably soft)</div>
+        <div class="radius-row">
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-24">24</div>
+          <div class="radius-box r-28">28</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Light Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Klarna is soft, friendly, and bright with a single dark anchor — the black payment-summary hero at <code>#0B051D</code>. Klarna Pink <code>#FFB3C7</code> is the only action color and always carries near-black text, <em>never</em> white. The Pay-in-4 schedule timeline — four dated dots on a connecting track, the first filled pink — is the signature object: the plan is never hidden behind a summary. Radii run notably soft (28pt CTA, 20–24pt cards) and transitions glide unhurriedly — the softness <em>is</em> the brand.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

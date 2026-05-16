@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Microsoft Teams iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #1F1F1F;
+    --surface-1: #2D2C2C;
+    --surface-2: #3D3C3C;
+    --divider: #3D3C3C;
+    --light-canvas: #F5F5F5;
+    --light-surface: #FFFFFF;
+    --text: #FFFFFF;
+    --text-secondary: #ADADAD;
+    --text-tertiary: #7A7A7A;
+    --light-text: #252423;
+    --purple: #5B5FC7;
+    --purple-light: #6264A7;
+    --purple-pressed: #4F52B2;
+    --purple-tint: rgba(98,100,167,0.18);
+    --available: #6BB700;
+    --busy: #C4314B;
+    --away: #FFAA44;
+    --offline: #8A8886;
+    --font: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; flex-wrap: wrap; }
+  .mark { width: 30px; height: 30px; border-radius: 7px; background: var(--purple); display: flex; align-items: center; justify-content: center; }
+  .mark svg { width: 17px; height: 17px; fill: #fff; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; }
+  .page-chip { background: var(--purple); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 700px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.05) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .app-top { padding: 50px 16px 10px; display: flex; align-items: center; justify-content: space-between; }
+  .top-left { display: flex; align-items: center; gap: 10px; }
+  .me-av { width: 28px; height: 28px; border-radius: 50%; background: rgba(98,100,167,0.4); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; position: relative; }
+  .me-av .pd { position: absolute; right: -1px; bottom: -1px; width: 9px; height: 9px; border-radius: 50%; background: var(--available); border: 2px solid var(--canvas); }
+  .screen-title { font-size: 20px; font-weight: 700; letter-spacing: -0.2px; }
+  .top-right { display: flex; gap: 14px; color: var(--text-secondary); }
+  .top-right svg { width: 21px; height: 21px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Join bar */
+  .join-bar { margin: 2px 12px 10px; height: 52px; border-radius: 12px; background: var(--purple); display: flex; align-items: center; gap: 10px; padding: 0 14px; box-shadow: 0 4px 16px rgba(98,100,167,0.35); animation: jpulse 2s ease-in-out infinite; }
+  @keyframes jpulse { 0%,100% { opacity: 1; } 50% { opacity: 0.85; } }
+  .join-bar svg { width: 17px; height: 17px; stroke: #fff; stroke-width: 2; fill: none; }
+  .join-bar .jt { flex: 1; font-size: 14px; font-weight: 600; color: #fff; }
+  .join-bar .jp { background: #fff; color: var(--purple); font-size: 13px; font-weight: 600; padding: 6px 16px; border-radius: 500px; }
+
+  /* Teams tree */
+  .tree { flex: 1; overflow-y: auto; scrollbar-width: none; }
+  .tree::-webkit-scrollbar { display: none; }
+  .team-row { height: 52px; display: flex; align-items: center; gap: 12px; padding: 0 16px; }
+  .team-av { width: 30px; height: 30px; border-radius: 7px; background: rgba(98,100,167,0.4); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+  .team-name { flex: 1; font-size: 16px; font-weight: 700; }
+  .chev { color: var(--text-secondary); transform: rotate(90deg); display: flex; }
+  .chev svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2.5; fill: none; }
+  .ch-row { height: 42px; display: flex; align-items: center; gap: 8px; padding: 0 16px 0 44px; position: relative; }
+  .ch-row.active { background: var(--purple-tint); }
+  .ch-row.active::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--purple); }
+  .ch-hash { font-size: 16px; font-weight: 600; color: var(--text-secondary); }
+  .ch-name { flex: 1; font-size: 16px; font-weight: 600; }
+  .ch-name.unread { font-weight: 700; }
+  .ch-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--purple); }
+
+  /* Message card preview at bottom of tree */
+  .msg-card { margin: 8px 12px 0; background: var(--surface-1); border-radius: 8px; padding: 12px; display: flex; gap: 12px; }
+  .msg-av { width: 32px; height: 32px; border-radius: 50%; background: rgba(98,100,167,0.4); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; position: relative; flex-shrink: 0; }
+  .msg-av .pd { position: absolute; right: -1px; bottom: -1px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--surface-1); }
+  .msg-body { flex: 1; }
+  .msg-head { display: flex; align-items: baseline; gap: 8px; }
+  .msg-author { font-size: 15px; font-weight: 600; }
+  .msg-time { font-size: 13px; color: var(--text-secondary); }
+  .msg-text { font-size: 15px; margin: 4px 0 8px; }
+  .react-row { display: flex; gap: 6px; }
+  .react { display: flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 500px; background: var(--surface-2); font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+  .react.mine { background: var(--purple-tint); }
+  .reply-count { font-size: 13px; color: var(--text-secondary); margin-top: 8px; }
+
+  .tab-bar { height: 60px; background: var(--surface-1); display: flex; align-items: center; justify-content: space-around; padding: 6px 4px 14px; border-top: 1px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--text-secondary); font-size: 10px; font-weight: 600; position: relative; }
+  .tab.active { color: var(--purple); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; }
+  .tab .badge { position: absolute; top: -2px; right: 6px; background: var(--busy); color: #fff; font-size: 9px; font-weight: 700; min-width: 15px; height: 15px; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0 3px; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 16px; min-height: 90px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 700; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #000; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 210px; flex-shrink: 0; }
+  .type-sample { flex: 1; }
+  .t-28 { font-size: 28px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-20 { font-size: 20px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-16b { font-size: 16px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 600; }
+  .t-15 { font-size: 15px; font-weight: 400; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; color: var(--text-secondary); }
+
+  /* Presence row */
+  .pres-row { display: flex; gap: 22px; flex-wrap: wrap; }
+  .pres { display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 11px; color: var(--text-secondary); }
+  .pres-dot { width: 16px; height: 16px; border-radius: 50%; }
+  .pd-available { background: var(--available); }
+  .pd-busy { background: var(--busy); }
+  .pd-dnd { background: var(--busy); position: relative; }
+  .pd-dnd::after { content: ''; position: absolute; left: 25%; right: 25%; top: 43%; height: 14%; background: #fff; border-radius: 1px; }
+  .pd-away { background: var(--away); }
+  .pd-offline { border: 2.5px solid var(--offline); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 600; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--purple); color: #fff; font-size: 16px; padding: 12px 24px; border-radius: 8px; }
+  .btn-primary:active { background: var(--purple-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--purple); border: 1px solid var(--purple); font-size: 15px; padding: 10px 20px; border-radius: 8px; }
+  .send-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--purple); display: inline-flex; align-items: center; justify-content: center; }
+  .send-btn svg { width: 16px; height: 16px; stroke: #fff; stroke-width: 2; fill: none; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--purple); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="mark">
+      <svg viewBox="0 0 24 24"><path d="M13 5h7a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4 4 4 0 0 1-4-4zM16 3.5a2.2 2.2 0 1 0 0 .01zM4 8h7v9.5A2.5 2.5 0 0 1 8.5 20H6a2 2 0 0 1-2-2zM7.5 4a2 2 0 1 0 0 .01z"/></svg>
+    </span>
+    <div class="page-title">Microsoft Teams iOS — Design Tokens</div>
+    <div class="page-chip">Dark</div>
+  </div>
+  <p class="page-subtitle">Full dual identity (light #F5F5F5 / dark #1F1F1F shown). Teams Purple (#5B5FC7 on dark) is the structural accent; presence dots are the one place Teams uses loaded semantic color. The Teams → Channels tree is the signature navigation.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="app-top">
+            <div class="top-left">
+              <div class="me-av">YA<span class="pd"></span></div>
+              <div class="screen-title">Teams</div>
+            </div>
+            <div class="top-right">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            </div>
+          </div>
+
+          <div class="join-bar">
+            <svg viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2"/><polygon points="16,10 21,7 21,17 16,14"/></svg>
+            <span class="jt">Weekly Sync · in progress</span>
+            <span class="jp">Join</span>
+          </div>
+
+          <div class="tree">
+            <div class="team-row">
+              <div class="team-av">DG</div>
+              <div class="team-name">Design Guild</div>
+              <div class="chev"><svg viewBox="0 0 24 24"><polyline points="9,6 15,12 9,18"/></svg></div>
+            </div>
+            <div class="ch-row active"><span class="ch-hash">#</span><span class="ch-name">general</span></div>
+            <div class="ch-row"><span class="ch-hash">#</span><span class="ch-name unread">design-crit</span><span class="ch-dot"></span></div>
+            <div class="ch-row"><span class="ch-hash">#</span><span class="ch-name">handoff</span></div>
+            <div class="team-row">
+              <div class="team-av">EN</div>
+              <div class="team-name">Engineering</div>
+              <div class="chev"><svg viewBox="0 0 24 24"><polyline points="9,6 15,12 9,18"/></svg></div>
+            </div>
+            <div class="ch-row"><span class="ch-hash">#</span><span class="ch-name unread">releases</span><span class="ch-dot"></span></div>
+            <div class="ch-row"><span class="ch-hash">#</span><span class="ch-name">incidents</span></div>
+
+            <div class="msg-card">
+              <div class="msg-av">PA<span class="pd" style="background:var(--busy);"></span></div>
+              <div class="msg-body">
+                <div class="msg-head"><span class="msg-author">Priya Anand</span><span class="msg-time">10:42 AM</span></div>
+                <div class="msg-text">Pushed the build — can someone review the redirect fix?</div>
+                <div class="react-row">
+                  <div class="react mine">👍 3</div>
+                  <div class="react">❤️ 1</div>
+                </div>
+                <div class="reply-count">💬 3 replies · Last reply 2h ago</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><span class="badge">3</span><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.5 21a2 2 0 0 1-3 0"/></svg><span>Activity</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.5 9 9 0 0 1-4-1L3 21l2-5.5a8.4 8.4 0 0 1-1-4A8.4 8.4 0 0 1 12.5 3 8.4 8.4 0 0 1 21 11.5z"/></svg><span>Chat</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="3"/><circle cx="16" cy="10" r="2.5"/><path d="M3 19c0-3 3-4.5 6-4.5s6 1.5 6 4.5M14 19c0-2 2-3 4-3"/></svg><span>Teams</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg><span>Calendar</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M5 4h3l2 5-2 1.5a11 11 0 0 0 5.5 5.5L20 14l-2 5h-3A14 14 0 0 1 5 7z"/></svg><span>Calls</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch light" style="background:#F5F5F5;"><div class="name">Light Canvas</div>#F5F5F5</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Light Surface</div>#FFFFFF</div>
+          <div class="swatch" style="background:#1F1F1F;"><div class="name">Dark Canvas</div>#1F1F1F</div>
+          <div class="swatch" style="background:#2D2C2C;"><div class="name">Dark Surface 1</div>#2D2C2C</div>
+          <div class="swatch" style="background:#3D3C3C;"><div class="name">Dark Surface 2</div>#3D3C3C</div>
+          <div class="swatch" style="background:#ADADAD; color:#000;"><div class="name">Text Secondary</div>#ADADAD</div>
+          <div class="swatch" style="background:#6264A7;"><div class="name">Purple (Light)</div>#6264A7</div>
+          <div class="swatch" style="background:#5B5FC7;"><div class="name">Purple (Dark)</div>#5B5FC7</div>
+          <div class="swatch" style="background:#6BB700; color:#000;"><div class="name">Available</div>#6BB700</div>
+          <div class="swatch" style="background:#C4314B;"><div class="name">Busy / DND</div>#C4314B</div>
+          <div class="swatch" style="background:#FFAA44; color:#000;"><div class="name">Away</div>#FFAA44</div>
+          <div class="swatch" style="background:#8A8886;"><div class="name">Offline</div>#8A8886</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Presence — the one loaded semantic color</div>
+        <div class="pres-row">
+          <div class="pres"><div class="pres-dot pd-available"></div>Available</div>
+          <div class="pres"><div class="pres-dot pd-busy"></div>Busy</div>
+          <div class="pres"><div class="pres-dot pd-dnd"></div>Do Not Disturb</div>
+          <div class="pres"><div class="pres-dot pd-away"></div>Away</div>
+          <div class="pres"><div class="pres-dot pd-offline"></div>Offline</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Segoe UI (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 28pt · 700</div><div class="type-sample t-28">Teams</div></div>
+        <div class="type-row"><div class="type-meta">Section · 20pt · 700</div><div class="type-sample t-20">Recent</div></div>
+        <div class="type-row"><div class="type-meta">Team Name · 16pt · 700</div><div class="type-sample t-16b">Design Guild</div></div>
+        <div class="type-row"><div class="type-meta">Channel / List · 16pt · 600</div><div class="type-sample t-16">general</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 400</div><div class="type-sample t-15">Pushed the build, can someone review?</div></div>
+        <div class="type-row"><div class="type-meta">Metadata · 13pt · 400</div><div class="type-sample t-13">10:42 AM · 3 replies</div></div>
+        <div class="type-row"><div class="type-meta">Tiny Label · 11pt · 700 UP</div><div class="type-sample t-11">Urgent</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Join</button>
+          <button class="btn btn-outline">Chat</button>
+          <div class="send-btn"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dual Identity Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Teams is genuinely dual-identity — light (<code>#F5F5F5</code> canvas / <code>#FFFFFF</code> cards) and dark (<code>#1F1F1F</code> / <code>#2D2C2C</code>) are both first-class. Teams Purple shifts from <code>#6264A7</code> (light) to a lighter <code>#5B5FC7</code> (dark) for contrast. Presence dots — green available, red busy/DND, yellow away, gray offline — are the only place Teams allows loaded semantic color; people scan them constantly. Fluent elevation is soft and low-contrast in light, replaced by surface steps in dark. The meeting join bar is the priority CTA when a meeting is live and pulses subtly.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

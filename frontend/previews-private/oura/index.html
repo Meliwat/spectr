@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Oura iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0B0B0F;
+    --surface-1: #16161C;
+    --surface-2: #1E1E26;
+    --surface-3: #27272F;
+    --divider: #2A2A33;
+    --text: #FFFFFF;
+    --text-secondary: #9A9AA5;
+    --text-tertiary: #6A6A73;
+    --readiness: #4FD1C5;
+    --readiness-deep: #37B3A8;
+    --sleep: #7C6FF0;
+    --sleep-deep: #6354D6;
+    --activity: #F5A623;
+    --activity-deep: #D98A12;
+    --negative: #E0746B;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+    --mono: 'SF Mono', ui-monospace, Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #060608; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 26px; font-weight: 700; letter-spacing: -0.4px; }
+  .page-chip { background: var(--readiness); color: #06302C; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 660px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .top-bar { padding: 52px 16px 8px; display: flex; align-items: center; justify-content: space-between; }
+  .date-sel { display: flex; align-items: center; gap: 6px; font-size: 17px; font-weight: 700; }
+  .date-sel svg { width: 14px; height: 14px; stroke: var(--text-secondary); stroke-width: 2.5; fill: none; }
+  .top-right { display: flex; align-items: center; gap: 14px; }
+  .ring-batt { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text-secondary); }
+  .ring-batt svg { width: 16px; height: 16px; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #4FD1C5, #37B3A8); }
+
+  .scroll-body { flex: 1; overflow: hidden; padding: 8px 16px 16px; display: flex; flex-direction: column; gap: 20px; }
+
+  /* Hero ring */
+  .ring-hero { display: flex; flex-direction: column; align-items: center; padding: 12px 0; }
+  .ring-svg { width: 200px; height: 200px; transform: rotate(-90deg); }
+  .ring-track { fill: none; stroke: var(--surface-3); stroke-width: 12; }
+  .ring-prog { fill: none; stroke: var(--readiness); stroke-width: 12; stroke-linecap: round; stroke-dasharray: 565.5; stroke-dashoffset: 565.5; animation: sweep 0.9s ease-out forwards; }
+  @keyframes sweep { to { stroke-dashoffset: 101.8; } } /* 82% of 565.5 */
+  .ring-center { position: absolute; display: flex; flex-direction: column; align-items: center; }
+  .ring-score { font-size: 52px; font-weight: 700; letter-spacing: -1px; }
+  .ring-label { font-size: 13px; font-weight: 700; letter-spacing: 0.8px; color: var(--readiness); margin-top: 2px; }
+  .ring-stack { position: relative; display: flex; align-items: center; justify-content: center; }
+  .ring-insight { font-size: 15px; color: var(--text-secondary); text-align: center; margin-top: 12px; padding: 0 12px; }
+
+  /* Contributor list */
+  .contrib-card { background: var(--surface-1); border-radius: 16px; overflow: hidden; }
+  .contrib-head { font-size: 13px; font-weight: 700; letter-spacing: 0.8px; color: var(--text-secondary); padding: 14px 16px 8px; }
+  .crow { display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 16px; border-bottom: 1px solid var(--divider); }
+  .crow:last-child { border-bottom: none; }
+  .crow-name { width: 120px; font-size: 15px; font-weight: 600; flex-shrink: 0; }
+  .crow-bar { flex: 1; height: 6px; border-radius: 3px; background: var(--surface-3); }
+  .crow-fill { height: 6px; border-radius: 3px; background: var(--readiness); }
+  .crow-val { width: 40px; text-align: right; font-size: 13px; font-weight: 600; }
+
+  /* Tab bar */
+  .tab-bar { height: 60px; background: rgba(11,11,15,0.82); backdrop-filter: saturate(180%) blur(20px); display: flex; align-items: center; justify-content: space-around; padding: 4px 8px 14px; border-top: 1px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--text-tertiary); font-size: 11px; font-weight: 600; }
+  .tab.active { color: var(--text); }
+  .tab svg { width: 23px; height: 23px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+  .tab.active svg { fill: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 90px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: var(--mono); border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.dk { color: #06302C; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: var(--mono); font-size: 11px; color: var(--text-secondary); width: 210px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); }
+  .t-52 { font-size: 52px; font-weight: 700; letter-spacing: -1px; line-height: 1; }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.4px; }
+  .t-22 { font-size: 22px; font-weight: 600; letter-spacing: -0.2px; }
+  .t-15 { font-size: 15px; font-weight: 600; }
+  .t-15r { font-size: 15px; font-weight: 400; color: var(--text-secondary); }
+  .t-13 { font-size: 13px; font-weight: 600; color: var(--readiness); }
+  .t-label { font-size: 13px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-secondary); }
+
+  /* Domain rings demo */
+  .rings-demo { display: flex; gap: 20px; justify-content: center; }
+  .mini-ring { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .mr-svg { width: 80px; height: 80px; transform: rotate(-90deg); }
+  .mr-track { fill: none; stroke: var(--surface-3); stroke-width: 7; }
+  .mr-stack { position: relative; display: flex; align-items: center; justify-content: center; }
+  .mr-num { position: absolute; font-size: 22px; font-weight: 700; }
+  .mr-cap { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; }
+
+  /* Metric tiles */
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .tile { background: var(--surface-2); border-radius: 16px; padding: 16px; }
+  .tile-label { font-size: 13px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-secondary); }
+  .tile-val { font-size: 22px; font-weight: 600; margin-top: 8px; }
+  .tile-val small { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .tile-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
+  .tile-spark { width: 40px; height: 3px; border-radius: 2px; background: var(--readiness); }
+  .tile-delta { font-size: 13px; font-weight: 600; color: var(--readiness); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 16px; font-weight: 600; cursor: pointer; border: none; padding: 14px 28px; border-radius: 24px; }
+  .btn-readiness { background: var(--readiness); color: var(--canvas); }
+  .btn-readiness:active { background: var(--readiness-deep); transform: scale(0.97); }
+  .btn-glass { background: var(--surface-2); color: var(--text); border: 1px solid var(--divider); }
+  .seg { display: inline-flex; background: var(--surface-1); border: 1px solid var(--divider); border-radius: 20px; padding: 3px; }
+  .seg .s { font-size: 13px; font-weight: 600; padding: 7px 16px; border-radius: 16px; color: var(--text-secondary); }
+  .seg .s.act { background: var(--surface-3); color: #fff; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--readiness); color: var(--canvas); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; }
+  .r-6 { border-radius: 6px; }
+  .r-16 { border-radius: 16px; }
+  .r-20 { border-radius: 20px; }
+  .r-24 { border-radius: 24px; }
+  .r-18 { border-radius: 18px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Oura iOS — Design Tokens</div>
+    <div class="page-chip">Instrument Panel</div>
+  </div>
+  <p class="page-subtitle">Cool-charcoal canvas (#0B0B0F). The score ring is the central object. Tri-domain color is a language — teal Readiness, indigo Sleep, amber Activity — used everywhere that domain appears.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="top-bar">
+            <div class="date-sel">Today <svg viewBox="0 0 24 24"><polyline points="6,9 12,15 18,9"/></svg></div>
+            <div class="top-right">
+              <div class="ring-batt"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="#27272F" stroke-width="3"/><path d="M12 3a9 9 0 0 1 0 18" fill="none" stroke="#9A9AA5" stroke-width="3"/></svg>72%</div>
+              <div class="avatar"></div>
+            </div>
+          </div>
+          <div class="scroll-body">
+            <div class="ring-hero">
+              <div class="ring-stack">
+                <svg class="ring-svg" viewBox="0 0 200 200">
+                  <circle class="ring-track" cx="100" cy="100" r="90"/>
+                  <circle class="ring-prog" cx="100" cy="100" r="90"/>
+                </svg>
+                <div class="ring-center">
+                  <div class="ring-score">82</div>
+                  <div class="ring-label">READINESS</div>
+                </div>
+              </div>
+              <div class="ring-insight">Your HRV is balanced and resting heart rate is low — a good day to push.</div>
+            </div>
+            <div class="contrib-card">
+              <div class="contrib-head">CONTRIBUTORS</div>
+              <div class="crow"><div class="crow-name">Resting HR</div><div class="crow-bar"><div class="crow-fill" style="width:88%;"></div></div><div class="crow-val">88</div></div>
+              <div class="crow"><div class="crow-name">HRV Balance</div><div class="crow-bar"><div class="crow-fill" style="width:74%;"></div></div><div class="crow-val">74</div></div>
+              <div class="crow"><div class="crow-name">Body Temp</div><div class="crow-bar"><div class="crow-fill" style="width:91%;"></div></div><div class="crow-val">91</div></div>
+              <div class="crow"><div class="crow-name">Recovery Index</div><div class="crow-bar"><div class="crow-fill" style="width:68%;"></div></div><div class="crow-val">68</div></div>
+            </div>
+          </div>
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/></svg><span>Today</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><polyline points="3,12 7,12 10,5 14,19 17,12 21,12"/></svg><span>Vitals</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg><span>My Health</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><span>Explore</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0B0B0F;"><div class="name">Canvas</div>#0B0B0F</div>
+          <div class="swatch" style="background:#16161C;"><div class="name">Surface 1</div>#16161C</div>
+          <div class="swatch" style="background:#1E1E26;"><div class="name">Surface 2</div>#1E1E26</div>
+          <div class="swatch" style="background:#27272F;"><div class="name">Surface 3 / Track</div>#27272F</div>
+          <div class="swatch" style="background:#2A2A33;"><div class="name">Divider</div>#2A2A33</div>
+          <div class="swatch dk" style="background:#FFFFFF; color:#0B0B0F;"><div class="name">Text Primary</div>#FFFFFF</div>
+          <div class="swatch" style="background:#9A9AA5; color:#0B0B0F;"><div class="name">Text Secondary</div>#9A9AA5</div>
+          <div class="swatch" style="background:#6A6A73;"><div class="name">Text Tertiary</div>#6A6A73</div>
+          <div class="swatch dk" style="background:#4FD1C5;"><div class="name">Readiness Teal</div>#4FD1C5</div>
+          <div class="swatch" style="background:#7C6FF0;"><div class="name">Sleep Indigo</div>#7C6FF0</div>
+          <div class="swatch dk" style="background:#F5A623;"><div class="name">Activity Amber</div>#F5A623</div>
+          <div class="swatch" style="background:#E0746B;"><div class="name">Negative Delta</div>#E0746B</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter (tabular figures)</div>
+        <div class="type-row"><div class="type-meta">Ring Score · 52pt · 700</div><div class="type-sample t-52">82</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 26pt · 700</div><div class="type-sample t-26">Readiness</div></div>
+        <div class="type-row"><div class="type-meta">Metric Value · 22pt · 600</div><div class="type-sample t-22">62 ms</div></div>
+        <div class="type-row"><div class="type-meta">Contributor · 15pt · 600</div><div class="type-sample t-15">Resting Heart Rate</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 400</div><div class="type-sample t-15r">Your HRV is trending up over the last 7 days.</div></div>
+        <div class="type-row"><div class="type-meta">Delta · 13pt · 600</div><div class="type-sample t-13">+4 vs last week</div></div>
+        <div class="type-row"><div class="type-meta">Domain Label · 13pt · 700 UP</div><div class="type-sample t-label">Readiness</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Tri-Domain Score Rings</div>
+        <div class="rings-demo">
+          <div class="mini-ring">
+            <div class="mr-stack">
+              <svg class="mr-svg" viewBox="0 0 80 80"><circle class="mr-track" cx="40" cy="40" r="34"/><circle cx="40" cy="40" r="34" fill="none" stroke="#4FD1C5" stroke-width="7" stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="38.4"/></svg>
+              <div class="mr-num">82</div>
+            </div>
+            <div class="mr-cap" style="color:#4FD1C5;">READINESS</div>
+          </div>
+          <div class="mini-ring">
+            <div class="mr-stack">
+              <svg class="mr-svg" viewBox="0 0 80 80"><circle class="mr-track" cx="40" cy="40" r="34"/><circle cx="40" cy="40" r="34" fill="none" stroke="#7C6FF0" stroke-width="7" stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="64.1"/></svg>
+              <div class="mr-num">70</div>
+            </div>
+            <div class="mr-cap" style="color:#7C6FF0;">SLEEP</div>
+          </div>
+          <div class="mini-ring">
+            <div class="mr-stack">
+              <svg class="mr-svg" viewBox="0 0 80 80"><circle class="mr-track" cx="40" cy="40" r="34"/><circle cx="40" cy="40" r="34" fill="none" stroke="#F5A623" stroke-width="7" stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="91.8"/></svg>
+              <div class="mr-num">57</div>
+            </div>
+            <div class="mr-cap" style="color:#F5A623;">ACTIVITY</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Metric Tiles</div>
+        <div class="tiles">
+          <div class="tile">
+            <div class="tile-label">HRV</div>
+            <div class="tile-val">62<small> ms</small></div>
+            <div class="tile-foot"><div class="tile-spark"></div><div class="tile-delta">+4</div></div>
+          </div>
+          <div class="tile">
+            <div class="tile-label">Resting HR</div>
+            <div class="tile-val">52<small> bpm</small></div>
+            <div class="tile-foot"><div class="tile-spark" style="background:#E0746B;"></div><div class="tile-delta" style="color:#E0746B;">+2</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons & Range Control</div>
+        <div class="btn-row">
+          <button class="btn btn-readiness">View details</button>
+          <button class="btn btn-glass">Add tag</button>
+          <div class="seg"><div class="s act">7D</div><div class="s">30D</div><div class="s">90D</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-24">24</div>
+          <div class="radius-box r-18">18</div>
+          <div class="radius-box r-circle">Ring</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

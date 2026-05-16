@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Shazam iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --core: #0050FF;
+    --blue: #0088FF;
+    --space: #08090E;
+    --blue-pressed: #006FE0;
+    --glass: rgba(255,255,255,0.08);
+    --glass-strong: rgba(255,255,255,0.14);
+    --divider: rgba(255,255,255,0.12);
+    --text: #FFFFFF;
+    --text-secondary: #B8C4FF;
+    --text-tertiary: rgba(184,196,255,0.55);
+    --apple-music: #FA243C;
+    --error: #FF453A;
+    --font: 'Montserrat', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #06070B; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+  .page-chip { background: var(--blue); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.6px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 660px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.95), 0 0 0 2px rgba(255,255,255,0.05) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--space); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  /* Radial hero gradient */
+  .hero-bg { position: absolute; inset: 0; background: radial-gradient(circle at 50% 42%, #0088FF 0%, #0050FF 30%, #08090E 100%); }
+
+  .top-bar { padding: 52px 20px 0; display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 3; }
+  .top-bar svg { width: 26px; height: 26px; stroke: #fff; stroke-width: 2; fill: none; }
+
+  .hero-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 2; }
+
+  .ring-wrap { width: 132px; height: 132px; position: relative; display: flex; align-items: center; justify-content: center; }
+  .ring { position: absolute; width: 132px; height: 132px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.22); animation: pulse 1.8s ease-out infinite; }
+  .ring.r2 { animation-delay: 0.6s; }
+  .ring.r3 { animation-delay: 1.2s; }
+  @keyframes pulse { 0% { transform: scale(1); opacity: 0.22; } 100% { transform: scale(2.6); opacity: 0; } }
+  .glow { position: absolute; width: 185px; height: 185px; border-radius: 50%; background: rgba(0,136,255,0.5); filter: blur(60px); }
+  .shz-btn { width: 132px; height: 132px; border-radius: 50%; background: radial-gradient(circle at 38% 32%, #FFFFFF 0%, #E8F0FF 60%, #CFE0FF 100%); border: 1px solid rgba(255,255,255,0.4); display: flex; align-items: center; justify-content: center; box-shadow: 0 16px 48px rgba(0,80,255,0.45); position: relative; z-index: 2; animation: breathe 2.4s ease-in-out infinite; }
+  @keyframes breathe { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+  .shz-btn svg { width: 56px; height: 56px; }
+  .shz-btn svg path { stroke: var(--blue); stroke-width: 13; stroke-linecap: round; fill: none; }
+
+  .tap-prompt { font-size: 16px; font-weight: 700; letter-spacing: 0.2px; margin-top: 28px; color: #fff; }
+
+  /* Bottom sheet peek */
+  .sheet { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.14); backdrop-filter: blur(40px); border-radius: 24px 24px 0 0; padding: 12px 16px 20px; z-index: 4; }
+  .grab { width: 36px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.4); margin: 0 auto 14px; }
+  .sheet-title { font-size: 16px; font-weight: 700; margin-bottom: 10px; }
+  .sheet-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; }
+  .sheet-art { width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0; }
+  .sheet-art.s1 { background: linear-gradient(135deg, #FF7AB6, #C2185B); }
+  .sheet-art.s2 { background: linear-gradient(135deg, #7AD7FF, #1565C0); }
+  .sheet-info { flex: 1; min-width: 0; }
+  .sheet-rt { font-size: 14px; font-weight: 700; }
+  .sheet-ra { font-size: 12px; color: var(--text-secondary); }
+  .sheet-time { font-size: 12px; color: var(--text-secondary); }
+
+  /* Token sections */
+  .section { background: #101218; border: 1px solid #21242E; border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 16px; min-height: 90px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 700; font-family: 'SF Mono', Menlo, monospace; border: 1px solid #21242E; color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #08090E; }
+  .swatch.glassy { background-image: linear-gradient(rgba(255,255,255,0.08), rgba(255,255,255,0.08)), repeating-linear-gradient(45deg, #1b2740 0 6px, #233156 6px 12px); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid #21242E; }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 210px; flex-shrink: 0; }
+  .type-sample { flex: 1; }
+  .t-28 { font-size: 28px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; letter-spacing: 0.2px; }
+  .t-16 { font-size: 16px; font-weight: 700; }
+  .t-15 { font-size: 15px; font-weight: 500; }
+  .t-14 { font-size: 14px; font-weight: 500; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-secondary); }
+
+  /* Result card demo */
+  .result-card { background: var(--glass); border: 1px solid var(--glass-strong); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 18px; }
+  .rc-top { display: flex; gap: 16px; }
+  .rc-art { width: 80px; height: 80px; border-radius: 12px; background: linear-gradient(135deg, #FF7AB6, #C2185B); flex-shrink: 0; }
+  .rc-info { display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+  .rc-title { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .rc-artist { font-size: 14px; font-weight: 500; color: var(--text-secondary); }
+  .rc-am { display: flex; align-items: center; justify-content: center; gap: 8px; background: #fff; color: #08090E; font-size: 16px; font-weight: 700; letter-spacing: 0.3px; padding: 14px; border-radius: 500px; }
+  .rc-am svg { width: 18px; height: 18px; fill: var(--apple-music); }
+  .rc-actions { display: flex; gap: 12px; }
+  .rc-act { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px; border-radius: 500px; background: var(--glass); border: 1px solid rgba(255,255,255,0.16); font-size: 14px; font-weight: 700; }
+  .rc-act svg { width: 18px; height: 18px; stroke: #fff; stroke-width: 2; fill: none; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; }
+  .btn-primary { background: #fff; color: #08090E; font-size: 16px; padding: 14px 28px; border-radius: 500px; letter-spacing: 0.3px; }
+  .btn-primary:active { background: #E8F0FF; transform: scale(0.97); }
+  .btn-glass { background: var(--glass); color: #fff; border: 1px solid rgba(255,255,255,0.16); font-size: 14px; padding: 12px 20px; border-radius: 500px; }
+  .chip { padding: 8px 18px; background: var(--glass); color: #fff; font-size: 14px; font-weight: 700; border-radius: 500px; }
+  .chip.active { background: var(--blue); color: #fff; }
+
+  /* Pulse ring demo */
+  .ring-demo { height: 120px; display: flex; align-items: center; justify-content: center; position: relative; }
+  .rd-core { width: 56px; height: 56px; border-radius: 50%; background: radial-gradient(circle at 38% 32%, #fff, #CFE0FF); z-index: 2; }
+  .rd-ring { position: absolute; width: 56px; height: 56px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); animation: pulse 1.8s ease-out infinite; }
+  .rd-ring.d2 { animation-delay: 0.6s; }
+  .rd-ring.d3 { animation-delay: 1.2s; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--blue); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-10 { border-radius: 10px; }
+  .r-12 { border-radius: 12px; }
+  .r-20 { border-radius: 20px; }
+  .r-24 { border-radius: 24px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Shazam iOS — Design Tokens</div>
+    <div class="page-chip">Dark</div>
+  </div>
+  <p class="page-subtitle">Radial blue gradient canvas (#0050FF core → #0088FF → #08090E edge). A single giant central button with concentric pulse rings. No tab bar — one hero screen plus a draggable history sheet.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="hero-bg"></div>
+          <div class="island"></div>
+          <div class="top-bar">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M6 19c1-3 3.5-4 6-4s5 1 6 4"/></svg>
+            <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          </div>
+          <div class="hero-center">
+            <div class="ring-wrap">
+              <div class="ring"></div>
+              <div class="ring r2"></div>
+              <div class="ring r3"></div>
+              <div class="glow"></div>
+              <div class="shz-btn">
+                <svg viewBox="0 0 100 100"><path d="M62 18 C40 18 30 30 30 46 C30 62 70 50 70 62 C70 78 58 86 38 86"/></svg>
+              </div>
+            </div>
+            <div class="tap-prompt">Listening for music…</div>
+          </div>
+          <div class="sheet">
+            <div class="grab"></div>
+            <div class="sheet-title">Your Shazams</div>
+            <div class="sheet-row">
+              <div class="sheet-art s1"></div>
+              <div class="sheet-info"><div class="sheet-rt">Bad Habit</div><div class="sheet-ra">Steve Lacy</div></div>
+              <div class="sheet-time">2h ago</div>
+            </div>
+            <div class="sheet-row">
+              <div class="sheet-art s2"></div>
+              <div class="sheet-info"><div class="sheet-rt">As It Was</div><div class="sheet-ra">Harry Styles</div></div>
+              <div class="sheet-time">Yesterday</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0050FF;"><div class="name">Gradient Core</div>#0050FF</div>
+          <div class="swatch" style="background:#0088FF;"><div class="name">Shazam Blue</div>#0088FF</div>
+          <div class="swatch" style="background:#08090E;"><div class="name">Space Tint</div>#08090E</div>
+          <div class="swatch" style="background:#006FE0;"><div class="name">Blue Pressed</div>#006FE0</div>
+          <div class="swatch glassy"><div class="name">Surface Glass</div>rgba 255·.08</div>
+          <div class="swatch glassy"><div class="name">Glass Strong</div>rgba 255·.14</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Text Primary</div>#FFFFFF</div>
+          <div class="swatch" style="background:#B8C4FF; color:#08090E;"><div class="name">Text Secondary</div>#B8C4FF</div>
+          <div class="swatch" style="background:#FA243C;"><div class="name">Apple Music</div>#FA243C</div>
+          <div class="swatch" style="background:#FF453A;"><div class="name">Error</div>#FF453A</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Montserrat (SF Pro fallback)</div>
+        <div class="type-row"><div class="type-meta">Result Large · 28pt · 700</div><div class="type-sample t-28">Bad Habit</div></div>
+        <div class="type-row"><div class="type-meta">Result Title · 22pt · 700</div><div class="type-sample t-22">As It Was</div></div>
+        <div class="type-row"><div class="type-meta">Tap Prompt · 18pt · 700</div><div class="type-sample t-18">Tap to Shazam</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 16pt · 700</div><div class="type-sample t-16">Steve Lacy</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 500</div><div class="type-sample t-15">From the album Gemini Rights</div></div>
+        <div class="type-row"><div class="type-meta">Artist / Sub · 14pt · 500</div><div class="type-sample t-14">Harry Styles</div></div>
+        <div class="type-row"><div class="type-meta">Eyebrow · 11pt · 700 UP</div><div class="type-sample t-11">Now Playing</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Result Card (glass over gradient)</div>
+        <div class="result-card">
+          <div class="rc-top">
+            <div class="rc-art"></div>
+            <div class="rc-info">
+              <div class="rc-title">Bad Habit</div>
+              <div class="rc-artist">Steve Lacy</div>
+            </div>
+          </div>
+          <div class="rc-am"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>Open in Apple Music</div>
+          <div class="rc-actions">
+            <div class="rc-act"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16,6 12,2 8,6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share</div>
+            <div class="rc-act"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add</div>
+            <div class="rc-act"><svg viewBox="0 0 24 24"><path d="M3 21c3-2 6-2 9 0M3 14c3-2 6-2 9 0M3 7c3-2 6-2 9 0"/></svg>Lyrics</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Open in Apple Music</button>
+          <button class="btn btn-glass">Share</button>
+          <div class="chip active">All</div>
+          <div class="chip">Apple Music</div>
+          <div class="chip">Concerts</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Pulsing Tap-to-Listen — Concentric Rings</div>
+        <div class="ring-demo">
+          <div class="rd-ring"></div>
+          <div class="rd-ring d2"></div>
+          <div class="rd-ring d3"></div>
+          <div class="rd-core"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-24">24</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

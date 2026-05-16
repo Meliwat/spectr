@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Linear iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #08090A;
+    --surface-1: #141516;
+    --surface-2: #1C1D1F;
+    --surface-3: #232428;
+    --divider: #23252A;
+    --text: #F7F8F8;
+    --text-secondary: #8A8F98;
+    --text-tertiary: #5C5F6A;
+    --purple: #5E6AD2;
+    --purple-pressed: #4F58B8;
+    --purple-tint: rgba(94,106,210,0.14);
+    --progress: #F2C94C;
+    --success: #4CB782;
+    --error: #EB5757;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+    --mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; flex-wrap: wrap; }
+  .mark { width: 28px; height: 28px; border-radius: 7px; background: var(--purple); display: flex; align-items: center; justify-content: center; }
+  .mark svg { width: 16px; height: 16px; fill: #fff; }
+  .page-title { font-size: 28px; font-weight: 600; letter-spacing: -0.6px; }
+  .page-chip { background: var(--purple); color: #fff; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 660px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.05) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .app-top { padding: 52px 16px 10px; display: flex; align-items: center; justify-content: space-between; }
+  .top-left { display: flex; align-items: center; gap: 10px; }
+  .icon-btn { color: var(--text-secondary); display: flex; }
+  .icon-btn svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .view-title { font-size: 17px; font-weight: 600; letter-spacing: -0.2px; }
+  .top-right { display: flex; align-items: center; gap: 6px; }
+
+  /* Cycle bar */
+  .cycle { padding: 4px 16px 12px; }
+  .cycle-track { height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }
+  .cycle-fill { height: 100%; width: 61%; background: var(--purple); border-radius: 3px; }
+  .cycle-caption { font-size: 12px; color: var(--text-secondary); margin-top: 6px; font-variant-numeric: tabular-nums; }
+
+  .group-header { display: flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+  .group-header .count { background: var(--surface-2); color: var(--text-secondary); font-size: 11px; padding: 1px 7px; border-radius: 999px; }
+
+  /* Issue rows */
+  .issues { flex: 1; overflow-y: auto; scrollbar-width: none; }
+  .issues::-webkit-scrollbar { display: none; }
+  .issue { display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 16px; position: relative; }
+  .issue.sel { background: var(--purple-tint); }
+  .issue.sel::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--purple); }
+  .st { width: 16px; height: 16px; flex-shrink: 0; }
+  .st svg { width: 16px; height: 16px; }
+  .iid { font-family: var(--mono); font-size: 13px; color: var(--text-secondary); font-variant-numeric: tabular-nums; flex-shrink: 0; }
+  .ititle { font-size: 15px; font-weight: 500; color: var(--text); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .prio { display: flex; align-items: flex-end; gap: 2px; height: 14px; flex-shrink: 0; }
+  .prio i { width: 3px; border-radius: 1px; background: var(--text-tertiary); opacity: 0.4; display: block; }
+  .prio i.on { background: var(--text-secondary); opacity: 1; }
+  .prio i:nth-child(1) { height: 6px; } .prio i:nth-child(2) { height: 10px; } .prio i:nth-child(3) { height: 14px; }
+  .prio.urgent { width: 14px; height: 14px; border-radius: 2px; background: var(--progress); align-items: center; justify-content: center; }
+  .prio.urgent b { font-size: 10px; color: #000; }
+  .av { width: 20px; height: 20px; border-radius: 50%; background: var(--surface-3); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; color: var(--text-secondary); flex-shrink: 0; }
+
+  /* Command menu overlay */
+  .cmd-scrim { position: absolute; inset: 0; background: rgba(0,0,0,0.5); z-index: 20; display: flex; align-items: flex-start; justify-content: center; padding-top: 90px; }
+  .cmd { width: calc(100% - 28px); background: var(--surface-1); border: 1px solid var(--divider); border-radius: 12px; box-shadow: 0 24px 64px rgba(0,0,0,0.6); overflow: hidden; }
+  .cmd-search { height: 44px; display: flex; align-items: center; gap: 10px; padding: 0 16px; border-bottom: 1px solid var(--divider); }
+  .cmd-search svg { width: 16px; height: 16px; stroke: var(--text-secondary); stroke-width: 2; fill: none; }
+  .cmd-search input { background: transparent; border: none; outline: none; color: var(--text); font-family: var(--font); font-size: 14px; font-weight: 500; flex: 1; caret-color: var(--purple); }
+  .cmd-row { height: 40px; display: flex; align-items: center; gap: 10px; padding: 0 16px; }
+  .cmd-row.foc { background: var(--purple-tint); }
+  .cmd-row .ci { width: 16px; height: 16px; color: var(--text-secondary); }
+  .cmd-row .ci svg { width: 15px; height: 15px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .cmd-row .cl { flex: 1; font-size: 14px; font-weight: 500; color: var(--text); }
+  .cmd-row .cs { font-family: var(--mono); font-size: 12px; color: var(--text-secondary); }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 16px; min-height: 90px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: var(--mono); border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #000; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: var(--mono); font-size: 11px; color: var(--text-secondary); width: 210px; flex-shrink: 0; }
+  .type-sample { flex: 1; }
+  .t-28 { font-size: 28px; font-weight: 600; letter-spacing: -0.4px; }
+  .t-22 { font-size: 22px; font-weight: 600; letter-spacing: -0.3px; }
+  .t-17 { font-size: 17px; font-weight: 600; letter-spacing: -0.2px; }
+  .t-15 { font-size: 15px; font-weight: 500; }
+  .t-15r { font-size: 15px; font-weight: 400; color: var(--text-secondary); }
+  .t-13m { font-size: 13px; font-weight: 500; font-family: var(--mono); color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 14px; font-weight: 600; padding: 8px 14px; border-radius: 8px; border: none; cursor: pointer; letter-spacing: -0.1px; height: 32px; }
+  .btn-primary { background: var(--purple); color: #fff; }
+  .btn-primary:active { background: var(--purple-pressed); transform: scale(0.98); }
+  .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--divider); font-weight: 500; }
+  .btn-ghost:active { background: var(--surface-2); }
+  .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; background: var(--surface-2); border: 1px solid var(--divider); border-radius: 8px; font-size: 13px; color: var(--text); }
+  .status-pill svg { width: 14px; height: 14px; }
+  .label-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: var(--surface-2); border-radius: 6px; font-size: 12px; font-weight: 500; color: var(--text); }
+  .label-pill .ld { width: 6px; height: 6px; border-radius: 50%; }
+
+  /* Command demo (static) */
+  .cmd-demo { background: var(--surface-2); border: 1px solid var(--divider); border-radius: 8px; overflow: hidden; }
+  .cmd-demo .cmd-row { background: transparent; }
+  .cmd-demo .cmd-row.foc { background: var(--purple-tint); }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--purple); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="mark">
+      <svg viewBox="0 0 24 24"><path d="M3.5 13.2 10.8 20.5a9 9 0 0 1-7.3-7.3zM3.1 9.9l11 11a9 9 0 0 0 2.6-.9L4 7.3a9 9 0 0 0-.9 2.6zM5.3 5.3 18.7 18.7a9 9 0 0 0 1.6-2.1L7.4 3.7a9 9 0 0 0-2.1 1.6zM9 3.5l11.5 11.5a9 9 0 0 0-9-11 9 9 0 0 0-2.5 0z"/></svg>
+    </span>
+    <div class="page-title">Linear iOS — Design Tokens</div>
+    <div class="page-chip">Dark</div>
+  </div>
+  <p class="page-subtitle">Near-OLED canvas (#08090A), Linear Purple (#5E6AD2) as the single accent for action, focus, and selection. Dense issue rows and a keyboard-first command menu — speed is the aesthetic.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="app-top">
+            <div class="top-left">
+              <div class="icon-btn"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="9" y1="4" x2="9" y2="20"/></svg></div>
+              <div class="view-title">Cycle 14</div>
+            </div>
+            <div class="top-right">
+              <div class="icon-btn"><svg viewBox="0 0 24 24"><polygon points="4,5 20,5 14,12 14,19 10,19 10,12"/></svg></div>
+              <div class="icon-btn"><svg viewBox="0 0 24 24"><line x1="4" y1="8" x2="20" y2="8"/><line x1="4" y1="14" x2="20" y2="14"/><circle cx="9" cy="8" r="2" fill="currentColor"/><circle cx="15" cy="14" r="2" fill="currentColor"/></svg></div>
+              <div class="icon-btn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+            </div>
+          </div>
+          <div class="cycle">
+            <div class="cycle-track"><div class="cycle-fill"></div></div>
+            <div class="cycle-caption">14 of 23 completed · 4 days left</div>
+          </div>
+
+          <div class="group-header">
+            <svg width="14" height="14" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="#F2C94C" stroke-width="1.5"/><path d="M8 8 L8 2 A6 6 0 0 1 8 14 Z" fill="#F2C94C"/></svg>
+            In Progress <span class="count">3</span>
+          </div>
+          <div class="issues">
+            <div class="issue sel">
+              <div class="st"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="#F2C94C" stroke-width="1.5"/><path d="M8 8 L8 2 A6 6 0 0 1 8 14 Z" fill="#F2C94C"/></svg></div>
+              <span class="iid">ENG-1423</span>
+              <span class="ititle">Fix flaky auth redirect on cold start</span>
+              <div class="prio urgent"><b>!</b></div>
+              <div class="av">SP</div>
+            </div>
+            <div class="issue">
+              <div class="st"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="#F2C94C" stroke-width="1.5"/><path d="M8 8 L8 2 A6 6 0 0 1 8 14 Z" fill="#F2C94C"/></svg></div>
+              <span class="iid">ENG-1419</span>
+              <span class="ititle">Command menu fuzzy ranking pass</span>
+              <div class="prio"><i class="on"></i><i class="on"></i><i class="on"></i></div>
+              <div class="av">MR</div>
+            </div>
+            <div class="issue">
+              <div class="st"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="#F2C94C" stroke-width="1.5"/><path d="M8 8 L8 2 A6 6 0 0 1 8 14 Z" fill="#F2C94C"/></svg></div>
+              <span class="iid">ENG-1402</span>
+              <span class="ititle">Sidebar drawer swipe velocity tuning</span>
+              <div class="prio"><i class="on"></i><i class="on"></i><i></i></div>
+              <div class="av">HZ</div>
+            </div>
+            <div class="group-header" style="padding-top:14px;">
+              <svg width="14" height="14" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="#8A8F98" stroke-width="1.5"/></svg>
+              Todo <span class="count">2</span>
+            </div>
+            <div class="issue">
+              <div class="st"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="#8A8F98" stroke-width="1.5"/></svg></div>
+              <span class="iid">ENG-1431</span>
+              <span class="ititle">Audit tabular-nums on count chips</span>
+              <div class="prio"><i class="on"></i><i></i><i></i></div>
+              <div class="av">SP</div>
+            </div>
+            <div class="issue">
+              <div class="st"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="#5E6AD2"/><path d="M5 8.2 L7 10.2 L11 5.8" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg></div>
+              <span class="iid">ENG-1390</span>
+              <span class="ititle">Ship cycle progress bar</span>
+              <div class="prio"><i class="on"></i><i class="on"></i><i></i></div>
+              <div class="av">MR</div>
+            </div>
+          </div>
+
+          <div class="cmd-scrim">
+            <div class="cmd">
+              <div class="cmd-search">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+                <input value="assign" readonly>
+              </div>
+              <div class="cmd-row foc"><span class="ci"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21c1-4 4-6 7-6s6 2 7 6"/></svg></span><span class="cl">Assign to…</span><span class="cs">A</span></div>
+              <div class="cmd-row"><span class="ci"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/></svg></span><span class="cl">Change status</span><span class="cs">S</span></div>
+              <div class="cmd-row"><span class="ci"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span><span class="cl">Create new issue</span><span class="cs">⌘ I</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#08090A;"><div class="name">Canvas</div>#08090A</div>
+          <div class="swatch" style="background:#141516;"><div class="name">Surface 1</div>#141516</div>
+          <div class="swatch" style="background:#1C1D1F;"><div class="name">Surface 2</div>#1C1D1F</div>
+          <div class="swatch" style="background:#232428;"><div class="name">Surface 3</div>#232428</div>
+          <div class="swatch" style="background:#23252A;"><div class="name">Divider</div>#23252A</div>
+          <div class="swatch light" style="background:#F7F8F8;"><div class="name">Text Primary</div>#F7F8F8</div>
+          <div class="swatch" style="background:#8A8F98; color:#000;"><div class="name">Text Secondary</div>#8A8F98</div>
+          <div class="swatch" style="background:#5C5F6A;"><div class="name">Text Tertiary</div>#5C5F6A</div>
+          <div class="swatch" style="background:#5E6AD2;"><div class="name">Linear Purple</div>#5E6AD2</div>
+          <div class="swatch" style="background:#4F58B8;"><div class="name">Purple Pressed</div>#4F58B8</div>
+          <div class="swatch" style="background:#F2C94C; color:#000;"><div class="name">In Progress</div>#F2C94C</div>
+          <div class="swatch" style="background:#EB5757;"><div class="name">Error</div>#EB5757</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 28pt · 600</div><div class="type-sample t-28">My Issues</div></div>
+        <div class="type-row"><div class="type-meta">View Title · 22pt · 600</div><div class="type-sample t-22">Cycle 14</div></div>
+        <div class="type-row"><div class="type-meta">Section · 17pt · 600</div><div class="type-sample t-17">In Progress</div></div>
+        <div class="type-row"><div class="type-meta">Issue Title · 15pt · 500</div><div class="type-sample t-15">Fix flaky auth redirect</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 400</div><div class="type-sample t-15r">Repro on cold start only, after token refresh</div></div>
+        <div class="type-row"><div class="type-meta">Identifier · 13pt · 500 mono</div><div class="type-sample t-13m">ENG-1423</div></div>
+        <div class="type-row"><div class="type-meta">Tiny Label · 11pt · 600 UP</div><div class="type-sample t-11">Todo</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons &amp; Pills</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Create issue</button>
+          <button class="btn btn-ghost">Cancel</button>
+          <div class="status-pill"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="#F2C94C" stroke-width="1.5"/><path d="M8 8 L8 2 A6 6 0 0 1 8 14 Z" fill="#F2C94C"/></svg>In Progress</div>
+          <div class="label-pill"><span class="ld" style="background:#EB5757;"></span>bug</div>
+          <div class="label-pill"><span class="ld" style="background:#5E6AD2;"></span>feature</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Command Menu (Cmd+K) — focused = purple</div>
+        <div class="cmd-demo">
+          <div class="cmd-search">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input value="Type a command or search…" readonly style="color:var(--text-tertiary);">
+          </div>
+          <div class="cmd-row foc"><span class="ci"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span><span class="cl">Create new issue</span><span class="cs">⌘ I</span></div>
+          <div class="cmd-row"><span class="ci"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21c1-4 4-6 7-6s6 2 7 6"/></svg></span><span class="cl">Assign to…</span><span class="cs">A</span></div>
+          <div class="cmd-row"><span class="ci"><svg viewBox="0 0 24 24"><polyline points="9,6 15,12 9,18"/></svg></span><span class="cl">Go to team</span><span class="cs">G T</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Linear's canvas is <code>#08090A</code> — darker than the common <code>#121212</code> dark mode, almost OLED true-black, so the issue list becomes the entire surface. Elevation is a single background step (<code>#08090A</code> → <code>#1C1D1F</code>) plus a 1pt <code>#23252A</code> border — real shadows appear only on the floating command menu. Linear Purple <code>#5E6AD2</code> is the only accent: primary action, the focused command row, and the active selection. Status is a drawn icon language, never a colored text badge.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

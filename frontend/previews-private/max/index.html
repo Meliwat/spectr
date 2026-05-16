@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Max iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #12053A;
+    --surface-1: #1B0B4D;
+    --surface-2: #250F5E;
+    --surface-3: #36206E;
+    --divider: #36206E;
+    --text: #FFFFFF;
+    --text-secondary: #B0A8D0;
+    --text-tertiary: #7E76A6;
+    --grad-start: #0046FF;
+    --grad-end: #7B2FF7;
+    --grad-solid: #5A2BE0;
+    --grad-pressed: #4A22BD;
+    --gradient: linear-gradient(135deg, #0046FF 0%, #7B2FF7 100%);
+    --live: #F2C94C;
+    --error: #FF5C7A;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; }
+  .page-chip { background: var(--gradient); color: #FFF; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  /* Billboard */
+  .billboard { height: 440px; position: relative; }
+  .bb-bg { position: absolute; inset: 0; background: linear-gradient(160deg, #3A1E78 0%, #251058 45%, #14063C 100%); }
+  .bb-bg::before { content: ''; position: absolute; top: 14%; left: 50%; transform: translateX(-50%); width: 62%; height: 44%; background: radial-gradient(circle at 50% 40%, #5B3AAE, #2C1666 70%); border-radius: 50%; filter: blur(2px); }
+  .bb-fade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(18,5,58,0) 40%, var(--canvas) 100%); }
+  .bb-content { position: absolute; left: 16px; right: 16px; bottom: 16px; }
+  .originals { display: inline-block; border-radius: 999px; padding: 1.5px; background: var(--gradient); margin-bottom: 10px; }
+  .originals span { display: block; background: rgba(18,5,58,0.55); border-radius: 999px; padding: 4px 8px; font-size: 11px; font-weight: 800; letter-spacing: 0.4px; color: #fff; }
+  .bb-title { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; }
+  .bb-meta { font-size: 13px; color: var(--text-secondary); margin-top: 6px; margin-bottom: 14px; }
+  .bb-actions { display: flex; gap: 12px; }
+  .play-btn { flex: 1; height: 50px; border-radius: 8px; background: var(--gradient); color: #fff; font-family: var(--font); font-size: 16px; font-weight: 800; letter-spacing: 0.2px; border: none; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 8px 24px rgba(91,43,224,0.35); position: relative; overflow: hidden; }
+  .play-btn svg { width: 18px; height: 18px; fill: #fff; }
+  .play-btn::after { content: ''; position: absolute; top: 0; bottom: 0; width: 70px; background: rgba(255,255,255,0.18); transform: skewX(-12deg); animation: shimmer 4s linear infinite; }
+  @keyframes shimmer { 0% { left: -80px; } 100% { left: 360px; } }
+  .info-btn { flex: 1; height: 50px; border-radius: 8px; background: rgba(255,255,255,0.14); color: #fff; font-family: var(--font); font-size: 15px; font-weight: 600; border: none; }
+
+  /* Originals row */
+  .row { padding: 14px 0 8px 16px; }
+  .row-head { display: flex; align-items: baseline; justify-content: space-between; padding-right: 16px; margin-bottom: 10px; }
+  .row-title { font-size: 20px; font-weight: 800; letter-spacing: -0.3px; }
+  .row-see { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+  .row-scroll { display: flex; gap: 12px; overflow: hidden; }
+  .tile { width: 150px; flex-shrink: 0; }
+  .tile-art { width: 150px; height: 84px; border-radius: 6px; position: relative; overflow: hidden; }
+  .t1 { background: linear-gradient(135deg, #5B3AAE, #2C1666); }
+  .t2 { background: linear-gradient(135deg, #3A5BCE, #1E2C78); }
+  .t3 { background: linear-gradient(135deg, #7B3AAE, #421666); }
+  .tile-badge { position: absolute; top: 6px; left: 6px; border-radius: 999px; padding: 1px; background: var(--gradient); }
+  .tile-badge span { display: block; background: rgba(18,5,58,0.6); border-radius: 999px; padding: 2px 6px; font-size: 9px; font-weight: 800; letter-spacing: 0.3px; }
+  .tile-title { font-size: 15px; font-weight: 600; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tile-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+  /* Tab bar */
+  .tab-bar { margin-top: auto; height: 64px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(18,5,58,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-secondary); font-size: 10px; font-weight: 600; gap: 3px; letter-spacing: 0.2px; position: relative; }
+  .tab.active { color: var(--text); }
+  .tab.active::after { content: ''; position: absolute; top: 26px; width: 18px; height: 3px; border-radius: 2px; background: var(--grad-solid); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.grad { background: var(--gradient); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; }
+  .t-28 { font-size: 28px; font-weight: 800; letter-spacing: -0.4px; }
+  .t-22 { font-size: 22px; font-weight: 800; letter-spacing: -0.3px; }
+  .t-16 { font-size: 16px; font-weight: 600; }
+  .t-15 { font-size: 15px; font-weight: 400; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--gradient); color: #fff; font-size: 16px; font-weight: 800; padding: 14px 28px; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 8px 24px rgba(91,43,224,0.35); }
+  .btn-primary svg { width: 16px; height: 16px; fill: #fff; }
+  .btn-primary:active { filter: brightness(0.82); transform: scale(0.97); }
+  .btn-secondary { background: rgba(255,255,255,0.14); color: var(--text); font-size: 15px; font-weight: 600; padding: 14px 24px; border-radius: 8px; }
+  .btn-secondary:active { background: rgba(255,255,255,0.22); transform: scale(0.98); }
+  .chip { background: var(--surface-2); color: var(--text); font-size: 14px; font-weight: 600; padding: 9px 16px; border-radius: 500px; }
+  .chip.active { background: var(--gradient); color: #fff; }
+
+  /* Originals demo */
+  .orig-demo { display: flex; gap: 12px; align-items: center; }
+
+  /* Profile gate demo */
+  .gate { display: flex; gap: 20px; }
+  .avatar { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .avatar-img { width: 72px; height: 72px; border-radius: 50%; }
+  .a1 { background: linear-gradient(135deg, #5B3AAE, #2C1666); }
+  .a2 { background: linear-gradient(135deg, #3A5BCE, #1E2C78); border: 2px solid transparent; background-image: linear-gradient(#1B0B4D,#1B0B4D), var(--gradient); background-origin: border-box; background-clip: content-box, border-box; }
+  .a3 { background: linear-gradient(135deg, #7B3AAE, #421666); }
+  .avatar-name { font-size: 14px; font-weight: 600; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--gradient); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Max iOS — Design Tokens</div>
+    <div class="page-chip">Dark</div>
+  </div>
+  <p class="page-subtitle">Deep purple canvas (#12053A) — the brand color is the environment, not a neutral dark. The Max gradient (#0046FF → #7B2FF7) powers the wordmark, primary CTA, focus, and the auto-trailer billboard.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="billboard">
+            <div class="bb-bg"></div>
+            <div class="bb-fade"></div>
+            <div class="bb-content">
+              <div class="originals"><span>Max Originals</span></div>
+              <div class="bb-title">Veil &amp; Crown</div>
+              <div class="bb-meta">2024 · TV-MA · 1 Season · Drama</div>
+              <div class="bb-actions">
+                <button class="play-btn"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg>Play</button>
+                <button class="info-btn">More Info</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="row-head">
+              <div class="row-title">Max Originals</div>
+              <div class="row-see">See All</div>
+            </div>
+            <div class="row-scroll">
+              <div class="tile">
+                <div class="tile-art t1"><div class="tile-badge"><span>Max Originals</span></div></div>
+                <div class="tile-title">Veil &amp; Crown</div>
+                <div class="tile-sub">S1 · E1 · New</div>
+              </div>
+              <div class="tile">
+                <div class="tile-art t2"><div class="tile-badge"><span>Max Originals</span></div></div>
+                <div class="tile-title">The Long Dusk</div>
+                <div class="tile-sub">Limited Series</div>
+              </div>
+              <div class="tile">
+                <div class="tile-art t3"><div class="tile-badge"><span>Max Originals</span></div></div>
+                <div class="tile-title">Hollow Tide</div>
+                <div class="tile-sub">S2 · E4</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><polygon points="10,9 16,12 10,15"/></svg><span>My List</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#12053A;"><div class="name">Canvas</div>#12053A</div>
+          <div class="swatch" style="background:#1B0B4D;"><div class="name">Surface 1</div>#1B0B4D</div>
+          <div class="swatch" style="background:#250F5E;"><div class="name">Surface 2</div>#250F5E</div>
+          <div class="swatch" style="background:#36206E;"><div class="name">Surface 3 / Divider</div>#36206E</div>
+          <div class="swatch" style="background:#FFFFFF; color:#12053A;"><div class="name">Text Primary</div>#FFFFFF</div>
+          <div class="swatch" style="background:#B0A8D0; color:#12053A;"><div class="name">Text Secondary</div>#B0A8D0</div>
+          <div class="swatch" style="background:#7E76A6;"><div class="name">Text Tertiary</div>#7E76A6</div>
+          <div class="swatch" style="background:#0046FF;"><div class="name">Gradient Start</div>#0046FF</div>
+          <div class="swatch" style="background:#7B2FF7;"><div class="name">Gradient End</div>#7B2FF7</div>
+          <div class="swatch grad"><div class="name">Brand Gradient</div>0046FF→7B2FF7</div>
+          <div class="swatch" style="background:#5A2BE0;"><div class="name">Gradient Solid</div>#5A2BE0</div>
+          <div class="swatch" style="background:#F2C94C; color:#12053A;"><div class="name">Live Gold</div>#F2C94C</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter</div>
+        <div class="type-row"><div class="type-meta">Billboard Title · 32pt · 800</div><div class="type-sample t-32">Veil &amp; Crown</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 28pt · 800</div><div class="type-sample t-28">My List</div></div>
+        <div class="type-row"><div class="type-meta">Row Header · 22pt · 800</div><div class="type-sample t-22">Max Originals</div></div>
+        <div class="type-row"><div class="type-meta">Episode Title · 16pt · 600</div><div class="type-sample t-16">The First Light</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 400</div><div class="type-sample t-15">A dynasty fractures over a single inheritance.</div></div>
+        <div class="type-row"><div class="type-meta">Metadata · 13pt · 400</div><div class="type-sample t-13">2024 · TV-MA · 1 Season</div></div>
+        <div class="type-row"><div class="type-meta">Label · 11pt · 800 UP</div><div class="type-sample t-11">Trending Now</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg>Play</button>
+          <button class="btn btn-secondary">More Info</button>
+          <div class="chip active">All</div>
+          <div class="chip">Series</div>
+          <div class="chip">Movies</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Max Originals Badge</div>
+        <div class="orig-demo">
+          <div class="originals"><span>Max Originals</span></div>
+          <div class="chip">Limited Series</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Profile Gate (focused = gradient ring)</div>
+        <div class="gate">
+          <div class="avatar"><div class="avatar-img a1"></div><div class="avatar-name">Mara</div></div>
+          <div class="avatar"><div class="avatar-img a2"></div><div class="avatar-name">Jude</div></div>
+          <div class="avatar"><div class="avatar-img a3"></div><div class="avatar-name">Kids</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

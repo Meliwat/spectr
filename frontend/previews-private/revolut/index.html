@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Revolut iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0A0A0F;
+    --surface-1: #16161F;
+    --surface-2: #1E1E2A;
+    --surface-3: #28283A;
+    --divider: #2A2A38;
+    --border: #33334A;
+    --text: #FFFFFF;
+    --text-secondary: #9A9AAA;
+    --text-tertiary: #6A6A7E;
+    --grad-start: #5B6BFF;
+    --grad-end: #9C6BFF;
+    --brand: #6B5BFF;
+    --brand-pressed: #5648D6;
+    --brand-tint: #1C1B33;
+    --income: #1FD17B;
+    --spend: #FF5A6A;
+    --warn: #FFB23F;
+    --crypto: #F7C948;
+    --grad: linear-gradient(115deg, #5B6BFF 0%, #9C6BFF 100%);
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 700; letter-spacing: -0.6px; color: var(--text); }
+  .page-chip { background: var(--grad); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #000; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(91,107,255,0.35), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text); }
+
+  /* Top bar */
+  .top-bar { display: flex; align-items: center; gap: 10px; padding: 4px 16px 8px; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--grad); flex-shrink: 0; }
+  .top-name { flex: 1; font-size: 15px; font-weight: 600; }
+  .top-icon { color: var(--text-secondary); }
+  .top-icon svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  .balance-wrap { padding: 6px 16px 16px; }
+  .balance-label { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 4px; }
+  .balance-figure { font-size: 38px; font-weight: 700; letter-spacing: -0.6px; font-variant-numeric: tabular-nums; }
+
+  /* Quick actions */
+  .qa-row { display: flex; justify-content: space-between; padding: 0 16px 16px; }
+  .qa { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .qa-circle { width: 52px; height: 52px; border-radius: 50%; background: var(--surface-2); display: flex; align-items: center; justify-content: center; }
+  .qa-circle.primary { background: var(--grad); }
+  .qa-circle svg { width: 22px; height: 22px; stroke: var(--text); stroke-width: 2; fill: none; }
+  .qa-label { font-size: 12px; color: var(--text-secondary); }
+
+  /* Metal card */
+  .card-wrap { padding: 0 16px 16px; }
+  .metal-card { aspect-ratio: 1.586; border-radius: 16px; background: linear-gradient(135deg, #2E2E33 0%, #101014 100%); position: relative; overflow: hidden; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+  .metal-card::after { content: ''; position: absolute; top: 0; bottom: 0; left: -40%; width: 40%; background: linear-gradient(115deg, transparent, rgba(255,255,255,0.18), transparent); animation: sheen 3s ease-in-out infinite; }
+  @keyframes sheen { 0% { left: -40%; } 55%, 100% { left: 130%; } }
+  .mc-brand { font-size: 18px; font-weight: 600; color: rgba(255,255,255,0.92); position: relative; z-index: 1; }
+  .mc-row { display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 1; }
+  .mc-num { font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: 1px; }
+  .mc-cl svg { width: 20px; height: 20px; stroke: rgba(255,255,255,0.8); stroke-width: 2; fill: none; }
+
+  /* Currency tiles */
+  .tiles { padding: 0 16px 12px; display: flex; flex-direction: column; gap: 10px; flex: 1; overflow-y: auto; scrollbar-width: none; }
+  .tiles::-webkit-scrollbar { display: none; }
+  .ctile { display: flex; align-items: center; gap: 12px; height: 64px; padding: 0 14px; background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; }
+  .flag { width: 28px; height: 28px; border-radius: 50%; background: var(--surface-2); display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+  .ctile-info { flex: 1; }
+  .ctile-code { font-size: 16px; font-weight: 600; }
+  .ctile-name { font-size: 13px; color: var(--text-secondary); }
+  .ctile-bal { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  /* Tab bar */
+  .tab-bar { height: 58px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: rgba(10,10,15,0.92); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 3px; }
+  .tab.active { color: var(--text); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { stroke: url(#tabgrad); }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 20px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.grad { background: var(--grad); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); }
+  .t-40 { font-size: 38px; font-weight: 700; letter-spacing: -0.6px; font-variant-numeric: tabular-nums; }
+  .t-28 { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-18 { font-size: 18px; font-weight: 600; }
+  .t-16 { font-size: 16px; font-weight: 600; }
+  .t-15 { font-size: 15px; font-weight: 400; color: var(--text-secondary); }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 600; cursor: pointer; border: none; letter-spacing: 0; font-size: 16px; }
+  .btn-primary { background: var(--grad); color: #FFF; padding: 15px 28px; border-radius: 16px; box-shadow: 0 8px 28px rgba(108,91,255,0.30); }
+  .btn-primary:active { opacity: 0.85; transform: scale(0.98); }
+  .btn-secondary { background: var(--surface-2); color: #FFF; padding: 15px 28px; border-radius: 16px; }
+  .btn-ghost { background: transparent; color: var(--text-secondary); padding: 15px 20px; }
+
+  /* Donut */
+  .donut-card { background: var(--surface-2); border-radius: 20px; padding: 24px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+  .donut { width: 160px; height: 160px; border-radius: 50%; background:
+    radial-gradient(closest-side, var(--surface-2) 78%, transparent 79% 100%),
+    conic-gradient(from -90deg, var(--grad-start), var(--grad-end) 62%, var(--surface-3) 62% 100%);
+    position: relative; display: flex; align-items: center; justify-content: center; }
+  .donut-center { display: flex; flex-direction: column; align-items: center; }
+  .donut-total { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .donut-sub { font-size: 13px; color: var(--text-secondary); }
+  .legend { display: flex; flex-wrap: wrap; gap: 10px 20px; justify-content: center; }
+  .leg { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-secondary); }
+  .leg .dot { width: 9px; height: 9px; border-radius: 3px; }
+
+  /* Transaction rows */
+  .tx { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .tx:last-child { border-bottom: none; }
+  .tx-logo { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; }
+  .tx-logo.sp { background: linear-gradient(135deg,#1DB954,#0d6b30); }
+  .tx-logo.am { background: linear-gradient(135deg,#FF9900,#b36b00); }
+  .tx-logo.in { background: linear-gradient(135deg,#1FD17B,#0f6e41); }
+  .tx-info { flex: 1; }
+  .tx-merch { font-size: 16px; font-weight: 600; }
+  .tx-meta { font-size: 13px; color: var(--text-secondary); }
+  .tx-amt { font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .tx-amt.in { color: var(--income); }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--grad); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-20 { border-radius: 20px; }
+  .r-24 { border-radius: 24px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs><linearGradient id="tabgrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5B6BFF"/><stop offset="1" stop-color="#9C6BFF"/></linearGradient></defs></svg>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Revolut iOS — Design Tokens</div>
+    <div class="page-chip">Dark</div>
+  </div>
+  <p class="page-subtitle">Cool near-black canvas (#0A0A0F) with the violet→purple gradient (#5B6BFF → #9C6BFF) as the single brand accent. Solid #6B5BFF only where a gradient can't render. Money is always tabular and decimal-aligned.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="top-bar">
+            <div class="avatar"></div>
+            <div class="top-name">Alex Mercer</div>
+            <div class="top-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg></div>
+            <div class="top-icon"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
+          </div>
+
+          <div class="balance-wrap">
+            <div class="balance-label">Total balance</div>
+            <div class="balance-figure">£12,480.65</div>
+          </div>
+
+          <div class="qa-row">
+            <div class="qa"><div class="qa-circle primary"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div class="qa-label">Add</div></div>
+            <div class="qa"><div class="qa-circle"><svg viewBox="0 0 24 24"><path d="M7 10l-4 4 4 4"/><path d="M3 14h14"/><path d="M17 14l4-4-4-4"/><path d="M21 10H7"/></svg></div><div class="qa-label">Exchange</div></div>
+            <div class="qa"><div class="qa-circle"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg></div><div class="qa-label">Send</div></div>
+            <div class="qa"><div class="qa-circle"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></div><div class="qa-label">More</div></div>
+          </div>
+
+          <div class="card-wrap">
+            <div class="metal-card">
+              <div class="mc-brand">Revolut</div>
+              <div class="mc-row">
+                <div class="mc-num">•••• 4821</div>
+                <div class="mc-cl"><svg viewBox="0 0 24 24"><path d="M6 8.5a8 8 0 0 1 0 7"/><path d="M10 6a13 13 0 0 1 0 12"/><path d="M14 4a18 18 0 0 1 0 16"/></svg></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tiles">
+            <div class="ctile">
+              <div class="flag">🇬🇧</div>
+              <div class="ctile-info"><div class="ctile-code">GBP</div><div class="ctile-name">British Pound</div></div>
+              <div class="ctile-bal">£8,240.10</div>
+            </div>
+            <div class="ctile">
+              <div class="flag">🇪🇺</div>
+              <div class="ctile-info"><div class="ctile-code">EUR</div><div class="ctile-name">Euro</div></div>
+              <div class="ctile-bal">€3,180.55</div>
+            </div>
+            <div class="ctile">
+              <div class="flag">🇺🇸</div>
+              <div class="ctile-info"><div class="ctile-code">USD</div><div class="ctile-name">US Dollar</div></div>
+              <div class="ctile-bal">$1,060.00</div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><polyline points="3,17 9,11 13,15 21,7"/><polyline points="15,7 21,7 21,13"/></svg><span>Invest</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 8h4a2.2 2.2 0 0 1 0 4.4h-4zM9.5 12.4h4.3a2.2 2.2 0 0 1 0 4.4H9.5zM11 6v2M11 16.8v2"/></svg><span>Crypto</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6 4.4 2.3 7.2L12 16.8l-6.3 4.2L8 13.8l-6-4.4h7.6z"/></svg><span>Lifestyle</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg><span>Cards</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0A0A0F;"><div class="name">Canvas</div>#0A0A0F</div>
+          <div class="swatch" style="background:#16161F;"><div class="name">Surface 1</div>#16161F</div>
+          <div class="swatch" style="background:#1E1E2A;"><div class="name">Surface 2</div>#1E1E2A</div>
+          <div class="swatch" style="background:#28283A;"><div class="name">Surface 3</div>#28283A</div>
+          <div class="swatch" style="background:#2A2A38;"><div class="name">Divider</div>#2A2A38</div>
+          <div class="swatch" style="background:#FFFFFF; color:#0A0A0F;"><div class="name">Text Primary</div>#FFFFFF</div>
+          <div class="swatch" style="background:#9A9AAA; color:#0A0A0F;"><div class="name">Text Secondary</div>#9A9AAA</div>
+          <div class="swatch grad"><div class="name">Brand Gradient</div>5B6BFF→9C6BFF</div>
+          <div class="swatch" style="background:#6B5BFF;"><div class="name">Brand Solid</div>#6B5BFF</div>
+          <div class="swatch" style="background:#1FD17B;"><div class="name">Income</div>#1FD17B</div>
+          <div class="swatch" style="background:#FF5A6A;"><div class="name">Spend</div>#FF5A6A</div>
+          <div class="swatch" style="background:#F7C948; color:#222;"><div class="name">Crypto Gold</div>#F7C948</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Aeonik (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Balance · 40pt · 700 tnum</div><div class="type-sample t-40">£12,480.65</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 28pt · 700</div><div class="type-sample t-28">Accounts</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Spending this month</div></div>
+        <div class="type-row"><div class="type-meta">Subsection · 18pt · 600</div><div class="type-sample t-18">Your cards</div></div>
+        <div class="type-row"><div class="type-meta">Merchant · 16pt · 600</div><div class="type-sample t-16">Spotify</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 400</div><div class="type-sample t-15">Rates update every 60 seconds at the mid-market price.</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 400</div><div class="type-sample t-13">Today, 14:32 · Subscriptions</div></div>
+        <div class="type-row"><div class="type-meta">Label · 11pt · 700 UP</div><div class="type-sample t-11">Available</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Add money</button>
+          <button class="btn btn-secondary">Details</button>
+          <button class="btn btn-ghost">Skip</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Spend Analytics Donut (signature)</div>
+        <div class="donut-card">
+          <div class="donut">
+            <div class="donut-center">
+              <div class="donut-total">£1,284</div>
+              <div class="donut-sub">this month</div>
+            </div>
+          </div>
+          <div class="legend">
+            <div class="leg"><span class="dot" style="background:#5B6BFF"></span>Groceries · £420</div>
+            <div class="leg"><span class="dot" style="background:#7B68FF"></span>Transport · £180</div>
+            <div class="leg"><span class="dot" style="background:#9C6BFF"></span>Eating out · £310</div>
+            <div class="leg"><span class="dot" style="background:#28283A"></span>Other · £374</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Transactions (incoming = green)</div>
+        <div class="tx">
+          <div class="tx-logo sp"></div>
+          <div class="tx-info"><div class="tx-merch">Spotify</div><div class="tx-meta">Today, 14:32 · Subscriptions</div></div>
+          <div class="tx-amt">-£9.99</div>
+        </div>
+        <div class="tx">
+          <div class="tx-logo in"></div>
+          <div class="tx-info"><div class="tx-merch">Salary — Acme Ltd</div><div class="tx-meta">Today, 09:00 · Income</div></div>
+          <div class="tx-amt in">+£2,400.00</div>
+        </div>
+        <div class="tx">
+          <div class="tx-logo am"></div>
+          <div class="tx-info"><div class="tx-merch">Amazon</div><div class="tx-meta">Yesterday · Shopping</div></div>
+          <div class="tx-amt">-£42.18</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-24">24</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Revolut is a cool near-black cockpit, never warm and never pure <code>#000000</code>. Canvas sits at <code>#0A0A0F</code>; surfaces lift to <code>#16161F</code> / <code>#1E1E2A</code> as floating slabs. The violet→purple gradient <code>#5B6BFF → #9C6BFF</code> is the entire brand accent — CTA, active tab, the spend arc, the card sheen — and the primary CTA glows with a soft <code>rgba(108,91,255,0.30)</code> halo. Solid <code>#6B5BFF</code> appears only where a gradient can't render. Every money figure is tabular and decimal-aligned.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

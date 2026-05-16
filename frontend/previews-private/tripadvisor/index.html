@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Tripadvisor iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --surface: #F2F2F2;
+    --divider: #E0E0E0;
+    --surface-pressed: #E8E8E8;
+    --text: #000000;
+    --text-secondary: #6B6B6B;
+    --text-tertiary: #9B9B9B;
+    --green: #34E0A1;
+    --green-pressed: #21C589;
+    --owl-black: #000000;
+    --empty-bubble: #D9D9D9;
+    --error: #D6122E;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #EDEDED; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 700; letter-spacing: -0.6px; color: var(--text); }
+  .page-chip { background: var(--green); color: #000; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.45), 0 0 0 2px rgba(0,0,0,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text); }
+
+  /* Top nav: owl + location + avatar */
+  .top-nav { display: flex; align-items: center; justify-content: space-between; padding: 0 16px 8px; }
+  .owl { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; }
+  .owl svg { width: 30px; height: 30px; }
+  .loc-pill { font-size: 15px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 4px; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #34E0A1, #21C589); }
+
+  /* Search */
+  .search-wrap { padding: 4px 16px 12px; }
+  .search-pill { display: flex; align-items: center; height: 48px; border-radius: 999px; background: var(--surface); padding: 0 18px; gap: 10px; }
+  .search-icon svg { width: 16px; height: 16px; stroke: var(--text-secondary); stroke-width: 2.5; fill: none; }
+  .search-text { flex: 1; font-size: 15px; color: var(--text-secondary); }
+
+  /* Category tiles */
+  .cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 4px 16px 14px; }
+  .cat-tile { background: var(--surface); border-radius: 16px; height: 84px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+  .cat-tile svg { width: 26px; height: 26px; stroke: var(--text); stroke-width: 1.8; fill: none; }
+  .cat-tile .glyph-fill { fill: var(--green); stroke: none; }
+  .cat-label { font-size: 14px; font-weight: 600; color: var(--text); }
+
+  /* Place list */
+  .place-list { flex: 1; padding: 4px 16px 16px; overflow-y: auto; scrollbar-width: none; }
+  .place-list::-webkit-scrollbar { display: none; }
+  .place { margin-bottom: 20px; }
+  .photo { width: 100%; aspect-ratio: 3/2; border-radius: 16px; position: relative; overflow: hidden; }
+  .photo-hotel { background: linear-gradient(160deg, #6FB7D6 0%, #3E7FA8 45%, #1F4D6B 100%); }
+  .photo-hotel::before { content: ''; position: absolute; top: 14%; left: 12%; right: 12%; bottom: 30%; background: #E8DCC4; border-radius: 4px; box-shadow: 3px 4px 0 rgba(0,0,0,0.15); }
+  .photo-hotel::after { content: ''; position: absolute; bottom: 16%; left: 16%; right: 16%; height: 20%; background: linear-gradient(180deg, #5CA0C2 0%, #3B7799 100%); border-radius: 2px; }
+  .photo-rest { background: linear-gradient(160deg, #E8B36B 0%, #C9823C 45%, #8A4F22 100%); }
+  .photo-rest::before { content: ''; position: absolute; top: 30%; left: 14%; right: 14%; bottom: 20%; background: #F2E6D0; border-radius: 6px; }
+  .photo-rest::after { content: ''; position: absolute; top: 24%; left: 18%; width: 16%; height: 10%; background: #A8632F; border-radius: 50% 50% 0 0; box-shadow: 90% 0 0 #A8632F, 180% 0 0 #A8632F; }
+  .badge { position: absolute; top: 12px; left: 12px; background: var(--green); color: #000; font-size: 11px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
+  .heart { position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; border-radius: 18px; background: rgba(0,0,0,0.30); display: flex; align-items: center; justify-content: center; }
+  .heart svg { width: 20px; height: 20px; }
+  .heart.saved path { fill: var(--green); stroke: var(--green); stroke-width: 1.2; }
+  .heart.unsaved path { fill: none; stroke: #FFF; stroke-width: 2; }
+  .dots { position: absolute; bottom: 12px; left: 0; right: 0; display: flex; justify-content: center; gap: 4px; }
+  .dot { width: 6px; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.5); }
+  .dot.active { background: #FFF; }
+
+  /* Bubble rating */
+  .bubbles { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+  .bubble-row { display: flex; gap: 2px; }
+  .bubble { width: 16px; height: 16px; border-radius: 50%; background: var(--empty-bubble); overflow: hidden; }
+  .bubble .fill { height: 100%; background: var(--green); }
+  .bubble.full .fill { width: 100%; }
+  .bubble.half .fill { width: 50%; }
+  .bubble.empty .fill { width: 0; }
+  .bubble-count { font-size: 13px; color: var(--text-secondary); }
+
+  .place-name { font-size: 17px; font-weight: 700; color: var(--text); margin-top: 6px; }
+  .place-meta { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+
+  /* Tab bar */
+  .tab-bar { height: 64px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: rgba(255,255,255,0.96); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-secondary); font-size: 11px; font-weight: 600; gap: 3px; letter-spacing: 0.2px; }
+  .tab.active { color: var(--green); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: #FFF; border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #000; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); }
+  .t-28 { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; }
+  .t-24 { font-size: 24px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-17 { font-size: 17px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 600; }
+  .t-15 { font-size: 15px; font-weight: 400; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--green); color: #000; font-size: 16px; padding: 14px 28px; border-radius: 999px; }
+  .btn-primary:active { background: var(--green-pressed); transform: scale(0.97); }
+  .btn-outline { background: transparent; color: #000; border: 1px solid #000; font-size: 15px; font-weight: 600; padding: 12px 24px; border-radius: 999px; }
+  .btn-text { background: transparent; color: #000; font-size: 15px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+  .chip { padding: 8px 16px; background: var(--surface); color: #000; font-size: 14px; font-weight: 600; border-radius: 999px; }
+  .chip.active { background: var(--green); color: #000; }
+
+  /* Bubble demo */
+  .bubble-demo { display: flex; flex-direction: column; gap: 16px; }
+  .bubble-demo-row { display: flex; align-items: center; gap: 12px; }
+  .bd-big .bubble { width: 28px; height: 28px; }
+  .bd-label { font-size: 13px; color: var(--text-secondary); width: 120px; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--green); color: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-8 { border-radius: 8px; }
+  .r-16 { border-radius: 16px; }
+  .r-20 { border-radius: 20px; }
+  .r-pill { border-radius: 999px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Tripadvisor iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">Bright white canvas (#FFFFFF) with Tripadvisor Green (#34E0A1) as the single accent. The five-circle bubble rating is the brand signature — bubbles, never stars. Traveler photography supplies the color.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="top-nav">
+            <div class="owl">
+              <svg viewBox="0 0 32 32"><path d="M16 3C9 3 4 8.5 4 16c0 7.5 5 13 12 13s12-5.5 12-13C28 8.5 23 3 16 3z" fill="#000"/><circle cx="11.5" cy="14" r="3.6" fill="#34E0A1"/><circle cx="20.5" cy="14" r="3.6" fill="#34E0A1"/><circle cx="11.5" cy="14" r="1.4" fill="#000"/><circle cx="20.5" cy="14" r="1.4" fill="#000"/><path d="M13.5 20l2.5 2.5L18.5 20z" fill="#34E0A1"/></svg>
+            </div>
+            <div class="loc-pill">New York City ▾</div>
+            <div class="avatar"></div>
+          </div>
+
+          <div class="search-wrap">
+            <div class="search-pill">
+              <div class="search-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg></div>
+              <div class="search-text">Hotels, things to do, restaurants…</div>
+            </div>
+          </div>
+
+          <div class="cat-grid">
+            <div class="cat-tile"><svg viewBox="0 0 24 24"><path d="M3 21V9l9-6 9 6v12"/><path d="M9 21v-7h6v7"/></svg><div class="cat-label">Hotels</div></div>
+            <div class="cat-tile"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="5"/><path d="M12 14v7M9 19h6"/></svg><div class="cat-label">Things to do</div></div>
+            <div class="cat-tile"><svg viewBox="0 0 24 24"><path d="M6 3v8a3 3 0 0 0 6 0V3M9 3v18"/><path d="M17 3c-1.5 1.5-2 4-2 6s.5 4 2 4v8"/></svg><div class="cat-label">Restaurants</div></div>
+            <div class="cat-tile"><svg viewBox="0 0 24 24"><path d="M2 16l9-3V5a1.5 1.5 0 0 1 3 0v8l8 3v2l-8-2v4l2 2v1l-3.5-1L9 23v-1l2-2v-4z" class="glyph-fill"/></svg><div class="cat-label">Flights</div></div>
+          </div>
+
+          <div class="place-list">
+            <div class="place">
+              <div class="photo photo-hotel">
+                <div class="badge">Travelers' Choice</div>
+                <div class="heart saved"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+                <div class="dots"><span class="dot active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+              </div>
+              <div class="bubbles">
+                <div class="bubble-row">
+                  <div class="bubble full"><div class="fill"></div></div>
+                  <div class="bubble full"><div class="fill"></div></div>
+                  <div class="bubble full"><div class="fill"></div></div>
+                  <div class="bubble full"><div class="fill"></div></div>
+                  <div class="bubble half"><div class="fill"></div></div>
+                </div>
+                <span class="bubble-count">4.5 (1,284)</span>
+              </div>
+              <div class="place-name">The Harborview Grand Hotel</div>
+              <div class="place-meta">Hotel · $$ - $$$ · 0.4 mi · #2 of 240 hotels</div>
+            </div>
+
+            <div class="place">
+              <div class="photo photo-rest">
+                <div class="heart unsaved"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+                <div class="dots"><span class="dot active"></span><span class="dot"></span><span class="dot"></span></div>
+              </div>
+              <div class="bubbles">
+                <div class="bubble-row">
+                  <div class="bubble full"><div class="fill"></div></div>
+                  <div class="bubble full"><div class="fill"></div></div>
+                  <div class="bubble full"><div class="fill"></div></div>
+                  <div class="bubble full"><div class="fill"></div></div>
+                  <div class="bubble empty"><div class="fill"></div></div>
+                </div>
+                <span class="bubble-count">4.0 (642)</span>
+              </div>
+              <div class="place-name">Olive &amp; Thyme Bistro</div>
+              <div class="place-meta">Mediterranean · $$ - $$$ · 0.7 mi</div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polygon points="15.5,8.5 10.5,10.5 8.5,15.5 13.5,13.5"/></svg><span>Explore</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg><span>Trips</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg><span>Review</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg><span>More</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Canvas</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#F2F2F2;"><div class="name">Surface</div>#F2F2F2</div>
+          <div class="swatch light" style="background:#E0E0E0;"><div class="name">Divider</div>#E0E0E0</div>
+          <div class="swatch" style="background:#000000;"><div class="name">Text / Owl Black</div>#000000</div>
+          <div class="swatch" style="background:#6B6B6B;"><div class="name">Text Secondary</div>#6B6B6B</div>
+          <div class="swatch" style="background:#9B9B9B;"><div class="name">Text Tertiary</div>#9B9B9B</div>
+          <div class="swatch" style="background:#34E0A1; color:#000;"><div class="name">Tripadvisor Green</div>#34E0A1</div>
+          <div class="swatch" style="background:#21C589; color:#000;"><div class="name">Green Pressed</div>#21C589</div>
+          <div class="swatch light" style="background:#D9D9D9;"><div class="name">Empty Bubble</div>#D9D9D9</div>
+          <div class="swatch" style="background:#D6122E;"><div class="name">Error</div>#D6122E</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Trip Sans (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 28pt · 700</div><div class="type-sample t-28">Explore</div></div>
+        <div class="type-row"><div class="type-meta">Place Hero · 24pt · 700</div><div class="type-sample t-24">Skyline Rooftop Bar</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Top experiences nearby</div></div>
+        <div class="type-row"><div class="type-meta">Place Name · 17pt · 700</div><div class="type-sample t-17">The Harborview Grand Hotel</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 16pt · 600</div><div class="type-sample t-16">Things to do</div></div>
+        <div class="type-row"><div class="type-meta">Review Body · 15pt · 400</div><div class="type-sample t-15">Stunning views and the staff went above and beyond.</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 400</div><div class="type-sample t-13">1,284 reviews · 0.4 mi · $$ - $$$</div></div>
+        <div class="type-row"><div class="type-meta">Badge · 11pt · 700 UP</div><div class="type-sample t-11">Travelers' Choice</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Write a review</button>
+          <button class="btn btn-outline">Directions</button>
+          <button class="btn-text">See all 240 hotels</button>
+          <div class="chip active">Best Value</div>
+          <div class="chip">Distance</div>
+          <div class="chip">$ - $$</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Five-Circle Bubble Rating (the signature)</div>
+        <div class="bubble-demo">
+          <div class="bubble-demo-row">
+            <span class="bd-label">5.0 — list</span>
+            <div class="bubble-row"><div class="bubble full"><div class="fill"></div></div><div class="bubble full"><div class="fill"></div></div><div class="bubble full"><div class="fill"></div></div><div class="bubble full"><div class="fill"></div></div><div class="bubble full"><div class="fill"></div></div></div>
+          </div>
+          <div class="bubble-demo-row">
+            <span class="bd-label">4.5 — partial</span>
+            <div class="bubble-row"><div class="bubble full"><div class="fill"></div></div><div class="bubble full"><div class="fill"></div></div><div class="bubble full"><div class="fill"></div></div><div class="bubble full"><div class="fill"></div></div><div class="bubble half"><div class="fill"></div></div></div>
+          </div>
+          <div class="bubble-demo-row">
+            <span class="bd-label">3.0 — empties</span>
+            <div class="bubble-row"><div class="bubble full"><div class="fill"></div></div><div class="bubble full"><div class="fill"></div></div><div class="bubble full"><div class="fill"></div></div><div class="bubble empty"><div class="fill"></div></div><div class="bubble empty"><div class="fill"></div></div></div>
+          </div>
+          <div class="bubble-demo-row bd-big">
+            <span class="bd-label">Review form</span>
+            <div class="bubble-row"><div class="bubble full"><div class="fill"></div></div><div class="bubble full"><div class="fill"></div></div><div class="bubble full"><div class="fill"></div></div><div class="bubble full"><div class="fill"></div></div><div class="bubble empty"><div class="fill"></div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Light Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Tripadvisor's canvas is pure <code>#FFFFFF</code> — a clean gallery wall, never tinted. Grouped cards lift to <code>#F2F2F2</code>. Tripadvisor Green <code>#34E0A1</code> is the only accent: primary action, active tab, and the five-circle bubble rating. Black text sits on the green CTA intentionally — the mint is bright enough that black maximizes contrast. Traveler photography supplies all the warmth; UI chrome stays out of the way.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

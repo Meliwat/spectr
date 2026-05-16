@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Google Gemini iOS — Light</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --surface: #F0F4F9;
+    --divider: #E3E3E3;
+    --text-primary: #1F1F1F;
+    --text-secondary: #5F6368;
+    --text-tertiary: #9AA0A6;
+    --dark-canvas: #1E1E1E;
+    --dark-surface: #282A2C;
+    --blue: #4285F4;
+    --blue-pressed: #3367D6;
+    --violet: #9B72CB;
+    --coral: #D96570;
+    --success: #1E8E3E;
+    --error: #D93025;
+    --grad: linear-gradient(95deg, #4285F4 0%, #9B72CB 50%, #D96570 100%);
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+    --mono: 'Roboto Mono', 'SF Mono', Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #E8EAED; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .spark { width: 40px; height: 40px; }
+  .spark svg { width: 100%; height: 100%; }
+  .page-title { font-size: 28px; font-weight: 500; letter-spacing: -0.2px; color: var(--text-primary); }
+  .page-chip { background: var(--grad); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 740px; margin-bottom: 40px; line-height: 1.55; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.5), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 500; color: var(--text-primary); }
+  .top-bar { height: 48px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; }
+  .tb-icon { color: var(--text-secondary); }
+  .tb-icon svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tb-model { display: flex; align-items: center; gap: 4px; font-size: 17px; font-weight: 500; color: var(--text-primary); }
+  .tb-model svg { width: 12px; height: 12px; stroke: var(--text-secondary); stroke-width: 2.5; fill: none; }
+  .tb-avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #4285F4, #9B72CB); }
+
+  .convo { flex: 1; overflow-y: auto; scrollbar-width: none; padding: 8px 16px 16px; display: flex; flex-direction: column; gap: 24px; }
+  .convo::-webkit-scrollbar { display: none; }
+
+  .user-turn { align-self: flex-end; max-width: 80%; background: var(--surface); color: var(--text-primary); font-size: 16px; line-height: 1.45; padding: 12px 16px; border-radius: 20px 20px 4px 20px; }
+
+  .ai-turn { display: flex; gap: 10px; }
+  .ai-spark { width: 20px; height: 20px; flex-shrink: 0; margin-top: 2px; }
+  .ai-spark svg { width: 100%; height: 100%; }
+  .ai-body { flex: 1; font-size: 16px; line-height: 1.55; color: var(--text-primary); }
+  .ai-body strong { font-weight: 700; }
+  .ai-body .stream { background: linear-gradient(95deg, transparent, rgba(155,114,203,0.28), transparent); background-size: 200% 100%; }
+  .ai-actions { display: flex; gap: 20px; margin-top: 12px; padding-left: 30px; color: var(--text-secondary); }
+  .ai-actions svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .thinking { display: inline-flex; gap: 6px; align-items: center; padding-left: 30px; }
+  .thinking i { width: 7px; height: 7px; border-radius: 50%; background: var(--grad); display: block; }
+
+  /* Prompt bar */
+  .prompt-wrap { padding: 8px 16px 14px; }
+  .prompt-ring { border-radius: 27.5px; padding: 1.5px; background: var(--grad); }
+  .prompt-bar { display: flex; align-items: center; gap: 10px; min-height: 52px; background: var(--surface); border-radius: 26px; padding: 8px 14px; }
+  .prompt-bar .pb-icon { color: var(--text-secondary); }
+  .prompt-bar .pb-icon svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .prompt-text { flex: 1; font-size: 16px; color: var(--text-primary); }
+  .send-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .send-btn svg { width: 18px; height: 18px; stroke: #FFF; stroke-width: 2.5; fill: none; }
+
+  /* Token sections */
+  .section { background: var(--canvas); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: var(--mono); border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--text-primary); }
+  .swatch.grad { background: var(--grad); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: var(--mono); font-size: 11px; color: var(--text-secondary); width: 210px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-28 { font-size: 28px; font-weight: 500; letter-spacing: -0.2px; }
+  .t-22 { font-size: 22px; font-weight: 500; }
+  .t-20 { font-size: 20px; font-weight: 500; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-14 { font-size: 14px; font-weight: 500; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-mono { font-family: var(--mono); font-size: 14px; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .send-demo { width: 36px; height: 36px; border-radius: 50%; background: var(--blue); display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; }
+  .send-demo svg { width: 18px; height: 18px; stroke: #FFF; stroke-width: 2.5; fill: none; }
+  .send-demo.empty { background: transparent; }
+  .send-demo.empty svg { stroke: var(--text-tertiary); }
+  .btn-pill { background: var(--blue); color: #FFF; font-family: var(--font); font-size: 15px; font-weight: 500; padding: 10px 24px; border-radius: 500px; border: none; cursor: pointer; }
+  .btn-pill:active { background: var(--blue-pressed); }
+  .btn-text { background: transparent; color: var(--blue); font-size: 15px; font-weight: 500; padding: 10px 0; border: none; cursor: pointer; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px; background: var(--surface); color: var(--text-primary); font-size: 14px; font-weight: 500; border-radius: 18px; border: 1px solid var(--divider); }
+  .chip.featured { border: none; padding: 0; background: var(--grad); border-radius: 19px; }
+  .chip.featured > span { display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px; margin: 1px; background: var(--surface); border-radius: 18px; }
+  .chip-spark { width: 12px; height: 12px; }
+  .chip-spark svg { width: 100%; height: 100%; }
+
+  /* Distinctive: streaming demo */
+  .stream-demo { background: var(--surface); border-radius: 16px; padding: 20px; }
+  .stream-demo .ai-turn { background: none; }
+  .stream-line { position: relative; overflow: hidden; }
+  .stream-line::after { content: ''; position: absolute; top: 0; bottom: 0; width: 120px; background: linear-gradient(95deg, transparent, rgba(155,114,203,0.30), transparent); animation: sweep 1.3s linear infinite; }
+  @keyframes sweep { from { left: -120px; } to { left: 100%; } }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--blue); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; }
+  .r-12 { border-radius: 12px; }
+  .r-18 { border-radius: 18px; }
+  .r-20 { border-radius: 20px; }
+  .r-26 { border-radius: 26px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  svg.grad-fill path { fill: url(#gemGrad); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs><linearGradient id="gemGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4285F4"/><stop offset="50%" stop-color="#9B72CB"/><stop offset="100%" stop-color="#D96570"/></linearGradient></defs></svg>
+<div class="page">
+
+  <div class="page-header">
+    <span class="spark"><svg class="grad-fill" viewBox="0 0 24 24"><path d="M12 0c.6 5.4 6 10.8 12 12-6 1.2-11.4 6.6-12 12-.6-5.4-6-10.8-12-12C6 10.8 11.4 5.4 12 0z"/></svg></span>
+    <div class="page-title">Gemini iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">A document-not-feed canvas (#FFFFFF light / #1E1E1E dark) with no cards. The Gemini gradient (#4285F4 → #9B72CB → #D96570) is the only accent, rationed to the sparkle, streaming shimmer, focus ring, and chip accents. Solid Google Blue (#4285F4) is the interactive primary.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+          <div class="top-bar">
+            <div class="tb-icon"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
+            <div class="tb-model">Gemini <svg viewBox="0 0 24 24"><polyline points="6,9 12,15 18,9"/></svg></div>
+            <div class="tb-avatar"></div>
+          </div>
+
+          <div class="convo">
+            <div class="user-turn">Explain what a transformer is, simply.</div>
+
+            <div class="ai-turn">
+              <span class="ai-spark"><svg class="grad-fill" viewBox="0 0 24 24"><path d="M12 0c.6 5.4 6 10.8 12 12-6 1.2-11.4 6.6-12 12-.6-5.4-6-10.8-12-12C6 10.8 11.4 5.4 12 0z"/></svg></span>
+              <div class="ai-body">
+                A <strong>transformer</strong> is a neural network architecture that reads an entire sequence at once and learns which parts matter most using a mechanism called <strong>attention</strong>. Instead of processing words one by one, it weighs every word against every other word in parallel — which is why it scales so well to long context.
+                <div class="ai-actions">
+                  <svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+                  <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                  <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"/><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"/></svg>
+                  <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/></svg>
+                </div>
+              </div>
+            </div>
+
+            <div class="ai-turn">
+              <span class="ai-spark"><svg class="grad-fill" viewBox="0 0 24 24"><path d="M12 0c.6 5.4 6 10.8 12 12-6 1.2-11.4 6.6-12 12-.6-5.4-6-10.8-12-12C6 10.8 11.4 5.4 12 0z"/></svg></span>
+              <div class="ai-body"><span class="thinking"><i></i><i></i><i></i></span></div>
+            </div>
+          </div>
+
+          <div class="prompt-wrap">
+            <div class="prompt-ring">
+              <div class="prompt-bar">
+                <span class="pb-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+                <span class="prompt-text">Ask a follow-up…</span>
+                <span class="pb-icon"><svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v4"/></svg></span>
+                <span class="send-btn"><svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5,12 12,5 19,12"/></svg></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Canvas (light)</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#F0F4F9;"><div class="name">Surface (light)</div>#F0F4F9</div>
+          <div class="swatch light" style="background:#E3E3E3;"><div class="name">Divider</div>#E3E3E3</div>
+          <div class="swatch" style="background:#1E1E1E;"><div class="name">Canvas (dark)</div>#1E1E1E</div>
+          <div class="swatch" style="background:#282A2C;"><div class="name">Surface (dark)</div>#282A2C</div>
+          <div class="swatch" style="background:#1F1F1F;"><div class="name">Text Primary</div>#1F1F1F</div>
+          <div class="swatch" style="background:#5F6368;"><div class="name">Text Secondary</div>#5F6368</div>
+          <div class="swatch" style="background:#4285F4;"><div class="name">Google Blue</div>#4285F4</div>
+          <div class="swatch" style="background:#9B72CB;"><div class="name">Gradient Violet</div>#9B72CB</div>
+          <div class="swatch" style="background:#D96570;"><div class="name">Gradient Coral</div>#D96570</div>
+          <div class="swatch grad"><div class="name">Gemini Gradient</div>4285F4→D96570</div>
+          <div class="swatch" style="background:#D93025;"><div class="name">Error</div>#D93025</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Google Sans (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Greeting · 28pt · 500</div><div class="type-sample t-28">Hello, Alex</div></div>
+        <div class="type-row"><div class="type-meta">Title · 22pt · 500</div><div class="type-sample t-22">Recent chats</div></div>
+        <div class="type-row"><div class="type-meta">Answer Heading · 20pt · 500</div><div class="type-sample t-20">How attention works</div></div>
+        <div class="type-row"><div class="type-meta">Answer Body · 16pt · 400</div><div class="type-sample t-16">The model weighs every token against every other token in parallel.</div></div>
+        <div class="type-row"><div class="type-meta">Chip · 14pt · 500</div><div class="type-sample t-14">Brainstorm ideas</div></div>
+        <div class="type-row"><div class="type-meta">Metadata · 13pt · 400</div><div class="type-sample t-13">2.5 Flash · 2 min ago</div></div>
+        <div class="type-row"><div class="type-meta">Code · 14pt mono</div><div class="type-sample t-mono">model.generate(prompt)</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="send-demo"><svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5,12 12,5 19,12"/></svg></button>
+          <button class="send-demo empty"><svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5,12 12,5 19,12"/></svg></button>
+          <button class="btn-pill">New chat</button>
+          <button class="btn-text">Cancel</button>
+          <span class="chip">Summarize a doc</span>
+          <span class="chip featured"><span><span class="chip-spark"><svg class="grad-fill" viewBox="0 0 24 24"><path d="M12 0c.6 5.4 6 10.8 12 12-6 1.2-11.4 6.6-12 12-.6-5.4-6-10.8-12-12C6 10.8 11.4 5.4 12 0z"/></svg></span>Help me write</span></span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive — Streaming Answer Shimmer</div>
+        <div class="stream-demo">
+          <div class="ai-turn">
+            <span class="ai-spark"><svg class="grad-fill" viewBox="0 0 24 24"><path d="M12 0c.6 5.4 6 10.8 12 12-6 1.2-11.4 6.6-12 12-.6-5.4-6-10.8-12-12C6 10.8 11.4 5.4 12 0z"/></svg></span>
+            <div class="ai-body stream-line">Attention lets the model focus on the most relevant parts of the input as it writes each new token, sweeping forward with a soft gradient as the response generates…</div>
+          </div>
+          <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.5; margin-top: 14px;">Answers stream token-by-token. A ~120px low-opacity gradient highlight sweeps the leading edge while generating; a 3-dot gradient pulse shows before the first token. The send button morphs to a blue stop square mid-stream.</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-18">18</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-26">26</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Light + Dark Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Gemini reads as a document, not a feed. There are no cards around turns — the user turn is a soft <code>#F0F4F9</code> chip (trailing-aligned, 4pt pointing corner) and the assistant turn is plain markdown text on the canvas, led by a gradient sparkle. Dark mode inverts canvas to <code>#1E1E1E</code> and surface to <code>#282A2C</code>; links/send use <code>#8AB4F8</code> for AA contrast. The gradient stops (<code>#4285F4 → #9B72CB → #D96570</code>) stay identical across themes — it is brand, never a body-text tint or button fill.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

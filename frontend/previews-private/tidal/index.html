@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by TIDAL iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #000000;
+    --surface-1: #0A0A0A;
+    --surface-2: #1A1A1A;
+    --divider: #262626;
+    --text: #FFFFFF;
+    --text-secondary: #9A9A9A;
+    --text-tertiary: #5C5C5C;
+    --white: #FFFFFF;
+    --cyan: #00FFFF;
+    --cyan-pressed: #00CCCC;
+    --error: #FF453A;
+    --font: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.7px; }
+  .page-chip { background: transparent; border: 1px solid var(--cyan); color: var(--cyan); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 4px; letter-spacing: 1px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 660px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.95), 0 0 0 2px rgba(255,255,255,0.05) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; border: 1px solid #161616; }
+
+  /* Full-bleed darkened backdrop (monochrome — no color extraction) */
+  .np-backdrop { position: absolute; inset: 0; background: linear-gradient(160deg, #1c1c1c 0%, #0a0a0a 55%, #000 100%); }
+  .np-backdrop::after { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.6); }
+
+  .app-nav { padding: 52px 16px 10px; display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 2; }
+  .np-label { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-secondary); }
+  .np-from { font-size: 13px; font-weight: 600; margin-top: 2px; }
+  .nav-more { color: #fff; font-size: 20px; }
+
+  .scroll-body { flex: 1; padding: 16px; position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; }
+
+  .album-art { width: 224px; height: 224px; border-radius: 0; background: linear-gradient(135deg, #2a2a2a 0%, #141414 50%, #050505 100%); margin: 16px 0 22px; position: relative; overflow: hidden; }
+  .album-art::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 32% 30%, rgba(255,255,255,0.10), transparent 62%); }
+  .album-art::before { content: ''; position: absolute; left: 22%; top: 30%; width: 56%; height: 40%; border: 2px solid rgba(255,255,255,0.16); border-radius: 50%; }
+
+  .np-titlerow { display: flex; align-items: center; gap: 10px; }
+  .track-title { font-size: 24px; font-weight: 700; letter-spacing: -0.3px; }
+  .badge { border: 1px solid var(--cyan); color: var(--cyan); font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 4px 8px; border-radius: 4px; }
+  .track-artist { font-size: 14px; color: var(--text-secondary); margin: 6px 0 22px; }
+
+  .scrubber { width: 100%; margin-bottom: 22px; }
+  .scrubber-track { height: 2px; background: var(--text-tertiary); position: relative; }
+  .scrubber-fill { height: 100%; width: 42%; background: var(--white); position: relative; }
+  .scrubber-thumb { position: absolute; right: -7px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; border-radius: 50%; background: var(--white); }
+  .scrubber-times { display: flex; justify-content: space-between; margin-top: 8px; font-size: 11px; font-weight: 600; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+
+  .transport { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0 6px; }
+  .t-icon { color: var(--text-secondary); }
+  .t-icon svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .t-skip { color: var(--text); }
+  .t-skip svg { width: 26px; height: 26px; fill: currentColor; }
+  .play-btn { width: 60px; height: 60px; border-radius: 50%; background: var(--white); display: flex; align-items: center; justify-content: center; }
+  .play-btn svg { width: 24px; height: 24px; fill: #000; }
+
+  /* Mini bar + tab bar */
+  .mini-bar { background: var(--surface-2); height: 50px; display: flex; align-items: center; padding: 0 12px; gap: 10px; position: relative; }
+  .mini-progress { position: absolute; top: 0; left: 0; height: 1px; width: 42%; background: var(--white); }
+  .mini-art { width: 38px; height: 38px; border-radius: 0; background: linear-gradient(135deg, #2a2a2a, #050505); }
+  .mini-text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  .mini-titlerow { display: flex; align-items: center; gap: 6px; }
+  .mini-title { font-size: 14px; font-weight: 600; }
+  .mini-badge { border: 1px solid var(--cyan); color: var(--cyan); font-size: 8px; font-weight: 700; letter-spacing: 0.8px; padding: 2px 5px; border-radius: 3px; }
+  .mini-artist { font-size: 11px; color: var(--text-secondary); }
+  .mini-icon { color: var(--text); }
+  .mini-icon svg { width: 20px; height: 20px; fill: currentColor; }
+
+  .tab-bar { height: 58px; background: rgba(0,0,0,0.96); backdrop-filter: saturate(180%) blur(20px); display: flex; align-items: center; justify-content: space-around; padding: 6px 8px 12px; border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-secondary); font-size: 10px; font-weight: 600; letter-spacing: 0.3px; }
+  .tab.active { color: var(--white); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 6px; padding: 16px; min-height: 90px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #000; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 210px; flex-shrink: 0; }
+  .type-sample { flex: 1; }
+  .t-28 { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; }
+  .t-24 { font-size: 24px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-16 { font-size: 16px; font-weight: 600; }
+  .t-15 { font-size: 15px; font-weight: 400; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-badge { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--cyan); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 15px; font-weight: 700; padding: 11px 32px; border-radius: 500px; border: none; cursor: pointer; letter-spacing: 0.3px; }
+  .btn-primary { background: var(--white); color: #000; }
+  .btn-primary:active { background: #E5E5E5; transform: scale(0.97); }
+  .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--text-secondary); font-size: 14px; font-weight: 600; padding: 11px 24px; }
+  .play-btn-demo { width: 56px; height: 56px; border-radius: 50%; background: var(--white); display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; }
+  .play-btn-demo svg { width: 22px; height: 22px; fill: #000; }
+  .chip { padding: 8px 18px; background: var(--surface-2); color: var(--text); font-size: 14px; font-weight: 600; border-radius: 500px; }
+  .chip.active { background: var(--white); color: #000; }
+
+  /* Quality badge demo */
+  .badge-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .qbadge { border: 1px solid var(--cyan); color: var(--cyan); font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 5px 10px; border-radius: 4px; }
+
+  /* Track row demo */
+  .row { display: flex; align-items: center; padding: 12px 0; gap: 10px; border-bottom: 1px solid var(--divider); }
+  .row:last-child { border-bottom: none; }
+  .row-art { width: 44px; height: 44px; border-radius: 0; flex-shrink: 0; position: relative; }
+  .row-art.r1 { background: linear-gradient(135deg, #2a2a2a, #050505); }
+  .row-art.r2 { background: linear-gradient(135deg, #333, #0a0a0a); }
+  .row-eq { position: absolute; left: 4px; top: 14px; display: flex; gap: 2px; align-items: flex-end; height: 16px; }
+  .row-eq span { width: 3px; background: var(--white); animation: eq 1s ease-in-out infinite; }
+  .row-eq span:nth-child(1) { height: 60%; animation-delay: 0s; }
+  .row-eq span:nth-child(2) { height: 90%; animation-delay: 0.3s; }
+  .row-eq span:nth-child(3) { height: 40%; animation-delay: 0.6s; }
+  @keyframes eq { 0%,100% { transform: scaleY(0.4); } 50% { transform: scaleY(1); } }
+  .row-info { flex: 1; min-width: 0; }
+  .row-title { font-size: 16px; font-weight: 600; }
+  .row-artist { font-size: 14px; color: var(--text-secondary); }
+  .row-dur { font-size: 11px; font-weight: 600; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+  .row-more { color: var(--text-secondary); }
+  .row-more svg { width: 18px; height: 18px; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--white); color: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-14 { border-radius: 14px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">TIDAL iOS — Design Tokens</div>
+    <div class="page-chip">Dark Only</div>
+  </div>
+  <p class="page-subtitle">Pure black canvas (#000000), white as the action color. HiFi cyan (#00FFFF) reserved exclusively for quality-tier badges. Radically flat — no shadows, square art, gallery negative space.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="np-backdrop"></div>
+          <div class="island"></div>
+          <div class="app-nav">
+            <div>
+              <div class="np-label">Playing from Album</div>
+              <div class="np-from">Yeezus</div>
+            </div>
+            <div class="nav-more">⌄</div>
+          </div>
+          <div class="scroll-body">
+            <div class="album-art"></div>
+            <div class="np-titlerow">
+              <div class="track-title">Black Skinhead</div>
+              <div class="badge">MAX</div>
+            </div>
+            <div class="track-artist">Kanye West</div>
+            <div class="scrubber">
+              <div class="scrubber-track"><div class="scrubber-fill"><div class="scrubber-thumb"></div></div></div>
+              <div class="scrubber-times"><span>1:18</span><span>-1:50</span></div>
+            </div>
+            <div class="transport">
+              <div class="t-icon"><svg viewBox="0 0 24 24"><path d="M16 3l5 5-5 5"/><path d="M21 8H9a5 5 0 0 0 0 10h1"/></svg></div>
+              <div class="t-skip"><svg viewBox="0 0 24 24"><polygon points="19,20 9,12 19,4"/><rect x="5" y="4" width="2" height="16"/></svg></div>
+              <button class="play-btn"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></button>
+              <div class="t-skip"><svg viewBox="0 0 24 24"><polygon points="5,4 15,12 5,20"/><rect x="17" y="4" width="2" height="16"/></svg></div>
+              <div class="t-icon"><svg viewBox="0 0 24 24"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div>
+            </div>
+          </div>
+          <div class="mini-bar">
+            <div class="mini-progress"></div>
+            <div class="mini-art"></div>
+            <div class="mini-text">
+              <div class="mini-titlerow"><div class="mini-title">Black Skinhead</div><div class="mini-badge">MAX</div></div>
+              <div class="mini-artist">Kanye West</div>
+            </div>
+            <div class="mini-icon"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></div>
+          </div>
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><polygon points="10,9 16,12 10,15" fill="currentColor" stroke="none"/></svg><span>Videos</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><rect x="14" y="14" width="6" height="6"/></svg><span>Collection</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#000000;"><div class="name">Canvas</div>#000000</div>
+          <div class="swatch" style="background:#0A0A0A;"><div class="name">Surface 1</div>#0A0A0A</div>
+          <div class="swatch" style="background:#1A1A1A;"><div class="name">Surface 2</div>#1A1A1A</div>
+          <div class="swatch" style="background:#262626;"><div class="name">Divider</div>#262626</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Text / White</div>#FFFFFF</div>
+          <div class="swatch" style="background:#9A9A9A; color:#000;"><div class="name">Text Secondary</div>#9A9A9A</div>
+          <div class="swatch" style="background:#5C5C5C;"><div class="name">Text Tertiary</div>#5C5C5C</div>
+          <div class="swatch" style="background:#00FFFF; color:#000;"><div class="name">HiFi Cyan</div>#00FFFF</div>
+          <div class="swatch" style="background:#00CCCC; color:#000;"><div class="name">Cyan Pressed</div>#00CCCC</div>
+          <div class="swatch" style="background:#FF453A;"><div class="name">Error</div>#FF453A</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Space Grotesk (TIDAL sans fallback)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 28pt · 700</div><div class="type-sample t-28">My Collection</div></div>
+        <div class="type-row"><div class="type-meta">Now Playing · 24pt · 700</div><div class="type-sample t-24">Black Skinhead</div></div>
+        <div class="type-row"><div class="type-meta">Track Title · 16pt · 600</div><div class="type-sample t-16">Bound 2</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 400</div><div class="type-sample t-15">Released June 18, 2013 · Def Jam</div></div>
+        <div class="type-row"><div class="type-meta">Artist / Sub · 14pt · 400</div><div class="type-sample t-14">Kanye West</div></div>
+        <div class="type-row"><div class="type-meta">Quality Badge · 10pt · 700</div><div class="type-sample t-badge">Master</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="play-btn-demo"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></button>
+          <button class="btn btn-primary">Play</button>
+          <button class="btn btn-outline">Following</button>
+          <div class="chip active">All</div>
+          <div class="chip">Albums</div>
+          <div class="chip">Tracks</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Quality-Tier Badges (cyan — fidelity only)</div>
+        <div class="badge-row">
+          <div class="qbadge">Master</div>
+          <div class="qbadge">HiFi</div>
+          <div class="qbadge">Max</div>
+          <div class="qbadge">Dolby Atmos</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Track Rows (square art · playing = white EQ)</div>
+        <div class="row">
+          <div class="row-art r1"><div class="row-eq"><span></span><span></span><span></span></div></div>
+          <div class="row-info">
+            <div class="row-title">Black Skinhead</div>
+            <div class="row-artist">Kanye West</div>
+          </div>
+          <div class="qbadge">Max</div>
+          <div class="row-dur">3:08</div>
+          <div class="row-more"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="19" cy="12" r="1.5" fill="currentColor"/></svg></div>
+        </div>
+        <div class="row">
+          <div class="row-art r2"></div>
+          <div class="row-info">
+            <div class="row-title">Bound 2</div>
+            <div class="row-artist">Kanye West</div>
+          </div>
+          <div class="qbadge">Master</div>
+          <div class="row-dur">3:49</div>
+          <div class="row-more"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="19" cy="12" r="1.5" fill="currentColor"/></svg></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

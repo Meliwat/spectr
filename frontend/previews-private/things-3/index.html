@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Things 3 iOS — Light</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --surface-1: #F5F6F8;
+    --surface-2: #ECECEC;
+    --divider: #ECECEC;
+    --text: #1D1D1F;
+    --text-secondary: #8A8A8E;
+    --text-tertiary: #C7C7CC;
+    --blue: #4F97FF;
+    --blue-pressed: #3D7FE0;
+    --blue-tint: rgba(79,151,255,0.10);
+    --today: #FFD60A;
+    --deadline: #FF3B30;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #E9EAEC; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; flex-wrap: wrap; }
+  .mark { width: 30px; height: 30px; border-radius: 8px; background: var(--blue); display: flex; align-items: center; justify-content: center; }
+  .mark svg { width: 17px; height: 17px; stroke: #fff; stroke-width: 3; fill: none; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; }
+  .page-chip { background: var(--blue); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 680px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #1A1A1C; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.5), 0 0 0 2px rgba(0,0,0,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .app-top { padding: 50px 20px 0; display: flex; align-items: center; justify-content: space-between; height: 76px; }
+  .top-icons { display: flex; gap: 18px; color: var(--text-secondary); }
+  .top-icons svg { width: 21px; height: 21px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  .list-title { display: flex; align-items: center; gap: 8px; padding: 8px 20px 8px; }
+  .list-title .star { width: 24px; height: 24px; }
+  .list-title h1 { font-size: 28px; font-weight: 700; letter-spacing: 0.3px; }
+
+  .todos { flex: 1; overflow-y: auto; scrollbar-width: none; padding-bottom: 90px; }
+  .todos::-webkit-scrollbar { display: none; }
+  .todo { display: flex; align-items: flex-start; gap: 12px; padding: 12px 20px; min-height: 44px; }
+  .todo.sel { background: var(--blue-tint); border-radius: 8px; margin: 0 8px; padding: 12px; }
+  .cbox { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--text-tertiary); flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; }
+  .cbox.done { background: var(--blue); border-color: var(--blue); }
+  .cbox.done svg { width: 13px; height: 13px; stroke: #fff; stroke-width: 3; fill: none; }
+  .todo-main { flex: 1; }
+  .todo-title { font-size: 17px; font-weight: 400; letter-spacing: -0.2px; }
+  .todo-title.done { color: var(--text-tertiary); text-decoration: line-through; }
+  .todo-meta { display: flex; align-items: center; gap: 8px; margin-top: 5px; }
+  .tag-pill { background: var(--surface-1); color: var(--text-secondary); font-size: 13px; padding: 3px 9px; border-radius: 500px; }
+  .date-pill { font-size: 13px; font-weight: 600; color: var(--blue); }
+  .date-pill.due { color: var(--deadline); }
+
+  .heading { padding: 24px 20px 8px; font-size: 17px; font-weight: 700; letter-spacing: -0.2px; display: flex; align-items: center; gap: 6px; }
+  .heading svg { width: 12px; height: 12px; stroke: var(--text-secondary); stroke-width: 2.5; fill: none; }
+  .hr { height: 1px; background: var(--divider); margin: 0 20px; }
+  .evening-label { padding: 22px 20px 6px; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-secondary); }
+
+  .magic-plus { position: absolute; right: 20px; bottom: 24px; width: 56px; height: 56px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(79,151,255,0.35); }
+  .magic-plus svg { width: 24px; height: 24px; stroke: #fff; stroke-width: 2.5; fill: none; }
+
+  /* Token sections */
+  .section { background: var(--canvas); border: 1px solid var(--divider); border-radius: 14px; padding: 26px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 18px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 16px; min-height: 92px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 700; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--text); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; }
+  .t-28 { font-size: 28px; font-weight: 700; letter-spacing: 0.3px; }
+  .t-24 { font-size: 24px; font-weight: 700; letter-spacing: 0.3px; }
+  .t-17b { font-size: 17px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-17 { font-size: 17px; font-weight: 400; letter-spacing: -0.2px; }
+  .t-15 { font-size: 15px; font-weight: 400; color: var(--text-secondary); }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-secondary); }
+
+  /* Checkbox demo */
+  .cb-demo-row { display: flex; gap: 20px; align-items: center; }
+  .cb { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--text-tertiary); display: flex; align-items: center; justify-content: center; }
+  .cb.done { background: var(--blue); border-color: var(--blue); }
+  .cb.done svg { width: 15px; height: 15px; stroke: #fff; stroke-width: 3; fill: none; }
+  .cb-label { font-size: 13px; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 600; cursor: pointer; border: none; letter-spacing: -0.2px; }
+  .btn-primary { background: var(--blue); color: #fff; font-size: 17px; padding: 12px 24px; border-radius: 10px; }
+  .btn-primary:active { background: var(--blue-pressed); transform: scale(0.98); }
+  .btn-text { background: transparent; color: var(--blue); font-size: 17px; font-weight: 600; padding: 12px 4px; }
+  .plus-demo { width: 56px; height: 56px; border-radius: 50%; background: var(--blue); display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(79,151,255,0.35); }
+  .plus-demo svg { width: 24px; height: 24px; stroke: #fff; stroke-width: 2.5; fill: none; }
+
+  /* Pie progress */
+  .pie-row { display: flex; gap: 22px; align-items: center; }
+  .pie { display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 12px; color: var(--text-secondary); }
+  .pie svg { width: 28px; height: 28px; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--blue); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-8 { border-radius: 8px; }
+  .r-10 { border-radius: 10px; }
+  .r-14 { border-radius: 14px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="mark">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="8,12 11,15 16,9"/></svg>
+    </span>
+    <div class="page-title">Things 3 iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">A serene white room (#FFFFFF) with generous whitespace — the calm is the product. Things Blue (#4F97FF) is the single accent; the one warm note is the #FFD60A Today star. The circular-checkbox fill is the signature delight.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="app-top">
+            <div class="top-icons"><svg viewBox="0 0 24 24"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="18" x2="20" y2="18"/></svg></div>
+            <div class="top-icons">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+              <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg>
+            </div>
+          </div>
+
+          <div class="list-title">
+            <svg class="star" viewBox="0 0 24 24" fill="#FFD60A"><polygon points="12,2 15.1,8.6 22,9.6 17,14.5 18.2,21.4 12,18.1 5.8,21.4 7,14.5 2,9.6 8.9,8.6"/></svg>
+            <h1>Today</h1>
+          </div>
+
+          <div class="todos">
+            <div class="todo">
+              <div class="cbox done"><svg viewBox="0 0 24 24"><polyline points="6,12 10,16 18,7"/></svg></div>
+              <div class="todo-main">
+                <div class="todo-title done">Send the design feedback</div>
+              </div>
+            </div>
+            <div class="todo sel">
+              <div class="cbox"></div>
+              <div class="todo-main">
+                <div class="todo-title">Review the redirect fix PR</div>
+                <div class="todo-meta"><span class="tag-pill">work</span><span class="date-pill">Today</span></div>
+              </div>
+            </div>
+            <div class="todo">
+              <div class="cbox"></div>
+              <div class="todo-main">
+                <div class="todo-title">Book the team offsite venue</div>
+                <div class="todo-meta"><span class="date-pill due">Yesterday</span></div>
+              </div>
+            </div>
+            <div class="todo">
+              <div class="cbox"></div>
+              <div class="todo-main">
+                <div class="todo-title">Water the plants</div>
+              </div>
+            </div>
+
+            <div class="heading">Research <svg viewBox="0 0 24 24"><polyline points="6,9 12,15 18,9"/></svg></div>
+            <div class="hr"></div>
+            <div class="todo">
+              <div class="cbox"></div>
+              <div class="todo-main"><div class="todo-title">Read the calm-tech essay</div></div>
+            </div>
+            <div class="todo">
+              <div class="cbox"></div>
+              <div class="todo-main">
+                <div class="todo-title">Sketch onboarding flow</div>
+                <div class="todo-meta"><span class="tag-pill">deep work</span></div>
+              </div>
+            </div>
+
+            <div class="evening-label">This Evening</div>
+            <div class="hr"></div>
+            <div class="todo">
+              <div class="cbox"></div>
+              <div class="todo-main"><div class="todo-title">Call Mom</div></div>
+            </div>
+          </div>
+
+          <div class="magic-plus"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Canvas</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#F5F6F8;"><div class="name">Surface 1</div>#F5F6F8</div>
+          <div class="swatch light" style="background:#ECECEC;"><div class="name">Surface 2 / Divider</div>#ECECEC</div>
+          <div class="swatch" style="background:#1D1D1F;"><div class="name">Text Primary</div>#1D1D1F</div>
+          <div class="swatch" style="background:#8A8A8E;"><div class="name">Text Secondary</div>#8A8A8E</div>
+          <div class="swatch light" style="background:#C7C7CC;"><div class="name">Text Tertiary</div>#C7C7CC</div>
+          <div class="swatch" style="background:#4F97FF;"><div class="name">Things Blue</div>#4F97FF</div>
+          <div class="swatch" style="background:#3D7FE0;"><div class="name">Blue Pressed</div>#3D7FE0</div>
+          <div class="swatch light" style="background:#FFD60A;"><div class="name">Today Star</div>#FFD60A</div>
+          <div class="swatch" style="background:#FF3B30;"><div class="name">Deadline</div>#FF3B30</div>
+          <div class="swatch" style="background:#1C1C1E;"><div class="name">Dark Canvas</div>#1C1C1E</div>
+          <div class="swatch" style="background:#2C2C2E;"><div class="name">Dark Surface</div>#2C2C2E</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Circular Checkbox — the signature delight</div>
+        <div class="cb-demo-row">
+          <div class="pie" style="gap:8px;"><div class="cb"></div><span class="cb-label">Unchecked</span></div>
+          <div class="pie" style="gap:8px;"><div class="cb done"><svg viewBox="0 0 24 24"><polyline points="6,12 10,16 18,7"/></svg></div><span class="cb-label">Completed</span></div>
+          <div class="pie" style="gap:8px;"><div class="plus-demo" style="width:34px;height:34px;box-shadow:0 4px 12px rgba(79,151,255,0.35);"><svg viewBox="0 0 24 24" style="width:16px;height:16px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><span class="cb-label">Magic-Plus</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — SF Pro (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">List Title · 28pt · 700</div><div class="type-sample t-28">Today</div></div>
+        <div class="type-row"><div class="type-meta">Project Title · 24pt · 700</div><div class="type-sample t-24">Website Redesign</div></div>
+        <div class="type-row"><div class="type-meta">Section Heading · 17pt · 700</div><div class="type-sample t-17b">Research</div></div>
+        <div class="type-row"><div class="type-meta">Task Title · 17pt · 400</div><div class="type-sample t-17">Review the redirect fix PR</div></div>
+        <div class="type-row"><div class="type-meta">Notes · 15pt · 400</div><div class="type-sample t-15">A calm sheet of paper, not an anxiety machine</div></div>
+        <div class="type-row"><div class="type-meta">Metadata · 13pt · 400</div><div class="type-sample t-13">3 to-dos · work</div></div>
+        <div class="type-row"><div class="type-meta">Tiny Label · 12pt · 700 UP</div><div class="type-sample t-12">This Evening</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Add To-Do</button>
+          <button class="btn btn-text">Show Logbook</button>
+          <div class="plus-demo"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Project Pie-Progress</div>
+        <div class="pie-row">
+          <div class="pie">
+            <svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="16" fill="none" stroke="#ECECEC" stroke-width="3"/><circle cx="18" cy="18" r="16" fill="none" stroke="#4F97FF" stroke-width="3" stroke-linecap="round" stroke-dasharray="25 100" transform="rotate(-90 18 18)"/></svg>
+            <span>25%</span>
+          </div>
+          <div class="pie">
+            <svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="16" fill="none" stroke="#ECECEC" stroke-width="3"/><circle cx="18" cy="18" r="16" fill="none" stroke="#4F97FF" stroke-width="3" stroke-linecap="round" stroke-dasharray="60 100" transform="rotate(-90 18 18)"/></svg>
+            <span>60%</span>
+          </div>
+          <div class="pie">
+            <svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="16" fill="#4F97FF"/><polyline points="11,18 16,23 25,13" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>
+            <span>Done</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Calm-By-Design Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Things deliberately uses more whitespace than competitors — roomy 44pt rows, 20pt margins, big calm titles. The white room <code>#FFFFFF</code> is flat: no card shadows, no skeuomorphic depth. The only intentional shadow is the soft blue glow under the Magic-Plus. Things Blue <code>#4F97FF</code> is the single action color; the one warm note is the <code>#FFD60A</code> Today star. The circular-checkbox fill (center-out, then a spring checkmark, then a gentle fade-out) is the signature delight — completion is never abrupt. A true dark mode exists at <code>#1C1C1E</code>, but the white room is the identity.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

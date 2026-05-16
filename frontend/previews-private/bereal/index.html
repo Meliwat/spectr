@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by BeReal iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #000000;
+    --surface-1: #1C1C1E;
+    --surface-2: #2C2C2E;
+    --divider: #2C2C2E;
+    --text: #FFFFFF;
+    --text-secondary: #8E8E93;
+    --text-tertiary: #636366;
+    --accent: #FFFFFF;
+    --on-accent: #000000;
+    --late: #FFD60A;
+    --error: #FF453A;
+    --online: #30D158;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; }
+  .page-chip { background: var(--accent); color: var(--on-accent); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 660px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Capture screen — the iconic BeReal screen */
+  .viewfinder { position: absolute; inset: 0; background: linear-gradient(165deg, #3A4A55 0%, #2A3640 45%, #14191E 100%); }
+  .viewfinder::before { content: ''; position: absolute; top: 30%; left: 14%; right: 14%; bottom: 30%; background: #1F2933; border-radius: 6px; box-shadow: 4px 6px 0 rgba(0,0,0,0.35); }
+  .viewfinder::after { content: ''; position: absolute; bottom: 30%; left: 18%; right: 18%; height: 14%; background: linear-gradient(180deg, #34424E, #222C34); border-radius: 2px; }
+
+  .cap-top { position: relative; z-index: 4; display: flex; justify-content: center; padding: 50px 16px 0; }
+  .countdown { background: rgba(0,0,0,0.55); backdrop-filter: blur(10px); border: 1px solid rgba(255,214,10,0.4); color: var(--late); font-size: 18px; font-weight: 700; padding: 8px 18px; border-radius: 500px; font-variant-numeric: tabular-nums; }
+
+  .selfie-inset { position: absolute; top: 96px; left: 16px; width: 100px; height: 134px; border-radius: 14px; border: 2px solid #000; overflow: hidden; z-index: 5; background: linear-gradient(155deg, #C99A78 0%, #9C6B4C 55%, #5E3B27 100%); box-shadow: 0 6px 18px rgba(0,0,0,0.55); }
+  .selfie-inset::after { content: ''; position: absolute; top: 26%; left: 30%; width: 40%; height: 34%; background: #B58462; border-radius: 50%; }
+  .drag-hint { position: absolute; top: 240px; left: 16px; font-size: 11px; color: rgba(255,255,255,0.6); z-index: 5; }
+
+  .cap-bottom { margin-top: auto; position: relative; z-index: 6; display: flex; align-items: center; justify-content: space-between; padding: 0 36px 28px; }
+  .flash-btn, .flip-btn { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #fff; }
+  .flash-btn svg, .flip-btn svg { width: 26px; height: 26px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .capture-btn { width: 76px; height: 76px; border-radius: 50%; border: 4px solid #fff; display: flex; align-items: center; justify-content: center; background: transparent; }
+  .capture-btn .disc { width: 58px; height: 58px; border-radius: 50%; background: #fff; }
+
+  /* Tab bar — opaque true black, no blur */
+  .tab-bar { height: 56px; background: #000; display: flex; align-items: center; justify-content: space-around; padding: 6px 8px 14px; border-top: 0.5px solid rgba(255,255,255,0.08); position: relative; z-index: 8; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 4px; color: rgba(255,255,255,0.45); font-size: 10px; font-weight: 600; }
+  .tab.active { color: var(--text); }
+  .tab svg { width: 26px; height: 26px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 16px; min-height: 90px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #000; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 210px; flex-shrink: 0; }
+  .type-sample { flex: 1; }
+  .t-24 { font-size: 24px; font-weight: 700; letter-spacing: -0.3px; font-variant-numeric: tabular-nums; }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-17 { font-size: 17px; font-weight: 600; letter-spacing: -0.2px; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-14 { font-size: 14px; font-weight: 600; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 700; letter-spacing: 0.2px; color: var(--late); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 17px; font-weight: 600; padding: 14px 32px; border-radius: 500px; border: none; cursor: pointer; letter-spacing: -0.2px; }
+  .btn-primary { background: var(--accent); color: var(--on-accent); }
+  .btn-primary:active { opacity: 0.85; transform: scale(0.97); }
+  .btn-outline { background: transparent; color: var(--text); border: 1px solid rgba(255,255,255,0.4); font-size: 16px; padding: 12px 24px; }
+  .cap-demo { width: 60px; height: 60px; border-radius: 50%; border: 4px solid #fff; background: transparent; display: inline-flex; align-items: center; justify-content: center; }
+  .cap-demo .disc { width: 44px; height: 44px; border-radius: 50%; background: #fff; }
+
+  /* Dual-lens composite demo */
+  .composite { width: 180px; aspect-ratio: 3/4; border-radius: 18px; position: relative; overflow: hidden; background: linear-gradient(165deg, #3A4A55, #14191E); box-shadow: 0 8px 24px rgba(0,0,0,0.6); }
+  .composite .self { position: absolute; top: 12px; left: 12px; width: 64px; height: 86px; border-radius: 14px; border: 2px solid #000; background: linear-gradient(155deg, #C99A78, #5E3B27); }
+
+  /* RealMoji cluster */
+  .realmoji-row { display: flex; align-items: center; }
+  .rm { width: 38px; height: 38px; border-radius: 50%; border: 2px solid #000; margin-left: -8px; }
+  .rm:first-child { margin-left: 0; }
+  .rm.a { background: linear-gradient(155deg, #C99A78, #5E3B27); }
+  .rm.b { background: linear-gradient(155deg, #7FA8C9, #2B4C6E); }
+  .rm.c { background: linear-gradient(155deg, #8FC99A, #2E6E3A); }
+  .rm-add { width: 38px; height: 38px; border-radius: 50%; border: 1.5px dashed rgba(255,255,255,0.6); margin-left: 12px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; font-weight: 600; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--accent); color: var(--on-accent); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-6 { border-radius: 6px; }
+  .r-14 { border-radius: 14px; }
+  .r-18 { border-radius: 18px; }
+  .r-24 { border-radius: 24px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">BeReal iOS — Design Tokens</div>
+    <div class="page-chip">Dark</div>
+  </div>
+  <p class="page-subtitle">Pure-black canvas (#000000) with no brand accent — white is the only verb. The dual-lens composite card and the 2-minute amber countdown are the whole product. Authenticity is shown, never hidden.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="viewfinder"></div>
+          <div class="island"></div>
+          <div class="cap-top">
+            <div class="countdown">⏰ 1:42 left to capture</div>
+          </div>
+          <div class="selfie-inset"></div>
+          <div class="drag-hint">drag to reposition ↕</div>
+          <div class="cap-bottom">
+            <div class="flash-btn"><svg viewBox="0 0 24 24"><polygon points="13,2 4,14 11,14 11,22 20,10 13,10"/></svg></div>
+            <button class="capture-btn"><span class="disc"></span></button>
+            <div class="flip-btn"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><polyline points="21,3 21,8 16,8"/><polyline points="3,21 3,16 8,16"/></svg></div>
+          </div>
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5"/><path d="M15 20c0-2 2-4 4.5-4"/></svg><span>Friends</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg><span>Official</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 21c1-4 4-6 7-6s6 2 7 6"/></svg><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#000000;"><div class="name">Canvas</div>#000000</div>
+          <div class="swatch" style="background:#1C1C1E;"><div class="name">Surface 1</div>#1C1C1E</div>
+          <div class="swatch" style="background:#2C2C2E;"><div class="name">Surface 2</div>#2C2C2E</div>
+          <div class="swatch" style="background:#2C2C2E;"><div class="name">Divider</div>#2C2C2E</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Text Primary</div>#FFFFFF</div>
+          <div class="swatch" style="background:#8E8E93; color:#000;"><div class="name">Text Secondary</div>#8E8E93</div>
+          <div class="swatch" style="background:#636366;"><div class="name">Text Tertiary</div>#636366</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Accent (no hue)</div>#FFFFFF</div>
+          <div class="swatch" style="background:#FFD60A; color:#000;"><div class="name">Late Amber</div>#FFD60A</div>
+          <div class="swatch" style="background:#FF453A;"><div class="name">Error</div>#FF453A</div>
+          <div class="swatch" style="background:#30D158; color:#000;"><div class="name">Online</div>#30D158</div>
+          <div class="swatch" style="background:#000000;"><div class="name">On-Accent</div>#000000</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — SF Pro (system)</div>
+        <div class="type-row"><div class="type-meta">Timer · 24pt · 700 tnum</div><div class="type-sample t-24">1:42 left to capture</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 22pt · 700</div><div class="type-sample t-22">Friends</div></div>
+        <div class="type-row"><div class="type-meta">Username · 17pt · 600</div><div class="type-sample t-17">jordan</div></div>
+        <div class="type-row"><div class="type-meta">Caption · 16pt · 400</div><div class="type-sample t-16">Stuck in the lab again</div></div>
+        <div class="type-row"><div class="type-meta">Comment Author · 14pt · 600</div><div class="type-sample t-14">maya</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 400</div><div class="type-sample t-13">Paris, France · 12:43</div></div>
+        <div class="type-row"><div class="type-meta">Late Badge · 12pt · 700</div><div class="type-sample t-12">⚠ 2h LATE</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="cap-demo"><span class="disc"></span></button>
+          <button class="btn btn-primary">Post</button>
+          <button class="btn btn-outline">Add a caption</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dual-Lens Composite + RealMojis (no counts)</div>
+        <div style="display:flex; gap:24px; align-items:center; flex-wrap:wrap;">
+          <div class="composite"><div class="self"></div></div>
+          <div>
+            <div class="realmoji-row" style="margin-bottom:14px;">
+              <span class="rm a"></span><span class="rm b"></span><span class="rm c"></span>
+              <span class="rm-add">+</span>
+            </div>
+            <div class="t-12">⚠ 2h LATE · 3 retakes</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-18">18</div>
+          <div class="radius-box r-24">24</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
