@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Flighty iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0B0B0F;
+    --surface-1: #1A1A1F;
+    --surface-2: #222228;
+    --surface-3: #2C2C34;
+    --divider: #2E2E36;
+    --text: #FFFFFF;
+    --text-secondary: #8E8E96;
+    --text-tertiary: #5A5A62;
+    --blue: #0A84FF;
+    --blue-pressed: #0066CC;
+    --blue-glow: rgba(10,132,255,0.45);
+    --on-time: #30D158;
+    --delay: #FFD60A;
+    --cancelled: #FF453A;
+    --map-land: #16161B;
+    --map-graticule: #1F1F26;
+    --arc-remaining: rgba(10,132,255,0.35);
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; }
+  .page-chip { background: var(--blue); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 660px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #060608; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.05) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text); position: relative; z-index: 5; }
+
+  /* Live flight map */
+  .map { position: relative; height: 280px; background:
+      radial-gradient(circle at 30% 40%, #16161B 0%, #0E0E12 60%, #0B0B0F 100%); overflow: hidden; }
+  .map::before { content: ''; position: absolute; inset: 0; background-image:
+      linear-gradient(var(--map-graticule) 1px, transparent 1px),
+      linear-gradient(90deg, var(--map-graticule) 1px, transparent 1px);
+    background-size: 40px 40px; opacity: 0.5; }
+  .land { position: absolute; background: var(--map-land); border-radius: 40% 55% 50% 45%; }
+  .land.l1 { left: 6%; top: 30%; width: 34%; height: 42%; }
+  .land.l2 { right: 8%; top: 22%; width: 30%; height: 50%; border-radius: 50% 40% 55% 45%; }
+  .arc-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .map-scrim { position: absolute; top: 0; left: 0; right: 0; height: 60px; background: linear-gradient(180deg, rgba(11,11,15,0.7), transparent); }
+
+  .pin { position: absolute; width: 9px; height: 9px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 3px rgba(255,255,255,0.15); }
+  .pin.o { left: 16%; top: 64%; }
+  .pin.d { right: 18%; top: 38%; }
+  .pin-label { position: absolute; font-size: 11px; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
+  .pin-label.o { left: 14%; top: 70%; }
+  .pin-label.d { right: 14%; top: 28%; }
+
+  /* Flight card overlay sheet */
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; background: var(--surface-1); border-radius: 20px 20px 0 0; padding: 16px 16px 0; box-shadow: 0 -16px 48px rgba(0,0,0,0.6); display: flex; flex-direction: column; }
+  .grabber { width: 36px; height: 4px; border-radius: 2px; background: var(--divider); margin: 0 auto 14px; }
+  .fc-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .fc-title { font-size: 17px; font-weight: 600; }
+  .chip { padding: 5px 10px; border-radius: 999px; font-size: 13px; font-weight: 700; letter-spacing: 0.3px; }
+  .chip-ontime { color: var(--on-time); background: rgba(48,209,88,0.15); }
+  .chip-delay { color: var(--delay); background: rgba(255,214,10,0.15); }
+  .chip-cancel { color: var(--cancelled); background: rgba(255,69,58,0.15); }
+  .fc-route { display: flex; align-items: center; gap: 16px; margin-bottom: 14px; }
+  .fc-code { font-size: 24px; font-weight: 700; letter-spacing: 0.5px; }
+  .fc-arc-mini { flex: 1; height: 1px; background: linear-gradient(90deg, var(--blue), var(--arc-remaining)); position: relative; }
+  .fc-arc-mini svg { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 14px; height: 14px; fill: var(--blue); }
+  .fc-times { display: flex; justify-content: space-between; margin-bottom: 12px; }
+  .fc-t { font-size: 32px; font-weight: 700; letter-spacing: -0.5px; }
+  .fc-g { font-size: 15px; font-weight: 600; letter-spacing: 0.5px; color: var(--text-secondary); margin-top: 4px; font-feature-settings: 'tnum'; }
+  .fc-end { text-align: right; }
+  .fc-meta { font-size: 13px; color: var(--text-secondary); padding-bottom: 14px; }
+
+  /* Tab bar */
+  .tab-bar { height: 60px; background: rgba(11,11,15,0.92); backdrop-filter: saturate(180%) blur(20px); display: flex; align-items: center; justify-content: space-around; padding: 4px 8px 14px; border-top: 0.5px solid var(--divider); position: relative; z-index: 5; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--text-secondary); font-size: 11px; font-weight: 600; }
+  .tab.active { color: var(--blue); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 16px; min-height: 90px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.dark-fg { color: #000; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; }
+  .t-32 { font-size: 32px; font-weight: 700; letter-spacing: -0.5px; }
+  .t-24 { font-size: 24px; font-weight: 700; letter-spacing: 0.5px; }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-17 { font-size: 17px; font-weight: 600; }
+  .t-15 { font-size: 15px; font-weight: 400; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-13b { font-size: 13px; font-weight: 700; letter-spacing: 0.3px; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 600; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--blue); color: #fff; font-size: 16px; padding: 15px 28px; border-radius: 14px; }
+  .btn-primary:active { background: var(--blue-pressed); transform: scale(0.98); }
+  .btn-secondary { background: var(--surface-1); color: #fff; border: 1px solid var(--divider); font-size: 15px; font-weight: 600; padding: 13px 24px; border-radius: 14px; cursor: pointer; }
+  .btn-text { background: transparent; color: var(--blue); font-size: 15px; font-weight: 600; padding: 13px 0; border: none; cursor: pointer; }
+
+  /* On-time ring + timeline demo */
+  .demo-flex { display: flex; gap: 28px; align-items: flex-start; }
+  .ring { width: 72px; height: 72px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; background:
+      conic-gradient(var(--on-time) 0% 87%, var(--divider) 87% 100%); position: relative; }
+  .ring::after { content: ''; position: absolute; inset: 4px; border-radius: 50%; background: var(--surface-1); }
+  .ring .rp { font-size: 20px; font-weight: 700; position: relative; z-index: 1; }
+  .ring .rl { font-size: 11px; color: var(--text-secondary); position: relative; z-index: 1; }
+  .timeline { flex: 1; }
+  .tl-row { display: flex; gap: 12px; padding: 6px 0; align-items: flex-start; position: relative; }
+  .tl-rail { position: absolute; left: 5px; top: 14px; bottom: -6px; width: 2px; background: var(--divider); }
+  .tl-row:last-child .tl-rail { display: none; }
+  .tl-node { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; margin-top: 2px; z-index: 1; }
+  .tl-node.ok { background: var(--on-time); }
+  .tl-node.warn { background: var(--delay); }
+  .tl-node.bad { background: var(--cancelled); }
+  .tl-time { font-size: 11px; font-weight: 600; color: var(--text-secondary); width: 56px; flex-shrink: 0; font-feature-settings: 'tnum'; }
+  .tl-body { flex: 1; }
+  .tl-title { font-size: 15px; font-weight: 600; }
+  .tl-delta { font-size: 13px; font-weight: 600; }
+  .tl-delta.warn { color: var(--delay); }
+  .tl-delta.ok { color: var(--on-time); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--blue); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-12 { border-radius: 12px; }
+  .r-14 { border-radius: 14px; }
+  .r-16 { border-radius: 16px; }
+  .r-20 { border-radius: 20px; }
+  .r-pill { border-radius: 999px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Flighty iOS — Design Tokens</div>
+    <div class="page-chip">Dark</div>
+  </div>
+  <p class="page-subtitle">Deep instrument-panel black (#0B0B0F) with Flighty Blue (#0A84FF) as the single accent. The glowing live flight arc is the signature; status colors are strict — green=on-time, amber=delayed, red=cancelled.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="map">
+            <div class="land l1"></div>
+            <div class="land l2"></div>
+            <div class="map-scrim"></div>
+            <svg class="arc-svg" viewBox="0 0 320 280" preserveAspectRatio="none">
+              <path d="M 51 179 Q 160 40 262 106" stroke="rgba(10,132,255,0.35)" stroke-width="2" fill="none" stroke-dasharray="4 5"/>
+              <path d="M 51 179 Q 160 40 262 106" stroke="rgba(10,132,255,0.45)" stroke-width="9" fill="none" stroke-linecap="round"/>
+              <path d="M 51 179 Q 121 92 168 80" stroke="#0A84FF" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+              <circle cx="168" cy="80" r="9" fill="rgba(10,132,255,0.45)"/>
+              <circle cx="168" cy="80" r="4" fill="#FFFFFF"/>
+            </svg>
+            <div class="pin o"></div><div class="pin-label o">SFO</div>
+            <div class="pin d"></div><div class="pin-label d">JFK</div>
+          </div>
+
+          <div class="status" style="margin-top:-50px;"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="sheet">
+            <div class="grabber"></div>
+            <div class="fc-head">
+              <div class="fc-title">United · UA 482</div>
+              <span class="chip chip-delay">DELAYED 22m</span>
+            </div>
+            <div class="fc-route">
+              <div class="fc-code">SFO</div>
+              <div class="fc-arc-mini"><svg viewBox="0 0 24 24"><path d="M2 16l9-3V5a1.5 1.5 0 0 1 3 0v8l8 3v2l-8-2v4l2 2v1l-3.5-1L9 23v-1l2-2v-4z"/></svg></div>
+              <div class="fc-code">JFK</div>
+            </div>
+            <div class="fc-times">
+              <div>
+                <div class="fc-t">7:45 AM</div>
+                <div class="fc-g">Gate B24 · Term 2</div>
+              </div>
+              <div class="fc-end">
+                <div class="fc-t">4:34 PM</div>
+                <div class="fc-g">Gate 7 · Term 4</div>
+              </div>
+            </div>
+            <div class="fc-meta">5h 42m · 2,586 mi · Nonstop · 62% complete</div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M2 16l9-3V5a1.5 1.5 0 0 1 3 0v8l8 3v2l-8-2v4l2 2v1l-3.5-1L9 23v-1l2-2v-4z"/></svg><span>Flights</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="1"/><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1"/></svg><span>Airport</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/></svg><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0B0B0F;"><div class="name">Canvas</div>#0B0B0F</div>
+          <div class="swatch" style="background:#1A1A1F;"><div class="name">Surface 1</div>#1A1A1F</div>
+          <div class="swatch" style="background:#222228;"><div class="name">Surface 2</div>#222228</div>
+          <div class="swatch" style="background:#2E2E36;"><div class="name">Divider</div>#2E2E36</div>
+          <div class="swatch" style="background:#FFFFFF; color:#000;"><div class="name">Text Primary</div>#FFFFFF</div>
+          <div class="swatch" style="background:#8E8E96;"><div class="name">Text Secondary</div>#8E8E96</div>
+          <div class="swatch" style="background:#0A84FF;"><div class="name">Flighty Blue</div>#0A84FF</div>
+          <div class="swatch" style="background:#0066CC;"><div class="name">Blue Pressed</div>#0066CC</div>
+          <div class="swatch" style="background:#30D158; color:#000;"><div class="name">On-Time Green</div>#30D158</div>
+          <div class="swatch dark-fg" style="background:#FFD60A;"><div class="name">Delay Amber</div>#FFD60A</div>
+          <div class="swatch" style="background:#FF453A;"><div class="name">Cancelled Red</div>#FF453A</div>
+          <div class="swatch" style="background:#16161B;"><div class="name">Map Land</div>#16161B</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — SF Pro (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Flight Time · 32pt · 700 tnum</div><div class="type-sample t-32">7:45 AM</div></div>
+        <div class="type-row"><div class="type-meta">Route Code · 24pt · 700</div><div class="type-sample t-24">SFO &rarr; JFK</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Delay history</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 17pt · 600</div><div class="type-sample t-17">United · UA 482</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 400</div><div class="type-sample t-15">Departure pushed 22 minutes due to late aircraft.</div></div>
+        <div class="type-row"><div class="type-meta">Status Chip · 13pt · 700</div><div class="type-sample t-13b">DELAYED 22M</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 400</div><div class="type-sample t-13">5h 42m · 2,586 mi · Nonstop</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Flight Status Chips (strict semantics)</div>
+        <div class="btn-row">
+          <span class="chip chip-ontime">ON TIME</span>
+          <span class="chip chip-delay">DELAYED 22m</span>
+          <span class="chip chip-cancel">CANCELLED</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Add flight</button>
+          <button class="btn-secondary">Share flight</button>
+          <button class="btn-text">View full timeline</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">On-Time Ring &amp; Delay Timeline</div>
+        <div class="demo-flex">
+          <div class="ring"><span class="rp">87%</span><span class="rl">on time</span></div>
+          <div class="timeline">
+            <div class="tl-row"><div class="tl-rail"></div><div class="tl-node ok"></div><div class="tl-time">6:58 AM</div><div class="tl-body"><div class="tl-title">Scheduled on time</div></div></div>
+            <div class="tl-row"><div class="tl-rail"></div><div class="tl-node warn"></div><div class="tl-time">7:21 AM</div><div class="tl-body"><div class="tl-title">Departure delayed <span class="tl-delta warn">+22m</span></div></div></div>
+            <div class="tl-row"><div class="tl-node ok"></div><div class="tl-time">8:07 AM</div><div class="tl-body"><div class="tl-title">Now boarding · Gate B24</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Flighty's canvas is <code>#0B0B0F</code> — a deep instrument-panel black, never pure <code>#000000</code> (the slight lift keeps depth in the map). Flighty Blue <code>#0A84FF</code> is the single accent: primary action, the live great-circle arc, and active states. Status colors are strict and never decorative — green <code>#30D158</code> = on-time, amber <code>#FFD60A</code> = delayed, red <code>#FF453A</code> = cancelled, on chips only. All flight data uses tabular figures so live updates never jitter. The only colored light is the soft blue glow behind the arc and plane marker.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

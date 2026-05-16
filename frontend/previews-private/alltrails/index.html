@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by AllTrails iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --sage: #F2F4F1;
+    --sunken: #EBEEE8;
+    --divider: #E2E6DF;
+    --text: #1A1A1A;
+    --text-secondary: #6B6F68;
+    --text-tertiary: #9A9E96;
+    --green: #428000;
+    --green-pressed: #336300;
+    --green-soft: #E8F0DF;
+    --easy: #428000;
+    --moderate: #C77700;
+    --hard: #B3261E;
+    --easy-bg: #E8F0DF;
+    --moderate-bg: #FBEEDD;
+    --hard-bg: #F7E0DE;
+    --star: #F2A93B;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+    --mono: 'SF Mono', ui-monospace, Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #ECEFE9; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; }
+  .page-chip { background: var(--green); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 660px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #DDE2D8; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.45), 0 0 0 2px rgba(255,255,255,0.7) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Map base */
+  .map { position: absolute; inset: 0; background:
+      linear-gradient(135deg, #DDE7D2 0%, #C9D9BA 45%, #BCD0AB 100%); }
+  .map::before { content: ''; position: absolute; inset: 0; background-image:
+      repeating-radial-gradient(circle at 30% 35%, transparent 0 18px, rgba(120,150,90,0.18) 18px 20px),
+      repeating-radial-gradient(circle at 72% 68%, transparent 0 14px, rgba(120,150,90,0.16) 14px 16px); }
+  .river { position: absolute; left: -10%; top: 55%; width: 130%; height: 18px; background: #9CC4D8; opacity: 0.6; transform: rotate(-8deg); border-radius: 9px; }
+
+  /* Floating search */
+  .search { position: absolute; top: 50px; left: 16px; right: 16px; height: 50px; background: #fff; border-radius: 25px; display: flex; align-items: center; gap: 10px; padding: 0 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); z-index: 10; }
+  .search svg { width: 18px; height: 18px; stroke: var(--text-secondary); stroke-width: 2; fill: none; }
+  .search span { color: var(--text-tertiary); font-size: 15px; }
+  .search .filt { margin-left: auto; }
+  .search .filt svg { stroke: var(--text); }
+
+  /* Map pins */
+  .pin { position: absolute; transform: translate(-50%, -100%); z-index: 5; }
+  .pin .body { font-size: 12px; font-weight: 700; color: #fff; padding: 5px 9px; border-radius: 12px; box-shadow: 0 3px 8px rgba(0,0,0,0.3); }
+  .pin .tail { width: 0; height: 0; margin: 0 auto; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 6px solid; }
+  .pin.easy .body { background: var(--easy); } .pin.easy .tail { border-top-color: var(--easy); }
+  .pin.mod .body { background: var(--moderate); } .pin.mod .tail { border-top-color: var(--moderate); }
+  .pin.hard .body { background: var(--hard); } .pin.hard .tail { border-top-color: var(--hard); }
+  .pin.sel .body { transform: scale(1.15); box-shadow: 0 0 0 3px #fff, 0 4px 10px rgba(0,0,0,0.3); }
+  .p1 { left: 32%; top: 30%; } .p2 { left: 64%; top: 42%; } .p3 { left: 46%; top: 60%; }
+
+  /* Mini card sheet */
+  .mini { position: absolute; left: 12px; right: 12px; bottom: 78px; background: #fff; border-radius: 16px; padding: 12px; display: flex; gap: 12px; box-shadow: 0 -8px 28px rgba(0,0,0,0.15); z-index: 10; }
+  .mini-thumb { width: 72px; height: 72px; border-radius: 10px; background: linear-gradient(135deg, #7FA86A, #4E7340); flex-shrink: 0; }
+  .mini-body { flex: 1; min-width: 0; }
+  .mini-pill { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.3px; padding: 3px 8px; border-radius: 9px; color: var(--moderate); background: var(--moderate-bg); }
+  .mini-name { font-size: 16px; font-weight: 600; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mini-stats { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+  .mini-stats b { color: var(--text); font-weight: 700; }
+
+  /* Toggle */
+  .toggle { position: absolute; bottom: 134px; left: 50%; transform: translateX(-50%); background: #fff; border-radius: 999px; display: flex; padding: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.14); z-index: 10; }
+  .toggle .t { font-size: 13px; font-weight: 600; padding: 7px 18px; border-radius: 999px; color: var(--text-secondary); }
+  .toggle .t.act { background: var(--green); color: #fff; }
+
+  /* Tab bar */
+  .tab-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 60px; background: rgba(255,255,255,0.96); backdrop-filter: saturate(180%) blur(20px); display: flex; align-items: center; justify-content: space-around; padding: 4px 8px 14px; border-top: 0.5px solid var(--divider); z-index: 15; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--text-tertiary); font-size: 11px; font-weight: 600; }
+  .tab.active { color: var(--green); }
+  .tab svg { width: 23px; height: 23px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+  .tab.active svg { fill: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--canvas); border: 1px solid var(--divider); border-radius: 16px; padding: 24px; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 90px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: var(--mono); border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.lt { color: var(--text); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: var(--mono); font-size: 11px; color: var(--text-secondary); width: 200px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); }
+  .t-28 { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; }
+  .t-24 { font-size: 24px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-17 { font-size: 17px; font-weight: 600; }
+  .t-16 { font-size: 16px; font-weight: 400; line-height: 1.5; }
+  .t-15 { font-size: 15px; font-weight: 700; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-13 { font-size: 13px; font-weight: 700; letter-spacing: 0.3px; }
+  .t-label { font-size: 12px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-secondary); }
+
+  /* Trail card demo */
+  .tcard { background: #fff; border: 1px solid var(--divider); border-radius: 12px; overflow: hidden; }
+  .tcard-photo { height: 150px; background: linear-gradient(150deg, #8FB377 0%, #5C8348 50%, #3C5C30 100%); position: relative; }
+  .tcard-photo::after { content: ''; position: absolute; left: 10%; right: 30%; bottom: 0; height: 38%; background: linear-gradient(180deg, #6B9152, #43662F); clip-path: polygon(0 100%, 22% 30%, 44% 70%, 66% 12%, 88% 55%, 100% 35%, 100% 100%); }
+  .tcard-heart { position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; border-radius: 50%; background: rgba(0,0,0,0.25); display: flex; align-items: center; justify-content: center; }
+  .tcard-heart svg { width: 18px; height: 18px; fill: var(--green); }
+  .tcard-body { padding: 12px 14px 16px; }
+  .tcard-row1 { display: flex; align-items: center; justify-content: space-between; }
+  .pill { font-size: 13px; font-weight: 700; letter-spacing: 0.3px; padding: 6px 12px; border-radius: 11px; }
+  .pill.mod { color: var(--moderate); background: var(--moderate-bg); }
+  .rate { display: flex; align-items: center; gap: 4px; font-size: 14px; }
+  .rate svg { width: 13px; height: 13px; fill: var(--star); }
+  .rate b { font-weight: 700; }
+  .rate small { color: var(--text-secondary); font-weight: 400; }
+  .tcard-name { font-size: 17px; font-weight: 600; margin-top: 10px; }
+  .tcard-loc { font-size: 14px; color: var(--text-secondary); margin-top: 2px; }
+  .tcard-stats { font-size: 14px; color: var(--text-secondary); margin-top: 8px; }
+  .tcard-stats b { color: var(--text); font-weight: 700; }
+
+  /* Difficulty pills */
+  .pill-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .pill.easy { color: var(--easy); background: var(--easy-bg); }
+  .pill.hard { color: var(--hard); background: var(--hard-bg); }
+  .pill.solid { color: #fff; background: var(--green); }
+
+  /* Buttons */
+  .btn { font-family: var(--font); font-size: 16px; font-weight: 600; cursor: pointer; border: none; border-radius: 25px; }
+  .btn-primary { background: var(--green); color: #fff; padding: 14px 28px; }
+  .btn-primary:active { background: var(--green-pressed); transform: scale(0.97); }
+  .btn-outline { background: transparent; color: var(--green); border: 1.5px solid var(--green); padding: 12.5px 24px; }
+  .record { width: 60px; height: 60px; border-radius: 50%; background: var(--green); display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 6px 18px rgba(66,128,0,0.30); border: none; cursor: pointer; }
+  .record svg { width: 26px; height: 26px; fill: #fff; }
+  .record.live { background: var(--hard); box-shadow: 0 6px 18px rgba(179,38,30,0.30); }
+
+  /* Route trace */
+  .trace-wrap { background: linear-gradient(135deg, #DDE7D2, #C4D6B3); border-radius: 12px; height: 130px; position: relative; overflow: hidden; }
+  .trace-svg { position: absolute; inset: 0; }
+  .trace-path { fill: none; stroke: var(--green); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 360; stroke-dashoffset: 360; animation: draw 1s ease-out forwards; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--green); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; }
+  .r-10 { border-radius: 10px; }
+  .r-11 { border-radius: 11px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-25 { border-radius: 25px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">AllTrails iOS — Design Tokens</div>
+    <div class="page-chip">Topo Light</div>
+  </div>
+  <p class="page-subtitle">Pure-white topo-paper canvas with a cool sage section surface (#F2F4F1). AllTrails Green leads; the difficulty scale (Easy green / Moderate amber / Hard red) is a color language on every card and pin.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="map">
+            <div class="river"></div>
+          </div>
+          <div class="search">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+            <span>Search by city, park, or trail</span>
+            <div class="filt"><svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg></div>
+          </div>
+          <div class="pin easy p1"><div class="body">Easy · 3.1mi</div><div class="tail"></div></div>
+          <div class="pin mod sel p2"><div class="body">Mod · 5.2mi</div><div class="tail"></div></div>
+          <div class="pin hard p3"><div class="body">Hard · 8.4mi</div><div class="tail"></div></div>
+          <div class="toggle"><div class="t act">Map</div><div class="t">List</div></div>
+          <div class="mini">
+            <div class="mini-thumb"></div>
+            <div class="mini-body">
+              <span class="mini-pill">MODERATE</span>
+              <div class="mini-name">Eagle Peak Loop Trail</div>
+              <div class="mini-stats"><b>5.2 mi</b> · Est. <b>2h 45m</b> · ↑ <b>1,200 ft</b></div>
+            </div>
+          </div>
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><polygon points="3,7 9,4 15,7 21,4 21,17 15,20 9,17 3,20"/><line x1="9" y1="4" x2="9" y2="17"/><line x1="15" y1="7" x2="15" y2="20"/></svg><span>Explore</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span>Saved</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polygon points="12,7 15,15 12,13 9,15"/></svg><span>Navigator</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="3"/><circle cx="17" cy="11" r="2.5"/><path d="M3 19c1-3 3-4 6-4s5 1 6 4"/></svg><span>Community</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 20c1-4 3.5-5 7-5s6 1 7 5"/></svg><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch lt" style="background:#FFFFFF;"><div class="name">Canvas</div>#FFFFFF</div>
+          <div class="swatch lt" style="background:#F2F4F1;"><div class="name">Surface Sage</div>#F2F4F1</div>
+          <div class="swatch lt" style="background:#EBEEE8;"><div class="name">Surface Sunken</div>#EBEEE8</div>
+          <div class="swatch lt" style="background:#E2E6DF;"><div class="name">Divider</div>#E2E6DF</div>
+          <div class="swatch" style="background:#1A1A1A;"><div class="name">Text Primary</div>#1A1A1A</div>
+          <div class="swatch" style="background:#6B6F68;"><div class="name">Text Secondary</div>#6B6F68</div>
+          <div class="swatch" style="background:#428000;"><div class="name">AllTrails Green</div>#428000</div>
+          <div class="swatch" style="background:#336300;"><div class="name">Green Pressed</div>#336300</div>
+          <div class="swatch lt" style="background:#E8F0DF;"><div class="name">Green Soft</div>#E8F0DF</div>
+          <div class="swatch" style="background:#C77700;"><div class="name">Moderate</div>#C77700</div>
+          <div class="swatch" style="background:#B3261E;"><div class="name">Hard</div>#B3261E</div>
+          <div class="swatch" style="background:#F2A93B; color:#3A2400;"><div class="name">Star Gold</div>#F2A93B</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter (tabular numerals)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 28pt · 700</div><div class="type-sample t-28">Explore</div></div>
+        <div class="type-row"><div class="type-meta">Detail Title · 24pt · 700</div><div class="type-sample t-24">Eagle Peak Loop Trail</div></div>
+        <div class="type-row"><div class="type-meta">Card / Trail Name · 17pt · 600</div><div class="type-sample t-17">Cascade Falls via Bear Creek</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">A scenic out-and-back with waterfall views near the summit.</div></div>
+        <div class="type-row"><div class="type-meta">Stat Value · 15pt · 700</div><div class="type-sample t-15">5.2 mi · 1,200 ft</div></div>
+        <div class="type-row"><div class="type-meta">Location · 14pt · 400</div><div class="type-sample t-14">Marin County, California</div></div>
+        <div class="type-row"><div class="type-meta">Difficulty · 13pt · 700 UP</div><div class="type-sample t-13">MODERATE</div></div>
+        <div class="type-row"><div class="type-meta">Label · 12pt · 700 UP</div><div class="type-sample t-label">Out &amp; Back</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Trail Card</div>
+        <div class="tcard">
+          <div class="tcard-photo">
+            <div class="tcard-heart"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+          </div>
+          <div class="tcard-body">
+            <div class="tcard-row1">
+              <span class="pill mod">MODERATE</span>
+              <div class="rate"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg><b>4.7</b><small>(1,284)</small></div>
+            </div>
+            <div class="tcard-name">Eagle Peak Loop Trail</div>
+            <div class="tcard-loc">Marin County, California</div>
+            <div class="tcard-stats">Length <b>5.2 mi</b> · Est. <b>2h 45m</b> · ↑ <b>1,200 ft</b></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Difficulty Pills</div>
+        <div class="pill-row">
+          <span class="pill easy">EASY</span>
+          <span class="pill mod">MODERATE</span>
+          <span class="pill hard">HARD</span>
+          <span class="pill solid">EASY · HERO</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons &amp; Record</div>
+        <div class="pill-row">
+          <button class="btn btn-primary">Directions</button>
+          <button class="btn btn-outline">Save</button>
+          <button class="record"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/></svg></button>
+          <button class="record live"><svg viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="2"/></svg></button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Route Trace (draws on the map)</div>
+        <div class="trace-wrap">
+          <svg class="trace-svg" viewBox="0 0 320 130" preserveAspectRatio="none">
+            <path class="trace-path" d="M30 100 C 70 60, 100 110, 140 70 S 210 30, 250 60 S 300 40, 300 30"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-11">11</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-25">25</div>
+          <div class="radius-box r-circle">Rec</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

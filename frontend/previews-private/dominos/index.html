@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Domino's iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --surface: #F4F4F4;
+    --surface-deep: #EAEAEA;
+    --divider: #E2E2E2;
+    --text: #1F1F1F;
+    --text-secondary: #6E6E6E;
+    --text-tertiary: #9A9A9A;
+    --red: #E31837;
+    --red-pressed: #C2122E;
+    --red-tint: #FCE7EB;
+    --blue: #006491;
+    --blue-pressed: #00547A;
+    --blue-tint: #E0EEF4;
+    --success: #1E8E3E;
+    --warning: #F5A623;
+    --font: 'Archivo', 'Helvetica Neue', -apple-system, BlinkMacSystemFont, 'SF Pro Text', Arial, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #E6E6E6; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; color: var(--red); }
+  .page-chip { background: var(--red); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 8px; letter-spacing: 0.4px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 660px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(31,31,31,0.45), 0 0 0 2px rgba(31,31,31,0.10) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Top nav */
+  .top { padding: 46px 16px 12px; background: var(--canvas); flex-shrink: 0; border-bottom: 1px solid var(--divider); }
+  .top-row { display: flex; align-items: center; justify-content: space-between; }
+  .deliv { font-size: 15px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 5px; }
+  .deliv svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2.5; fill: none; }
+  .cart { position: relative; color: var(--text); }
+  .cart svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .cart-badge { position: absolute; top: -6px; right: -6px; background: var(--red); color: #fff; font-size: 9px; font-weight: 700; width: 16px; height: 16px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+  .scr-title { font-size: 24px; font-weight: 700; letter-spacing: -0.3px; color: var(--text); margin-top: 12px; }
+
+  /* Tracker hero */
+  .body-scroll { flex: 1; overflow: hidden; padding: 16px; background: var(--surface); }
+  .tracker { background: var(--canvas); border-radius: 12px; padding: 16px; box-shadow: 0 4px 14px rgba(31,31,31,0.12); }
+  .tk-head { font-size: 20px; font-weight: 700; color: var(--text); }
+  .tk-rail { display: flex; align-items: flex-start; margin: 18px 0 12px; }
+  .tk-node-wrap { display: flex; flex-direction: column; align-items: center; width: 44px; }
+  .tk-seg { flex: 1; height: 4px; margin-top: 9px; background: var(--divider); }
+  .tk-seg.done { background: var(--blue); }
+  .tk-seg.active { background: var(--red); }
+  .tk-node { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--divider); display: flex; align-items: center; justify-content: center; background: var(--canvas); }
+  .tk-node.done { background: var(--blue); border-color: var(--blue); }
+  .tk-node.active { background: var(--red); border-color: var(--red); animation: pulse 1.6s ease-in-out infinite; }
+  .tk-node svg { width: 12px; height: 12px; stroke: #fff; stroke-width: 3; fill: none; display: none; }
+  .tk-node.done svg { display: block; }
+  @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+  .tk-lbl { font-size: 9px; font-weight: 400; color: var(--text-tertiary); margin-top: 5px; text-align: center; line-height: 1.15; }
+  .tk-lbl.done { color: var(--text); font-weight: 700; }
+  .tk-lbl.active { color: var(--red); font-weight: 700; }
+  .tk-eta { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+  .tk-link { font-size: 13px; font-weight: 700; color: var(--blue); margin-top: 8px; }
+
+  /* Deal card */
+  .deal { background: var(--canvas); border: 2px solid var(--red); border-radius: 8px; padding: 14px; margin-top: 16px; }
+  .deal-top { display: flex; align-items: center; justify-content: space-between; }
+  .deal-price { font-size: 28px; font-weight: 700; color: var(--red); letter-spacing: -0.4px; font-variant-numeric: tabular-nums; }
+  .domino-mark { display: flex; width: 22px; height: 22px; border-radius: 4px; overflow: hidden; }
+  .domino-mark .a { flex: 1; background: var(--red); }
+  .domino-mark .b { flex: 1; background: var(--blue); }
+  .deal-name { font-size: 16px; font-weight: 700; color: var(--text); margin-top: 6px; }
+  .deal-fine { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .deal-add { float: right; margin-top: 8px; background: var(--red); color: #fff; font-size: 12px; font-weight: 700; letter-spacing: 0.4px; padding: 8px 14px; border-radius: 8px; }
+
+  /* Order footer */
+  .order-footer { background: var(--canvas); border-top: 1px solid var(--divider); padding: 12px 16px; box-shadow: 0 -4px 14px rgba(31,31,31,0.10); }
+  .cta { height: 50px; background: var(--red); color: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase; }
+
+  /* Tab bar */
+  .tab-bar { height: 58px; background: var(--canvas); border-top: 0.5px solid var(--divider); display: flex; align-items: center; justify-content: space-around; padding: 6px 6px 14px; flex-shrink: 0; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--text-secondary); font-size: 11px; font-weight: 700; }
+  .tab.active { color: var(--red); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--canvas); border: 1px solid var(--divider); border-radius: 8px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 8px; padding: 14px; min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 500; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--text); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 210px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-17 { font-size: 17px; font-weight: 700; }
+  .t-15 { font-size: 15px; font-weight: 400; line-height: 1.45; }
+  .t-price { font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.2px; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; }
+  .btn-primary { background: var(--red); color: #fff; font-size: 16px; letter-spacing: 0.3px; text-transform: uppercase; padding: 15px 26px; border-radius: 8px; }
+  .btn-primary:active { background: var(--red-pressed); transform: scale(0.98); }
+  .btn-blue { background: var(--blue); color: #fff; font-size: 15px; padding: 13px 22px; border-radius: 8px; }
+  .btn-outline { background: transparent; color: var(--text); border: 2px solid var(--text); font-size: 14px; padding: 11px 20px; border-radius: 8px; }
+  .btn-text { background: transparent; color: var(--blue); font-size: 14px; font-weight: 700; padding: 12px 4px; cursor: pointer; border: none; }
+  .chip { padding: 8px 16px; background: var(--surface); color: var(--text); font-size: 13px; font-weight: 700; border-radius: 8px; }
+  .chip.active { background: var(--red); color: #fff; }
+
+  /* Build pizza preview */
+  .pizza-demo { display: flex; align-items: center; gap: 22px; }
+  .pizza { width: 130px; height: 130px; border-radius: 50%; background: #EDD9A8; border: 10px solid #CC9E5C; position: relative; overflow: hidden; flex-shrink: 0; }
+  .pizza .sauce { position: absolute; inset: 6px; border-radius: 50%; background: #C0392B; }
+  .pizza .cheese { position: absolute; inset: 12px; border-radius: 50%; background: rgba(250,220,115,0.65); }
+  .pizza .pep { position: absolute; width: 16px; height: 16px; border-radius: 50%; background: #9B2C2C; }
+  .pizza .p1 { top: 26%; left: 30%; } .pizza .p2 { top: 52%; left: 56%; } .pizza .p3 { top: 60%; left: 26%; } .pizza .p4 { top: 30%; left: 58%; }
+  .pizza-opts { flex: 1; font-size: 13px; color: var(--text-secondary); line-height: 1.7; }
+  .pizza-opts b { color: var(--text); }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--red); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Domino's iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">Clean white canvas (#FFFFFF). Domino's Red #E31837 is the action color (order, build, deals, active tracker stage); Domino's Blue #006491 is the info color (links, completed checkmarks). The five-stage pizza tracker is the signature.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="top">
+            <div class="top-row">
+              <div class="deliv">Delivery · 21 Mill Rd <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+              <div class="cart"><span class="cart-badge">3</span><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="18" cy="21" r="1"/><path d="M2 3h3l2.6 13.4a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L23 7H6"/></svg></div>
+            </div>
+            <div class="scr-title">Order Tracker</div>
+          </div>
+
+          <div class="body-scroll">
+            <div class="tracker">
+              <div class="tk-head">Your pizza is in the oven!</div>
+              <div class="tk-rail">
+                <div class="tk-node-wrap">
+                  <div class="tk-node done"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+                  <div class="tk-lbl done">Prep</div>
+                </div>
+                <div class="tk-seg done"></div>
+                <div class="tk-node-wrap">
+                  <div class="tk-node active"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+                  <div class="tk-lbl active">Bake</div>
+                </div>
+                <div class="tk-seg active"></div>
+                <div class="tk-node-wrap">
+                  <div class="tk-node"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+                  <div class="tk-lbl">Box</div>
+                </div>
+                <div class="tk-seg"></div>
+                <div class="tk-node-wrap">
+                  <div class="tk-node"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+                  <div class="tk-lbl">Quality Check</div>
+                </div>
+                <div class="tk-seg"></div>
+                <div class="tk-node-wrap">
+                  <div class="tk-node"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+                  <div class="tk-lbl">Out for delivery</div>
+                </div>
+              </div>
+              <div class="tk-eta">Estimated delivery 7:45 PM</div>
+              <div class="tk-link">Track on the map</div>
+            </div>
+
+            <div class="deal">
+              <div class="deal-top">
+                <div class="deal-price">$7.99</div>
+                <div class="domino-mark"><div class="a"></div><div class="b"></div></div>
+              </div>
+              <div class="deal-name">Mix &amp; Match</div>
+              <div class="deal-fine">Any 2 or more · medium 2-topping, sides &amp; more</div>
+              <div class="deal-add">Add Deal</div>
+            </div>
+          </div>
+
+          <div class="order-footer">
+            <div class="cta">Add to Order · $13.99</div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M4 3v7a3 3 0 0 0 3 3v8M7 3v7M10 3v7"/><path d="M18 3c-1.5 0-3 2-3 6 0 2 1 3 3 3v8"/></svg><span>Order</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M12 21s-7-5.2-7-11a7 7 0 0 1 14 0c0 5.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><span>Tracker</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V5a2 2 0 0 1 2-2h8z"/><circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none"/></svg><span>Deals</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21c0-4 3.5-6 7-6s7 2 7 6"/></svg><span>Account</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#E31837;"><div class="name">Domino's Red</div>#E31837</div>
+          <div class="swatch" style="background:#C2122E;"><div class="name">Red Pressed</div>#C2122E</div>
+          <div class="swatch light" style="background:#FCE7EB;"><div class="name">Red Tint</div>#FCE7EB</div>
+          <div class="swatch" style="background:#006491;"><div class="name">Domino's Blue</div>#006491</div>
+          <div class="swatch" style="background:#00547A;"><div class="name">Blue Pressed</div>#00547A</div>
+          <div class="swatch light" style="background:#E0EEF4;"><div class="name">Blue Tint</div>#E0EEF4</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Canvas</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#F4F4F4;"><div class="name">Surface</div>#F4F4F4</div>
+          <div class="swatch light" style="background:#E2E2E2;"><div class="name">Divider</div>#E2E2E2</div>
+          <div class="swatch" style="background:#1F1F1F;"><div class="name">Text Primary</div>#1F1F1F</div>
+          <div class="swatch" style="background:#6E6E6E;"><div class="name">Text Secondary</div>#6E6E6E</div>
+          <div class="swatch" style="background:#1E8E3E;"><div class="name">Success</div>#1E8E3E</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Archivo</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 26pt · 700</div><div class="type-sample t-26">Order</div></div>
+        <div class="type-row"><div class="type-meta">Tracker Stage · 22pt · 700</div><div class="type-sample t-22">Your pizza is in the oven!</div></div>
+        <div class="type-row"><div class="type-meta">Section · 18pt · 700</div><div class="type-sample t-18">Specialty Pizzas</div></div>
+        <div class="type-row"><div class="type-meta">Item · 17pt · 700</div><div class="type-sample t-17">ExtravaganZZa</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 400</div><div class="type-sample t-15">Pepperoni, ham, Italian sausage, beef, onions, peppers.</div></div>
+        <div class="type-row"><div class="type-meta">Price · 16pt · 700 tnum</div><div class="type-sample t-price">$13.99</div></div>
+        <div class="type-row"><div class="type-meta">Meta / ETA · 13pt · 400</div><div class="type-sample t-13">25–35 min · Est. 7:45 PM</div></div>
+        <div class="type-row"><div class="type-meta">Tab · 11pt · 700</div><div class="type-sample t-11">Tracker</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Add to Order</button>
+          <button class="btn btn-blue">Track Order</button>
+          <button class="btn btn-outline">Customize</button>
+          <button class="btn-text">Change store</button>
+          <div class="chip active">Pizzas</div>
+          <div class="chip">Sides</div>
+          <div class="chip">Drinks</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive — Build-Your-Pizza Preview</div>
+        <div class="pizza-demo">
+          <div class="pizza">
+            <div class="sauce"></div>
+            <div class="cheese"></div>
+            <div class="pep p1"></div><div class="pep p2"></div><div class="pep p3"></div><div class="pep p4"></div>
+          </div>
+          <div class="pizza-opts">
+            <b>Size</b> Medium 12"<br>
+            <b>Crust</b> Hand Tossed<br>
+            <b>Sauce</b> Robust Tomato<br>
+            <b>Cheese</b> Extra<br>
+            <b>Toppings</b> Pepperoni
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

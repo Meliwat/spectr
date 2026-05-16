@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Walmart iOS — Light</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --surface-tint: #F2F8FD;
+    --surface-gray: #F5F5F5;
+    --divider: #E2E8F0;
+    --border: #C9D2DE;
+    --text: #2E2F32;
+    --text-secondary: #74767C;
+    --text-tertiary: #9BA0A8;
+    --blue: #0071DC;
+    --blue-pressed: #004F9A;
+    --blue-tint: #E6F1FC;
+    --spark: #FFC220;
+    --spark-pressed: #E5A800;
+    --success: #1A7F37;
+    --savings: #2A8703;
+    --error: #D03A2D;
+    --star: #FFB81C;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #EAF2FA; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 700; letter-spacing: -0.6px; color: var(--text); }
+  .page-chip { background: var(--blue); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.5), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text); }
+
+  /* App bar */
+  .app-bar { display: flex; align-items: center; gap: 10px; padding: 4px 16px 10px; }
+  .spark { width: 30px; height: 30px; position: relative; flex-shrink: 0; }
+  .spark span { position: absolute; top: 50%; left: 50%; width: 5px; height: 13px; background: var(--spark); border-radius: 3px; transform-origin: center; }
+  .spark span:nth-child(1) { transform: translate(-50%,-50%) rotate(0deg) translateY(-9px); }
+  .spark span:nth-child(2) { transform: translate(-50%,-50%) rotate(60deg) translateY(-9px); }
+  .spark span:nth-child(3) { transform: translate(-50%,-50%) rotate(120deg) translateY(-9px); }
+  .spark span:nth-child(4) { transform: translate(-50%,-50%) rotate(180deg) translateY(-9px); }
+  .spark span:nth-child(5) { transform: translate(-50%,-50%) rotate(240deg) translateY(-9px); }
+  .spark span:nth-child(6) { transform: translate(-50%,-50%) rotate(300deg) translateY(-9px); }
+  .loc-chip { flex: 1; font-size: 13px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 4px; }
+  .loc-chip .chev { color: var(--text-secondary); }
+  .bar-icon { color: var(--text); }
+  .bar-icon svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Search */
+  .search-wrap { padding: 0 16px 10px; }
+  .search-pill { display: flex; align-items: center; height: 44px; border-radius: 22px; background: var(--surface-gray); padding: 0 14px; gap: 10px; }
+  .search-icon svg { width: 18px; height: 18px; stroke: var(--text-secondary); stroke-width: 2.4; fill: none; }
+  .search-ph { flex: 1; font-size: 15px; color: var(--text-secondary); }
+  .scan-icon svg { width: 20px; height: 20px; stroke: var(--blue); stroke-width: 2; fill: none; }
+
+  /* Fulfillment toggle */
+  .ff-toggle { margin: 0 16px 8px; background: var(--surface-tint); border-radius: 20px; padding: 4px; display: flex; }
+  .ff-seg { flex: 1; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; color: var(--text-secondary); border-radius: 16px; }
+  .ff-seg.active { background: #FFF; color: var(--blue); box-shadow: 0 2px 6px rgba(16,24,40,0.10); }
+
+  .ff-eta { display: flex; align-items: center; gap: 6px; padding: 0 16px 12px; font-size: 12px; color: var(--text-secondary); }
+  .ff-eta svg { width: 14px; height: 14px; stroke: var(--blue); stroke-width: 2; fill: none; }
+  .ff-eta b { color: var(--text); font-weight: 600; }
+
+  /* Product grid */
+  .prod-grid { flex: 1; overflow-y: auto; padding: 4px 16px 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-content: start; scrollbar-width: none; }
+  .prod-grid::-webkit-scrollbar { display: none; }
+  .pcard { background: var(--canvas); border: 1px solid var(--divider); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+  .pimg { aspect-ratio: 1; border-radius: 8px; background: var(--surface-gray); position: relative; overflow: hidden; }
+  .pimg.milk { background: linear-gradient(160deg,#EAF3FB 0%,#D6E7F5 100%); }
+  .pimg.milk::after { content:''; position:absolute; left:32%; right:32%; top:18%; bottom:14%; background:#FFF; border:1px solid #D6E7F5; border-radius:4px 4px 6px 6px; }
+  .pimg.cereal { background: linear-gradient(160deg,#FFF3DA 0%,#FBE2B0 100%); }
+  .pimg.cereal::after { content:''; position:absolute; left:28%; right:28%; top:16%; bottom:14%; background:#E8973A; border-radius:3px; }
+  .pimg.tv { background: linear-gradient(160deg,#E9EDF2 0%,#CFD7E0 100%); }
+  .pimg.tv::after { content:''; position:absolute; left:14%; right:14%; top:20%; bottom:26%; background:#1B1D21; border-radius:3px; }
+  .pimg.buds { background: linear-gradient(160deg,#EAF3FB 0%,#D6E7F5 100%); }
+  .pimg.buds::after { content:''; position:absolute; left:36%; right:36%; top:24%; bottom:22%; background:#FFF; border:1px solid #C9D2DE; border-radius:8px; }
+  .rb-tag { align-self: flex-start; background: var(--spark); color: var(--text); font-size: 10px; font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; }
+  .price-row { display: flex; align-items: baseline; gap: 6px; }
+  .price-now { font-size: 19px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+  .price-was { font-size: 12px; color: var(--text-secondary); text-decoration: line-through; }
+  .save-line { font-size: 11px; font-weight: 600; color: var(--savings); }
+  .ptitle { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .pstars { display: flex; gap: 1px; }
+  .pstars svg { width: 11px; height: 11px; fill: var(--star); }
+  .add-btn { margin-top: 2px; height: 36px; border-radius: 18px; background: var(--blue); color: #FFF; font-family: var(--font); font-size: 14px; font-weight: 600; border: none; cursor: pointer; }
+  .add-btn:active { background: var(--blue-pressed); transform: scale(0.98); }
+
+  /* Tab bar */
+  .tab-bar { height: 60px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: var(--canvas); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-secondary); font-size: 10px; font-weight: 600; gap: 3px; position: relative; }
+  .tab.active { color: var(--blue); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+  .cart-badge { position: absolute; top: -3px; right: 8px; background: var(--blue); color: #FFF; font-size: 9px; font-weight: 700; min-width: 16px; height: 16px; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+
+  /* Token sections */
+  .section { background: var(--canvas); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--text); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); }
+  .t-32 { font-size: 32px; font-weight: 700; letter-spacing: -0.4px; }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 600; }
+  .t-16 { font-size: 16px; font-weight: 600; }
+  .t-15 { font-size: 15px; font-weight: 400; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-price { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .t-12 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2px; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 600; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--blue); color: #FFF; font-size: 16px; padding: 13px 28px; border-radius: 24px; }
+  .btn-primary:active { background: var(--blue-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--blue); border: 1.5px solid var(--blue); font-size: 16px; padding: 12px 26px; border-radius: 24px; }
+  .btn-deal { background: var(--spark); color: var(--text); font-size: 15px; padding: 12px 24px; border-radius: 22px; }
+  .btn-deal:active { background: var(--spark-pressed); }
+  .stepper { display: inline-flex; align-items: center; gap: 16px; height: 36px; padding: 0 14px; border: 1px solid var(--border); border-radius: 18px; }
+  .stepper svg { width: 16px; height: 16px; stroke: var(--blue); stroke-width: 2.4; fill: none; }
+  .stepper .qn { font-size: 15px; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+
+  /* Rollback tag demo */
+  .tag-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .tag { font-family: var(--font); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; padding: 4px 10px; border-radius: 4px; }
+  .tag-rb { background: var(--spark); color: var(--text); }
+  .tag-cl { background: var(--error); color: #FFF; }
+  .tag-bs { background: var(--blue-tint); color: var(--blue); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--blue); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-22 { border-radius: 22px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="spark">
+      <span></span><span></span><span></span><span></span><span></span><span></span>
+    </span>
+    <div class="page-title">Walmart iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">Bright white canvas (#FFFFFF) with a cool-tint surface (#F2F8FD). Walmart Blue (#0071DC) is the only action color; Spark Yellow (#FFC220) is reserved for the Spark logo and the Rollback savings tag — dark text on yellow, never white.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="app-bar">
+            <span class="spark"><span></span><span></span><span></span><span></span><span></span><span></span></span>
+            <div class="loc-chip">Sacramento Supercenter <span class="chev">▾</span></div>
+            <div class="bar-icon"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></div>
+          </div>
+
+          <div class="search-wrap">
+            <div class="search-pill">
+              <div class="search-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg></div>
+              <div class="search-ph">Search Walmart</div>
+              <div class="scan-icon"><svg viewBox="0 0 24 24"><path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2M7 8v8M11 8v8M15 8v8"/></svg></div>
+            </div>
+          </div>
+
+          <div class="ff-toggle">
+            <div class="ff-seg active">Pickup</div>
+            <div class="ff-seg">Delivery</div>
+          </div>
+          <div class="ff-eta"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> Pickup today, <b>by 4pm</b> · Free</div>
+
+          <div class="prod-grid">
+            <div class="pcard">
+              <div class="pimg milk"></div>
+              <div class="rb-tag">Rollback</div>
+              <div class="price-row"><span class="price-now">$2.98</span><span class="price-was">$3.64</span></div>
+              <div class="save-line">Save $0.66</div>
+              <div class="ptitle">Great Value Whole Vitamin D Milk, 1 Gallon</div>
+              <div class="pstars"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9.5 17,14 18,21 12,17.5 6,21 7,14 2,9.5 9,9"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9.5 17,14 18,21 12,17.5 6,21 7,14 2,9.5 9,9"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9.5 17,14 18,21 12,17.5 6,21 7,14 2,9.5 9,9"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9.5 17,14 18,21 12,17.5 6,21 7,14 2,9.5 9,9"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9.5 17,14 18,21 12,17.5 6,21 7,14 2,9.5 9,9"/></svg></div>
+              <button class="add-btn">Add to cart</button>
+            </div>
+            <div class="pcard">
+              <div class="pimg cereal"></div>
+              <div class="price-row"><span class="price-now">$4.24</span></div>
+              <div class="ptitle">Honey Nut Cereal Family Size, 19.5 oz</div>
+              <div class="pstars"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9.5 17,14 18,21 12,17.5 6,21 7,14 2,9.5 9,9"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9.5 17,14 18,21 12,17.5 6,21 7,14 2,9.5 9,9"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9.5 17,14 18,21 12,17.5 6,21 7,14 2,9.5 9,9"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9.5 17,14 18,21 12,17.5 6,21 7,14 2,9.5 9,9"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9.5 17,14 18,21 12,17.5 6,21 7,14 2,9.5 9,9"/></svg></div>
+              <button class="add-btn">Add to cart</button>
+            </div>
+            <div class="pcard">
+              <div class="pimg tv"></div>
+              <div class="rb-tag">Rollback</div>
+              <div class="price-row"><span class="price-now">$248</span><span class="price-was">$328</span></div>
+              <div class="save-line">Save $80.00</div>
+              <div class="ptitle">onn. 50" 4K UHD LED Roku Smart TV</div>
+              <div class="pstars"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9.5 17,14 18,21 12,17.5 6,21 7,14 2,9.5 9,9"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9.5 17,14 18,21 12,17.5 6,21 7,14 2,9.5 9,9"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9.5 17,14 18,21 12,17.5 6,21 7,14 2,9.5 9,9"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9.5 17,14 18,21 12,17.5 6,21 7,14 2,9.5 9,9"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9.5 17,14 18,21 12,17.5 6,21 7,14 2,9.5 9,9"/></svg></div>
+              <button class="add-btn">Add to cart</button>
+            </div>
+            <div class="pcard">
+              <div class="pimg buds"></div>
+              <div class="price-row"><span class="price-now">$19.88</span><span class="price-was">$29.00</span></div>
+              <div class="save-line">Save $9.12</div>
+              <div class="ptitle">Wireless Earbuds with Charging Case</div>
+              <div class="pstars"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9.5 17,14 18,21 12,17.5 6,21 7,14 2,9.5 9,9"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9.5 17,14 18,21 12,17.5 6,21 7,14 2,9.5 9,9"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9.5 17,14 18,21 12,17.5 6,21 7,14 2,9.5 9,9"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9.5 17,14 18,21 12,17.5 6,21 7,14 2,9.5 9,9"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9.5 17,14 18,21 12,17.5 6,21 7,14 2,9.5 9,9"/></svg></div>
+              <button class="add-btn">Add to cart</button>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg><span>Shop</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M14 7l3 3M3 21l4-1 11-11-3-3L4 17z"/></svg><span>Services</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+            <div class="tab"><span class="cart-badge">3</span><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="18" cy="21" r="1"/><path d="M3 4h2l2 12h11l2-8H6"/></svg><span>Cart</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M6 19c1-3 3.5-4 6-4s5 1 6 4"/></svg><span>Account</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Canvas</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#F2F8FD;"><div class="name">Surface Tint</div>#F2F8FD</div>
+          <div class="swatch light" style="background:#F5F5F5;"><div class="name">Surface Gray</div>#F5F5F5</div>
+          <div class="swatch light" style="background:#E2E8F0;"><div class="name">Divider</div>#E2E8F0</div>
+          <div class="swatch light" style="background:#C9D2DE;"><div class="name">Border</div>#C9D2DE</div>
+          <div class="swatch" style="background:#2E2F32;"><div class="name">Text Primary</div>#2E2F32</div>
+          <div class="swatch" style="background:#74767C;"><div class="name">Text Secondary</div>#74767C</div>
+          <div class="swatch" style="background:#0071DC;"><div class="name">Walmart Blue</div>#0071DC</div>
+          <div class="swatch" style="background:#004F9A;"><div class="name">Blue Pressed</div>#004F9A</div>
+          <div class="swatch light" style="background:#FFC220;"><div class="name">Spark Yellow</div>#FFC220</div>
+          <div class="swatch" style="background:#2A8703;"><div class="name">Savings</div>#2A8703</div>
+          <div class="swatch" style="background:#D03A2D;"><div class="name">Error</div>#D03A2D</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Bogle (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 28pt · 700</div><div class="type-sample t-32">Your Cart</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Deals you'll love</div></div>
+        <div class="type-row"><div class="type-meta">Price · 22pt · 700 tnum</div><div class="type-sample t-price">$24.97</div></div>
+        <div class="type-row"><div class="type-meta">Subsection · 18pt · 600</div><div class="type-sample t-18">Pickup at Supercenter</div></div>
+        <div class="type-row"><div class="type-meta">Product Title · 16pt · 600</div><div class="type-sample t-16">Great Value Whole Milk, 1 Gallon</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 400</div><div class="type-sample t-15">Pick up today or get it delivered as soon as 2pm.</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 400</div><div class="type-sample t-13">Sold &amp; shipped by Walmart · $0.21/oz</div></div>
+        <div class="type-row"><div class="type-meta">Tag · 12pt · 700 UP</div><div class="type-sample t-12">Rollback</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons &amp; Stepper</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Add to cart</button>
+          <button class="btn btn-outline">Save for later</button>
+          <button class="btn btn-deal">Shop deals</button>
+          <div class="stepper">
+            <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span class="qn">2</span>
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Savings Tags (signature)</div>
+        <div class="tag-row">
+          <span class="tag tag-rb">Rollback</span>
+          <span class="tag tag-cl">Clearance</span>
+          <span class="tag tag-bs">Best seller</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-22">22</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Light Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Walmart is a bright, high-contrast store optimized for in-aisle and outdoor readability. Canvas stays pure white <code>#FFFFFF</code>; grouped modules sit on a cool tint <code>#F2F8FD</code>. Walmart Blue <code>#0071DC</code> is the single action color — buttons, links, the active tab. Spark Yellow <code>#FFC220</code> is ritual: the six-ray logo and the Rollback savings tag, always with dark <code>#2E2F32</code> text, never white. Separation is border-first (1px <code>#E2E8F0</code>), shadow-second and faint.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

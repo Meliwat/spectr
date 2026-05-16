@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by WeChat iOS — Light</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --backdrop: #EDEDED;
+    --canvas: #FFFFFF;
+    --surface: #F7F7F7;
+    --divider: #D9D9D9;
+    --pressed: #ECECEC;
+    --text: #181818;
+    --text-secondary: #888888;
+    --text-tertiary: #B2B2B2;
+    --green: #07C160;
+    --green-pressed: #06A050;
+    --incoming: #FFFFFF;
+    --outgoing: #95EC69;
+    --red-dot: #FA5151;
+    --link-blue: #576B95;
+    --gold: #FBE3B3;
+    --moments: #3F7DD5;
+    --scan: #2EA0F8;
+    --channels: #FA9D3B;
+    --mini: #3CC51F;
+    --search: #5C7CFA;
+    --nearby: #F76F34;
+    --top-stories: #EB6F6F;
+    --font: 'Noto Sans', -apple-system, 'PingFang SC', BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #DFDFDF; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1180px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; flex-wrap: wrap; }
+  .mark { width: 36px; height: 36px; border-radius: 8px; background: var(--green); display: flex; align-items: center; justify-content: center; }
+  .mark svg { width: 22px; height: 22px; fill: #FFF; }
+  .page-title { font-size: 28px; font-weight: 600; letter-spacing: -0.3px; }
+  .page-chip { background: var(--green); color: #FFF; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.55; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #0c0c0c; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.5), 0 0 0 2px rgba(0,0,0,0.08) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--backdrop); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text); background: var(--backdrop); }
+  .nav { height: 44px; display: flex; align-items: center; justify-content: center; background: var(--backdrop); position: relative; font-size: 17px; font-weight: 600; }
+  .nav .plus { position: absolute; right: 16px; }
+  .nav .plus svg { width: 22px; height: 22px; stroke: var(--text); stroke-width: 2; fill: none; }
+
+  /* Discover grouped list (the super-app hub) */
+  .discover { flex: 1; overflow-y: auto; scrollbar-width: none; padding: 12px 0; }
+  .discover::-webkit-scrollbar { display: none; }
+  .cluster { background: var(--canvas); margin-bottom: 12px; }
+  .d-row { height: 56px; display: flex; align-items: center; gap: 12px; padding: 0 16px; background: var(--canvas); }
+  .d-row:active { background: var(--pressed); }
+  .d-row + .d-row { border-top: 1px solid var(--divider); margin-left: 56px; padding-left: 0; }
+  .d-row + .d-row .chip { margin-left: 16px; }
+  .chip { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .chip svg { width: 16px; height: 16px; stroke: #FFF; stroke-width: 2; fill: none; }
+  .d-title { font-size: 17px; font-weight: 400; flex: 1; }
+  .d-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red-dot); }
+  .d-chev svg { width: 16px; height: 16px; stroke: var(--text-tertiary); stroke-width: 2.5; fill: none; }
+
+  /* Tab bar */
+  .tab-bar { height: 56px; display: flex; align-items: center; padding: 4px 4px 8px; justify-content: space-around; background: var(--surface); border-top: 1px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; color: #999999; font-size: 10px; font-weight: 400; position: relative; }
+  .tab.active { color: var(--green); }
+  .tab svg { width: 26px; height: 26px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; }
+  .tab .badge { position: absolute; top: -3px; right: 14px; min-width: 16px; height: 16px; border-radius: 8px; background: var(--red-dot); color: #FFF; font-size: 10px; font-weight: 600; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+
+  /* Token sections */
+  .section { background: var(--canvas); border: 1px solid var(--divider); border-radius: 12px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 16px; min-height: 90px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #181818; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; }
+  .t-17s { font-size: 17px; font-weight: 600; }
+  .t-17r { font-size: 17px; font-weight: 400; }
+  .t-17b { font-size: 17px; font-weight: 400; line-height: 1.4; }
+  .t-15s { font-size: 15px; font-weight: 600; color: var(--link-blue); }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 400; color: var(--text-secondary); }
+
+  /* Bubbles demo */
+  .demo-thread { background: var(--backdrop); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 6px; }
+  .b-row { display: flex; align-items: flex-start; gap: 8px; }
+  .b-row.out { justify-content: flex-end; }
+  .av { width: 36px; height: 36px; border-radius: 8px; background: linear-gradient(135deg, #C9A06C, #8F5B2E); flex-shrink: 0; }
+  .av.me { background: linear-gradient(135deg, #6CB5C9, #2E748F); }
+  .bub { max-width: 70%; padding: 9px 12px; font-size: 17px; line-height: 1.4; position: relative; }
+  .bub.in { background: var(--incoming); border-radius: 6px; }
+  .bub.in::before { content: ''; position: absolute; left: -5px; top: 12px; border: 5px solid transparent; border-right-color: var(--incoming); }
+  .bub.out { background: var(--outgoing); border-radius: 6px; }
+  .bub.out::after { content: ''; position: absolute; right: -5px; top: 12px; border: 5px solid transparent; border-left-color: var(--outgoing); }
+  .time-sep { text-align: center; font-size: 12px; color: var(--text-secondary); padding: 4px 0; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--green); color: #FFF; font-size: 17px; font-weight: 600; padding: 12px 28px; border-radius: 6px; }
+  .btn-primary:active { background: var(--green-pressed); transform: scale(0.99); }
+  .btn-outline { background: #FFF; color: var(--text); border: 1px solid var(--divider); font-size: 16px; font-weight: 400; padding: 11px 22px; border-radius: 6px; }
+  .btn-send { background: var(--green); color: #FFF; font-size: 16px; font-weight: 600; padding: 8px 16px; border-radius: 4px; }
+
+  /* Red packet */
+  .red-packet { width: 240px; padding: 22px; border-radius: 8px; background: linear-gradient(180deg, #FA5151 0%, #C72E29 100%); box-shadow: 0 2px 8px rgba(0,0,0,0.12); display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .rp-seal { width: 44px; height: 44px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; }
+  .rp-seal svg { width: 22px; height: 22px; fill: #C72E29; }
+  .rp-msg { color: #FFF; font-size: 17px; font-weight: 600; }
+  .rp-from { color: rgba(255,255,255,0.85); font-size: 13px; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--green); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-4 { border-radius: 4px; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="mark"><svg viewBox="0 0 24 24"><path d="M9 3C5 3 1.8 5.8 1.8 9.2c0 1.9 1 3.6 2.6 4.8L3.5 17l3-1.6c.8.2 1.6.3 2.5.3.2 0 .5 0 .7-.1A5.6 5.6 0 0 1 9.4 13c0-3.3 3.2-5.8 7-5.8h.6C16.3 4.6 13 3 9 3zm9 6c-3.2 0-5.8 2.2-5.8 4.9 0 2.7 2.6 4.9 5.8 4.9.7 0 1.3-.1 2-.3l2.4 1.3-.7-2.2c1.3-1 2.1-2.3 2.1-3.7C23.8 11.2 21.2 9 18 9z"/></svg></span>
+    <div class="page-title">WeChat iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">An operating system wearing a chat app's clothes. The identity is the super-app Discover hub: a calm grouped list of feature rows on a gray system (#EDEDED). WeChat Green (#07C160) is the only accent; the red dot is the universal attention primitive.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+          <div class="nav">Discover<span class="plus"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span></div>
+
+          <div class="discover">
+            <div class="cluster">
+              <div class="d-row">
+                <div class="chip" style="background:var(--moments);"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M3 17l5-4 4 3 4-4 5 4"/></svg></div>
+                <div class="d-title">Moments</div>
+                <div class="d-dot"></div>
+                <div class="d-chev"><svg viewBox="0 0 24 24"><polyline points="9,6 15,12 9,18"/></svg></div>
+              </div>
+            </div>
+
+            <div class="cluster">
+              <div class="d-row">
+                <div class="chip" style="background:var(--channels);"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polygon points="10,8 16,12 10,16"/></svg></div>
+                <div class="d-title">Channels</div>
+                <div class="d-chev"><svg viewBox="0 0 24 24"><polyline points="9,6 15,12 9,18"/></svg></div>
+              </div>
+              <div class="d-row">
+                <div class="chip" style="background:var(--scan);"><svg viewBox="0 0 24 24"><path d="M4 7V4h3M17 4h3v3M20 17v3h-3M7 20H4v-3"/><line x1="4" y1="12" x2="20" y2="12"/></svg></div>
+                <div class="d-title">Scan</div>
+                <div class="d-chev"><svg viewBox="0 0 24 24"><polyline points="9,6 15,12 9,18"/></svg></div>
+              </div>
+              <div class="d-row">
+                <div class="chip" style="background:var(--top-stories);"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg></div>
+                <div class="d-title">Top Stories</div>
+                <div class="d-chev"><svg viewBox="0 0 24 24"><polyline points="9,6 15,12 9,18"/></svg></div>
+              </div>
+            </div>
+
+            <div class="cluster">
+              <div class="d-row">
+                <div class="chip" style="background:var(--search);"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+                <div class="d-title">Search</div>
+                <div class="d-chev"><svg viewBox="0 0 24 24"><polyline points="9,6 15,12 9,18"/></svg></div>
+              </div>
+              <div class="d-row">
+                <div class="chip" style="background:var(--nearby);"><svg viewBox="0 0 24 24"><path d="M12 21s-7-5.7-7-11a7 7 0 0 1 14 0c0 5.3-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+                <div class="d-title">People Nearby</div>
+                <div class="d-chev"><svg viewBox="0 0 24 24"><polyline points="9,6 15,12 9,18"/></svg></div>
+              </div>
+            </div>
+
+            <div class="cluster">
+              <div class="d-row">
+                <div class="chip" style="background:var(--mini);"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div>
+                <div class="d-title">Mini Programs</div>
+                <div class="d-chev"><svg viewBox="0 0 24 24"><polyline points="9,6 15,12 9,18"/></svg></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7A8.38 8.38 0 0 1 4 11.5 8.5 8.5 0 0 1 21 11.5z"/></svg><span>Chats</span><span class="badge">5</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="12" cy="10" r="2.5"/><path d="M7.5 17c.5-2.2 2.4-3.5 4.5-3.5s4 1.3 4.5 3.5"/></svg><span>Contacts</span></div>
+            <div class="tab active"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polygon points="15,9 11,11 9,15 13,13"/></svg><span>Discover</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="3.5"/><path d="M5.5 20c.7-3.5 3.5-5.5 6.5-5.5s5.8 2 6.5 5.5"/></svg><span>Me</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch light" style="background:#EDEDED;"><div class="name">Chat Backdrop</div>#EDEDED</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Canvas / Incoming</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#95EC69; color:#181818;"><div class="name">Outgoing Bubble</div>#95EC69</div>
+          <div class="swatch light" style="background:#D9D9D9;"><div class="name">Divider</div>#D9D9D9</div>
+          <div class="swatch" style="background:#181818;"><div class="name">Text Primary</div>#181818</div>
+          <div class="swatch" style="background:#888888;"><div class="name">Text Secondary</div>#888888</div>
+          <div class="swatch" style="background:#07C160;"><div class="name">WeChat Green</div>#07C160</div>
+          <div class="swatch" style="background:#06A050;"><div class="name">Green Pressed</div>#06A050</div>
+          <div class="swatch" style="background:#FA5151;"><div class="name">Red Dot / Packet</div>#FA5151</div>
+          <div class="swatch" style="background:#576B95;"><div class="name">Link Blue</div>#576B95</div>
+          <div class="swatch light" style="background:#FBE3B3; color:#181818;"><div class="name">Packet Gold</div>#FBE3B3</div>
+          <div class="swatch" style="background:#3F7DD5;"><div class="name">Moments Chip</div>#3F7DD5</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — PingFang SC / Noto Sans (400 / 600)</div>
+        <div class="type-row"><div class="type-meta">Nav Title · 17 · 600</div><div class="type-sample t-17s">Discover</div></div>
+        <div class="type-row"><div class="type-meta">Contact / Row · 17 · 400</div><div class="type-sample t-17r">Li Wei</div></div>
+        <div class="type-row"><div class="type-meta">Message Body · 17 · 400 · 1.4</div><div class="type-sample t-17b">See you at the office tomorrow morning.</div></div>
+        <div class="type-row"><div class="type-meta">Moments Name · 15 · 600</div><div class="type-sample t-15s">Zhang Min</div></div>
+        <div class="type-row"><div class="type-meta">Preview · 14 · 400</div><div class="type-sample t-14">[Photo]</div></div>
+        <div class="type-row"><div class="type-meta">Timestamp · 13 · 400</div><div class="type-sample t-13">2:14 PM</div></div>
+        <div class="type-row"><div class="type-meta">Time Separator · 12 · 400</div><div class="type-sample t-12">Yesterday</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Message Bubbles (squarer + tail)</div>
+        <div class="demo-thread">
+          <div class="b-row in">
+            <div class="av"></div>
+            <div class="bub in">Did you get the red packet I sent?</div>
+          </div>
+          <div class="time-sep">2:14 PM</div>
+          <div class="b-row out">
+            <div class="bub out">Yes! Thank you 🙏</div>
+            <div class="av me"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons &amp; Red Packet</div>
+        <div class="btn-row" style="margin-bottom: 20px;">
+          <button class="btn btn-primary">Pay</button>
+          <button class="btn btn-outline">Cancel</button>
+          <button class="btn btn-send">Send</button>
+        </div>
+        <div class="red-packet">
+          <div class="rp-seal"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-2 6h4l-2 3 2 3h-4M9 8v8M15 8v8"/></svg></div>
+          <div class="rp-msg">Best wishes!</div>
+          <div class="rp-from">From Zhang Min</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale (squarer than Western messengers)</div>
+        <div class="radius-row">
+          <div class="radius-box r-4">4<br>send</div>
+          <div class="radius-box r-6">6<br>bubble</div>
+          <div class="radius-box r-8">8<br>avatar</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

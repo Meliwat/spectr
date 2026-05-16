@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Tumblr iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #001935;
+    --surface-1: #001020;
+    --surface-2: #0B2A45;
+    --surface-3: #13395B;
+    --divider: #36465D;
+    --text: #FFFFFF;
+    --text-secondary: #8A9AAE;
+    --text-tertiary: #5C6B80;
+    --blue: #00B8FF;
+    --blue-pressed: #0090CC;
+    --green: #00CF35;
+    --pink: #FF4930;
+    --warning: #FFB300;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000a14; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; }
+  .page-chip { background: var(--blue); color: var(--canvas); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 680px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #000610; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  .topbar { height: 48px; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 18px 6px; background: var(--surface-1); }
+  .wordmark { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+  .topbar-actions { display: flex; gap: 14px; color: var(--text-secondary); }
+  .topbar-actions svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  .feed { flex: 1; overflow-y: auto; scrollbar-width: none; padding-top: 8px; }
+  .feed::-webkit-scrollbar { display: none; }
+
+  /* Post card */
+  .card { background: var(--surface-2); border-radius: 8px; margin: 0 8px 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+  .card-head { display: flex; align-items: center; gap: 10px; padding: 12px; }
+  .avatar { width: 36px; height: 36px; border-radius: 6px; flex-shrink: 0; }
+  .av-1 { background: linear-gradient(135deg, #4FD0FF, #0073A8); }
+  .av-2 { background: linear-gradient(135deg, #6FE0A0, #1FA050); }
+  .av-3 { background: linear-gradient(135deg, #FF8A6E, #C2351F); }
+  .blog-name { font-size: 16px; font-weight: 700; flex: 1; }
+  .follow-btn { padding: 6px 14px; border-radius: 6px; border: 1.5px solid var(--green); color: var(--green); font-size: 14px; font-weight: 700; }
+  .card-more { color: var(--text-secondary); }
+  .card-more svg { width: 22px; height: 22px; }
+  .card-more circle { fill: currentColor; }
+
+  .gif-media { width: 100%; height: 180px; background: linear-gradient(125deg, #FF4930 0%, #00B8FF 50%, #00CF35 100%); position: relative; }
+  .gif-media::after { content: 'GIF'; position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.6); color: #fff; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
+
+  /* Reblog chain */
+  .reblog-chain { padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+  .seg { display: flex; }
+  .seg.d1 { padding-left: 24px; }
+  .seg.d2 { padding-left: 12px; }
+  .seg-rule { width: 2px; background: var(--divider); margin-right: 12px; flex-shrink: 0; }
+  .seg-src { font-size: 14px; font-weight: 700; color: var(--blue); margin-bottom: 4px; }
+  .seg-text { font-size: 15px; line-height: 1.45; color: var(--text); }
+
+  .tag-bar { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 12px 8px; }
+  .tag { font-size: 14px; color: var(--text-secondary); }
+
+  .card-footer { display: flex; align-items: center; padding: 0 12px 12px; }
+  .notes { font-size: 13px; font-weight: 600; color: var(--text-secondary); flex: 1; }
+  .footer-act { color: var(--text-secondary); margin-left: 18px; }
+  .footer-act svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .footer-act.liked { color: var(--pink); }
+  .footer-act.liked svg { fill: var(--pink); stroke: var(--pink); }
+
+  /* Tab bar with center FAB */
+  .tab-bar { height: 60px; background: var(--surface-1); display: flex; align-items: flex-start; justify-content: space-around; padding: 8px 6px 14px; border-top: 0.5px solid var(--divider); position: relative; z-index: 8; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--text-secondary); }
+  .tab.active { color: var(--blue); }
+  .tab svg { width: 26px; height: 26px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; }
+  .fab { width: 52px; height: 52px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; margin-top: -10px; box-shadow: 0 6px 18px rgba(0,184,255,0.35); }
+  .fab svg { width: 24px; height: 24px; stroke: var(--canvas); stroke-width: 3; fill: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-2); border: 1px solid var(--divider); border-radius: 8px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 8px; padding: 16px; min-height: 90px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 700; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--canvas); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 210px; flex-shrink: 0; }
+  .type-sample { flex: 1; }
+  .t-28 { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; font-family: Georgia, serif; }
+  .t-20 { font-size: 20px; font-weight: 700; }
+  .t-16b { font-size: 16px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; line-height: 1.5; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-13 { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+  .t-blue { color: var(--blue); font-size: 14px; font-weight: 700; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 16px; font-weight: 700; padding: 12px 24px; border-radius: 6px; border: none; cursor: pointer; }
+  .btn-primary { background: var(--blue); color: var(--canvas); }
+  .btn-primary:active { background: var(--blue-pressed); transform: scale(0.98); }
+  .btn-follow { background: transparent; color: var(--green); border: 1.5px solid var(--green); padding: 8px 18px; }
+  .btn-following { background: var(--green); color: var(--canvas); padding: 8px 18px; }
+  .fab-demo { width: 52px; height: 52px; border-radius: 50%; background: var(--blue); border: none; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 6px 18px rgba(0,184,255,0.35); cursor: pointer; }
+  .fab-demo svg { width: 24px; height: 24px; stroke: var(--canvas); stroke-width: 3; fill: none; }
+
+  /* Like burst demo */
+  .burst-demo { position: relative; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; }
+  .burst-demo .h-main { width: 24px; height: 24px; fill: var(--pink); }
+  .burst-demo .h-p { position: absolute; width: 10px; height: 10px; fill: var(--pink); opacity: 0.85; }
+  .p1 { transform: translate(20px,-16px) rotate(20deg); }
+  .p2 { transform: translate(-22px,-12px) rotate(-15deg); }
+  .p3 { transform: translate(16px,18px) rotate(30deg); }
+  .p4 { transform: translate(-18px,16px) rotate(-25deg); }
+  .p5 { transform: translate(0,-26px); }
+  .p6 { transform: translate(26px,2px) rotate(10deg); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--blue); color: var(--canvas); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-14 { border-radius: 14px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Tumblr iOS — Design Tokens</div>
+    <div class="page-chip">Dark</div>
+  </div>
+  <p class="page-subtitle">Deep-navy canvas (#001935) with darker navy cards — a midnight zine, not black. Three accents: Blue actions, Green follow/notes, Pink-red like. The heart-burst and the indented reblog chain are the soul of Tumblr.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="topbar">
+            <div class="wordmark">tumblr</div>
+            <div class="topbar-actions">
+              <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+            </div>
+          </div>
+
+          <div class="feed">
+            <div class="card">
+              <div class="card-head">
+                <div class="avatar av-1"></div>
+                <div class="blog-name">neon-archive</div>
+                <div class="follow-btn">Follow</div>
+                <div class="card-more"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></div>
+              </div>
+              <div class="gif-media"></div>
+              <div class="tag-bar">
+                <span class="tag">#aesthetic</span><span class="tag">#gifset</span><span class="tag">#neon</span><span class="tag">#mine</span>
+              </div>
+              <div class="card-footer">
+                <span class="notes">12,408 notes</span>
+                <span class="footer-act"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.5 9 9 0 0 1-4-1L3 20l1-4.5a8.4 8.4 0 0 1-1-4A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg></span>
+                <span class="footer-act"><svg viewBox="0 0 24 24"><path d="M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3"/></svg></span>
+                <span class="footer-act liked"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></span>
+                <span class="footer-act"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></span>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head">
+                <div class="avatar av-3"></div>
+                <div class="blog-name">soft-thoughts</div>
+                <div class="follow-btn">Follow</div>
+                <div class="card-more"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></div>
+              </div>
+              <div class="reblog-chain">
+                <div class="seg d2">
+                  <div class="seg-rule"></div>
+                  <div>
+                    <div class="seg-src">quiet-hours</div>
+                    <div class="seg-text">the dashboard at 2am hits different</div>
+                  </div>
+                </div>
+                <div class="seg d1">
+                  <div class="seg-rule"></div>
+                  <div>
+                    <div class="seg-src">moonlit-pages</div>
+                    <div class="seg-text">it really does. something about the blue.</div>
+                  </div>
+                </div>
+                <div class="seg">
+                  <div>
+                    <div class="seg-src">soft-thoughts</div>
+                    <div class="seg-text">reblog if your blog is your diary 💙</div>
+                  </div>
+                </div>
+              </div>
+              <div class="tag-bar">
+                <span class="tag">#late night</span><span class="tag">#text post</span><span class="tag">#mutuals</span>
+              </div>
+              <div class="card-footer">
+                <span class="notes">3,901 notes</span>
+                <span class="footer-act"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.5 9 9 0 0 1-4-1L3 20l1-4.5a8.4 8.4 0 0 1-1-4A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg></span>
+                <span class="footer-act"><svg viewBox="0 0 24 24"><path d="M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3"/></svg></span>
+                <span class="footer-act"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></span>
+                <span class="footer-act"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg></div>
+            <div class="fab"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="12" cy="10" r="3"/><path d="M7 18c1-2.5 3-3.5 5-3.5s4 1 5 3.5"/></svg></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#001935;"><div class="name">Navy Canvas</div>#001935</div>
+          <div class="swatch" style="background:#001020;"><div class="name">Surface 1</div>#001020</div>
+          <div class="swatch" style="background:#0B2A45;"><div class="name">Surface 2</div>#0B2A45</div>
+          <div class="swatch" style="background:#13395B;"><div class="name">Surface 3</div>#13395B</div>
+          <div class="swatch" style="background:#36465D;"><div class="name">Divider</div>#36465D</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Text Primary</div>#FFFFFF</div>
+          <div class="swatch" style="background:#8A9AAE;"><div class="name">Text Secondary</div>#8A9AAE</div>
+          <div class="swatch" style="background:#5C6B80;"><div class="name">Text Tertiary</div>#5C6B80</div>
+          <div class="swatch" style="background:#00B8FF; color:#001935;"><div class="name">Tumblr Blue</div>#00B8FF</div>
+          <div class="swatch" style="background:#0090CC;"><div class="name">Blue Pressed</div>#0090CC</div>
+          <div class="swatch" style="background:#00CF35; color:#001935;"><div class="name">Tumblr Green</div>#00CF35</div>
+          <div class="swatch" style="background:#FF4930;"><div class="name">Pink-Red (like)</div>#FF4930</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — SF Pro / Inter (serif quotes)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 28pt · 700</div><div class="type-sample t-28">Activity</div></div>
+        <div class="type-row"><div class="type-meta">Quote Post · 26pt · 700 serif</div><div class="type-sample t-26">"Hold fast to dreams"</div></div>
+        <div class="type-row"><div class="type-meta">Section · 20pt · 700</div><div class="type-sample t-20">Radar</div></div>
+        <div class="type-row"><div class="type-meta">Blog Name · 16pt · 700</div><div class="type-sample t-16b">neon-archive</div></div>
+        <div class="type-row"><div class="type-meta">Post Body · 16pt · 400 · 1.5</div><div class="type-sample t-16">the dashboard at 2am hits different</div></div>
+        <div class="type-row"><div class="type-meta">Reblog Source · 14pt · 700</div><div class="type-sample t-blue">quiet-hours</div></div>
+        <div class="type-row"><div class="type-meta">Notes / Meta · 13pt · 600</div><div class="type-sample t-13">12,408 notes</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Reblog</button>
+          <button class="btn btn-follow">Follow</button>
+          <button class="btn btn-following">Following</button>
+          <button class="fab-demo"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Heart-Burst on Like (signature)</div>
+        <div class="burst-demo">
+          <svg class="h-p p1" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <svg class="h-p p2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <svg class="h-p p3" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <svg class="h-p p4" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <svg class="h-p p5" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <svg class="h-p p6" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <svg class="h-main" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

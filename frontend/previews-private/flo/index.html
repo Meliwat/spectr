@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Flo iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --blush: #FFF0F3;
+    --surface-sunken: #FBE9ED;
+    --divider: #F3DDE3;
+    --text: #1A1A2E;
+    --text-secondary: #6E6A82;
+    --text-tertiary: #A09CB0;
+    --coral: #FF6B81;
+    --coral-pressed: #E85870;
+    --coral-soft: #FFD9DF;
+    --lavender: #C5B3E6;
+    --lavender-deep: #A893D6;
+    --lavender-soft: #EDE6F7;
+    --positive: #7DC9A8;
+    --alert: #F2B36B;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Rounded', 'SF Pro Text', sans-serif;
+    --mono: 'SF Mono', ui-monospace, Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #F7EEF1; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; }
+  .page-chip { background: var(--coral); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 660px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #EADCE1; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(255,107,129,0.5), 0 0 0 2px rgba(255,255,255,0.6) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .top-bar { padding: 52px 20px 4px; display: flex; align-items: center; justify-content: space-between; }
+  .greet { font-size: 24px; font-weight: 700; letter-spacing: -0.3px; }
+  .avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #FF8FA3, #FF6B81); }
+
+  .scroll-body { flex: 1; overflow: hidden; padding: 8px 20px 16px; display: flex; flex-direction: column; gap: 18px; }
+
+  /* Cycle wheel */
+  .wheel-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; padding-top: 8px; }
+  .wheel-stack { position: relative; display: flex; align-items: center; justify-content: center; }
+  .wheel-svg { width: 220px; height: 220px; transform: rotate(-90deg); }
+  .wheel-center { position: absolute; display: flex; flex-direction: column; align-items: center; }
+  .wheel-day { font-size: 30px; font-weight: 700; letter-spacing: -0.4px; }
+  .wheel-phase { font-size: 14px; color: var(--text-secondary); margin-top: 2px; }
+  .wheel-today { fill: var(--coral); }
+  .wheel-cta { background: var(--coral); color: #fff; font-size: 16px; font-weight: 600; padding: 14px 32px; border-radius: 26px; border: none; }
+
+  /* Prediction card */
+  .pred { display: flex; gap: 14px; background: var(--blush); border-radius: 20px; padding: 18px; box-shadow: 0 6px 20px rgba(255,107,129,0.10); }
+  .pred-icon { color: var(--coral); }
+  .pred-icon svg { width: 28px; height: 28px; fill: currentColor; }
+  .pred-label { font-size: 12px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-secondary); }
+  .pred-emph { font-size: 20px; font-weight: 700; color: var(--coral); margin-top: 4px; }
+  .pred-sub { font-size: 14px; color: var(--text-secondary); margin-top: 4px; }
+
+  /* Symptom chips */
+  .chip-group-label { font-size: 12px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 10px; }
+  .chip-wrap { display: flex; flex-wrap: wrap; gap: 10px; }
+  .schip { display: inline-flex; align-items: center; gap: 6px; background: var(--blush); color: var(--text); font-size: 15px; font-weight: 600; padding: 10px 16px; border-radius: 18px; border: 1.5px solid transparent; }
+  .schip.sel { background: var(--coral-soft); color: var(--coral-pressed); border-color: var(--coral); }
+  .schip svg { width: 16px; height: 16px; fill: currentColor; }
+
+  /* Tab bar */
+  .tab-bar { height: 60px; background: rgba(255,255,255,0.94); backdrop-filter: saturate(180%) blur(20px); display: flex; align-items: center; justify-content: space-around; padding: 4px 8px 14px; border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--text-tertiary); font-size: 11px; font-weight: 600; }
+  .tab.active { color: var(--coral); }
+  .tab svg { width: 23px; height: 23px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+  .tab.active svg { fill: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--canvas); border: 1px solid var(--divider); border-radius: 20px; padding: 24px; margin-bottom: 24px; box-shadow: 0 6px 20px rgba(255,107,129,0.06); }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 14px; padding: 16px; min-height: 90px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: var(--mono); border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.lt { color: var(--text); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: var(--mono); font-size: 11px; color: var(--text-secondary); width: 200px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); }
+  .t-30 { font-size: 30px; font-weight: 700; letter-spacing: -0.4px; }
+  .t-24 { font-size: 24px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-20 { font-size: 20px; font-weight: 700; color: var(--coral); }
+  .t-18 { font-size: 18px; font-weight: 600; }
+  .t-16 { font-size: 16px; font-weight: 400; line-height: 1.5; }
+  .t-15 { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-label { font-size: 12px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-secondary); }
+
+  /* Calendar mini */
+  .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; border-radius: 50%; position: relative; }
+  .cell.logged { background: var(--coral-pressed); color: #fff; }
+  .cell.pred { border: 1.5px solid var(--coral); color: var(--coral); }
+  .cell.fert { background: var(--lavender-soft); }
+  .cell.ovul { border: 2px solid var(--lavender-deep); }
+  .cell.today::after { content: ''; position: absolute; bottom: 3px; width: 5px; height: 5px; border-radius: 50%; background: var(--coral); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 16px; font-weight: 600; cursor: pointer; border: none; border-radius: 26px; }
+  .btn-primary { background: var(--coral); color: #fff; padding: 16px 32px; }
+  .btn-primary:active { background: var(--coral-pressed); transform: scale(0.97); }
+  .btn-soft { background: var(--coral-soft); color: var(--coral-pressed); padding: 14px 28px; }
+  .btn-text { background: transparent; color: var(--coral); font-size: 15px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Legend */
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; }
+  .ld { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-secondary); }
+  .ld .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--coral); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-18 { border-radius: 18px; }
+  .r-20 { border-radius: 20px; }
+  .r-26 { border-radius: 26px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Flo iOS — Design Tokens</div>
+    <div class="page-chip">Soft Light</div>
+  </div>
+  <p class="page-subtitle">Pure-white canvas with a barely-there blush surface (#FFF0F3). Flo Coral leads; lavender is the phase partner. The cycle wheel is the anchor — soft, rounded, reassuring, never clinical.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="top-bar">
+            <div class="greet">Good morning</div>
+            <div class="avatar"></div>
+          </div>
+          <div class="scroll-body">
+            <div class="wheel-wrap">
+              <div class="wheel-stack">
+                <svg class="wheel-svg" viewBox="0 0 220 220">
+                  <circle cx="110" cy="110" r="98" fill="none" stroke="#F3DDE3" stroke-width="14"/>
+                  <!-- period (coral) 0-18% -->
+                  <circle cx="110" cy="110" r="98" fill="none" stroke="#FF6B81" stroke-width="14" stroke-linecap="round" stroke-dasharray="110.9 615.8" stroke-dashoffset="0"/>
+                  <!-- fertile (lavender) ~40-58% -->
+                  <circle cx="110" cy="110" r="98" fill="none" stroke="#C5B3E6" stroke-width="14" stroke-linecap="round" stroke-dasharray="110.9 615.8" stroke-dashoffset="-246.3"/>
+                  <!-- ovulation (deep lavender) ~50% -->
+                  <circle cx="110" cy="110" r="98" fill="none" stroke="#A893D6" stroke-width="14" stroke-linecap="round" stroke-dasharray="24.6 615.8" stroke-dashoffset="-307.9"/>
+                  <!-- today dot -->
+                  <circle class="wheel-today" cx="110" cy="12" r="9"/>
+                </svg>
+                <div class="wheel-center">
+                  <div class="wheel-day">Day 14</div>
+                  <div class="wheel-phase">Follicular phase</div>
+                </div>
+              </div>
+              <button class="wheel-cta">Log period</button>
+            </div>
+            <div class="pred">
+              <div class="pred-icon"><svg viewBox="0 0 24 24"><path d="M12 2s7 8 7 13a7 7 0 0 1-14 0c0-5 7-13 7-13z"/></svg></div>
+              <div>
+                <div class="pred-label">Next period</div>
+                <div class="pred-emph">In 5 days</div>
+                <div class="pred-sub">Expected May 19 · 87% confidence</div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/></svg><span>Today</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg><span>Calendar</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12c.6.6 1 1.5 1 2h6c0-.5.4-1.4 1-2a7 7 0 0 0-4-12z"/></svg><span>Insights</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M16 10a4 4 0 0 1-8 0" fill="none"/><path d="M12 8l1.5 2-1.5 2-1.5-2z"/></svg><span>Partner</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg><span>More</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch lt" style="background:#FFFFFF;"><div class="name">Canvas</div>#FFFFFF</div>
+          <div class="swatch lt" style="background:#FFF0F3;"><div class="name">Surface Blush</div>#FFF0F3</div>
+          <div class="swatch lt" style="background:#FBE9ED;"><div class="name">Surface Sunken</div>#FBE9ED</div>
+          <div class="swatch lt" style="background:#F3DDE3;"><div class="name">Divider</div>#F3DDE3</div>
+          <div class="swatch" style="background:#1A1A2E;"><div class="name">Text Primary</div>#1A1A2E</div>
+          <div class="swatch" style="background:#6E6A82;"><div class="name">Text Secondary</div>#6E6A82</div>
+          <div class="swatch" style="background:#FF6B81;"><div class="name">Flo Coral</div>#FF6B81</div>
+          <div class="swatch" style="background:#E85870;"><div class="name">Coral Pressed</div>#E85870</div>
+          <div class="swatch lt" style="background:#FFD9DF;"><div class="name">Coral Soft</div>#FFD9DF</div>
+          <div class="swatch" style="background:#C5B3E6;"><div class="name">Lavender</div>#C5B3E6</div>
+          <div class="swatch" style="background:#A893D6;"><div class="name">Lavender Deep</div>#A893D6</div>
+          <div class="swatch lt" style="background:#EDE6F7;"><div class="name">Lavender Soft</div>#EDE6F7</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter (tabular numerals)</div>
+        <div class="type-row"><div class="type-meta">Wheel Center · 30pt · 700</div><div class="type-sample t-30">Day 14</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 24pt · 700</div><div class="type-sample t-24">Calendar</div></div>
+        <div class="type-row"><div class="type-meta">Prediction · 20pt · 700</div><div class="type-sample t-20">Period in 5 days</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 18pt · 600</div><div class="type-sample t-18">Your cycle is regular</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Logging your symptoms helps improve predictions over time.</div></div>
+        <div class="type-row"><div class="type-meta">Chip Label · 15pt · 600</div><div class="type-sample t-15">Cramps</div></div>
+        <div class="type-row"><div class="type-meta">Subtitle · 14pt · 400</div><div class="type-sample t-14">May 14 · Cycle day 14</div></div>
+        <div class="type-row"><div class="type-meta">Label · 12pt · 700 UP</div><div class="type-sample t-label">Fertile window</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Symptom Log Chips (selected = coral)</div>
+        <div class="chip-group-label">Flow & symptoms</div>
+        <div class="chip-wrap">
+          <div class="schip sel"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/></svg>Cramps</div>
+          <div class="schip">Headache</div>
+          <div class="schip sel">Tender breasts</div>
+          <div class="schip">Bloating</div>
+          <div class="schip">Fatigue</div>
+          <div class="schip sel">Cravings</div>
+          <div class="schip">Acne</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Calendar States</div>
+        <div class="cal">
+          <div class="cell">1</div><div class="cell logged">2</div><div class="cell logged">3</div><div class="cell logged">4</div><div class="cell">5</div><div class="cell">6</div><div class="cell">7</div>
+          <div class="cell">8</div><div class="cell">9</div><div class="cell">10</div><div class="cell fert">11</div><div class="cell fert">12</div><div class="cell ovul">13</div><div class="cell fert">14</div>
+          <div class="cell fert">15</div><div class="cell">16</div><div class="cell">17</div><div class="cell">18</div><div class="cell today">19</div><div class="cell pred">20</div><div class="cell pred">21</div>
+        </div>
+        <div class="legend" style="margin-top:14px;">
+          <div class="ld"><span class="dot" style="background:#E85870;"></span>Period</div>
+          <div class="ld"><span class="dot" style="background:#EDE6F7;border:1px solid #C5B3E6;"></span>Fertile</div>
+          <div class="ld"><span class="dot" style="border:2px solid #A893D6;"></span>Ovulation</div>
+          <div class="ld"><span class="dot" style="border:1.5px solid #FF6B81;"></span>Predicted</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Log period</button>
+          <button class="btn btn-soft">Add symptom</button>
+          <button class="btn-text">See all</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-18">18</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-26">26</div>
+          <div class="radius-box r-circle">Wheel</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

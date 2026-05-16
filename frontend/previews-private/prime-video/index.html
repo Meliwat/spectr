@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Prime Video iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0F171E;
+    --surface-1: #1A242F;
+    --surface-2: #232F3E;
+    --surface-3: #2E3B47;
+    --divider: #2E3B47;
+    --text: #FFFFFF;
+    --text-secondary: #AAB7C4;
+    --text-tertiary: #6E7B89;
+    --blue: #00A8E1;
+    --blue-pressed: #008CBD;
+    --imdb: #F5C518;
+    --live: #E50914;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 30px; font-weight: 700; letter-spacing: -0.5px; }
+  .page-chip { background: var(--blue); color: #0F171E; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  /* Billboard */
+  .billboard { height: 360px; position: relative; }
+  .bb-bg { position: absolute; inset: 0; background: linear-gradient(155deg, #1E3A52 0%, #15293A 45%, #0F1A24 100%); }
+  .bb-bg::before { content: ''; position: absolute; top: 16%; left: 14%; width: 46%; height: 42%; background: linear-gradient(135deg, #2E5A78, #1A3346); border-radius: 6px; }
+  .bb-bg::after { content: ''; position: absolute; top: 26%; right: 14%; width: 28%; height: 30%; background: linear-gradient(135deg, #3A6E8E, #20384C); border-radius: 50%; }
+  .bb-fade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,23,30,0) 35%, var(--canvas) 100%); }
+  .bb-content { position: absolute; left: 16px; right: 16px; bottom: 16px; }
+  .bb-title { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; }
+  .bb-meta { font-size: 13px; color: var(--text-secondary); margin: 6px 0 14px; }
+  .bb-meta .imdb { color: var(--imdb); font-weight: 600; }
+  .bb-actions { display: flex; gap: 12px; }
+  .play-btn { flex: 1; height: 50px; border-radius: 8px; background: var(--blue); color: #0F171E; font-family: var(--font); font-size: 16px; font-weight: 700; letter-spacing: 0.2px; border: none; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 8px 24px rgba(0,168,225,0.32); }
+  .play-btn svg { width: 18px; height: 18px; fill: #0F171E; }
+  .wl-btn { flex: 1; height: 50px; border-radius: 8px; background: rgba(255,255,255,0.14); color: #fff; font-family: var(--font); font-size: 15px; font-weight: 600; border: none; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .wl-btn svg { width: 16px; height: 16px; stroke: #fff; stroke-width: 2.5; fill: none; }
+
+  /* X-Ray overlay (anchored over the bottom of the billboard) */
+  .xray { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(35,47,62,0.96); backdrop-filter: blur(24px); border-radius: 16px 16px 0 0; padding: 16px; }
+  .xray-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .xray-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-secondary); }
+  .xray-head svg { width: 16px; height: 16px; stroke: var(--text-secondary); stroke-width: 2.5; fill: none; }
+  .xray-cast { display: flex; gap: 16px; }
+  .cast { width: 64px; text-align: center; }
+  .cast-pic { width: 56px; height: 56px; border-radius: 50%; margin: 0 auto 6px; }
+  .c1 { background: linear-gradient(135deg, #4A7E9E, #243846); }
+  .c2 { background: linear-gradient(135deg, #6E8E5A, #38462C); }
+  .c3 { background: linear-gradient(135deg, #9E6E4A, #463824); }
+  .cast-name { font-size: 11px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cast-role { font-size: 11px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* Row */
+  .row { padding: 14px 0 8px 16px; }
+  .row-head { display: flex; align-items: baseline; justify-content: space-between; padding-right: 16px; margin-bottom: 10px; }
+  .row-title { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+  .row-see { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+  .row-scroll { display: flex; gap: 12px; overflow: hidden; }
+  .poster { width: 104px; flex-shrink: 0; }
+  .poster-art { width: 104px; height: 156px; border-radius: 6px; }
+  .p1 { background: linear-gradient(135deg, #2E5A78, #15293A); }
+  .p2 { background: linear-gradient(135deg, #4A6E5A, #1F362C); }
+  .p3 { background: linear-gradient(135deg, #6E4A78, #2C1F36); }
+  .p4 { background: linear-gradient(135deg, #784A4A, #361F1F); }
+  .poster-rib { font-size: 11px; color: var(--blue); margin-top: 6px; }
+
+  /* Tab bar */
+  .tab-bar { margin-top: auto; height: 60px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: rgba(15,23,30,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-secondary); font-size: 10px; font-weight: 600; gap: 3px; letter-spacing: 0.2px; }
+  .tab.active { color: var(--blue); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #0F171E; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); }
+  .t-30 { font-size: 30px; font-weight: 700; letter-spacing: -0.4px; }
+  .t-28 { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-16 { font-size: 16px; font-weight: 600; }
+  .t-15 { font-size: 15px; font-weight: 400; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--blue); color: #0F171E; font-size: 16px; font-weight: 700; padding: 14px 28px; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 8px 24px rgba(0,168,225,0.32); }
+  .btn-primary svg { width: 16px; height: 16px; fill: #0F171E; }
+  .btn-primary:active { background: var(--blue-pressed); transform: scale(0.97); }
+  .btn-wl { background: rgba(255,255,255,0.14); color: var(--blue); font-size: 15px; font-weight: 600; padding: 14px 24px; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px; }
+  .btn-wl svg { width: 16px; height: 16px; fill: var(--blue); }
+  .btn-xray { background: var(--surface-2); color: var(--text); font-size: 13px; font-weight: 700; padding: 9px 14px; border-radius: 6px; }
+  .chip { background: var(--surface-2); color: var(--text); font-size: 14px; font-weight: 600; padding: 9px 16px; border-radius: 500px; }
+  .chip.active { background: var(--blue); color: #0F171E; }
+
+  /* IMDb badge demo */
+  .badge-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .imdb-badge { background: var(--imdb); color: #0F171E; font-size: 11px; font-weight: 700; letter-spacing: 0.4px; padding: 4px 8px; border-radius: 4px; }
+  .live-badge { background: var(--live); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 0.4px; padding: 4px 8px; border-radius: 4px; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--blue); color: #0F171E; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Prime Video iOS — Design Tokens</div>
+    <div class="page-chip">Dark</div>
+  </div>
+  <p class="page-subtitle">Dark-navy canvas (#0F171E) — Amazon blue-slate, not neutral black. Prime Blue (#00A8E1) is the single accent — the Play verb, active tab, X-Ray, watchlist. The X-Ray panel slides up over playing video.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="billboard">
+            <div class="bb-bg"></div>
+            <div class="bb-fade"></div>
+            <div class="bb-content">
+              <div class="bb-title">The Citadel Files</div>
+              <div class="bb-meta">2024 · 16+ · 1 Season · <span class="imdb">★ 8.4 IMDb</span></div>
+              <div class="bb-actions">
+                <button class="play-btn"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg>Play</button>
+                <button class="wl-btn"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Watchlist</button>
+              </div>
+            </div>
+            <div class="xray">
+              <div class="xray-head">
+                <span class="xray-label">In this scene</span>
+                <svg viewBox="0 0 24 24"><polyline points="6,9 12,15 18,9"/></svg>
+              </div>
+              <div class="xray-cast">
+                <div class="cast"><div class="cast-pic c1"></div><div class="cast-name">N. Palmer</div><div class="cast-role">Agent Cole</div></div>
+                <div class="cast"><div class="cast-pic c2"></div><div class="cast-name">K. Voss</div><div class="cast-role">Director</div></div>
+                <div class="cast"><div class="cast-pic c3"></div><div class="cast-name">H. Ruiz</div><div class="cast-role">Mara</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="row-head">
+              <div class="row-title">Included with Prime</div>
+              <div class="row-see">See more</div>
+            </div>
+            <div class="row-scroll">
+              <div class="poster"><div class="poster-art p1"></div><div class="poster-rib">Included with Prime</div></div>
+              <div class="poster"><div class="poster-art p2"></div><div class="poster-rib">Included with Prime</div></div>
+              <div class="poster"><div class="poster-art p3"></div><div class="poster-rib">Included with Prime</div></div>
+              <div class="poster"><div class="poster-art p4"></div><div class="poster-rib">Included with Prime</div></div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M6 7V6a4 4 0 0 1 8 0v1h3l1 13H4L5 7z"/></svg><span>Store</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M5 12a7 7 0 0 1 14 0M2 12a10 10 0 0 1 20 0"/></svg><span>Live</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Find</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="8,12 12,16 16,12"/><line x1="12" y1="7" x2="12" y2="16"/></svg><span>Downloads</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0F171E;"><div class="name">Canvas</div>#0F171E</div>
+          <div class="swatch" style="background:#1A242F;"><div class="name">Surface 1</div>#1A242F</div>
+          <div class="swatch" style="background:#232F3E;"><div class="name">Surface 2</div>#232F3E</div>
+          <div class="swatch" style="background:#2E3B47;"><div class="name">Surface 3 / Divider</div>#2E3B47</div>
+          <div class="swatch" style="background:#FFFFFF; color:#0F171E;"><div class="name">Text Primary</div>#FFFFFF</div>
+          <div class="swatch" style="background:#AAB7C4; color:#0F171E;"><div class="name">Text Secondary</div>#AAB7C4</div>
+          <div class="swatch" style="background:#6E7B89;"><div class="name">Text Tertiary</div>#6E7B89</div>
+          <div class="swatch" style="background:#00A8E1; color:#0F171E;"><div class="name">Prime Blue</div>#00A8E1</div>
+          <div class="swatch" style="background:#008CBD;"><div class="name">Blue Pressed</div>#008CBD</div>
+          <div class="swatch" style="background:#F5C518; color:#0F171E;"><div class="name">IMDb Yellow</div>#F5C518</div>
+          <div class="swatch" style="background:#E50914;"><div class="name">Live / Error</div>#E50914</div>
+          <div class="swatch" style="background:#000000;"><div class="name">Player Black</div>#000000</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Amazon Ember (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Details Title · 30pt · 700</div><div class="type-sample t-30">The Citadel Files</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 28pt · 700</div><div class="type-sample t-28">Downloads</div></div>
+        <div class="type-row"><div class="type-meta">Row Header · 22pt · 700</div><div class="type-sample t-22">Included with Prime</div></div>
+        <div class="type-row"><div class="type-meta">Episode Title · 16pt · 600</div><div class="type-sample t-16">Chapter One: Cold Open</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 400</div><div class="type-sample t-15">A disavowed agent races to clear her name.</div></div>
+        <div class="type-row"><div class="type-meta">Metadata · 13pt · 400</div><div class="type-sample t-13">2024 · 16+ · 1 Season</div></div>
+        <div class="type-row"><div class="type-meta">Label · 11pt · 700 UP</div><div class="type-sample t-11">Continue Watching</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg>Play</button>
+          <button class="btn btn-wl"><svg viewBox="0 0 24 24"><polyline points="5,12 10,17 19,7" fill="none" stroke="var(--blue)" stroke-width="3"/></svg>Watchlisted</button>
+          <button class="btn btn-xray">X-Ray</button>
+          <div class="chip active">All</div>
+          <div class="chip">Movies</div>
+          <div class="chip">TV</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">X-Ray Cast Strip</div>
+        <div class="xray-cast">
+          <div class="cast"><div class="cast-pic c1"></div><div class="cast-name">N. Palmer</div><div class="cast-role">Agent Cole</div></div>
+          <div class="cast"><div class="cast-pic c2"></div><div class="cast-name">K. Voss</div><div class="cast-role">Director</div></div>
+          <div class="cast"><div class="cast-pic c3"></div><div class="cast-name">H. Ruiz</div><div class="cast-role">Mara</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Badges (IMDb is brand-family)</div>
+        <div class="badge-row">
+          <div class="imdb-badge">★ 8.4 IMDb</div>
+          <div class="live-badge">● LIVE</div>
+          <div class="poster-rib" style="margin:0;">Included with Prime</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

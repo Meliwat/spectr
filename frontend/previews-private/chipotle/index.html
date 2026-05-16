@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Chipotle iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Archivo+Narrow:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FFF5E1;
+    --surface: #FFFFFF;
+    --cream-deep: #F4E8D0;
+    --divider: #E8DCC4;
+    --text: #451400;
+    --text-secondary: #8A6B4F;
+    --text-tertiary: #B49A82;
+    --red: #A81612;
+    --red-pressed: #8C1210;
+    --red-tint: #F4E2E1;
+    --tan: #AC8C5B;
+    --success: #3C7A3C;
+    --spice: #E07B26;
+    --display: 'Archivo', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+    --display-narrow: 'Archivo Narrow', 'Archivo', sans-serif;
+    --body: 'Avenir Next', -apple-system, BlinkMacSystemFont, 'SF Pro Text', Helvetica, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #E8DCC0; color: var(--text); font-family: var(--body); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-family: var(--display); font-size: 28px; font-weight: 800; letter-spacing: 0.4px; text-transform: uppercase; color: var(--red); }
+  .page-chip { background: var(--red); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 8px; letter-spacing: 0.4px; text-transform: uppercase; font-family: var(--display); }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 640px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(69,20,0,0.45), 0 0 0 2px rgba(69,20,0,0.10) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--cream); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Top nav */
+  .top { padding: 46px 16px 10px; background: var(--cream); flex-shrink: 0; }
+  .top-row { display: flex; align-items: center; justify-content: space-between; }
+  .pickup { font-family: var(--body); font-size: 15px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 5px; }
+  .pickup svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2.5; fill: none; }
+  .bag { position: relative; color: var(--text); }
+  .bag svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .bag-badge { position: absolute; top: -6px; right: -6px; background: var(--red); color: #fff; font-size: 9px; font-weight: 700; width: 16px; height: 16px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+  .scr-title { font-family: var(--display); font-size: 24px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; color: var(--text); margin-top: 12px; }
+  /* Step progress */
+  .steps { display: flex; gap: 2px; margin-top: 12px; }
+  .step-seg { flex: 1; height: 4px; border-radius: 500px; background: var(--divider); }
+  .step-seg.done { background: var(--red); }
+
+  /* Build list */
+  .build { flex: 1; overflow: hidden; background: var(--surface); }
+  .sec-h { font-family: var(--display); font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text); padding: 18px 16px 8px; border-bottom: 1px solid var(--divider); }
+  .ing { display: flex; align-items: center; gap: 12px; padding: 0 16px; min-height: 56px; background: var(--surface); border-bottom: 1px solid var(--divider); position: relative; }
+  .ing.sel { background: var(--red-tint); }
+  .ing.sel::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 1.5px; background: var(--red); }
+  .ing-info { flex: 1; }
+  .ing-name { font-family: var(--body); font-size: 16px; font-weight: 700; color: var(--text); }
+  .ing-meta { font-family: var(--body); font-size: 13px; color: var(--text-secondary); margin-top: 1px; }
+  .sel-circle { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--divider); display: flex; align-items: center; justify-content: center; }
+  .ing.sel .sel-circle { border-color: var(--red); background: var(--red); }
+  .sel-box { width: 26px; height: 26px; border-radius: 6px; border: 2px solid var(--divider); display: flex; align-items: center; justify-content: center; }
+  .ing.sel .sel-box { border-color: var(--red); background: var(--red); }
+  .sel-circle svg, .sel-box svg { width: 15px; height: 15px; stroke: #fff; stroke-width: 3; fill: none; display: none; }
+  .ing.sel .sel-circle svg, .ing.sel .sel-box svg { display: block; }
+
+  /* ADD TO BAG footer */
+  .cta-footer { background: var(--surface); border-top: 1px solid var(--divider); padding: 12px 16px; box-shadow: 0 -4px 14px rgba(69,20,0,0.10); }
+  .cta { height: 50px; background: var(--red); color: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: var(--display); font-size: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; }
+
+  /* Tab bar */
+  .tab-bar { height: 58px; background: var(--surface); border-top: 0.5px solid var(--divider); display: flex; align-items: center; justify-content: space-around; padding: 6px 6px 14px; flex-shrink: 0; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--text-secondary); font-family: var(--body); font-size: 11px; font-weight: 700; }
+  .tab.active { color: var(--red); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface); border: 1px solid var(--divider); border-radius: 8px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-family: var(--display); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 8px; padding: 14px; min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 500; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--body); margin-bottom: 2px; }
+  .swatch.light { color: var(--text); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); }
+  .t-hero { font-family: var(--display-narrow); font-size: 32px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px; }
+  .t-title { font-family: var(--display); font-size: 26px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; }
+  .t-section { font-family: var(--display); font-size: 18px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; }
+  .t-item { font-family: var(--body); font-size: 17px; font-weight: 700; }
+  .t-body { font-family: var(--body); font-size: 15px; font-weight: 400; line-height: 1.45; }
+  .t-price { font-family: var(--body); font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .t-meta { font-family: var(--body); font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--display); font-weight: 800; text-transform: uppercase; cursor: pointer; border: none; }
+  .btn-primary { background: var(--red); color: #fff; font-size: 16px; letter-spacing: 0.8px; padding: 16px 26px; border-radius: 8px; }
+  .btn-primary:active { background: var(--red-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--text); border: 2px solid var(--text); font-size: 14px; letter-spacing: 0.6px; padding: 12px 22px; border-radius: 8px; }
+  .btn-text { background: transparent; color: var(--red); font-family: var(--body); font-size: 14px; font-weight: 700; text-transform: none; padding: 12px 4px; cursor: pointer; border: none; }
+  .chip { font-family: var(--body); padding: 8px 16px; background: var(--surface); color: var(--text); font-size: 13px; font-weight: 700; border-radius: 8px; border: 1.5px solid var(--divider); }
+  .chip.active { background: var(--red); color: #fff; border-color: var(--red); }
+
+  /* Rewards ring */
+  .ring-wrap { display: flex; align-items: center; gap: 20px; }
+  .ring { width: 120px; height: 120px; border-radius: 50%; background: conic-gradient(var(--red) 0% 65%, var(--divider) 65% 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ring-inner { width: 100px; height: 100px; border-radius: 50%; background: var(--surface); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .ring-num { font-family: var(--display); font-size: 34px; font-weight: 800; color: var(--red); line-height: 1; font-variant-numeric: tabular-nums; }
+  .ring-lbl { font-family: var(--display); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-secondary); margin-top: 3px; }
+  .ring-side { flex: 1; }
+  .ring-side .h { font-family: var(--body); font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.3; }
+  .ring-side .s { font-family: var(--body); font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+
+  /* Foil hero */
+  .foil { height: 130px; border-radius: 12px; background: linear-gradient(120deg, #D9D4C9 0%, #BFB9AC 45%, #A8A296 100%); position: relative; overflow: hidden; display: flex; align-items: flex-end; padding: 16px; }
+  .foil::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(115deg, rgba(255,255,255,0.16) 0 2px, transparent 2px 14px); }
+  .foil-title { font-family: var(--display-narrow); font-size: 26px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text); position: relative; z-index: 2; }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--red); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-full { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Chipotle iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">Cream kraft-paper canvas (#FFF5E1). Chipotle Red #A81612 is the only accent. ALL-CAPS bold condensed Archivo headers shout; sentence-case Avenir body whispers. Espresso brown #451400 for all text — no black.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="top">
+            <div class="top-row">
+              <div class="pickup">Pickup · 600 Congress Ave <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+              <div class="bag"><span class="bag-badge">2</span><svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+            </div>
+            <div class="scr-title">Burrito Bowl</div>
+            <div class="steps">
+              <div class="step-seg done"></div>
+              <div class="step-seg done"></div>
+              <div class="step-seg done"></div>
+              <div class="step-seg"></div>
+              <div class="step-seg"></div>
+            </div>
+          </div>
+
+          <div class="build">
+            <div class="sec-h">Rice</div>
+            <div class="ing sel">
+              <div class="ing-info"><div class="ing-name">White Rice</div><div class="ing-meta">210 Cal</div></div>
+              <div class="sel-circle"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            </div>
+            <div class="ing">
+              <div class="ing-info"><div class="ing-name">Brown Rice</div><div class="ing-meta">210 Cal</div></div>
+              <div class="sel-circle"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            </div>
+
+            <div class="sec-h">Protein</div>
+            <div class="ing sel">
+              <div class="ing-info"><div class="ing-name">Chicken</div><div class="ing-meta">180 Cal</div></div>
+              <div class="sel-circle"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            </div>
+            <div class="ing">
+              <div class="ing-info"><div class="ing-name">Steak</div><div class="ing-meta">150 Cal · Add for $2.00</div></div>
+              <div class="sel-circle"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            </div>
+
+            <div class="sec-h">Toppings</div>
+            <div class="ing sel">
+              <div class="ing-info"><div class="ing-name">Fajita Veggies</div><div class="ing-meta">20 Cal</div></div>
+              <div class="sel-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            </div>
+            <div class="ing">
+              <div class="ing-info"><div class="ing-name">Guacamole</div><div class="ing-meta">230 Cal · Add for $2.45</div></div>
+              <div class="sel-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            </div>
+          </div>
+
+          <div class="cta-footer">
+            <div class="cta">Add to Bag · $9.65</div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M4 3v7a3 3 0 0 0 3 3v8M7 3v7M10 3v7"/><path d="M18 3c-1.5 0-3 2-3 6 0 2 1 3 3 3v8"/></svg><span>Order</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><line x1="14" y1="14" x2="14" y2="20"/><line x1="20" y1="14" x2="20" y2="20"/><line x1="14" y1="17" x2="20" y2="17"/></svg><span>Scan</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="6" cy="18" r="3"/><circle cx="18" cy="18" r="3"/><path d="M6 18h6l3-9h4M10 9h6"/></svg><span>Delivery</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg><span>More</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#A81612;"><div class="name">Chipotle Red</div>#A81612</div>
+          <div class="swatch" style="background:#8C1210;"><div class="name">Red Pressed</div>#8C1210</div>
+          <div class="swatch light" style="background:#F4E2E1;"><div class="name">Red Tint</div>#F4E2E1</div>
+          <div class="swatch light" style="background:#FFF5E1;"><div class="name">Cream Canvas</div>#FFF5E1</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Surface</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#F4E8D0;"><div class="name">Cream Deep</div>#F4E8D0</div>
+          <div class="swatch light" style="background:#E8DCC4;"><div class="name">Divider</div>#E8DCC4</div>
+          <div class="swatch" style="background:#451400;"><div class="name">Text Espresso</div>#451400</div>
+          <div class="swatch" style="background:#8A6B4F;"><div class="name">Text Chocolate</div>#8A6B4F</div>
+          <div class="swatch" style="background:#AC8C5B;"><div class="name">Tan / Foil</div>#AC8C5B</div>
+          <div class="swatch" style="background:#3C7A3C;"><div class="name">Success</div>#3C7A3C</div>
+          <div class="swatch" style="background:#E07B26;"><div class="name">Spice Orange</div>#E07B26</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Archivo + Avenir</div>
+        <div class="type-row"><div class="type-meta">Hero CAPS · 32pt · 800</div><div class="type-sample t-hero">Build Your Own</div></div>
+        <div class="type-row"><div class="type-meta">Screen CAPS · 26pt · 800</div><div class="type-sample t-title">Entrées</div></div>
+        <div class="type-row"><div class="type-meta">Section CAPS · 18pt · 700</div><div class="type-sample t-section">Protein</div></div>
+        <div class="type-row"><div class="type-meta">Item · 17pt · 700</div><div class="type-sample t-item">Barbacoa</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 400</div><div class="type-sample t-body">Slow-cooked, shredded beef seasoned with chipotle peppers.</div></div>
+        <div class="type-row"><div class="type-meta">Price · 16pt · 700 tnum</div><div class="type-sample t-price">$9.65</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 400</div><div class="type-sample t-meta">170 Cal · Add for $2.00</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Add to Bag</button>
+          <button class="btn btn-outline">Customize</button>
+          <button class="btn-text">Skip</button>
+          <div class="chip active">Vegetarian</div>
+          <div class="chip">Keto</div>
+          <div class="chip">High Protein</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive — Rewards Points Ring</div>
+        <div class="ring-wrap">
+          <div class="ring">
+            <div class="ring-inner">
+              <div class="ring-num">1,250</div>
+              <div class="ring-lbl">Points</div>
+            </div>
+          </div>
+          <div class="ring-side">
+            <div class="h">250 points until your next free entrée</div>
+            <div class="s">1,250 / 1,500 · Earn 10 pts per $1</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive — Foil Hero</div>
+        <div class="foil"><div class="foil-title">Build Your Own</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-full">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

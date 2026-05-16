@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Dropbox iOS — Light</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --surface: #F7F5F2;
+    --divider: #E6E1DA;
+    --text-primary: #1E1919;
+    --text-secondary: #6F6A65;
+    --text-tertiary: #A39E98;
+    --blue: #0061FF;
+    --blue-pressed: #0050D0;
+    --blue-tint: #E6F0FF;
+    --pdf-red: #FA551E;
+    --doc-blue: #0061FF;
+    --sheet-green: #1A8754;
+    --image-teal: #00B2A9;
+    --folder-slate: #8C97A8;
+    --success: #1A8754;
+    --warning: #FFAF00;
+    --error: #D1180B;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #ECE9E4; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .logo-box { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+  .logo-box svg { width: 100%; height: 100%; }
+  .page-title { font-size: 32px; font-weight: 700; letter-spacing: -0.6px; color: var(--text-primary); }
+  .page-chip { background: var(--blue); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.5), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+
+  .nav-row { padding: 4px 16px 12px; display: flex; align-items: flex-end; justify-content: space-between; }
+  .nav-title { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; color: var(--text-primary); }
+  .nav-icons { display: flex; gap: 16px; color: var(--text-secondary); }
+  .nav-icons svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; position: relative; }
+
+  /* Recents shelf */
+  .shelf-head { font-size: 16px; font-weight: 700; color: var(--text-primary); padding: 8px 16px 10px; }
+  .shelf { display: flex; gap: 10px; padding: 0 16px 14px; overflow-x: auto; scrollbar-width: none; }
+  .shelf::-webkit-scrollbar { display: none; }
+  .rcard { width: 116px; flex-shrink: 0; border: 1px solid var(--divider); border-radius: 12px; padding: 10px; background: var(--canvas); }
+  .rcard-thumb { width: 100%; height: 70px; border-radius: 4px; background: var(--surface); display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+  .rcard-thumb svg { width: 24px; height: 24px; }
+  .rcard-name { font-size: 13px; font-weight: 600; color: var(--text-primary); line-height: 1.25; margin-bottom: 2px; }
+  .rcard-meta { font-size: 11px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+
+  /* File list */
+  .list-head { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-secondary); padding: 6px 16px 4px; }
+  .file-list { flex: 1; overflow-y: auto; scrollbar-width: none; }
+  .file-list::-webkit-scrollbar { display: none; }
+  .frow { display: flex; align-items: center; height: 60px; padding: 0 16px; gap: 12px; }
+  .frow.selected { background: var(--blue-tint); }
+  .ficon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ficon svg { width: 20px; height: 20px; }
+  .ficon.pdf { background: rgba(250,85,30,0.14); color: var(--pdf-red); }
+  .ficon.doc { background: rgba(0,97,255,0.14); color: var(--doc-blue); }
+  .ficon.sheet { background: rgba(26,135,84,0.14); color: var(--sheet-green); }
+  .ficon.image { background: rgba(0,178,169,0.14); color: var(--image-teal); }
+  .ficon.folder { background: rgba(140,151,168,0.16); color: var(--folder-slate); }
+  .fcheck { width: 40px; height: 40px; flex-shrink: 0; color: var(--blue); display: flex; align-items: center; justify-content: center; }
+  .fcheck svg { width: 26px; height: 26px; fill: var(--blue); }
+  .finfo { flex: 1; min-width: 0; }
+  .fname { font-size: 16px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .fmeta { font-size: 14px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+  .fmore { color: var(--text-secondary); flex-shrink: 0; }
+  .fmore svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Upload bar */
+  .upload-bar { padding: 12px 16px; background: var(--canvas); border-top: 0.5px solid var(--divider); }
+  .upload-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .upload-label { font-size: 14px; font-weight: 600; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+  .upload-check { color: var(--success); }
+  .upload-check svg { width: 18px; height: 18px; fill: var(--success); }
+  .upload-track { height: 3px; border-radius: 2px; background: var(--divider); overflow: hidden; }
+  .upload-fill { height: 100%; width: 62%; background: var(--blue); border-radius: 2px; }
+
+  /* FAB */
+  .fab { position: absolute; right: 16px; bottom: 88px; width: 56px; height: 56px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,97,255,0.32); z-index: 6; }
+  .fab svg { width: 24px; height: 24px; stroke: #FFF; stroke-width: 2.4; fill: none; }
+
+  /* Tab bar */
+  .tab-bar { height: 64px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: rgba(255,255,255,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-secondary); font-size: 10px; font-weight: 600; gap: 4px; letter-spacing: 0.2px; }
+  .tab.active { color: var(--blue); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--canvas); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--text-primary); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 200px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-28 { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-17 { font-size: 17px; font-weight: 600; }
+  .t-16 { font-size: 16px; font-weight: 600; }
+  .t-15 { font-size: 15px; font-weight: 400; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 600; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--blue); color: #FFF; font-size: 16px; padding: 14px 24px; border-radius: 8px; }
+  .btn-primary:active { background: var(--blue-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1px solid var(--divider); font-size: 15px; padding: 14px 24px; border-radius: 8px; }
+  .btn-text { background: transparent; color: var(--blue); font-size: 15px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+  .fab-demo { width: 56px; height: 56px; border-radius: 50%; background: var(--blue); display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; box-shadow: 0 8px 20px rgba(0,97,255,0.32); }
+  .fab-demo svg { width: 24px; height: 24px; stroke: #FFF; stroke-width: 2.4; fill: none; }
+  .perm-chip { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: var(--surface); color: var(--text-primary); font-size: 14px; font-weight: 600; border-radius: 500px; }
+  .perm-chip svg { width: 14px; height: 14px; stroke: var(--text-secondary); stroke-width: 2; fill: none; }
+
+  /* Distinctive: upload bar demo */
+  .uploaddemo { background: var(--surface); border-radius: 12px; padding: 16px; }
+  .uploaddemo .upload-top { margin-bottom: 8px; }
+  .uploaddemo .upload-track { background: #DDD7CE; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--blue); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo-box">
+      <svg viewBox="0 0 32 32"><path fill="#0061FF" d="M8 2 0 7l8 5 8-5-8-5zM24 2l-8 5 8 5 8-5-8-5zM0 17l8 5 8-5-8-5-8 5zM24 12l-8 5 8 5 8-5-8-5zM8 23.5l8 5 8-5-8-5-8 5z"/></svg>
+    </span>
+    <div class="page-title">Dropbox iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">Paper-white canvas (#FFFFFF) with a warm-cream grouped surface (#F7F5F2) and warm ink (#1E1919). Dropbox Blue (#0061FF) is the single UI accent — primary actions, active tab, links, and selection. File rows lead with colored type icons.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="nav-row">
+            <div class="nav-title">Files</div>
+            <div class="nav-icons">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+              <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg>
+            </div>
+          </div>
+
+          <div class="scroll-body">
+            <div class="shelf-head">Recents</div>
+            <div class="shelf">
+              <div class="rcard">
+                <div class="rcard-thumb"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="18" rx="2" fill="rgba(250,85,30,0.14)"/><path d="M14 3v5h5" stroke="#FA551E" stroke-width="2"/><path d="M8 13h8M8 17h6" stroke="#FA551E" stroke-width="2" stroke-linecap="round"/></svg></div>
+                <div class="rcard-name">Q3 Report.pdf</div>
+                <div class="rcard-meta">2.4 MB · Today</div>
+              </div>
+              <div class="rcard">
+                <div class="rcard-thumb"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" fill="rgba(0,178,169,0.14)"/><circle cx="9" cy="10" r="2" fill="#00B2A9"/><path d="M4 17l5-4 4 3 3-2 4 3" stroke="#00B2A9" stroke-width="2" fill="none"/></svg></div>
+                <div class="rcard-name">Mockup_v4.png</div>
+                <div class="rcard-meta">880 KB · Apr 14</div>
+              </div>
+              <div class="rcard">
+                <div class="rcard-thumb"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="18" rx="2" fill="rgba(26,135,84,0.14)"/><path d="M8 8h8M8 12h8M8 16h8M12 6v14" stroke="#1A8754" stroke-width="1.6"/></svg></div>
+                <div class="rcard-name">Budget.xlsx</div>
+                <div class="rcard-meta">44 KB · Apr 9</div>
+              </div>
+            </div>
+
+            <div class="list-head">All files</div>
+            <div class="file-list">
+              <div class="frow selected">
+                <div class="fcheck"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12l2.5 2.5L16 9" stroke="#FFF" stroke-width="2.4" fill="none"/></svg></div>
+                <div class="finfo">
+                  <div class="fname">Q3 Report.pdf</div>
+                  <div class="fmeta">2.4 MB · Modified Apr 12</div>
+                </div>
+                <div class="fmore"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></div>
+              </div>
+              <div class="frow">
+                <div class="ficon folder"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+                <div class="finfo">
+                  <div class="fname">Design Assets</div>
+                  <div class="fmeta">28 items</div>
+                </div>
+                <div class="fmore"><svg viewBox="0 0 24 24"><polyline points="9,6 15,12 9,18"/></svg></div>
+              </div>
+              <div class="frow">
+                <div class="ficon doc"><svg viewBox="0 0 24 24" fill="none"><rect x="5" y="3" width="14" height="18" rx="2" stroke="currentColor" stroke-width="2"/><path d="M9 9h6M9 13h6M9 17h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+                <div class="finfo">
+                  <div class="fname">Project Brief.paper</div>
+                  <div class="fmeta">16 KB · Modified Apr 10</div>
+                </div>
+                <div class="fmore"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></div>
+              </div>
+              <div class="frow">
+                <div class="ficon image"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="10" r="1.6" fill="currentColor"/><path d="M5 18l4-4 4 3 3-2 3 3" stroke="currentColor" stroke-width="2"/></svg></div>
+                <div class="finfo">
+                  <div class="fname">Mockup_v4.png</div>
+                  <div class="fmeta">880 KB · Modified Apr 8</div>
+                </div>
+                <div class="fmore"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></div>
+              </div>
+              <div class="frow">
+                <div class="ficon sheet"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path d="M4 9h16M4 14h16M9 4v16M14 4v16" stroke="currentColor" stroke-width="1.6"/></svg></div>
+                <div class="finfo">
+                  <div class="fname">Budget Q3.xlsx</div>
+                  <div class="fmeta">44 KB · Modified Apr 6</div>
+                </div>
+                <div class="fmore"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></div>
+              </div>
+            </div>
+
+            <div class="fab"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+
+            <div class="upload-bar">
+              <div class="upload-top">
+                <span class="upload-label">Uploading 3 of 8 · 4.2 MB</span>
+                <span class="upload-check"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 12l2.5 2.5L16 9" stroke="currentColor" stroke-width="2" fill="none"/></svg></span>
+              </div>
+              <div class="upload-track"><div class="upload-fill"></div></div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Files</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M3 17l5-4 4 3 3-2 6 5"/></svg><span>Photos</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M12 16V4M8 12l4 4 4-4"/><path d="M4 18a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2"/></svg><span>Offline</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M6 19c1-3 3.5-4 6-4s5 1 6 4"/></svg><span>Account</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Canvas</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#F7F5F2;"><div class="name">Surface (cream)</div>#F7F5F2</div>
+          <div class="swatch light" style="background:#E6E1DA;"><div class="name">Divider</div>#E6E1DA</div>
+          <div class="swatch" style="background:#1E1919;"><div class="name">Text Primary</div>#1E1919</div>
+          <div class="swatch" style="background:#6F6A65;"><div class="name">Text Secondary</div>#6F6A65</div>
+          <div class="swatch" style="background:#A39E98;"><div class="name">Text Tertiary</div>#A39E98</div>
+          <div class="swatch" style="background:#0061FF;"><div class="name">Dropbox Blue</div>#0061FF</div>
+          <div class="swatch" style="background:#0050D0;"><div class="name">Blue Pressed</div>#0050D0</div>
+          <div class="swatch light" style="background:#E6F0FF;"><div class="name">Blue Tint (sel)</div>#E6F0FF</div>
+          <div class="swatch" style="background:#FA551E;"><div class="name">PDF Red</div>#FA551E</div>
+          <div class="swatch" style="background:#00B2A9;"><div class="name">Image Teal</div>#00B2A9</div>
+          <div class="swatch" style="background:#1A8754;"><div class="name">Sheet / Success</div>#1A8754</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Sharp Grotesk (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 28pt · 700</div><div class="type-sample t-28">Files</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Recents</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 17pt · 600</div><div class="type-sample t-17">Project Brief.paper</div></div>
+        <div class="type-row"><div class="type-meta">File Name · 16pt · 600</div><div class="type-sample t-16">Q3 Report.pdf</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 400</div><div class="type-sample t-15">No files yet — tap + to add one</div></div>
+        <div class="type-row"><div class="type-meta">Metadata · 14pt · 400</div><div class="type-sample t-14">2.4 MB · Modified Apr 12</div></div>
+        <div class="type-row"><div class="type-meta">Label · 11pt · 700 UP</div><div class="type-sample t-11">Shared with you</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="fab-demo"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+          <button class="btn btn-primary">Share</button>
+          <button class="btn btn-outline">Cancel</button>
+          <button class="btn-text">Manage access</button>
+          <div class="perm-chip">Can edit <svg viewBox="0 0 24 24"><polyline points="6,9 12,15 18,9"/></svg></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive — Determinate Upload Bar</div>
+        <div class="uploaddemo">
+          <div class="upload-top">
+            <span class="upload-label">Uploading 3 of 8 · 4.2 MB</span>
+            <span style="color:var(--text-secondary); font-size:13px; font-variant-numeric:tabular-nums;">62%</span>
+          </div>
+          <div class="upload-track"><div class="upload-fill"></div></div>
+          <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.5; margin-top: 12px;">Uploads always show a real, determinate byte-progress fill (track <code>#E6E1DA</code>, fill <code>#0061FF</code>) — never a fake indeterminate spinner. On completion the bar fills, flashes a <code>#1A8754</code> check, then fades after 1.5s.</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Light Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Dropbox is a warm-white workspace. Canvas is true <code>#FFFFFF</code>; grouped sections lift to warm cream <code>#F7F5F2</code> with a warm hairline <code>#E6E1DA</code>. Text is warm ink <code>#1E1919</code>, never pure black. Dropbox Blue <code>#0061FF</code> is rationed to primary actions, the active tab, links, and selection. File-type icon colors (PDF red, image teal, sheet green) are illustration, not UI accent. The dark theme inverts to a warm charcoal <code>#1E1919</code> canvas with blue lightened to <code>#3D8BFF</code> for AA contrast.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

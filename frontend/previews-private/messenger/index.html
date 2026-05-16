@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Messenger iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --grad-blue: #0A7CFF;
+    --grad-violet: #9D4EDD;
+    --grad-pink: #FF5CA0;
+    --blue: #0A7CFF;
+    --blue-pressed: #0866D6;
+    --canvas: #000000;
+    --surface: #1C1C1D;
+    --incoming: #303030;
+    --divider: #3A3B3C;
+    --text: #E4E6EB;
+    --text-secondary: #B0B3B8;
+    --text-tertiary: #8A8D91;
+    --active: #31D158;
+    --error: #FA383E;
+    --success: #31A24C;
+    --gradient: linear-gradient(135deg, #0A7CFF 0%, #9D4EDD 50%, #FF5CA0 100%);
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #050505; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1180px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; flex-wrap: wrap; }
+  .mark { width: 36px; height: 36px; border-radius: 50%; background: var(--gradient); display: flex; align-items: center; justify-content: center; }
+  .mark svg { width: 20px; height: 20px; fill: #FFF; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; }
+  .page-chip { background: var(--gradient); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.55; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; }
+
+  /* Thread header */
+  .thread-head { display: flex; align-items: center; gap: 10px; padding: 4px 16px 12px; border-bottom: 1px solid var(--divider); }
+  .th-back svg { width: 24px; height: 24px; stroke: var(--blue); stroke-width: 2.5; fill: none; }
+  .th-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #6C9BC9, #2E5C8F); flex-shrink: 0; position: relative; }
+  .th-avatar::after { content: ''; position: absolute; bottom: -1px; right: -1px; width: 12px; height: 12px; border-radius: 50%; background: var(--active); border: 2px solid var(--canvas); }
+  .th-name { font-size: 16px; font-weight: 600; }
+  .th-status { font-size: 12px; color: var(--text-secondary); }
+  .th-actions { margin-left: auto; display: flex; gap: 18px; }
+  .th-actions svg { width: 22px; height: 22px; stroke: var(--blue); stroke-width: 2; fill: none; }
+
+  /* Thread — gradient anchored to the conversation */
+  .thread { flex: 1; overflow-y: auto; padding: 16px 0; scrollbar-width: none; display: flex; flex-direction: column; gap: 2px; position: relative; }
+  .thread::-webkit-scrollbar { display: none; }
+
+  .msg-row { display: flex; padding: 0 10px; position: relative; }
+  .msg-row.out { justify-content: flex-end; }
+  .gap { height: 8px; }
+  .bubble { max-width: 72%; padding: 9px 14px; font-size: 16px; line-height: 1.4; position: relative; }
+  .bubble.in { background: var(--incoming); color: var(--text); border-radius: 18px 18px 18px 6px; }
+  .bubble.in.mid { border-radius: 18px; }
+  /* Outgoing bubble shows a slice of the conversation-wide ribbon */
+  .bubble.out { color: #FFF; border-radius: 18px 18px 6px 18px; background: var(--gradient); background-attachment: local; }
+  .bubble.out.mid { border-radius: 18px; }
+  .b-meta { display: flex; gap: 4px; justify-content: flex-end; margin-top: 3px; font-size: 12px; color: rgba(255,255,255,0.8); }
+  .react-badge { position: absolute; bottom: -10px; right: 10px; display: flex; align-items: center; gap: 3px; padding: 3px 6px; border-radius: 999px; background: var(--canvas); border: 1px solid var(--divider); font-size: 12px; }
+  .react-badge .cnt { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+
+  /* Reactions popover */
+  .popover { align-self: flex-end; margin: 14px 16px 4px; display: inline-flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 28px; background: var(--surface); box-shadow: 0 8px 28px rgba(0,0,0,0.5); }
+  .popover .emo { font-size: 28px; }
+  .popover .plus { width: 18px; height: 18px; }
+  .popover .plus svg { width: 18px; height: 18px; stroke: var(--text-secondary); stroke-width: 2.5; fill: none; }
+
+  /* Composer */
+  .composer { display: flex; align-items: flex-end; gap: 10px; padding: 8px 10px 12px; }
+  .comp-actions { display: flex; align-items: center; gap: 14px; }
+  .comp-actions svg { width: 22px; height: 22px; stroke: var(--blue); stroke-width: 2; fill: none; }
+  .comp-pill { flex: 1; display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 12px; border-radius: 18px; background: var(--surface); }
+  .comp-ph { flex: 1; font-size: 16px; color: var(--text-tertiary); padding: 8px 0; }
+  .comp-emoji svg { width: 20px; height: 20px; stroke: var(--text-secondary); stroke-width: 2; fill: none; }
+  .send-thumb { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .send-thumb svg { width: 24px; height: 24px; fill: var(--blue); }
+
+  /* Tab bar */
+  .tab-bar { height: 56px; display: flex; align-items: center; padding: 4px 8px 8px; justify-content: space-around; background: var(--canvas); border-top: 1px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--text-secondary); font-size: 10px; font-weight: 600; }
+  .tab.active { color: var(--blue); }
+  .tab svg { width: 26px; height: 26px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; }
+
+  /* Token sections */
+  .section { background: #131314; border: 1px solid var(--divider); border-radius: 14px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 96px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.grad { background: var(--gradient); }
+  .swatch.light { color: #000; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; }
+  .t-28 { font-size: 28px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-17s { font-size: 17px; font-weight: 600; }
+  .t-17b { font-size: 17px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15 { font-size: 15px; font-weight: 400; color: var(--text-secondary); }
+  .t-13 { font-size: 13px; font-weight: 700; letter-spacing: 0.2px; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 400; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--blue); color: #FFF; font-size: 16px; font-weight: 600; padding: 13px 28px; border-radius: 20px; }
+  .btn-primary:active { background: var(--blue-pressed); transform: scale(0.99); }
+  .btn-text { background: transparent; color: var(--blue); font-size: 16px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+  .send-demo { width: 32px; height: 32px; border-radius: 50%; background: var(--blue); display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; }
+  .send-demo svg { width: 16px; height: 16px; fill: #FFF; }
+  .thumb-demo { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; }
+  .thumb-demo svg { width: 24px; height: 24px; fill: var(--blue); }
+
+  /* Bubble demo with continuous ribbon */
+  .demo-thread { display: flex; flex-direction: column; gap: 4px; background: var(--canvas); border-radius: 12px; padding: 16px; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--gradient); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-6 { border-radius: 6px; }
+  .r-12 { border-radius: 12px; }
+  .r-18 { border-radius: 18px; }
+  .r-20 { border-radius: 20px; }
+  .r-28 { border-radius: 28px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="mark"><svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.1 2 11.2c0 2.9 1.4 5.5 3.7 7.2V22l3.4-1.9c.9.3 1.9.4 2.9.4 5.5 0 10-4.1 10-9.2S17.5 2 12 2zm1 12.4l-2.5-2.7-5 2.7 5.5-5.8 2.6 2.7 4.9-2.7-5.5 5.8z"/></svg></span>
+    <div class="page-title">Messenger iOS — Design Tokens</div>
+    <div class="page-chip">Dark</div>
+  </div>
+  <p class="page-subtitle">The most expressive messaging surface: outgoing bubbles are a conversation-anchored #0A7CFF → #9D4EDD → #FF5CA0 gradient flowing down the whole run. True-black canvas makes the gradient glow. Long-press any bubble for the bouncy reactions popover.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="thread-head">
+            <span class="th-back"><svg viewBox="0 0 24 24"><polyline points="15,18 9,12 15,6"/></svg></span>
+            <div class="th-avatar"></div>
+            <div>
+              <div class="th-name">Theo Marchetti</div>
+              <div class="th-status">Active now</div>
+            </div>
+            <div class="th-actions">
+              <svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 1.9.6 2.8a2 2 0 0 1-.4 2.1L8 9.8a16 16 0 0 0 6 6l1.2-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.5 2.8.6a2 2 0 0 1 1.9 2z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+            </div>
+          </div>
+
+          <div class="thread">
+            <div class="msg-row"><div class="bubble in mid">Did you see the new gradient bubbles?</div></div>
+            <div class="msg-row"><div class="bubble in">They flow down the whole conversation now 🌈<div class="b-meta" style="color:var(--text-secondary)">9:36 AM</div></div></div>
+            <div class="gap"></div>
+            <div class="msg-row out"><div class="bubble out mid">Yes! It looks like one continuous ribbon.</div></div>
+            <div class="msg-row out"><div class="bubble out">Way more fun than a flat color.
+              <div class="b-meta"><span>9:38 AM</span><span>✓</span></div>
+              <div class="react-badge">❤️<span class="cnt">2</span></div>
+            </div></div>
+            <div class="gap"></div>
+            <div class="msg-row"><div class="bubble in">Long-press one to react 👇</div></div>
+
+            <div class="popover">
+              <span class="emo">👍</span>
+              <span class="emo">❤️</span>
+              <span class="emo">😆</span>
+              <span class="emo">😮</span>
+              <span class="emo">😢</span>
+              <span class="emo">😡</span>
+              <span class="plus"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+            </div>
+          </div>
+
+          <div class="composer">
+            <div class="comp-actions">
+              <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>
+              <svg viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3"/></svg>
+            </div>
+            <div class="comp-pill">
+              <span class="comp-ph">Aa</span>
+              <span class="comp-emoji"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></span>
+            </div>
+            <div class="send-thumb"><svg viewBox="0 0 24 24"><path d="M2 20h2a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1H2zm5-1a1 1 0 0 0 1 1h9.3a2 2 0 0 0 2-1.7l1.3-7A2 2 0 0 0 18 8h-5l.8-4.2A2 2 0 0 0 11.8 1.5L8 9.3z"/></svg></div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7A8.38 8.38 0 0 1 4 11.5 8.5 8.5 0 0 1 21 11.5z"/></svg><span>Chats</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 9l1-5h16l1 5M4 9v11a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9M9 21v-6h6v6"/></svg><span>Marketplace</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16"/></svg><span>Stories</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette (Dark · True Black)</div>
+        <div class="swatches">
+          <div class="swatch grad"><div class="name">Bubble Gradient</div>blue→violet→pink</div>
+          <div class="swatch" style="background:#0A7CFF;"><div class="name">UI Blue / Grad Start</div>#0A7CFF</div>
+          <div class="swatch" style="background:#9D4EDD;"><div class="name">Grad Violet</div>#9D4EDD</div>
+          <div class="swatch" style="background:#FF5CA0;"><div class="name">Grad Pink</div>#FF5CA0</div>
+          <div class="swatch" style="background:#000000;"><div class="name">Canvas</div>#000000</div>
+          <div class="swatch" style="background:#1C1C1D;"><div class="name">Surface</div>#1C1C1D</div>
+          <div class="swatch" style="background:#303030;"><div class="name">Incoming</div>#303030</div>
+          <div class="swatch" style="background:#3A3B3C;"><div class="name">Divider</div>#3A3B3C</div>
+          <div class="swatch light" style="background:#E4E6EB; color:#050505;"><div class="name">Text Primary</div>#E4E6EB</div>
+          <div class="swatch" style="background:#B0B3B8; color:#000;"><div class="name">Text Secondary</div>#B0B3B8</div>
+          <div class="swatch" style="background:#31D158; color:#000;"><div class="name">Active Now</div>#31D158</div>
+          <div class="swatch" style="background:#FA383E;"><div class="name">Error</div>#FA383E</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter (400 / 600 / 700)</div>
+        <div class="type-row"><div class="type-meta">Large Title · 28 · 700</div><div class="type-sample t-28">Chats</div></div>
+        <div class="type-row"><div class="type-meta">Conversation · 17 · 600</div><div class="type-sample t-17s">Theo Marchetti</div></div>
+        <div class="type-row"><div class="type-meta">Unread Name · 17 · 700</div><div class="type-sample t-17b">Priya Anand</div></div>
+        <div class="type-row"><div class="type-meta">Message Body · 16 · 400</div><div class="type-sample t-16">Way more fun than a flat color.</div></div>
+        <div class="type-row"><div class="type-meta">Preview · 15 · 400</div><div class="type-sample t-15">sent a photo</div></div>
+        <div class="type-row"><div class="type-meta">Section · 13 · 700</div><div class="type-sample t-13">Active</div></div>
+        <div class="type-row"><div class="type-meta">Bubble Meta · 12 · 400</div><div class="type-sample t-12">9:41 AM ✓</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons & Big-Thumb Send</div>
+        <div class="btn-row">
+          <span class="thumb-demo"><svg viewBox="0 0 24 24"><path d="M2 20h2a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1H2zm5-1a1 1 0 0 0 1 1h9.3a2 2 0 0 0 2-1.7l1.3-7A2 2 0 0 0 18 8h-5l.8-4.2A2 2 0 0 0 11.8 1.5L8 9.3z"/></svg></span>
+          <button class="send-demo"><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg></button>
+          <button class="btn btn-primary">Create Group</button>
+          <button class="btn-text">Edit</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Gradient Ribbon (anchored to conversation)</div>
+        <div class="demo-thread">
+          <div class="msg-row"><div class="bubble in mid">How's the build?</div></div>
+          <div class="gap"></div>
+          <div class="msg-row out"><div class="bubble out mid">Green.</div></div>
+          <div class="msg-row out"><div class="bubble out mid">Shipping now.</div></div>
+          <div class="msg-row out"><div class="bubble out">Notice the color flows across all three of mine →</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-6">6<br>tail</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-18">18<br>bubble</div>
+          <div class="radius-box r-20">20<br>btn</div>
+          <div class="radius-box r-28">28<br>popover</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

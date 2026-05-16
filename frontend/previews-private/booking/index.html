@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Booking.com iOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --surface: #F2F2F2;
+    --surface-deep: #E6E6E6;
+    --divider: #E0E0E0;
+    --text: #1A1A1A;
+    --text-secondary: #6B6B6B;
+    --text-tertiary: #949494;
+    --blue: #003580;
+    --cta: #0071C2;
+    --cta-pressed: #005A9C;
+    --blue-tint: #E7F0F7;
+    --yellow: #FEBB02;
+    --success: #008009;
+    --deal: #CC0000;
+    --warning: #F5A623;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #E4E4E4; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; color: var(--blue); }
+  .page-chip { background: var(--cta); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 660px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #0a0a0a; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(26,26,26,0.45), 0 0 0 2px rgba(26,26,26,0.10) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--surface); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 20; }
+
+  /* Navy app bar */
+  .appbar { background: var(--blue); padding: 46px 16px 14px; flex-shrink: 0; }
+  .appbar-row { display: flex; align-items: center; gap: 12px; }
+  .ab-back { color: #fff; }
+  .ab-back svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2.5; fill: none; }
+  .ab-title { color: #fff; font-size: 16px; font-weight: 700; flex: 1; }
+  .ab-sub { color: rgba(255,255,255,0.85); font-size: 12px; margin-top: 2px; }
+
+  /* Scroll body */
+  .scroll-body { flex: 1; overflow: hidden; padding: 14px 16px 0; }
+
+  /* Search form card */
+  .search-card { background: var(--canvas); border-radius: 8px; box-shadow: 0 2px 6px rgba(26,26,26,0.08); padding: 4px 12px 12px; margin-bottom: 14px; }
+  .sf-row { display: flex; align-items: center; gap: 10px; height: 48px; border-bottom: 1px solid var(--divider); }
+  .sf-row:nth-child(3) { border-bottom: none; }
+  .sf-row svg { width: 18px; height: 18px; stroke: var(--text-secondary); stroke-width: 2; fill: none; }
+  .sf-row span { font-size: 15px; color: var(--text); }
+  .sf-row span.ph { color: var(--text-secondary); }
+  .sf-btn { margin-top: 12px; height: 48px; background: var(--cta); color: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; }
+
+  /* Genius banner */
+  .genius { background: var(--blue); border-radius: 8px; padding: 14px; display: flex; align-items: center; margin-bottom: 14px; }
+  .genius-txt { flex: 1; }
+  .genius-h { color: #fff; font-size: 16px; font-weight: 700; }
+  .genius-s { color: rgba(255,255,255,0.9); font-size: 12px; margin-top: 2px; }
+  .genius-chip { background: var(--yellow); color: var(--blue); font-size: 12px; font-weight: 700; padding: 4px 8px; border-radius: 500px; }
+
+  /* Property card */
+  .prop { background: var(--canvas); border: 1px solid var(--divider); border-radius: 8px; padding: 10px; display: flex; gap: 10px; margin-bottom: 12px; }
+  .prop-photo { width: 96px; height: 116px; border-radius: 8px; flex-shrink: 0; position: relative; overflow: hidden; }
+  .pp-a { background: linear-gradient(150deg, #6E8FB0 0%, #3C5A7A 60%, #21344A 100%); }
+  .pp-a::after { content: ''; position: absolute; inset: 30% 16% 14% 16%; background: #2A415C; border-radius: 4px; box-shadow: 2px 3px 0 #1B2C3F; }
+  .pp-b { background: linear-gradient(150deg, #C9A36E 0%, #9C7448 55%, #5E3F24 100%); }
+  .pp-b::after { content: ''; position: absolute; left: 18%; right: 18%; bottom: 14%; top: 38%; background: #D8C7A6; border-radius: 2px 2px 6px 6px; }
+  .prop-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .prop-name { font-size: 16px; font-weight: 700; color: var(--text); line-height: 1.25; }
+  .prop-loc { font-size: 12px; margin-top: 3px; }
+  .prop-loc a { color: var(--cta); }
+  .prop-loc .dist { color: var(--text-secondary); }
+  .prop-policy { font-size: 12px; color: var(--success); margin-top: 4px; font-weight: 600; }
+  .score-row { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+  .score-badge { background: var(--blue); color: #fff; font-size: 14px; font-weight: 700; padding: 4px 7px; border-radius: 5px; font-variant-numeric: tabular-nums; }
+  .score-word { font-size: 13px; font-weight: 700; color: var(--text); }
+  .score-count { font-size: 11px; color: var(--text-secondary); }
+  .prop-price { margin-top: auto; text-align: right; }
+  .price-strike { font-size: 12px; color: var(--text-tertiary); text-decoration: line-through; }
+  .price-now { font-size: 17px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+  .price-fine { font-size: 11px; color: var(--text-secondary); }
+  .price-scarce { font-size: 12px; font-weight: 600; color: var(--deal); margin-top: 2px; }
+
+  /* Tab bar */
+  .tab-bar { height: 58px; background: var(--canvas); border-top: 0.5px solid var(--divider); display: flex; align-items: center; justify-content: space-around; padding: 6px 4px 14px; flex-shrink: 0; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--text-secondary); font-size: 10px; font-weight: 600; }
+  .tab.active { color: var(--cta); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--canvas); border: 1px solid var(--divider); border-radius: 8px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 8px; padding: 14px; min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 500; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--text); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 210px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-17 { font-size: 17px; font-weight: 700; }
+  .t-price { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .t-15 { font-size: 15px; font-weight: 400; line-height: 1.45; }
+  .t-14 { font-size: 14px; font-weight: 700; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 600; color: var(--text-secondary); letter-spacing: 0.1px; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; }
+  .btn-primary { background: var(--cta); color: #fff; font-size: 16px; padding: 15px 28px; border-radius: 8px; }
+  .btn-primary:active { background: var(--cta-pressed); transform: scale(0.98); }
+  .btn-outline { background: #fff; color: var(--cta); border: 1.5px solid var(--cta); font-size: 15px; padding: 13px 22px; border-radius: 8px; }
+  .btn-text { background: transparent; color: var(--cta); font-size: 14px; font-weight: 700; padding: 12px 4px; cursor: pointer; border: none; }
+  .chip { padding: 8px 16px; background: #fff; color: var(--text); font-size: 12px; font-weight: 600; border-radius: 500px; border: 1px solid var(--divider); }
+  .chip.active { background: var(--blue-tint); color: var(--cta); border: 1.5px solid var(--cta); font-weight: 700; }
+
+  /* Score badge demo */
+  .badge-demo { display: flex; flex-direction: column; gap: 12px; }
+  .bd-line { display: flex; align-items: center; gap: 8px; }
+  .bd-num { background: var(--blue); color: #fff; font-size: 15px; font-weight: 700; padding: 5px 8px; border-radius: 5px; font-variant-numeric: tabular-nums; }
+  .bd-word { font-size: 14px; font-weight: 700; color: var(--text); }
+  .bd-count { font-size: 12px; color: var(--text-secondary); }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--cta); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-5 { border-radius: 5px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">Booking.com iOS — Design Tokens</div>
+    <div class="page-chip">Light</div>
+  </div>
+  <p class="page-subtitle">Dense white marketplace (#FFFFFF). Booking Blue #003580 owns brand/structure (app bar, Genius banner, the score badge); CTA Blue #0071C2 owns action (Search, Reserve, links). The navy review-score badge with a one-decimal score is the signature.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+
+          <div class="appbar">
+            <div class="appbar-row">
+              <div class="ab-back"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+              <div>
+                <div class="ab-title">Lisbon</div>
+                <div class="ab-sub">Fri 12 Jul — Sun 14 Jul · 2 adults</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="scroll-body">
+            <div class="search-card">
+              <div class="sf-row"><svg viewBox="0 0 24 24"><path d="M12 21s-7-5.2-7-11a7 7 0 0 1 14 0c0 5.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><span>Lisbon, Portugal</span></div>
+              <div class="sf-row"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg><span>Fri 12 Jul — Sun 14 Jul</span></div>
+              <div class="sf-row"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21c0-4 3.5-6 7-6s7 2 7 6"/></svg><span>2 adults · 0 children · 1 room</span></div>
+              <div class="sf-btn">Search</div>
+            </div>
+
+            <div class="genius">
+              <div class="genius-txt">
+                <div class="genius-h">Genius</div>
+                <div class="genius-s">You're a Genius level 1 member</div>
+              </div>
+              <div class="genius-chip">10% off</div>
+            </div>
+
+            <div class="prop">
+              <div class="prop-photo pp-a"></div>
+              <div class="prop-info">
+                <div class="prop-name">Grand Plaza Hotel</div>
+                <div class="prop-loc"><a>City centre</a> <span class="dist">· 0.5 km from centre</span></div>
+                <div class="prop-policy">Free cancellation</div>
+                <div class="score-row">
+                  <span class="score-badge">8.9</span>
+                  <span class="score-word">Fabulous</span>
+                  <span class="score-count">· 1,284 reviews</span>
+                </div>
+                <div class="prop-price">
+                  <div class="price-strike">$240</div>
+                  <div class="price-now">$198</div>
+                  <div class="price-fine">Includes taxes and fees</div>
+                  <div class="price-scarce">Only 2 rooms left</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="prop">
+              <div class="prop-photo pp-b"></div>
+              <div class="prop-info">
+                <div class="prop-name">Riverside Boutique Inn</div>
+                <div class="prop-loc"><a>Alfama</a> <span class="dist">· 1.2 km from centre</span></div>
+                <div class="prop-policy">Breakfast included</div>
+                <div class="score-row">
+                  <span class="score-badge">9.2</span>
+                  <span class="score-word">Superb</span>
+                  <span class="score-count">· 642 reviews</span>
+                </div>
+                <div class="prop-price">
+                  <div class="price-now">$164</div>
+                  <div class="price-fine">Includes taxes and fees</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span>Saved</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg><span>Bookings</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21c0-4 3.5-6 7-6s7 2 7 6"/></svg><span>Profile</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 4.5 1.5c0 1.5-2 2-2 3"/><circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/></svg><span>Help</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#003580;"><div class="name">Booking Blue</div>#003580</div>
+          <div class="swatch" style="background:#0071C2;"><div class="name">CTA Blue</div>#0071C2</div>
+          <div class="swatch" style="background:#005A9C;"><div class="name">CTA Pressed</div>#005A9C</div>
+          <div class="swatch light" style="background:#E7F0F7;"><div class="name">Blue Tint</div>#E7F0F7</div>
+          <div class="swatch" style="background:#FEBB02; color:#1A1A1A;"><div class="name">Brand Yellow</div>#FEBB02</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">Canvas</div>#FFFFFF</div>
+          <div class="swatch light" style="background:#F2F2F2;"><div class="name">Surface</div>#F2F2F2</div>
+          <div class="swatch light" style="background:#E0E0E0;"><div class="name">Divider</div>#E0E0E0</div>
+          <div class="swatch" style="background:#1A1A1A;"><div class="name">Text Primary</div>#1A1A1A</div>
+          <div class="swatch" style="background:#6B6B6B;"><div class="name">Text Secondary</div>#6B6B6B</div>
+          <div class="swatch" style="background:#008009;"><div class="name">Success</div>#008009</div>
+          <div class="swatch" style="background:#CC0000;"><div class="name">Deal / Urgency</div>#CC0000</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter (BookingSans)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 22pt · 700</div><div class="type-sample t-22">Search</div></div>
+        <div class="type-row"><div class="type-meta">Section · 18pt · 700</div><div class="type-sample t-18">Browse by property type</div></div>
+        <div class="type-row"><div class="type-meta">Property Name · 17pt · 700</div><div class="type-sample t-17">Grand Plaza Hotel</div></div>
+        <div class="type-row"><div class="type-meta">Price · 17pt · 700 tnum</div><div class="type-sample t-price">$198</div></div>
+        <div class="type-row"><div class="type-meta">Score Word · 14pt · 700</div><div class="type-sample t-14">Fabulous</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 400</div><div class="type-sample t-15">Spacious rooms with a view over the old town.</div></div>
+        <div class="type-row"><div class="type-meta">Meta / Location · 13pt · 400</div><div class="type-sample t-13">0.5 km from centre · 1 night, 2 adults</div></div>
+        <div class="type-row"><div class="type-meta">Tab · 11pt · 600</div><div class="type-sample t-11">Bookings</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Search</button>
+          <button class="btn btn-outline">Change search</button>
+          <button class="btn-text">Show on map</button>
+          <div class="chip active">Free cancellation</div>
+          <div class="chip">Breakfast</div>
+          <div class="chip">5 stars</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Distinctive — Review-Score Badge</div>
+        <div class="badge-demo">
+          <div class="bd-line"><span class="bd-num">9.2</span><span class="bd-word">Superb</span><span class="bd-count">· 642 reviews</span></div>
+          <div class="bd-line"><span class="bd-num">8.9</span><span class="bd-word">Fabulous</span><span class="bd-count">· 1,284 reviews</span></div>
+          <div class="bd-line"><span class="bd-num">8.1</span><span class="bd-word">Very good</span><span class="bd-count">· 318 reviews</span></div>
+          <div class="bd-line"><span class="bd-num">7.4</span><span class="bd-word">Good</span><span class="bd-count">· 96 reviews</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-5">5</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Obsidian iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #1E1E1E;
+    --surface-1: #262626;
+    --surface-2: #2D2D2D;
+    --surface-3: #363636;
+    --divider: #363636;
+    --text: #DCDDDE;
+    --text-secondary: #999999;
+    --text-tertiary: #6B6B6B;
+    --purple: #7C3AED;
+    --purple-link: #A78BFA;
+    --purple-pressed: #6D28D9;
+    --purple-tint: rgba(124,58,237,0.14);
+    --external: #7C9CBF;
+    --success: #4ADE80;
+    --error: #F87171;
+    --highlight: rgba(255,213,79,0.25);
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+    --mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1120px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; flex-wrap: wrap; }
+  .mark { width: 30px; height: 30px; border-radius: 8px; background: var(--purple); display: flex; align-items: center; justify-content: center; }
+  .mark svg { width: 18px; height: 18px; fill: #fff; }
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+  .page-chip { background: var(--purple); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 15px; max-width: 700px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 320px; height: 680px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.05) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  /* Ribbon */
+  .ribbon { width: 40px; background: var(--surface-1); display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 52px 0 14px; }
+  .ribbon .ri { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); }
+  .ribbon .ri.active { color: var(--purple-link); }
+  .ribbon .ri svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .ribbon .spacer { flex: 1; }
+
+  .main { flex: 1; display: flex; flex-direction: column; }
+  .note-toolbar { height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 40px 14px 8px; }
+  .note-title { font-size: 15px; font-weight: 600; color: var(--text); }
+  .nt-icons { display: flex; gap: 14px; color: var(--text-secondary); }
+  .nt-icons svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Editor */
+  .editor { flex: 1; overflow-y: auto; scrollbar-width: none; padding: 4px 16px; }
+  .editor::-webkit-scrollbar { display: none; }
+  .ed-h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; margin: 8px 0 10px; }
+  .src { font-family: var(--mono); font-size: 14px; line-height: 1.55; color: var(--text); margin-bottom: 8px; }
+  .syn { color: var(--text-tertiary); }
+  .wl { color: var(--purple-link); text-decoration: underline; text-decoration-color: rgba(167,139,250,0.5); }
+  .ext { color: var(--external); }
+  .hl { background: var(--highlight); border-radius: 2px; padding: 0 2px; }
+  .bq { border-left: 3px solid var(--purple); padding-left: 10px; color: var(--text-secondary); font-family: var(--mono); font-size: 14px; line-height: 1.55; margin: 8px 0; }
+  .code-blk { background: var(--surface-2); border-radius: 6px; padding: 10px 12px; font-family: var(--mono); font-size: 13px; color: var(--text); margin: 8px 0; }
+  .tags-line { display: flex; gap: 6px; margin: 10px 0 4px; flex-wrap: wrap; }
+  .tag-pill { background: var(--purple-tint); color: var(--purple-link); font-size: 13px; font-weight: 600; padding: 3px 9px; border-radius: 500px; }
+
+  /* Backlinks */
+  .backlinks { background: var(--surface-1); border-top: 1px solid var(--divider); padding: 12px 14px 8px; }
+  .bl-head { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 10px; display: flex; gap: 8px; }
+  .bl-item { margin-bottom: 12px; }
+  .bl-title { font-size: 14px; font-weight: 600; color: var(--text); }
+  .bl-ctx { font-size: 13px; color: var(--text-secondary); margin-top: 3px; line-height: 1.45; }
+  .bl-ctx .wl { text-decoration: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 10px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 16px; min-height: 90px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: var(--mono); border: 1px solid var(--divider); color: #fff; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #000; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: var(--mono); font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-20 { font-size: 20px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 400; font-family: var(--mono); }
+  .t-15 { font-size: 15px; font-weight: 400; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-secondary); }
+
+  /* Graph demo */
+  .graph-demo { background: var(--canvas); border-radius: 8px; height: 200px; position: relative; overflow: hidden; }
+  .gnode { position: absolute; border-radius: 50%; background: var(--purple); transform: translate(-50%, -50%); }
+  .gnode.active { background: var(--purple-link); box-shadow: 0 0 0 8px var(--purple-tint); }
+  .gnode .glabel { position: absolute; top: 110%; left: 50%; transform: translateX(-50%); font-size: 11px; font-weight: 600; color: var(--text-secondary); white-space: nowrap; }
+  .gedge { position: absolute; height: 1px; background: var(--divider); transform-origin: 0 0; }
+  .gedge.bright { background: var(--purple); }
+
+  /* File tree demo */
+  .ft-row { display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 8px; font-size: 15px; }
+  .ft-row.active { background: var(--purple-tint); border-radius: 4px; position: relative; }
+  .ft-row.active::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--purple); }
+  .ft-row svg { width: 14px; height: 14px; stroke: var(--text-secondary); stroke-width: 2; fill: none; flex-shrink: 0; }
+  .ft-row.active svg { stroke: var(--purple-link); }
+  .ft-chev { width: 10px; }
+  .ft-mod { width: 6px; height: 6px; border-radius: 50%; background: var(--purple-link); margin-left: auto; }
+
+  /* Command palette demo */
+  .cmd { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 10px; overflow: hidden; }
+  .cmd-input { height: 44px; display: flex; align-items: center; gap: 10px; padding: 0 16px; border-bottom: 1px solid var(--divider); font-family: var(--mono); }
+  .cmd-input .gt { color: var(--text-tertiary); }
+  .cmd-input input { background: transparent; border: none; outline: none; color: var(--text); font-family: var(--mono); font-size: 14px; flex: 1; caret-color: var(--purple-link); }
+  .cmd-input input::placeholder { color: var(--text-tertiary); }
+  .cmd-row { height: 38px; display: flex; align-items: center; padding: 0 16px; font-family: var(--mono); font-size: 14px; }
+  .cmd-row.foc { background: var(--purple-tint); }
+  .cmd-row .cl { flex: 1; }
+  .cmd-row .cs { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-size: 15px; font-weight: 600; padding: 9px 16px; border-radius: 6px; border: none; cursor: pointer; letter-spacing: -0.1px; height: 34px; }
+  .btn-primary { background: var(--purple); color: #fff; }
+  .btn-primary:active { background: var(--purple-pressed); transform: scale(0.98); }
+  .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--divider); }
+  .btn-ghost:active { background: var(--surface-2); }
+
+  /* Radius */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 72px; height: 72px; background: var(--purple); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-6 { border-radius: 6px; }
+  .r-10 { border-radius: 10px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="mark">
+      <svg viewBox="0 0 24 24"><path d="M14 2 6 5 4 14l5 8 7-2 4-9zM12 7l4 7-3 4-5-6z" opacity="0.55"/><path d="M12 7l4 7-3 4z"/></svg>
+    </span>
+    <div class="page-title">Obsidian iOS — Design Tokens</div>
+    <div class="page-chip">Dark</div>
+  </div>
+  <p class="page-subtitle">A deep charcoal workshop (#1E1E1E) for thought. Obsidian Purple (#7C3AED action / #A78BFA links &amp; nodes) is the single connective accent. Two type systems on purpose — Inter for chrome, JetBrains Mono for the markdown source.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="ribbon">
+            <div class="ri active"><svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="8" r="2.5"/><circle cx="12" cy="17" r="2.5"/><path d="M8 7l8 1M16.5 10l-4 5M8.5 8l3 8"/></svg></div>
+            <div class="ri"><svg viewBox="0 0 24 24"><polyline points="6,8 10,12 6,16"/><line x1="12" y1="16" x2="18" y2="16"/></svg></div>
+            <div class="ri"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg></div>
+            <div class="ri"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+            <div class="spacer"></div>
+            <div class="ri"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.5-2.4 1a7 7 0 0 0-1.7-1L16.5 3h-4l-.3 2.5a7 7 0 0 0-1.7 1l-2.4-1-2 3.5L6 10a7 7 0 0 0 0 2l-2 1.5 2 3.5 2.4-1a7 7 0 0 0 1.7 1l.3 2.5h4l.3-2.5a7 7 0 0 0 1.7-1l2.4 1 2-3.5-2-1.5a7 7 0 0 0 .1-1z"/></svg></div>
+          </div>
+
+          <div class="main">
+            <div class="note-toolbar">
+              <div class="note-title">Knowledge Graphs.md</div>
+              <div class="nt-icons">
+                <svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg>
+              </div>
+            </div>
+
+            <div class="editor">
+              <div class="ed-h1">Knowledge Graphs</div>
+              <div class="src"><span class="syn">## </span>Why notes connect</div>
+              <div class="src">A vault becomes a graph when you link with <span class="wl">[[Wikilinks]]</span> instead of folders.</div>
+              <div class="src">See also <span class="wl">[[Backlinks]]</span> and the <span class="ext">https://obsidian.md</span> docs.</div>
+              <div class="bq"><span class="syn">&gt; </span>Tools for thinking, not a product to consume.</div>
+              <div class="src">The idea of <span class="hl">==spaced linking==</span> compounds over years.</div>
+              <div class="code-blk">graph.addEdge(noteA, noteB)</div>
+              <div class="tags-line">
+                <span class="tag-pill">#pkm</span>
+                <span class="tag-pill">#evergreen</span>
+              </div>
+            </div>
+
+            <div class="backlinks">
+              <div class="bl-head">Linked Mentions <span>2</span></div>
+              <div class="bl-item">
+                <div class="bl-title">Backlinks</div>
+                <div class="bl-ctx">…the inverse of <span class="wl">[[Knowledge Graphs]]</span> — every note pointing here.</div>
+              </div>
+              <div class="bl-item">
+                <div class="bl-title">Daily · 2026-05-16</div>
+                <div class="bl-ctx">Re-read <span class="wl">[[Knowledge Graphs]]</span> before the talk.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#1E1E1E;"><div class="name">Canvas</div>#1E1E1E</div>
+          <div class="swatch" style="background:#262626;"><div class="name">Surface 1</div>#262626</div>
+          <div class="swatch" style="background:#2D2D2D;"><div class="name">Surface 2</div>#2D2D2D</div>
+          <div class="swatch" style="background:#363636;"><div class="name">Surface 3 / Divider</div>#363636</div>
+          <div class="swatch light" style="background:#DCDDDE;"><div class="name">Text Primary</div>#DCDDDE</div>
+          <div class="swatch" style="background:#999999; color:#000;"><div class="name">Text Secondary</div>#999999</div>
+          <div class="swatch" style="background:#6B6B6B;"><div class="name">Text / Syntax</div>#6B6B6B</div>
+          <div class="swatch" style="background:#7C3AED;"><div class="name">Obsidian Purple</div>#7C3AED</div>
+          <div class="swatch" style="background:#A78BFA; color:#000;"><div class="name">Purple Link / Node</div>#A78BFA</div>
+          <div class="swatch" style="background:#6D28D9;"><div class="name">Purple Pressed</div>#6D28D9</div>
+          <div class="swatch" style="background:#7C9CBF;"><div class="name">External Link</div>#7C9CBF</div>
+          <div class="swatch" style="background:#F87171;"><div class="name">Error</div>#F87171</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Graph View — nodes &amp; edges</div>
+        <div class="graph-demo">
+          <div class="gedge bright" style="left:50%; top:50%; width:78px; transform:rotate(-150deg);"></div>
+          <div class="gedge bright" style="left:50%; top:50%; width:90px; transform:rotate(-25deg);"></div>
+          <div class="gedge" style="left:50%; top:50%; width:70px; transform:rotate(70deg);"></div>
+          <div class="gedge" style="left:18%; top:30%; width:60px; transform:rotate(35deg);"></div>
+          <div class="gnode active" style="left:50%; top:50%; width:18px; height:18px;"><span class="glabel">Knowledge Graphs</span></div>
+          <div class="gnode" style="left:18%; top:30%; width:11px; height:11px;"></div>
+          <div class="gnode" style="left:80%; top:38%; width:13px; height:13px;"></div>
+          <div class="gnode" style="left:62%; top:78%; width:9px; height:9px;"></div>
+          <div class="gnode" style="left:34%; top:62%; width:8px; height:8px;"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter + JetBrains Mono</div>
+        <div class="type-row"><div class="type-meta">Note Title · 26pt · 700 (Inter)</div><div class="type-sample t-26">Knowledge Graphs</div></div>
+        <div class="type-row"><div class="type-meta">Editor H2 · 20pt · 700 (Inter)</div><div class="type-sample t-20">Why notes connect</div></div>
+        <div class="type-row"><div class="type-meta">Reading Body · 16pt · 400 (Inter)</div><div class="type-sample t-16">A vault becomes a graph when you link.</div></div>
+        <div class="type-row"><div class="type-meta">Source Body · 15pt · 400 (Mono)</div><div class="type-sample t-15m">## Why notes <span class="wl">[[connect]]</span></div></div>
+        <div class="type-row"><div class="type-meta">File Row · 15pt · 400 (Inter)</div><div class="type-sample t-15">Daily Note.md</div></div>
+        <div class="type-row"><div class="type-meta">Backlink Context · 13pt · 400</div><div class="type-sample t-13">…the inverse of the current note</div></div>
+        <div class="type-row"><div class="type-meta">Pane Title · 11pt · 700 UP</div><div class="type-sample t-11">Linked Mentions</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">File Tree</div>
+        <div class="ft-row"><svg viewBox="0 0 24 24"><polyline points="9,6 15,12 9,18"/></svg><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 3h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Notes</div>
+        <div class="ft-row active" style="padding-left:30px;"><span class="ft-chev"></span><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><polyline points="14,3 14,8 19,8"/></svg>Knowledge Graphs.md<span class="ft-mod"></span></div>
+        <div class="ft-row" style="padding-left:30px;"><span class="ft-chev"></span><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><polyline points="14,3 14,8 19,8"/></svg>Backlinks.md</div>
+        <div class="ft-row" style="padding-left:30px;"><span class="ft-chev"></span><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><polyline points="14,3 14,8 19,8"/></svg>Daily · 2026-05-16.md</div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Command Palette — focused = purple</div>
+        <div class="cmd">
+          <div class="cmd-input"><span class="gt">&gt;</span><input value="Type a command…" readonly></div>
+          <div class="cmd-row foc"><span class="cl">Open graph view</span><span class="cs">⌘ G</span></div>
+          <div class="cmd-row"><span class="cl">Create new note</span><span class="cs">⌘ N</span></div>
+          <div class="cmd-row"><span class="cl">Toggle reading view</span><span class="cs">⌘ E</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Create note</button>
+          <button class="btn btn-ghost">Cancel</button>
+          <span class="tag-pill">#pkm</span>
+          <span class="tag-pill">#evergreen</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Workshop Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Obsidian's canvas is a deep charcoal <code>#1E1E1E</code> — a developer-tool workshop, not a glossy app. Obsidian Purple is the single connective accent: <code>#7C3AED</code> for actions, <code>#A78BFA</code> for <code>[[wikilinks]]</code>, active graph nodes, and selection. Two type systems exist on purpose — Inter for chrome and reading, JetBrains Mono for the source editor and command palette — and markdown syntax markers stay dimmed-but-visible in <code>#6B6B6B</code> so you always know you're editing text. Elevation is a charcoal step plus a 1pt <code>#363636</code> divider; real shadows appear only on the floating command palette. The graph view and backlinks pane are the twin pillars of the knowledge system.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
