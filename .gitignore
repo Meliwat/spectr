@@ -48,3 +48,4 @@ promo/out/
 build/
 dist/
 *.egg-info/
+.gstack/
