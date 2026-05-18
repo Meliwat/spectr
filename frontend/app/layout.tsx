@@ -17,7 +17,7 @@ const SITE_URL = (process.env.SITE_URL || 'https://www.spectr.to').replace(/\/$/
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Spectr — See an app. Ship an app.',
+    default: 'Spectr — Connect Spectr to Claude in one command',
     template: '%s — Spectr',
   },
   description:
@@ -45,14 +45,14 @@ export const metadata: Metadata = {
     type: 'website',
     siteName: 'Spectr',
     url: SITE_URL,
-    title: 'Spectr — See an app. Ship an app.',
+    title: 'Spectr — Connect Spectr to Claude in one command',
     description:
       'Record any mobile app. Spectr turns it into a production-ready blueprint your AI coding agent can build from.',
     locale: 'en_US',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Spectr — See an app. Ship an app.',
+    title: 'Spectr — Connect Spectr to Claude in one command',
     description:
       'Record any mobile app. Spectr turns it into a production-ready blueprint your AI coding agent can build from.',
   },
