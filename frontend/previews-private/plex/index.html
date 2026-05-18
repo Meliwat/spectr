@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Plex iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #1F2326;
+    --surface-1: #282C30;
+    --surface-2: #32373B;
+    --surface-3: #3C4146;
+    --divider: #34393D;
+    --text-primary: #F2F3F4;
+    --text-secondary: #9BA0A4;
+    --text-tertiary: #6B7075;
+    --ink: #FFFFFF;
+    --yellow: #E5A00D;
+    --yellow-pressed: #C98A09;
+    --yellow-ink: #1A1304;
+    --online: #4CAF50;
+    --offline: #6B7075;
+    --error: #E5484D;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--yellow); color: var(--yellow-ink); font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 30; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); flex-shrink: 0; }
+  .scroll-body { flex: 1; overflow-y: auto; scrollbar-width: none; display: flex; flex-direction: column; }
+  .scroll-body::-webkit-scrollbar { display: none; }
+
+  /* Server picker bar */
+  .server-bar { display: flex; align-items: center; gap: 8px; padding: 6px 20px 14px; }
+  .server-pill { display: flex; align-items: center; gap: 8px; background: var(--surface-1); border: 1px solid var(--divider); border-radius: 999px; padding: 7px 14px; }
+  .server-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--online); }
+  .server-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+  .server-chev { width: 14px; height: 14px; stroke: var(--text-secondary); stroke-width: 2.4; fill: none; }
+  .server-spacer { flex: 1; }
+  .icon-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
+  .icon-btn svg { width: 20px; height: 20px; stroke: var(--text-primary); stroke-width: 2; fill: none; }
+
+  /* On Deck rail */
+  .rail-head { display: flex; align-items: center; justify-content: space-between; padding: 4px 20px 12px; }
+  .rail-title { font-size: 20px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.3px; }
+  .rail-all { font-size: 13px; font-weight: 600; color: var(--yellow); }
+  .rail { display: flex; gap: 12px; padding: 0 20px 22px; overflow-x: auto; scrollbar-width: none; }
+  .rail::-webkit-scrollbar { display: none; }
+  .deck { width: 220px; flex-shrink: 0; }
+  .deck-art { width: 220px; height: 124px; border-radius: 6px; position: relative; overflow: hidden; }
+  .deck-art.a1 { background: linear-gradient(150deg, #2E4A6B 0%, #1A2A3B 100%); }
+  .deck-art.a2 { background: linear-gradient(150deg, #4B3A2E 0%, #2B1F14 100%); }
+  .deck-play { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 42px; height: 42px; border-radius: 50%; background: rgba(0,0,0,0.55); display: flex; align-items: center; justify-content: center; }
+  .deck-play svg { width: 16px; height: 16px; fill: #FFF; margin-left: 2px; }
+  .deck-prog { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(255,255,255,0.22); }
+  .deck-prog span { display: block; height: 100%; background: var(--yellow); }
+  .deck-title { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-top: 8px; }
+  .deck-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+  /* Library grid */
+  .lib-head { padding: 4px 20px 12px; }
+  .lib-title { font-size: 20px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.3px; }
+  .lib-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0 20px 20px; }
+  .poster { aspect-ratio: 2/3; border-radius: 6px; position: relative; overflow: hidden; }
+  .poster.p1 { background: linear-gradient(160deg, #5B3A82 0%, #2A1B3D 100%); }
+  .poster.p2 { background: linear-gradient(160deg, #234E70 0%, #14283B 100%); }
+  .poster.p3 { background: linear-gradient(160deg, #6B3A2E 0%, #3B1F14 100%); }
+  .poster.p4 { background: linear-gradient(160deg, #2E5B4A 0%, #143B2A 100%); }
+  .poster.p5 { background: linear-gradient(160deg, #5B5B2E 0%, #3B3B14 100%); }
+  .poster.p6 { background: linear-gradient(160deg, #3A3A5B 0%, #1F1F3B 100%); }
+  .unwatched { position: absolute; top: 7px; right: 7px; width: 9px; height: 9px; border-radius: 50%; background: var(--yellow); box-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+
+  /* Tab bar */
+  .tab-bar { height: 64px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: rgba(31,35,38,0.96); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); flex-shrink: 0; }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 4px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--yellow); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 600; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--yellow); color: var(--yellow-ink); font-size: 16px; padding: 14px 28px; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px; }
+  .btn-primary svg { width: 16px; height: 16px; fill: var(--yellow-ink); }
+  .btn-primary:active { background: var(--yellow-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1px solid var(--surface-3); font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 8px; }
+  .btn-ghost { background: var(--surface-2); color: var(--text-primary); font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 8px; }
+  .btn-text { background: transparent; color: var(--yellow); font-size: 14px; font-weight: 600; padding: 12px 0; text-decoration: none; border: none; cursor: pointer; }
+
+  /* Server status rows */
+  .srv-list { display: flex; flex-direction: column; gap: 4px; }
+  .srv { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 8px; background: var(--surface-2); }
+  .srv.sel { background: var(--surface-3); }
+  .srv-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .srv-dot.on { background: var(--online); }
+  .srv-dot.off { background: var(--offline); }
+  .srv-info { flex: 1; }
+  .srv-name { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .srv-meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .srv-check { width: 18px; height: 18px; stroke: var(--yellow); stroke-width: 2.5; fill: none; }
+
+  /* Progress bars */
+  .prog-demo { display: flex; flex-direction: column; gap: 14px; }
+  .prog-track { height: 4px; background: var(--surface-3); border-radius: 2px; overflow: hidden; }
+  .prog-track span { display: block; height: 100%; background: var(--yellow); }
+  .prog-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--yellow); color: var(--yellow-ink); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 10px; background: var(--yellow); }
+  .logo svg { width: 24px; height: 24px; }
+  code { font-family: 'SF Mono', Menlo, monospace; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; font-size: 12px; color: var(--yellow); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 32 32"><path d="M9 3h7.5l8 13-8 13H9l8-13z" fill="#1A1304"/></svg>
+    </span>
+    <div class="page-title">Plex iOS — Design Tokens</div>
+    <div class="page-chip">Cool Charcoal</div>
+  </div>
+  <p class="page-subtitle">Cool charcoal canvas (#1F2326, never true black) with a single Plex Yellow (#E5A00D) accent paired with dark #1A1304 button text. The On Deck resume rail and the library poster grid sit beneath a multi-server status picker.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="scroll-body">
+            <div class="server-bar">
+              <div class="server-pill">
+                <span class="server-dot"></span>
+                <span class="server-name">Home Server</span>
+                <svg class="server-chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+              <div class="server-spacer"></div>
+              <div class="icon-btn"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg></div>
+              <div class="icon-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.13-1.3l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2.2-1.3L14 2h-4l-.27 2.4a7 7 0 0 0-2.2 1.3l-2.4-1-2 3.4 2 1.6A7 7 0 0 0 5 12c0 .44.05.87.13 1.3l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2.2 1.3L10 22h4l.27-2.4a7 7 0 0 0 2.2-1.3l2.4 1 2-3.4-2-1.6c.08-.43.13-.86.13-1.3z"/></svg></div>
+            </div>
+
+            <div class="rail-head">
+              <span class="rail-title">On Deck</span>
+              <span class="rail-all">See All</span>
+            </div>
+            <div class="rail">
+              <div class="deck">
+                <div class="deck-art a1">
+                  <div class="deck-play"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></div>
+                  <div class="deck-prog"><span style="width:64%"></span></div>
+                </div>
+                <div class="deck-title">The Northern Expanse</div>
+                <div class="deck-sub">S2 · E5 · 22 min left</div>
+              </div>
+              <div class="deck">
+                <div class="deck-art a2">
+                  <div class="deck-play"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></div>
+                  <div class="deck-prog"><span style="width:38%"></span></div>
+                </div>
+                <div class="deck-title">Dust & Rivers</div>
+                <div class="deck-sub">2023 · 1h 02m left</div>
+              </div>
+            </div>
+
+            <div class="lib-head"><span class="lib-title">Movies</span></div>
+            <div class="lib-grid">
+              <div class="poster p1"><span class="unwatched"></span></div>
+              <div class="poster p2"></div>
+              <div class="poster p3"><span class="unwatched"></span></div>
+              <div class="poster p4"></div>
+              <div class="poster p5"><span class="unwatched"></span></div>
+              <div class="poster p6"></div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><span>Library</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 3-6 3z"/></svg><span>Discover</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="14" height="12" rx="2"/><path d="M17 10l4-2v8l-4-2z"/></svg><span>Live TV</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/></svg><span>You</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#1F2326;"><div class="name">Charcoal Canvas</div>#1F2326</div>
+          <div class="swatch" style="background:#282C30;"><div class="name">Surface 1</div>#282C30</div>
+          <div class="swatch" style="background:#32373B;"><div class="name">Surface 2</div>#32373B</div>
+          <div class="swatch" style="background:#3C4146;"><div class="name">Surface 3</div>#3C4146</div>
+          <div class="swatch" style="background:#34393D;"><div class="name">Divider</div>#34393D</div>
+          <div class="swatch" style="background:#E5A00D; color:#1A1304;"><div class="name">Plex Yellow</div>#E5A00D</div>
+          <div class="swatch" style="background:#C98A09; color:#1A1304;"><div class="name">Yellow Pressed</div>#C98A09</div>
+          <div class="swatch" style="background:#1A1304;"><div class="name">Yellow Ink</div>#1A1304</div>
+          <div class="swatch" style="background:#4CAF50;"><div class="name">Online</div>#4CAF50</div>
+          <div class="swatch" style="background:#F2F3F4; color:#1F2326;"><div class="name">Text Primary</div>#F2F3F4</div>
+          <div class="swatch" style="background:#9BA0A4; color:#1F2326;"><div class="name">Text Secondary</div>#9BA0A4</div>
+          <div class="swatch" style="background:#E5484D;"><div class="name">Error</div>#E5484D</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter (Plex product face)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 800</div><div class="type-sample t-32">Library</div></div>
+        <div class="type-row"><div class="type-meta">Hero Title · 26pt · 800</div><div class="type-sample t-26">The Northern Expanse</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">On Deck</div></div>
+        <div class="type-row"><div class="type-meta">Subsection · 18pt · 700</div><div class="type-sample t-18">Recently Added</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Resume where you left off across every device on your server.</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 15pt · 600</div><div class="type-sample t-15m">Dust &amp; Rivers</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">S2 · E5 · 22 min left</div></div>
+        <div class="type-row"><div class="type-meta">Caption · 12pt · 600</div><div class="type-sample t-12">1080p · 5.1</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg> Play</button>
+          <button class="btn btn-outline">Mark as Watched</button>
+          <button class="btn btn-ghost">Add to Playlist</button>
+          <button class="btn-text">More like this</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Server Picker</div>
+        <div class="srv-list">
+          <div class="srv sel">
+            <span class="srv-dot on"></span>
+            <div class="srv-info"><div class="srv-name">Home Server</div><div class="srv-meta">Online · 2,481 items · LAN</div></div>
+            <svg class="srv-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="srv">
+            <span class="srv-dot on"></span>
+            <div class="srv-info"><div class="srv-name">Cabin NAS</div><div class="srv-meta">Online · 612 items · Remote</div></div>
+          </div>
+          <div class="srv">
+            <span class="srv-dot off"></span>
+            <div class="srv-info"><div class="srv-name">Office Mini</div><div class="srv-meta">Offline · last seen 3d ago</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">On Deck Progress Bar</div>
+        <div class="prog-demo">
+          <div><div class="prog-label">Resumable — 64% watched</div><div class="prog-track"><span style="width:64%"></span></div></div>
+          <div><div class="prog-label">Nearly finished — 91%</div><div class="prog-track"><span style="width:91%"></span></div></div>
+          <div><div class="prog-label">Just started — 12%</div><div class="prog-track"><span style="width:12%"></span></div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Plex is dark-first and intentionally <em>not</em> true black — the canvas is a cool charcoal <code>#1F2326</code> so poster art reads as warm against a neutral, calm ground. Surfaces lift to <code>#282C30</code> / <code>#32373B</code> for the server picker and rows. Plex Yellow <code>#E5A00D</code> is the single accent and always pairs with dark ink <code>#1A1304</code> on filled buttons (never white-on-yellow). The yellow appears only on the Play button, the active tab, the On Deck progress bar, the unwatched corner dot, and the selected-server check. Server-status dots use green <code>#4CAF50</code> (online) / gray <code>#6B7075</code> (offline).</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

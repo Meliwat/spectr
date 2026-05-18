@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Vero iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #000000;
+    --surface-1: #0E0E10;
+    --surface-2: #161618;
+    --divider: #232325;
+    --text-primary: #FFFFFF;
+    --text-secondary: #9A9AA0;
+    --text-tertiary: #5E5E64;
+    --ink: #FFFFFF;
+    --vero-teal: #00C2B8;
+    --vero-blue: #0098E6;
+    --vero-grad-a: #00D1C1;
+    --vero-grad-b: #0079D3;
+    --camera-amber: #E8B23A;
+    --success: #2ECC71;
+    --error: #FF4D4F;
+    --font: 'Manrope', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: linear-gradient(135deg, var(--vero-grad-a), var(--vero-grad-b)); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+
+  /* Top bar */
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 2px 18px 12px; }
+  .topbar-logo { font-size: 22px; font-weight: 800; letter-spacing: 2px; background: linear-gradient(135deg, var(--vero-grad-a), var(--vero-grad-b)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .topbar-actions { display: flex; gap: 18px; }
+  .topbar-actions svg { width: 21px; height: 21px; stroke: var(--text-primary); stroke-width: 1.8; fill: none; }
+
+  /* Post-type selector row */
+  .ptypes { display: flex; gap: 0; padding: 6px 12px 12px; justify-content: space-between; border-bottom: 0.5px solid var(--divider); }
+  .ptype { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; color: var(--text-tertiary); }
+  .ptype svg { width: 19px; height: 19px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+  .ptype-label { font-size: 9px; font-weight: 600; letter-spacing: 0.2px; }
+  .ptype.active { color: var(--vero-teal); }
+  .ptype.active svg { stroke: var(--vero-teal); }
+
+  /* Feed */
+  .feed { flex: 1; overflow-y: auto; scrollbar-width: none; }
+  .feed::-webkit-scrollbar { display: none; }
+  .post { padding: 16px 16px 14px; border-bottom: 0.5px solid var(--divider); }
+  .post-head { display: flex; align-items: center; gap: 10px; }
+  .post-av { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--vero-grad-a), var(--vero-grad-b)); flex-shrink: 0; }
+  .post-id { flex: 1; min-width: 0; }
+  .post-name { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+  .post-meta { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; display: flex; align-items: center; gap: 5px; }
+  .post-type-chip { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; color: var(--vero-teal); }
+  .post-type-chip svg { width: 11px; height: 11px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .post-more { color: var(--text-tertiary); font-size: 18px; letter-spacing: 1px; }
+  .post-photo { margin-top: 12px; aspect-ratio: 4/5; border-radius: 10px; background: linear-gradient(160deg, #1C4A52 0%, #0C2A30 60%, #07181B 100%); position: relative; overflow: hidden; }
+  .post-photo::before { content: ''; position: absolute; top: 18%; left: 12%; right: 12%; bottom: 30%; background: linear-gradient(150deg, #2A6068, #123238); border-radius: 6px; }
+  .post-cap { font-size: 13px; color: var(--text-secondary); margin-top: 12px; line-height: 1.5; }
+  .post-actions { display: flex; align-items: center; gap: 22px; margin-top: 14px; color: var(--text-secondary); }
+  .post-act { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; }
+  .post-act svg { width: 19px; height: 19px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+  .post-act.liked { color: var(--vero-teal); }
+  .post-act.liked svg { fill: var(--vero-teal); stroke: var(--vero-teal); }
+
+  /* Book post variant */
+  .post-book { margin-top: 12px; display: flex; gap: 12px; background: var(--surface-1); border: 1px solid var(--divider); border-radius: 10px; padding: 12px; }
+  .book-cover { width: 56px; height: 80px; border-radius: 4px; background: linear-gradient(150deg, #C29A3A, #7A5A18); flex-shrink: 0; }
+  .book-info { flex: 1; }
+  .book-rate { font-size: 11px; color: var(--camera-amber); margin-top: 6px; letter-spacing: 1px; }
+  .book-title { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+  .book-author { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+
+  /* Tab bar */
+  .tab-bar { height: 66px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(0,0,0,0.96); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 500; gap: 3px; }
+  .tab.active { color: var(--vero-teal); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+  .tab-compose svg { width: 27px; height: 27px; }
+  .tab-compose .ring { stroke: url(#vg); stroke-width: 2; fill: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.grad { background: linear-gradient(135deg, var(--vero-grad-a), var(--vero-grad-b)); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-15 { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 500; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase; color: var(--text-tertiary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0.2px; }
+  .btn-primary { background: linear-gradient(135deg, var(--vero-grad-a), var(--vero-grad-b)); color: #FFF; font-size: 15px; padding: 13px 28px; border-radius: 999px; }
+  .btn-primary:active { transform: scale(0.98); filter: brightness(0.94); }
+  .btn-outline { background: transparent; color: var(--vero-teal); border: 1.5px solid var(--vero-teal); font-size: 14px; font-weight: 700; padding: 11px 22px; border-radius: 999px; }
+  .btn-ghost { background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--divider); font-size: 14px; font-weight: 600; padding: 11px 20px; border-radius: 999px; }
+  .btn-text { background: transparent; color: var(--vero-teal); font-size: 14px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Signature: post-type picker */
+  .picker-demo { background: var(--surface-2); border-radius: 14px; padding: 16px; }
+  .picker-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .pick-cell { display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 12px 4px; border-radius: 12px; background: var(--surface-1); border: 1px solid var(--divider); color: var(--text-secondary); }
+  .pick-cell.on { border-color: var(--vero-teal); color: var(--vero-teal); background: rgba(0,194,184,0.08); }
+  .pick-cell svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+  .pick-cell span { font-size: 10px; font-weight: 600; }
+
+  /* Signature: chronological badge */
+  .chrono { display: inline-flex; align-items: center; gap: 8px; background: var(--surface-2); border: 1px solid var(--divider); border-radius: 999px; padding: 9px 16px; color: var(--text-secondary); font-size: 12px; font-weight: 600; }
+  .chrono svg { width: 15px; height: 15px; stroke: var(--vero-teal); stroke-width: 2; fill: none; }
+  .chrono b { color: var(--text-primary); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: linear-gradient(135deg, var(--vero-grad-a), var(--vero-grad-b)); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-10 { border-radius: 10px; }
+  .r-14 { border-radius: 14px; }
+  .r-20 { border-radius: 20px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs><linearGradient id="vg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00D1C1"/><stop offset="1" stop-color="#0079D3"/></linearGradient></defs></svg>
+<div class="page">
+
+  <div class="page-header">
+    <span class="topbar-logo" style="font-size:26px;">VERO</span>
+    <div class="page-title">Vero iOS — Design Tokens</div>
+    <div class="page-chip">True Black</div>
+  </div>
+  <p class="page-subtitle">Pure-black canvas (#000000) — a calm, no-algorithm photographer's app. A single teal→blue gradient (#00D1C1 → #0079D3) carries the brand; the strictly chronological feed and the 7 post-type selector (photo / video / link / music / film / book / place) are the signature surfaces.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="topbar">
+            <span class="topbar-logo">VERO</span>
+            <div class="topbar-actions">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+            </div>
+          </div>
+
+          <div class="ptypes">
+            <div class="ptype active"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/></svg><span class="ptype-label">Photo</span></div>
+            <div class="ptype"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="14" height="12" rx="2"/><path d="M17 10l4-2v8l-4-2z"/></svg><span class="ptype-label">Video</span></div>
+            <div class="ptype"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg><span class="ptype-label">Link</span></div>
+            <div class="ptype"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span class="ptype-label">Music</span></div>
+            <div class="ptype"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 4v16M17 4v16"/></svg><span class="ptype-label">Film</span></div>
+            <div class="ptype"><svg viewBox="0 0 24 24"><path d="M4 4h14a2 2 0 0 1 2 2v15l-9-4-9 4z"/></svg><span class="ptype-label">Book</span></div>
+            <div class="ptype"><svg viewBox="0 0 24 24"><path d="M12 21s-7-6-7-12a7 7 0 0 1 14 0c0 6-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg><span class="ptype-label">Place</span></div>
+          </div>
+
+          <div class="feed">
+            <div class="post">
+              <div class="post-head">
+                <div class="post-av"></div>
+                <div class="post-id">
+                  <div class="post-name">Mara Linden</div>
+                  <div class="post-meta">
+                    <span class="post-type-chip"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/></svg> Photo</span>
+                    · 14m
+                  </div>
+                </div>
+                <span class="post-more">···</span>
+              </div>
+              <div class="post-photo"></div>
+              <div class="post-cap">Last light over the fjord. Shot on film, no edits.</div>
+              <div class="post-actions">
+                <span class="post-act liked"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21.2l8.8-8.8a5.5 5.5 0 0 0 0-7.8z"/></svg> 248</span>
+                <span class="post-act"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> 31</span>
+                <span class="post-act"><svg viewBox="0 0 24 24"><path d="M4 12v8h16v-8M16 6l-4-4-4 4M12 2v14"/></svg></span>
+              </div>
+            </div>
+
+            <div class="post">
+              <div class="post-head">
+                <div class="post-av"></div>
+                <div class="post-id">
+                  <div class="post-name">Jonas Whit</div>
+                  <div class="post-meta">
+                    <span class="post-type-chip"><svg viewBox="0 0 24 24"><path d="M4 4h14a2 2 0 0 1 2 2v15l-9-4-9 4z"/></svg> Book</span>
+                    · 1h
+                  </div>
+                </div>
+                <span class="post-more">···</span>
+              </div>
+              <div class="post-book">
+                <div class="book-cover"></div>
+                <div class="book-info">
+                  <div class="book-title">The Overstory</div>
+                  <div class="book-author">Richard Powers</div>
+                  <div class="book-rate">★★★★★</div>
+                </div>
+              </div>
+              <div class="post-cap">Could not put it down — a year in one sitting.</div>
+              <div class="post-actions">
+                <span class="post-act"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21.2l8.8-8.8a5.5 5.5 0 0 0 0-7.8z"/></svg> 92</span>
+                <span class="post-act"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> 12</span>
+                <span class="post-act"><svg viewBox="0 0 24 24"><path d="M4 12v8h16v-8M16 6l-4-4-4 4M12 2v14"/></svg></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Feed</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Discover</span></div>
+            <div class="tab tab-compose"><svg viewBox="0 0 24 24"><circle class="ring" cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8" stroke="url(#vg)" stroke-width="2" fill="none"/></svg><span>&nbsp;</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M2 7l10 6 10-6"/><rect x="2" y="5" width="20" height="14" rx="2"/></svg><span>Inbox</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/></svg><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#000000; border-color:#232325;"><div class="name">True Black</div>#000000</div>
+          <div class="swatch" style="background:#0E0E10;"><div class="name">Surface 1</div>#0E0E10</div>
+          <div class="swatch" style="background:#161618;"><div class="name">Surface 2</div>#161618</div>
+          <div class="swatch" style="background:#232325;"><div class="name">Divider</div>#232325</div>
+          <div class="swatch grad"><div class="name">Brand Gradient</div>teal → blue</div>
+          <div class="swatch" style="background:#00C2B8;"><div class="name">Vero Teal</div>#00C2B8</div>
+          <div class="swatch" style="background:#0098E6;"><div class="name">Vero Blue</div>#0098E6</div>
+          <div class="swatch" style="background:#00D1C1;"><div class="name">Gradient A</div>#00D1C1</div>
+          <div class="swatch" style="background:#0079D3;"><div class="name">Gradient B</div>#0079D3</div>
+          <div class="swatch" style="background:#E8B23A; color:#1A1206;"><div class="name">Camera Amber</div>#E8B23A</div>
+          <div class="swatch" style="background:#FFFFFF; color:#000;"><div class="name">Text Primary</div>#FFFFFF</div>
+          <div class="swatch" style="background:#9A9AA0; color:#000;"><div class="name">Text Secondary</div>#9A9AA0</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Manrope (clean geometric sans)</div>
+        <div class="type-row"><div class="type-meta">Display · 32pt · 800</div><div class="type-sample t-32">Feed</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 26pt · 700</div><div class="type-sample t-26">Discover</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">People you follow</div></div>
+        <div class="type-row"><div class="type-meta">Post Author · 18pt · 700</div><div class="type-sample t-18">Mara Linden</div></div>
+        <div class="type-row"><div class="type-meta">Title · 15pt · 600</div><div class="type-sample t-15">The Overstory</div></div>
+        <div class="type-row"><div class="type-meta">Caption · 14pt · 500</div><div class="type-sample t-14">Last light over the fjord. Shot on film, no edits.</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 400</div><div class="type-sample t-13">Photo · 14m ago</div></div>
+        <div class="type-row"><div class="type-meta">Type Label · 11pt · 600</div><div class="type-sample t-11">Photo</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Post</button>
+          <button class="btn btn-outline">Connect</button>
+          <button class="btn btn-ghost">Follow</button>
+          <button class="btn-text">See all post types</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Signature — 7 Post-Type Selector</div>
+        <div class="picker-demo">
+          <div class="picker-grid">
+            <div class="pick-cell on"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/></svg><span>Photo</span></div>
+            <div class="pick-cell"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="14" height="12" rx="2"/><path d="M17 10l4-2v8l-4-2z"/></svg><span>Video</span></div>
+            <div class="pick-cell"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg><span>Link</span></div>
+            <div class="pick-cell"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span>Music</span></div>
+            <div class="pick-cell"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 4v16M17 4v16"/></svg><span>Film</span></div>
+            <div class="pick-cell"><svg viewBox="0 0 24 24"><path d="M4 4h14a2 2 0 0 1 2 2v15l-9-4-9 4z"/></svg><span>Book</span></div>
+            <div class="pick-cell"><svg viewBox="0 0 24 24"><path d="M12 21s-7-6-7-12a7 7 0 0 1 14 0c0 6-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg><span>Place</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Signature — Chronological (No Algorithm)</div>
+        <div class="chrono">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          Feed is <b>strictly chronological</b> — newest first, never reordered
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Vero is true-black-first — the canvas is pure <code>#000000</code>, giving photography an OLED-deep, gallery-wall presentation. Surfaces lift only barely to <code>#0E0E10</code> / <code>#161618</code> so cards are felt, not framed. The brand is a single teal→blue gradient (<code>#00D1C1 → #0079D3</code>) used on the wordmark, the primary Post CTA, the compose ring, and active states; the flat <code>#00C2B8</code> teal carries small accents like liked hearts and active post-type icons. The chronological, no-algorithm feed and the 7-type post selector (photo / video / link / music / film / book / place) are the soul of the product — calm, deliberate, anti-doomscroll.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

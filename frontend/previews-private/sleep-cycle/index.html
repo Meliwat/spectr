@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Sleep Cycle iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --night-top: #2A2D5A;
+    --night-mid: #3B4371;
+    --night-deep: #1A1C3D;
+    --canvas: #14152E;
+    --surface-1: #1E2046;
+    --surface-2: #292C58;
+    --divider: #353974;
+    --text-primary: #F2F3FB;
+    --text-secondary: #A6A9D4;
+    --text-tertiary: #6C70A8;
+    --ink: #FFFFFF;
+    --accent: #6C7BFF;
+    --accent-pressed: #5563E6;
+    --aqua: #4FD1E6;
+    --aqua-soft: #7FE3F0;
+    --gold: #FFC56B;
+    --rose: #FF8FB1;
+    --deep-sleep: #3D4ABF;
+    --light-sleep: #6C7BFF;
+    --awake: #FF8FB1;
+    --success: #4FD1A0;
+    --error: #FF6B81;
+    --font: 'Nunito', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: linear-gradient(135deg, var(--night-top), var(--night-mid)); color: #FFF; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050510; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: linear-gradient(180deg, #2A2D5A 0%, #262A52 30%, #1C1F40 65%, #14152E 100%); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 700; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; padding: 0 20px; }
+
+  /* Header zone */
+  .sc-head { padding: 6px 4px 16px; }
+  .sc-eyebrow { font-size: 12px; font-weight: 700; color: var(--aqua); letter-spacing: 1.4px; text-transform: uppercase; }
+  .sc-title { font-size: 26px; font-weight: 800; color: var(--ink); margin-top: 6px; letter-spacing: -0.3px; }
+  .sc-date { font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-top: 4px; }
+
+  /* Sleep score ring */
+  .score-row { display: flex; align-items: center; gap: 18px; padding: 4px 6px 18px; }
+  .ring { width: 92px; height: 92px; flex-shrink: 0; }
+  .ring-num { font-size: 26px; font-weight: 900; fill: var(--ink); }
+  .ring-pct { font-size: 9px; font-weight: 700; fill: var(--text-secondary); }
+  .score-meta .big { font-size: 22px; font-weight: 800; color: var(--ink); }
+  .score-meta .sub { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-top: 3px; }
+  .score-meta .pill { display: inline-block; margin-top: 8px; font-size: 11px; font-weight: 800; color: var(--canvas); background: var(--aqua); padding: 3px 10px; border-radius: 999px; }
+
+  /* Sleep graph card */
+  .graph-card { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 20px; padding: 16px 14px 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
+  .graph-title { font-size: 13px; font-weight: 700; color: var(--text-primary); display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .graph-title span { color: var(--text-tertiary); font-size: 11px; font-weight: 600; }
+  .wave-wrap { position: relative; height: 110px; }
+  .wave-wrap svg { width: 100%; height: 100%; display: block; }
+  .y-labels { position: absolute; top: 0; left: 0; height: 100%; display: flex; flex-direction: column; justify-content: space-between; font-size: 8px; font-weight: 700; color: var(--text-tertiary); padding: 2px 0; }
+  .x-axis { display: flex; justify-content: space-between; margin-top: 6px; font-size: 9px; font-weight: 700; color: var(--text-tertiary); padding: 0 4px; }
+  .legend { display: flex; gap: 14px; margin-top: 12px; padding: 0 4px; }
+  .leg { display: flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; color: var(--text-secondary); }
+  .leg i { width: 9px; height: 9px; border-radius: 3px; display: inline-block; }
+
+  /* Smart alarm card */
+  .alarm-card { display: flex; align-items: center; gap: 14px; background: var(--surface-1); border: 1px solid var(--divider); border-radius: 18px; padding: 14px 16px; margin-top: 14px; }
+  .alarm-ic { width: 38px; height: 38px; border-radius: 12px; background: linear-gradient(135deg, var(--accent), var(--deep-sleep)); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .alarm-ic svg { width: 20px; height: 20px; stroke: #FFF; stroke-width: 2; fill: none; }
+  .alarm-tx { flex: 1; }
+  .alarm-tx .t { font-size: 15px; font-weight: 800; color: var(--text-primary); }
+  .alarm-tx .s { font-size: 11px; font-weight: 600; color: var(--text-secondary); margin-top: 2px; }
+  .alarm-time { font-size: 19px; font-weight: 900; color: var(--ink); }
+
+  /* Tab bar */
+  .tab-bar { height: 70px; display: flex; align-items: flex-start; padding: 10px 4px 16px; justify-content: space-around; background: rgba(20,21,46,0.92); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 700; gap: 4px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--aqua); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 700; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 900; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 800; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 700; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 800; cursor: pointer; border: none; letter-spacing: 0.2px; }
+  .btn-primary { background: linear-gradient(135deg, var(--accent), var(--deep-sleep)); color: #FFF; font-size: 16px; padding: 15px 30px; border-radius: 16px; box-shadow: 0 8px 20px rgba(108,123,255,0.35); }
+  .btn-primary:active { background: var(--accent-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1.5px solid var(--divider); font-size: 14px; font-weight: 700; padding: 13px 22px; border-radius: 14px; }
+  .btn-pill { background: var(--surface-2); color: var(--aqua); border: 1px solid var(--divider); font-size: 14px; font-weight: 700; padding: 11px 20px; border-radius: 999px; }
+  .btn-text { background: transparent; color: var(--aqua); font-size: 14px; font-weight: 700; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Sleep stage chips */
+  .stage-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .stage { font-family: var(--font); font-weight: 800; font-size: 13px; padding: 8px 14px; border-radius: 12px; color: #FFF; }
+  .stage-deep { background: var(--deep-sleep); }
+  .stage-light { background: var(--light-sleep); }
+  .stage-awake { background: var(--awake); color: #3A1430; }
+  .stage-rem { background: var(--aqua); color: #07303A; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: linear-gradient(135deg, var(--accent), var(--deep-sleep)); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-20 { border-radius: 20px; }
+  .r-28 { border-radius: 28px; }
+  .r-pill { border-radius: 999px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Moon logomark */
+  .moon { display: inline-block; width: 44px; height: 44px; }
+  .moon svg { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="moon">
+      <svg viewBox="0 0 48 48"><defs><linearGradient id="mg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6C7BFF"/><stop offset="1" stop-color="#3B4371"/></linearGradient></defs><circle cx="24" cy="24" r="22" fill="url(#mg)"/><path d="M30 13a13 13 0 1 0 7 14 11 11 0 0 1-7-14z" fill="#F2F3FB"/><circle cx="33" cy="16" r="1.6" fill="#FFC56B"/><circle cx="16" cy="14" r="1.1" fill="#7FE3F0"/></svg>
+    </span>
+    <div class="page-title">Sleep Cycle iOS — Design Tokens</div>
+    <div class="page-chip">Night Gradient</div>
+  </div>
+  <p class="page-subtitle">Sleep Cycle wraps its whole UI in a calm indigo→night gradient (#2A2D5A → #3B4371) that fades to a deep canvas (#14152E). The signature sleep-analysis graph plots the night as a soft cyan wave over color-coded stages; Aqua (#4FD1E6) is the single bright accent against an otherwise tranquil, low-glare dark field.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="scroll-body">
+            <div class="sc-head">
+              <div class="sc-eyebrow">Sleep Analysis</div>
+              <div class="sc-title">Last night</div>
+              <div class="sc-date">Mon, May 12 · 23:42 – 07:18</div>
+            </div>
+
+            <div class="score-row">
+              <svg class="ring" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="42" fill="none" stroke="#292C58" stroke-width="9"/>
+                <circle cx="50" cy="50" r="42" fill="none" stroke="#4FD1E6" stroke-width="9" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="58" transform="rotate(-90 50 50)"/>
+                <text class="ring-num" x="50" y="50" text-anchor="middle">78</text>
+                <text class="ring-pct" x="50" y="64" text-anchor="middle">SLEEP QUALITY</text>
+              </svg>
+              <div class="score-meta">
+                <div class="big">7h 36m</div>
+                <div class="sub">Time asleep · 31m to fall asleep</div>
+                <span class="pill">Good night</span>
+              </div>
+            </div>
+
+            <div class="graph-card">
+              <div class="graph-title">Sleep stages <span>23:42 — 07:18</span></div>
+              <div class="wave-wrap">
+                <div class="y-labels"><span>Awake</span><span>Light</span><span>Deep</span></div>
+                <svg viewBox="0 0 280 110" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="wf" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0" stop-color="#6C7BFF" stop-opacity="0.45"/>
+                      <stop offset="1" stop-color="#6C7BFF" stop-opacity="0.02"/>
+                    </linearGradient>
+                  </defs>
+                  <path d="M0,18 C18,16 24,8 38,10 C54,12 60,70 78,84 C96,98 104,92 120,80 C138,66 146,40 164,44 C182,48 190,86 208,90 C226,94 234,58 252,50 C266,44 274,22 280,20 L280,110 L0,110 Z" fill="url(#wf)"/>
+                  <path d="M0,18 C18,16 24,8 38,10 C54,12 60,70 78,84 C96,98 104,92 120,80 C138,66 146,40 164,44 C182,48 190,86 208,90 C226,94 234,58 252,50 C266,44 274,22 280,20" fill="none" stroke="#7FE3F0" stroke-width="2.5" stroke-linecap="round"/>
+                  <circle cx="38" cy="10" r="3" fill="#FF8FB1"/>
+                  <circle cx="78" cy="84" r="3" fill="#3D4ABF"/>
+                  <circle cx="208" cy="90" r="3" fill="#3D4ABF"/>
+                </svg>
+              </div>
+              <div class="x-axis"><span>00</span><span>02</span><span>04</span><span>06</span><span>07</span></div>
+              <div class="legend">
+                <span class="leg"><i style="background:#FF8FB1"></i>Awake</span>
+                <span class="leg"><i style="background:#6C7BFF"></i>Light</span>
+                <span class="leg"><i style="background:#3D4ABF"></i>Deep</span>
+                <span class="leg"><i style="background:#4FD1E6"></i>REM</span>
+              </div>
+            </div>
+
+            <div class="alarm-card">
+              <div class="alarm-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M5 3 2 6M19 3l3 3"/></svg></div>
+              <div class="alarm-tx">
+                <div class="t">Smart alarm</div>
+                <div class="s">Wakes you in your lightest sleep</div>
+              </div>
+              <div class="alarm-time">07:30</div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 13h2l3-9 4 18 3-11h6"/></svg><span>Sleep</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg><span>Journal</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M5 3 2 6"/></svg><span>Alarm</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span>Sounds</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/></svg><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette — Night Gradient</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#2A2D5A;"><div class="name">Night Top</div>#2A2D5A</div>
+          <div class="swatch" style="background:#3B4371;"><div class="name">Night Mid</div>#3B4371</div>
+          <div class="swatch" style="background:#14152E;"><div class="name">Canvas Deep</div>#14152E</div>
+          <div class="swatch" style="background:#1E2046;"><div class="name">Surface 1</div>#1E2046</div>
+          <div class="swatch" style="background:#292C58;"><div class="name">Surface 2</div>#292C58</div>
+          <div class="swatch" style="background:#353974;"><div class="name">Divider</div>#353974</div>
+          <div class="swatch" style="background:#6C7BFF;"><div class="name">Accent Indigo</div>#6C7BFF</div>
+          <div class="swatch" style="background:#4FD1E6; color:#07303A;"><div class="name">Aqua</div>#4FD1E6</div>
+          <div class="swatch" style="background:#3D4ABF;"><div class="name">Deep Sleep</div>#3D4ABF</div>
+          <div class="swatch" style="background:#FF8FB1; color:#3A1430;"><div class="name">Awake / Rose</div>#FF8FB1</div>
+          <div class="swatch" style="background:#FFC56B; color:#3A2A0E;"><div class="name">Gold (stars)</div>#FFC56B</div>
+          <div class="swatch" style="background:#F2F3FB; color:#14152E;"><div class="name">Text Primary</div>#F2F3FB</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Nunito (rounded humanist sans)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 900</div><div class="type-sample t-32">Last night</div></div>
+        <div class="type-row"><div class="type-meta">Hero Stat · 26pt · 800</div><div class="type-sample t-26">7h 36m asleep</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 800</div><div class="type-sample t-22">Sleep stages</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 18pt · 700</div><div class="type-sample t-18">Smart alarm</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Sleep Cycle wakes you in your lightest phase within a 30-minute window.</div></div>
+        <div class="type-row"><div class="type-meta">List Item · 15pt · 600</div><div class="type-sample t-15m">Time to fall asleep · 31m</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Mon, May 12 · 23:42 – 07:18</div></div>
+        <div class="type-row"><div class="type-meta">Eyebrow · 12pt · 700</div><div class="type-sample t-12">SLEEP ANALYSIS</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Start sleep session</button>
+          <button class="btn btn-outline">Edit alarm</button>
+          <button class="btn btn-pill">This week</button>
+          <button class="btn-text">View full night</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Sleep Stage Chips</div>
+        <div class="stage-row">
+          <div class="stage stage-awake">Awake</div>
+          <div class="stage stage-light">Light sleep</div>
+          <div class="stage stage-deep">Deep sleep</div>
+          <div class="stage stage-rem">REM</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Sleep Quality Ring</div>
+        <div class="btn-row">
+          <svg width="80" height="80" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="#292C58" stroke-width="9"/><circle cx="50" cy="50" r="42" fill="none" stroke="#FF8FB1" stroke-width="9" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="172" transform="rotate(-90 50 50)"/><text x="50" y="56" text-anchor="middle" font-size="22" font-weight="900" fill="#F2F3FB" font-family="Nunito">34</text></svg>
+          <svg width="80" height="80" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="#292C58" stroke-width="9"/><circle cx="50" cy="50" r="42" fill="none" stroke="#6C7BFF" stroke-width="9" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="106" transform="rotate(-90 50 50)"/><text x="50" y="56" text-anchor="middle" font-size="22" font-weight="900" fill="#F2F3FB" font-family="Nunito">60</text></svg>
+          <svg width="80" height="80" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="#292C58" stroke-width="9"/><circle cx="50" cy="50" r="42" fill="none" stroke="#4FD1E6" stroke-width="9" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="40" transform="rotate(-90 50 50)"/><text x="50" y="56" text-anchor="middle" font-size="22" font-weight="900" fill="#F2F3FB" font-family="Nunito">85</text></svg>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-28">28</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Ring</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Sleep Cycle is dark-first by nature — it's a bedside app. The canvas is never pure black; it's a deep indigo <code>#14152E</code> beneath the night gradient (<code>#2A2D5A → #3B4371</code>) so the screen glows softly rather than glaring at 3am. Cards lift to <code>#1E2046</code>. Aqua <code>#4FD1E6</code> is the only high-luminance accent and is used sparingly on the active wave and primary stats. Light mode swaps to a pale dawn (<code>#F4F5FC</code>) with the same indigo accent — the sleep graph keeps its stage colors in both modes. Brightness auto-dims further during a tracking session.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

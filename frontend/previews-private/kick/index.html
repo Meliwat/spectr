@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Kick iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0E0E10;
+    --surface-1: #161618;
+    --surface-2: #1F1F23;
+    --surface-3: #2A2A2E;
+    --divider: #2D2D31;
+    --text-primary: #FFFFFF;
+    --text-secondary: #A6A6AD;
+    --text-tertiary: #6E6E76;
+    --ink: #FFFFFF;
+    --kick-green: #53FC18;
+    --kick-green-press: #45D912;
+    --kick-green-deep: #00E701;
+    --live-red: #FF1F44;
+    --mod-blue: #3EA6FF;
+    --vip-pink: #FF4FD8;
+    --sub-gold: #FFC700;
+    --error: #FF4A4A;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--kick-green); color: #0E0E10; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(83,252,24,0.35), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+
+  .stream { height: 200px; background: linear-gradient(155deg, #14361F 0%, #0C2415 50%, #0E0E10 100%); position: relative; overflow: hidden; }
+  .stream::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 60% 40%, rgba(83,252,24,0.22), transparent 60%); }
+  .stream-top { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; align-items: flex-start; justify-content: space-between; z-index: 2; }
+  .live-pill { display: flex; align-items: center; gap: 6px; background: var(--live-red); padding: 4px 9px; border-radius: 5px; }
+  .live-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: #FFF; }
+  .live-pill span { font-size: 10px; font-weight: 800; letter-spacing: 0.5px; }
+  .viewers { display: flex; align-items: center; gap: 5px; background: rgba(0,0,0,0.55); padding: 4px 9px; border-radius: 5px; }
+  .viewers svg { width: 12px; height: 12px; stroke: #FFF; stroke-width: 2; fill: none; }
+  .viewers span { font-size: 11px; font-weight: 700; }
+  .stream-ctrls { position: absolute; bottom: 10px; left: 12px; right: 12px; display: flex; align-items: center; gap: 12px; z-index: 2; }
+  .stream-ctrls svg { width: 18px; height: 18px; stroke: #FFF; stroke-width: 2; fill: none; }
+  .stream-ctrls .spacer { flex: 1; }
+
+  .streamer { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 0.5px solid var(--divider); }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #53FC18, #00A651); flex-shrink: 0; border: 2px solid var(--kick-green); }
+  .streamer-info { flex: 1; min-width: 0; }
+  .streamer-name { font-size: 14px; font-weight: 800; display: flex; align-items: center; gap: 5px; }
+  .streamer-name svg { width: 13px; height: 13px; fill: var(--kick-green); }
+  .streamer-cat { font-size: 12px; color: var(--text-secondary); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .follow-btn { background: var(--kick-green); color: #0E0E10; font-size: 12px; font-weight: 800; padding: 8px 16px; border-radius: 6px; flex-shrink: 0; }
+
+  .chat { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .chat-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px 8px; }
+  .chat-title { font-size: 12px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-secondary); }
+  .chat-head svg { width: 16px; height: 16px; stroke: var(--text-secondary); stroke-width: 2; fill: none; }
+  .chat-msgs { flex: 1; overflow-y: auto; padding: 4px 14px; scrollbar-width: none; display: flex; flex-direction: column; gap: 9px; }
+  .chat-msgs::-webkit-scrollbar { display: none; }
+  .msg { font-size: 13px; line-height: 1.35; word-wrap: break-word; }
+  .msg .u { font-weight: 700; }
+  .msg .u.green { color: var(--kick-green); }
+  .msg .u.mod { color: var(--mod-blue); }
+  .msg .u.vip { color: var(--vip-pink); }
+  .msg .u.sub { color: var(--sub-gold); }
+  .msg .u.plain { color: #C9C9D1; }
+  .msg .badge { display: inline-flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 900; padding: 1px 4px; border-radius: 3px; margin-right: 4px; vertical-align: middle; }
+  .b-mod { background: var(--mod-blue); color: #06121F; }
+  .b-sub { background: var(--sub-gold); color: #1A1500; }
+  .b-vip { background: var(--vip-pink); color: #2A0022; }
+  .msg .txt { color: #E4E4E9; }
+  .msg .emote { display: inline-block; width: 18px; height: 18px; border-radius: 3px; background: linear-gradient(135deg, #53FC18, #00A651); vertical-align: middle; margin: 0 1px; }
+  .chat-input { display: flex; align-items: center; gap: 8px; padding: 10px 12px 12px; border-top: 0.5px solid var(--divider); }
+  .chat-field { flex: 1; height: 38px; background: var(--surface-2); border-radius: 8px; display: flex; align-items: center; padding: 0 12px; font-size: 13px; color: var(--text-tertiary); }
+  .chat-send { width: 38px; height: 38px; border-radius: 8px; background: var(--kick-green); display: flex; align-items: center; justify-content: center; }
+  .chat-send svg { width: 16px; height: 16px; fill: #0E0E10; }
+
+  /* Tab bar */
+  .tab-bar { height: 64px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: rgba(14,14,16,0.96); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 4px; }
+  .tab.active { color: var(--kick-green); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 900; letter-spacing: -0.5px; color: var(--ink); }
+  .t-24 { font-size: 24px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); }
+  .t-20 { font-size: 20px; font-weight: 800; letter-spacing: -0.2px; }
+  .t-16b { font-size: 16px; font-weight: 700; }
+  .t-15 { font-size: 15px; font-weight: 400; }
+  .t-13m { font-size: 13px; font-weight: 600; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-10 { font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 800; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--kick-green); color: #0E0E10; font-size: 15px; padding: 13px 28px; border-radius: 6px; }
+  .btn-primary:active { background: var(--kick-green-press); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1px solid var(--surface-3); font-size: 14px; font-weight: 700; padding: 12px 22px; border-radius: 6px; }
+  .btn-sub { background: var(--surface-2); color: var(--kick-green); border: 1px solid var(--kick-green); font-size: 14px; font-weight: 800; padding: 12px 20px; border-radius: 6px; }
+  .btn-text { background: transparent; color: var(--kick-green); font-size: 14px; font-weight: 700; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Chat badge demo */
+  .badge-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .demo-badge { font-size: 11px; font-weight: 900; padding: 3px 9px; border-radius: 4px; }
+
+  /* Live card demo */
+  .live-card-row { display: flex; gap: 14px; }
+  .live-card { width: 150px; }
+  .lc-thumb { width: 100%; aspect-ratio: 16/9; border-radius: 8px; position: relative; overflow: hidden; background: linear-gradient(150deg, #14361F, #0C2415); }
+  .lc-thumb .live { position: absolute; top: 6px; left: 6px; background: var(--live-red); font-size: 8px; font-weight: 800; padding: 2px 6px; border-radius: 3px; letter-spacing: 0.4px; }
+  .lc-thumb .vc { position: absolute; bottom: 6px; left: 6px; background: rgba(0,0,0,0.6); font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 3px; }
+  .lc-meta { display: flex; gap: 8px; margin-top: 8px; }
+  .lc-av { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #53FC18, #00A651); flex-shrink: 0; }
+  .lc-txt .t1 { font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .lc-txt .t2 { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--kick-green); color: #0E0E10; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-3 { border-radius: 3px; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logomark { display: inline-flex; align-items: center; height: 40px; }
+  .logomark svg { height: 28px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logomark">
+      <svg viewBox="0 0 120 36" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="5" width="26" height="26" rx="5" fill="#53FC18"/>
+        <path d="M7 11v14M7 18l7-7M7 18l7 7" stroke="#0E0E10" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <text x="34" y="27" font-family="Inter, sans-serif" font-size="24" font-weight="900" fill="#FFFFFF" letter-spacing="-0.5">KICK</text>
+      </svg>
+    </span>
+    <div class="page-title">Kick iOS — Design Tokens</div>
+    <div class="page-chip">Live Green</div>
+  </div>
+  <p class="page-subtitle">Near-black canvas (#0E0E10) detonated by Kick Green (#53FC18) — an electric, almost-radioactive lime that is the entire brand. The signature surface is the live-stream watch screen: video on top, a streamer bar with a green Follow button, and a real-time chat panel below with color-coded mod/sub/VIP usernames, badge chips, and custom emotes. Green carries every primary action; the rest of the UI stays monochrome so the green screams.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="stream">
+            <div class="stream-top">
+              <div class="live-pill"><span class="dot"></span><span>LIVE</span></div>
+              <div class="viewers">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/></svg>
+                <span>24.8K</span>
+              </div>
+            </div>
+            <div class="stream-ctrls">
+              <svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20" fill="#FFF" stroke="none"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4z"/><path d="M19 12a7 7 0 0 0-3-5.7"/></svg>
+              <div class="spacer"></div>
+              <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7zM5 10h2V7h3V5H5zm12 7h-3v2h5v-5h-2zM14 5v2h3v3h2V5z"/></svg>
+            </div>
+          </div>
+
+          <div class="streamer">
+            <div class="avatar"></div>
+            <div class="streamer-info">
+              <div class="streamer-name">NovaPlays <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10" fill="none" stroke="var(--kick-green)" stroke-width="2"/></svg></div>
+              <div class="streamer-cat">Just Chatting · 24,812 watching</div>
+            </div>
+            <div class="follow-btn">Follow</div>
+          </div>
+
+          <div class="chat">
+            <div class="chat-head">
+              <div class="chat-title">Stream Chat</div>
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 1-.6 2.8l1.7 1.3-2 3.5-2-1a7 7 0 0 1-2.4 1.4l-.3 2.1h-4l-.3-2.1a7 7 0 0 1-2.4-1.4l-2 1-2-3.5 1.7-1.3A7 7 0 0 1 5 12c0-1 .2-1.9.6-2.8L3.9 7.9l2-3.5 2 1A7 7 0 0 1 10.3 4l.3-2.1h4l.3 2.1a7 7 0 0 1 2.4 1.4l2-1 2 3.5-1.7 1.3c.4.9.6 1.8.6 2.8z"/></svg>
+            </div>
+            <div class="chat-msgs">
+              <div class="msg"><span class="badge b-mod">MOD</span><span class="u mod">StreamGuard</span><span class="txt">: keep it civil in here folks </span><span class="emote"></span></div>
+              <div class="msg"><span class="u green">pixel_knight</span><span class="txt">: that play was actually insane</span></div>
+              <div class="msg"><span class="badge b-sub">12</span><span class="u sub">D2_andy</span><span class="txt">: been here since the start, lets gooo</span></div>
+              <div class="msg"><span class="u plain">lurker_99</span><span class="txt">: first time on the stream, this is sick</span></div>
+              <div class="msg"><span class="badge b-vip">VIP</span><span class="u vip">QueenBee</span><span class="txt">: </span><span class="emote"></span><span class="emote"></span><span class="txt"> clip that</span></div>
+              <div class="msg"><span class="u green">turbo_mike</span><span class="txt">: how is he this cracked lmao</span></div>
+              <div class="msg"><span class="badge b-sub">3</span><span class="u sub">night_owl</span><span class="txt">: subbed for 3 months now worth every coin</span></div>
+              <div class="msg"><span class="u plain">jess.codes</span><span class="txt">: what's the rank grind today</span></div>
+              <div class="msg"><span class="u green">vortex</span><span class="txt">: chat is moving so fast </span><span class="emote"></span></div>
+            </div>
+            <div class="chat-input">
+              <div class="chat-field">Send a message</div>
+              <div class="chat-send"><svg viewBox="0 0 24 24"><path d="M3 11l18-8-8 18-2-7-8-3z"/></svg></div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Browse</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg><span>Following</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="14" height="14" rx="3"/><path d="M17 9l4-2v10l-4-2"/></svg><span>Clips</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21c1.5-4 4-6 7-6s5.5 2 7 6"/></svg><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0E0E10;"><div class="name">Canvas (Near-Black)</div>#0E0E10</div>
+          <div class="swatch" style="background:#161618;"><div class="name">Surface 1</div>#161618</div>
+          <div class="swatch" style="background:#1F1F23;"><div class="name">Surface 2</div>#1F1F23</div>
+          <div class="swatch" style="background:#2A2A2E;"><div class="name">Surface 3</div>#2A2A2E</div>
+          <div class="swatch" style="background:#53FC18; color:#0E0E10;"><div class="name">Kick Green</div>#53FC18</div>
+          <div class="swatch" style="background:#45D912; color:#0E0E10;"><div class="name">Green Pressed</div>#45D912</div>
+          <div class="swatch" style="background:#00E701; color:#0E0E10;"><div class="name">Green Deep</div>#00E701</div>
+          <div class="swatch" style="background:#FF1F44;"><div class="name">Live Red</div>#FF1F44</div>
+          <div class="swatch" style="background:#3EA6FF; color:#06121F;"><div class="name">Mod Blue</div>#3EA6FF</div>
+          <div class="swatch" style="background:#FFC700; color:#1A1500;"><div class="name">Sub Gold</div>#FFC700</div>
+          <div class="swatch" style="background:#FF4FD8; color:#2A0022;"><div class="name">VIP Pink</div>#FF4FD8</div>
+          <div class="swatch" style="background:#A6A6AD; color:#0E0E10;"><div class="name">Text Secondary</div>#A6A6AD</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter (Kick uses a tight grotesque)</div>
+        <div class="type-row"><div class="type-meta">Display · 32pt · 900</div><div class="type-sample t-32">Go Live</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 24pt · 800</div><div class="type-sample t-24">Following</div></div>
+        <div class="type-row"><div class="type-meta">Section · 20pt · 800</div><div class="type-sample t-20">Live Channels</div></div>
+        <div class="type-row"><div class="type-meta">Streamer · 16pt · 700</div><div class="type-sample t-16b">NovaPlays</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 400</div><div class="type-sample t-15">Watch your favorite streamers live, with zero delay chat.</div></div>
+        <div class="type-row"><div class="type-meta">Chat Message · 13pt · 600/400</div><div class="type-sample t-13m">pixel_knight: that play was insane</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 400</div><div class="type-sample t-13">Just Chatting · 24,812 watching</div></div>
+        <div class="type-row"><div class="type-meta">Live Badge · 10pt · 800 caps</div><div class="type-sample t-10">Live Now</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Follow</button>
+          <button class="btn btn-sub">Subscribe</button>
+          <button class="btn btn-outline">Share</button>
+          <button class="btn-text">Go Live</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Chat Role Badges</div>
+        <div class="badge-row">
+          <span class="demo-badge" style="background:#3EA6FF;color:#06121F;">MOD</span>
+          <span class="demo-badge" style="background:#FFC700;color:#1A1500;">SUB 12</span>
+          <span class="demo-badge" style="background:#FF4FD8;color:#2A0022;">VIP</span>
+          <span class="demo-badge" style="background:#53FC18;color:#0E0E10;">OG</span>
+          <span class="demo-badge" style="background:#2A2A2E;color:#FFF;">VERIFIED</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Live Channel Card</div>
+        <div class="live-card-row">
+          <div class="live-card">
+            <div class="lc-thumb"><span class="live">LIVE</span><span class="vc">24.8K</span></div>
+            <div class="lc-meta">
+              <div class="lc-av"></div>
+              <div class="lc-txt"><div class="t1">Ranked Grind to #1</div><div class="t2">NovaPlays · FPS</div></div>
+            </div>
+          </div>
+          <div class="live-card">
+            <div class="lc-thumb"><span class="live">LIVE</span><span class="vc">9.1K</span></div>
+            <div class="lc-meta">
+              <div class="lc-av"></div>
+              <div class="lc-txt"><div class="t1">Late Night Talk</div><div class="t2">QueenBee · IRL</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-3">3</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Kick is dark-only — a near-black <code>#0E0E10</code> canvas, not pure black, so the green doesn't vibrate against true #000. Kick Green <code>#53FC18</code> is an intentionally loud, almost-radioactive lime: it owns the logo, the Follow/Subscribe buttons, the active tab, online avatar rings, and links — and almost nothing else, so it stays a shock of color in an otherwise monochrome UI. Chat is the second pillar: usernames are color-coded by role (mod <code>#3EA6FF</code>, sub <code>#FFC700</code>, VIP <code>#FF4FD8</code>, default randomized green-ish), each prefixed by a tiny badge chip, with custom emote sprites inline. The live indicator is always <code>#FF1F44</code>. Stream video stays full-color; chrome and chat scaffolding stay grey.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

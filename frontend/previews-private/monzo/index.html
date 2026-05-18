@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Monzo iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0E1620;
+    --surface-1: #14233C;
+    --surface-2: #1B2F4D;
+    --divider: #243A57;
+    --text-primary: #F4F6F9;
+    --text-secondary: #9FB0C6;
+    --text-tertiary: #61748E;
+    --ink: #FFFFFF;
+    --coral: #FF3464;
+    --coral-pressed: #E02855;
+    --navy: #14233C;
+    --mint: #5CE0C4;
+    --gold: #FFC75F;
+    --sky: #5AA9F0;
+    --success: #2FCB8F;
+    --error: #FF5A6E;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--coral); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow-y: auto; scrollbar-width: none; display: flex; flex-direction: column; }
+  .scroll-body::-webkit-scrollbar { display: none; }
+
+  /* Account header */
+  .acct-head { padding: 6px 20px 14px; display: flex; align-items: center; justify-content: space-between; }
+  .acct-name { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; color: var(--text-primary); }
+  .acct-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--coral); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #FFF; }
+
+  /* Coral card hero */
+  .card { margin: 4px 20px 22px; height: 132px; border-radius: 18px; background: linear-gradient(135deg, #FF3464 0%, #FF5A7F 55%, #E02855 100%); padding: 18px 20px; position: relative; box-shadow: 0 14px 30px -14px rgba(255,52,100,0.55); }
+  .card-balance { font-size: 30px; font-weight: 800; letter-spacing: -0.6px; color: #FFF; }
+  .card-sub { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.85); margin-top: 2px; }
+  .card-chip { position: absolute; top: 18px; right: 20px; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.9); letter-spacing: 1px; }
+  .card-num { position: absolute; bottom: 16px; left: 20px; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.9); letter-spacing: 2px; }
+
+  /* Pots row */
+  .pots-label { font-size: 13px; font-weight: 600; color: var(--text-secondary); padding: 0 20px 10px; }
+  .pots { display: flex; gap: 12px; padding: 0 20px 22px; overflow-x: auto; scrollbar-width: none; }
+  .pots::-webkit-scrollbar { display: none; }
+  .pot { flex-shrink: 0; width: 92px; }
+  .pot-coin { width: 92px; height: 92px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 8px 16px -8px rgba(0,0,0,0.6); }
+  .pot-1 { background: linear-gradient(135deg, #5AA9F0, #3E7FC4); }
+  .pot-2 { background: linear-gradient(135deg, #5CE0C4, #2FB59A); }
+  .pot-3 { background: linear-gradient(135deg, #FFC75F, #E0A23A); }
+  .pot-add { background: var(--surface-2); border: 1px dashed var(--divider); color: var(--text-tertiary); }
+  .pot-name { font-size: 12px; font-weight: 600; color: var(--text-primary); margin-top: 8px; }
+  .pot-amt { font-size: 11px; font-weight: 500; color: var(--text-secondary); margin-top: 1px; }
+
+  /* Transaction feed */
+  .feed-head { display: flex; align-items: baseline; justify-content: space-between; padding: 6px 20px 8px; }
+  .feed-day { font-size: 13px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.2px; }
+  .feed-spent { font-size: 12px; font-weight: 500; color: var(--text-tertiary); }
+  .txn { display: flex; align-items: center; gap: 14px; padding: 10px 20px; }
+  .txn-emoji { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .e-coffee { background: #4A3726; }
+  .e-shop { background: #243A57; }
+  .e-music { background: #3A2440; }
+  .e-pay { background: #1F4030; }
+  .txn-body { flex: 1; min-width: 0; }
+  .txn-merchant { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+  .txn-meta { font-size: 12px; font-weight: 400; color: var(--text-secondary); margin-top: 2px; }
+  .txn-amt { font-size: 15px; font-weight: 700; color: var(--text-primary); flex-shrink: 0; }
+  .txn-amt.in { color: var(--success); }
+
+  /* Tab bar */
+  .tab-bar { height: 68px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(14,22,32,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: #61748E; font-size: 10px; font-weight: 500; gap: 3px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--coral); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-30 { font-size: 30px; font-weight: 800; letter-spacing: -0.5px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-13 { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--coral); color: #FFF; font-size: 16px; padding: 15px 28px; border-radius: 14px; }
+  .btn-primary:active { background: var(--coral-pressed); transform: scale(0.98); }
+  .btn-secondary { background: var(--surface-2); color: var(--text-primary); font-size: 15px; font-weight: 600; padding: 14px 24px; border-radius: 14px; border: 1px solid var(--divider); }
+  .btn-pill { background: transparent; color: var(--coral); border: 1.5px solid var(--coral); font-size: 14px; font-weight: 600; padding: 10px 20px; border-radius: 500px; }
+  .btn-text { background: transparent; color: var(--coral); font-size: 14px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Pots component */
+  .pot-card { display: flex; align-items: center; gap: 14px; background: var(--surface-2); border: 1px solid var(--divider); border-radius: 16px; padding: 16px; }
+  .pot-card-coin { width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #5CE0C4, #2FB59A); display: flex; align-items: center; justify-content: center; font-size: 22px; }
+  .pot-card-body { flex: 1; }
+  .pot-card-name { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+  .pot-card-goal { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+  .pot-bar { height: 6px; border-radius: 3px; background: var(--divider); margin-top: 8px; overflow: hidden; }
+  .pot-bar > span { display: block; height: 100%; width: 64%; background: var(--mint); border-radius: 3px; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--coral); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-14 { border-radius: 14px; }
+  .r-16 { border-radius: 16px; }
+  .r-18 { border-radius: 18px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Monzo logomark */
+  .logo { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: var(--coral); }
+  .logo svg { width: 26px; height: 26px; fill: #FFF; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 32 32"><path d="M5 26V12.5c0-1 .5-1.5 1.4-1.9l8-3.6c.4-.2.8-.2 1.2 0l8 3.6c.9.4 1.4.9 1.4 1.9V26h-4.6V15.4l-4.4-2-4.4 2V26H5z"/></svg>
+    </span>
+    <div class="page-title">Monzo iOS — Design Tokens</div>
+    <div class="page-chip">Hot Coral Dark</div>
+  </div>
+  <p class="page-subtitle">Deep-navy canvas (#0E1620) lifted from Monzo's signature navy #14233C, with cards at #14233C. Hot Coral (#FF3464) is identical across themes — the card hero and primary actions glow against the dark. The emoji transaction feed and Pots stay full-color; only chrome dims.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="scroll-body">
+            <div class="acct-head">
+              <div class="acct-name">Current account</div>
+              <div class="acct-avatar">M</div>
+            </div>
+
+            <div class="card">
+              <div class="card-chip">MONZO</div>
+              <div class="card-balance">£2,418.60</div>
+              <div class="card-sub">Available to spend</div>
+              <div class="card-num">•••• •••• •••• 9042</div>
+            </div>
+
+            <div class="pots-label">Pots</div>
+            <div class="pots">
+              <div class="pot"><div class="pot-coin pot-1">✈️</div><div class="pot-name">Holiday</div><div class="pot-amt">£640</div></div>
+              <div class="pot"><div class="pot-coin pot-2">🏠</div><div class="pot-name">Rent</div><div class="pot-amt">£1,200</div></div>
+              <div class="pot"><div class="pot-coin pot-3">☕️</div><div class="pot-name">Coffee</div><div class="pot-amt">£35</div></div>
+              <div class="pot"><div class="pot-coin pot-add">+</div><div class="pot-name">New pot</div><div class="pot-amt">&nbsp;</div></div>
+            </div>
+
+            <div class="feed-head"><div class="feed-day">TODAY</div><div class="feed-spent">£24.10 spent</div></div>
+            <div class="txn">
+              <div class="txn-emoji e-coffee">☕️</div>
+              <div class="txn-body"><div class="txn-merchant">Grind Coffee</div><div class="txn-meta">9:12 · Eating out</div></div>
+              <div class="txn-amt">−£3.40</div>
+            </div>
+            <div class="txn">
+              <div class="txn-emoji e-shop">🛍️</div>
+              <div class="txn-body"><div class="txn-merchant">Uniqlo</div><div class="txn-meta">11:48 · Shopping</div></div>
+              <div class="txn-amt">−£42.00</div>
+            </div>
+            <div class="txn">
+              <div class="txn-emoji e-music">🎧</div>
+              <div class="txn-body"><div class="txn-merchant">Spotify</div><div class="txn-meta">08:00 · Subscription</div></div>
+              <div class="txn-amt">−£11.99</div>
+            </div>
+            <div class="txn">
+              <div class="txn-emoji e-pay">💸</div>
+              <div class="txn-body"><div class="txn-merchant">Salary — Acme Ltd</div><div class="txn-meta">07:30 · Income</div></div>
+              <div class="txn-amt in">+£2,640.00</div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M16 3v4M8 3v4"/></svg><span>Payments</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Pots</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M21 7v6h-6"/></svg><span>Trends</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 21c1-4 4-6 7-6s6 2 7 6"/></svg><span>Account</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette (Dark)</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#FF3464;"><div class="name">Hot Coral</div>#FF3464</div>
+          <div class="swatch" style="background:#E02855;"><div class="name">Coral Pressed</div>#E02855</div>
+          <div class="swatch" style="background:#14233C;"><div class="name">Monzo Navy</div>#14233C</div>
+          <div class="swatch" style="background:#0E1620;"><div class="name">Dark Canvas</div>#0E1620</div>
+          <div class="swatch" style="background:#1B2F4D;"><div class="name">Dark Surface</div>#1B2F4D</div>
+          <div class="swatch" style="background:#243A57;"><div class="name">Divider</div>#243A57</div>
+          <div class="swatch" style="background:#F4F6F9; color:#14233C;"><div class="name">Text Primary</div>#F4F6F9</div>
+          <div class="swatch" style="background:#9FB0C6; color:#14233C;"><div class="name">Text Secondary</div>#9FB0C6</div>
+          <div class="swatch" style="background:#5CE0C4; color:#0E1620;"><div class="name">Pot Mint</div>#5CE0C4</div>
+          <div class="swatch" style="background:#FFC75F; color:#222;"><div class="name">Pot Gold</div>#FFC75F</div>
+          <div class="swatch" style="background:#2FCB8F; color:#0E1620;"><div class="name">Income Green</div>#2FCB8F</div>
+          <div class="swatch" style="background:#FF5A6E;"><div class="name">Error</div>#FF5A6E</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter (Monzo brand sans)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 800</div><div class="type-sample t-32">Home</div></div>
+        <div class="type-row"><div class="type-meta">Balance · 30pt · 800</div><div class="type-sample t-30">£2,418.60</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Current account</div></div>
+        <div class="type-row"><div class="type-meta">Subsection · 18pt · 700</div><div class="type-sample t-18">Holiday pot</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Round up spare change into a pot.</div></div>
+        <div class="type-row"><div class="type-meta">Merchant · 15pt · 600</div><div class="type-sample t-15m">Grind Coffee</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 500</div><div class="type-sample t-13">9:12 · Eating out</div></div>
+        <div class="type-row"><div class="type-meta">Label · 12pt · 500</div><div class="type-sample t-12">Available to spend</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Send money</button>
+          <button class="btn btn-secondary">Add to pot</button>
+          <button class="btn btn-pill">Split bill</button>
+          <button class="btn-text">See all transactions</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Pots Card</div>
+        <div class="pot-card">
+          <div class="pot-card-coin">✈️</div>
+          <div class="pot-card-body">
+            <div class="pot-card-name">Holiday</div>
+            <div class="pot-card-goal">£640 of £1,000 goal</div>
+            <div class="pot-bar"><span></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-18">18</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Monzo's dark mode is deep navy, not pure black — canvas sits at <code>#0E1620</code>, derived from the brand navy <code>#14233C</code> which becomes the card-and-row surface. Hot Coral <code>#FF3464</code> is identical across themes; the gradient debit-card hero glows against the dark navy. Transaction emoji avatars and Pot coins remain full-color and saturated — only chrome (dividers, secondary text) recedes. Income amounts stay green <code>#2FCB8F</code>; the feed is the soul of the app and never dims.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

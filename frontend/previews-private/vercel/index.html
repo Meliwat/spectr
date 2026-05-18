@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Vercel iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #000000;
+    --surface-1: #0A0A0A;
+    --surface-2: #111111;
+    --surface-3: #1A1A1A;
+    --divider: #2E2E2E;
+    --border: #333333;
+    --text-primary: #EDEDED;
+    --text-secondary: #A1A1A1;
+    --text-tertiary: #707070;
+    --ink: #FFFFFF;
+    --vercel-blue: #0070F3;
+    --vercel-blue-hover: #3291FF;
+    --success: #0CCE6B;
+    --success-dim: #0F3D2E;
+    --error: #E5484D;
+    --error-dim: #3A1416;
+    --warning: #F5A623;
+    --building: #F5A623;
+    --highlight-purple: #7928CA;
+    --highlight-cyan: #50E3C2;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+    --mono: 'Geist Mono', 'SF Mono', ui-monospace, Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--ink); color: #000; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* App top bar */
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 6px 18px 14px; }
+  .topbar-left { display: flex; align-items: center; gap: 10px; }
+  .triangle { width: 22px; height: 19px; }
+  .triangle svg { width: 100%; height: 100%; fill: var(--ink); }
+  .topbar-title { font-size: 17px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.2px; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #7928CA, #0070F3); }
+
+  /* Section header in phone */
+  .ph-sec { display: flex; align-items: center; justify-content: space-between; padding: 10px 18px 8px; }
+  .ph-sec-title { font-size: 13px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.4px; }
+  .ph-filter { font-family: var(--mono); font-size: 11px; color: var(--text-tertiary); }
+
+  /* Deployments list */
+  .deploy-list { flex: 1; padding: 4px 14px 14px; overflow-y: auto; scrollbar-width: none; }
+  .deploy-list::-webkit-scrollbar { display: none; }
+  .deploy { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 12px; padding: 14px 14px 12px; margin-bottom: 10px; }
+  .deploy-top { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .dot-ready { background: var(--success); box-shadow: 0 0 0 3px rgba(12,206,107,0.15); }
+  .dot-build { background: var(--building); box-shadow: 0 0 0 3px rgba(245,166,35,0.15); }
+  .dot-error { background: var(--error); box-shadow: 0 0 0 3px rgba(229,72,77,0.15); }
+  .deploy-state { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+  .deploy-state.build { color: var(--building); }
+  .deploy-state.err { color: var(--error); }
+  .deploy-env { margin-left: auto; font-family: var(--mono); font-size: 10px; font-weight: 500; color: var(--text-secondary); background: var(--surface-3); border: 1px solid var(--border); padding: 3px 7px; border-radius: 5px; }
+  .deploy-url { font-family: var(--mono); font-size: 12px; color: var(--text-primary); margin-bottom: 6px; }
+  .deploy-meta { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-tertiary); }
+  .commit-icon { width: 12px; height: 12px; stroke: var(--text-tertiary); stroke-width: 2; fill: none; }
+  .deploy-branch { font-family: var(--mono); color: var(--text-secondary); }
+  .deploy-time { margin-left: auto; }
+
+  /* Tab bar */
+  .tab-bar { height: 68px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(0,0,0,0.92); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 500; gap: 4px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--ink); }
+  .tab svg { width: 21px; height: 21px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: var(--mono); border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #000; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: var(--mono); font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.4px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-18 { font-size: 18px; font-weight: 600; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 500; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-13mono { font-size: 13px; font-weight: 400; font-family: var(--mono); color: var(--text-primary); }
+  .t-12 { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 600; cursor: pointer; border: none; letter-spacing: -0.1px; }
+  .btn-primary { background: var(--ink); color: #000; font-size: 14px; padding: 11px 20px; border-radius: 8px; }
+  .btn-primary:active { background: #CFCFCF; transform: scale(0.98); }
+  .btn-secondary { background: transparent; color: var(--text-primary); border: 1px solid var(--border); font-size: 14px; font-weight: 500; padding: 10px 18px; border-radius: 8px; }
+  .btn-blue { background: var(--vercel-blue); color: #FFF; font-size: 14px; padding: 11px 20px; border-radius: 8px; }
+  .btn-blue:active { background: #005FCC; }
+  .btn-danger { background: transparent; color: var(--error); border: 1px solid var(--error); font-size: 14px; font-weight: 500; padding: 10px 18px; border-radius: 8px; }
+
+  /* Status badges */
+  .badge-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .badge { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 12px; font-weight: 500; padding: 5px 10px; border-radius: 999px; border: 1px solid; }
+  .badge-ready { color: var(--success); border-color: rgba(12,206,107,0.4); background: rgba(12,206,107,0.08); }
+  .badge-build { color: var(--building); border-color: rgba(245,166,35,0.4); background: rgba(245,166,35,0.08); }
+  .badge-error { color: var(--error); border-color: rgba(229,72,77,0.4); background: rgba(229,72,77,0.08); }
+  .badge .bdot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+  /* Analytics bars */
+  .analytics { display: flex; align-items: flex-end; gap: 8px; height: 110px; padding: 12px; background: var(--surface-2); border: 1px solid var(--divider); border-radius: 12px; }
+  .abar { flex: 1; background: linear-gradient(180deg, var(--vercel-blue), rgba(0,112,243,0.25)); border-radius: 4px 4px 0 0; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--ink); color: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Triangle logomark header */
+  .logo { display: inline-flex; width: 40px; height: 36px; align-items: center; justify-content: center; }
+  .logo svg { width: 100%; height: 100%; fill: var(--ink); }
+  code { font-family: var(--mono); font-size: 12px; background: var(--surface-3); padding: 1px 5px; border-radius: 4px; color: var(--text-primary); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 76 65"><path d="M37.527 0L75.054 65H0z"/></svg>
+    </span>
+    <div class="page-title">Vercel iOS — Design Tokens</div>
+    <div class="page-chip">Pure Black</div>
+  </div>
+  <p class="page-subtitle">Absolute black canvas (#000000) — Vercel ships true black, not charcoal. The interface is monochrome: white text (#EDEDED), hairline #2E2E2E borders, and zero brand accent except the status traffic-light (Ready #0CCE6B, Building #F5A623, Error #E5484D) and #0070F3 for links. Geist Mono carries every URL, branch, and commit hash.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="topbar">
+            <div class="topbar-left">
+              <span class="triangle"><svg viewBox="0 0 76 65"><path d="M37.527 0L75.054 65H0z"/></svg></span>
+              <span class="topbar-title">acme-web</span>
+            </div>
+            <div class="avatar"></div>
+          </div>
+
+          <div class="ph-sec">
+            <span class="ph-sec-title">Deployments</span>
+            <span class="ph-filter">main · all</span>
+          </div>
+
+          <div class="deploy-list">
+            <div class="deploy">
+              <div class="deploy-top">
+                <span class="dot dot-ready"></span>
+                <span class="deploy-state">Ready</span>
+                <span class="deploy-env">Production</span>
+              </div>
+              <div class="deploy-url">acme-web.vercel.app</div>
+              <div class="deploy-meta">
+                <svg class="commit-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><line x1="3" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="21" y2="12"/></svg>
+                <span class="deploy-branch">main</span>
+                <span class="deploy-time">2m ago</span>
+              </div>
+            </div>
+
+            <div class="deploy">
+              <div class="deploy-top">
+                <span class="dot dot-build"></span>
+                <span class="deploy-state build">Building</span>
+                <span class="deploy-env">Preview</span>
+              </div>
+              <div class="deploy-url">acme-web-git-feat-nav.vercel.app</div>
+              <div class="deploy-meta">
+                <svg class="commit-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><line x1="3" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="21" y2="12"/></svg>
+                <span class="deploy-branch">feat/nav</span>
+                <span class="deploy-time">just now</span>
+              </div>
+            </div>
+
+            <div class="deploy">
+              <div class="deploy-top">
+                <span class="dot dot-error"></span>
+                <span class="deploy-state err">Error</span>
+                <span class="deploy-env">Preview</span>
+              </div>
+              <div class="deploy-url">acme-web-git-fix-auth.vercel.app</div>
+              <div class="deploy-meta">
+                <svg class="commit-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><line x1="3" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="21" y2="12"/></svg>
+                <span class="deploy-branch">fix/auth</span>
+                <span class="deploy-time">14m ago</span>
+              </div>
+            </div>
+
+            <div class="deploy">
+              <div class="deploy-top">
+                <span class="dot dot-ready"></span>
+                <span class="deploy-state">Ready</span>
+                <span class="deploy-env">Preview</span>
+              </div>
+              <div class="deploy-url">acme-web-git-chore-deps.vercel.app</div>
+              <div class="deploy-meta">
+                <svg class="commit-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><line x1="3" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="21" y2="12"/></svg>
+                <span class="deploy-branch">chore/deps</span>
+                <span class="deploy-time">1h ago</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Overview</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/><circle cx="8" cy="5" r="1.6" fill="currentColor"/><circle cx="14" cy="12" r="1.6" fill="currentColor"/></svg><span>Deploys</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-5 3 4 5-7"/></svg><span>Analytics</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.13-1.3l2-1.5-2-3.5-2.4 1a7 7 0 0 0-2.3-1.3L13.7 2h-3.4l-.5 2.4a7 7 0 0 0-2.3 1.3l-2.4-1-2 3.5 2 1.5A7 7 0 0 0 5 12a7 7 0 0 0 .13 1.3l-2 1.5 2 3.5 2.4-1a7 7 0 0 0 2.3 1.3l.5 2.4h3.4l.5-2.4a7 7 0 0 0 2.3-1.3l2.4 1 2-3.5-2-1.5A7 7 0 0 0 19 12z"/></svg><span>Settings</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#000000;"><div class="name">Pure Black</div>#000000</div>
+          <div class="swatch" style="background:#0A0A0A;"><div class="name">Surface 1</div>#0A0A0A</div>
+          <div class="swatch" style="background:#111111;"><div class="name">Surface 2</div>#111111</div>
+          <div class="swatch" style="background:#2E2E2E;"><div class="name">Divider</div>#2E2E2E</div>
+          <div class="swatch light" style="background:#EDEDED;"><div class="name">Text Primary</div>#EDEDED</div>
+          <div class="swatch" style="background:#A1A1A1; color:#000;"><div class="name">Text Secondary</div>#A1A1A1</div>
+          <div class="swatch" style="background:#0070F3;"><div class="name">Link Blue</div>#0070F3</div>
+          <div class="swatch" style="background:#0CCE6B; color:#000;"><div class="name">Ready Green</div>#0CCE6B</div>
+          <div class="swatch" style="background:#F5A623; color:#000;"><div class="name">Building Amber</div>#F5A623</div>
+          <div class="swatch" style="background:#E5484D;"><div class="name">Error Red</div>#E5484D</div>
+          <div class="swatch" style="background:#7928CA;"><div class="name">Highlight Purple</div>#7928CA</div>
+          <div class="swatch" style="background:#50E3C2; color:#000;"><div class="name">Highlight Cyan</div>#50E3C2</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Geist Sans + Geist Mono (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Display · 32pt · 800</div><div class="type-sample t-32">Overview</div></div>
+        <div class="type-row"><div class="type-meta">Title · 26pt · 700</div><div class="type-sample t-26">Production Deployment</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Recent Deployments</div></div>
+        <div class="type-row"><div class="type-meta">Subsection · 18pt · 600</div><div class="type-sample t-18">Build Logs</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Your project deployed successfully to production.</div></div>
+        <div class="type-row"><div class="type-meta">Label · 15pt · 500</div><div class="type-sample t-15m">Assign Custom Domain</div></div>
+        <div class="type-row"><div class="type-meta">URL / Hash · 13pt · Mono</div><div class="type-sample t-13mono">acme-web.vercel.app · 4f9a2c1</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Deployed by alex · 2m ago</div></div>
+        <div class="type-row"><div class="type-meta">Caption · 12pt · 500</div><div class="type-sample t-12">PRODUCTION</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Deploy</button>
+          <button class="btn btn-secondary">Redeploy</button>
+          <button class="btn btn-blue">Visit</button>
+          <button class="btn btn-danger">Delete</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Deployment Status Badges</div>
+        <div class="badge-row">
+          <span class="badge badge-ready"><span class="bdot"></span>Ready</span>
+          <span class="badge badge-build"><span class="bdot"></span>Building</span>
+          <span class="badge badge-error"><span class="bdot"></span>Error</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Analytics — Web Vitals Bars</div>
+        <div class="analytics">
+          <div class="abar" style="height:42%;"></div>
+          <div class="abar" style="height:60%;"></div>
+          <div class="abar" style="height:38%;"></div>
+          <div class="abar" style="height:78%;"></div>
+          <div class="abar" style="height:55%;"></div>
+          <div class="abar" style="height:90%;"></div>
+          <div class="abar" style="height:48%;"></div>
+          <div class="abar" style="height:70%;"></div>
+          <div class="abar" style="height:64%;"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Vercel is dark-mode-native and ships <strong>true black</strong> <code>#000000</code> — not the charcoal most apps use. Cards lift only one step to <code>#0A0A0A</code>; separation comes from hairline <code>#2E2E2E</code> borders, not shadows. The system is deliberately monochrome — the only color is the status traffic-light (<code>#0CCE6B</code> Ready / <code>#F5A623</code> Building / <code>#E5484D</code> Error) and <code>#0070F3</code> for links and primary blue actions. Light mode inverts to pure white <code>#FFFFFF</code> with <code>#000000</code> text; the geometric triangle logomark flips fill but never changes shape.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Fidelity iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0E1411;
+    --surface-1: #16201B;
+    --surface-2: #1F2C24;
+    --divider: #26342B;
+    --text-primary: #E8EFE9;
+    --text-secondary: #9DB0A2;
+    --text-tertiary: #6B7E72;
+    --ink: #F4F8F5;
+    --fidelity-green: #368727;
+    --fidelity-green-deep: #00754A;
+    --fidelity-green-pressed: #2A6B1F;
+    --leaf: #4FB23B;
+    --gain: #15B374;
+    --loss: #E5544B;
+    --gold: #C8A24B;
+    --link: #4FB23B;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--fidelity-green); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow-y: auto; scrollbar-width: none; display: flex; flex-direction: column; }
+  .scroll-body::-webkit-scrollbar { display: none; }
+
+  /* Account header */
+  .acct-head { padding: 6px 20px 16px; }
+  .acct-greeting { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
+  .acct-name { font-size: 22px; font-weight: 700; color: var(--ink); letter-spacing: -0.3px; margin-top: 2px; }
+  .acct-total-label { font-size: 12px; color: var(--text-secondary); margin-top: 18px; font-weight: 500; }
+  .acct-total { font-size: 34px; font-weight: 800; color: var(--ink); letter-spacing: -0.8px; margin-top: 4px; }
+  .acct-delta { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 14px; font-weight: 600; color: var(--gain); }
+  .acct-delta svg { width: 12px; height: 12px; fill: var(--gain); }
+  .acct-delta .muted { color: var(--text-secondary); font-weight: 500; }
+
+  /* Mini chart */
+  .chart-wrap { padding: 4px 16px 14px; }
+  .chart { height: 96px; border-radius: 14px; background: var(--surface-1); border: 0.5px solid var(--divider); position: relative; overflow: hidden; padding: 10px 0 0; }
+  .chart svg { width: 100%; height: 64px; display: block; }
+  .chart-tabs { display: flex; gap: 6px; padding: 8px 12px 0; }
+  .chart-tab { font-size: 11px; font-weight: 600; color: var(--text-secondary); padding: 3px 9px; border-radius: 999px; }
+  .chart-tab.active { background: var(--fidelity-green); color: #FFF; }
+
+  /* Holdings */
+  .sec-label { font-size: 13px; font-weight: 700; color: var(--text-primary); padding: 8px 20px 6px; letter-spacing: -0.1px; display: flex; justify-content: space-between; align-items: center; }
+  .sec-label .more { font-size: 12px; color: var(--leaf); font-weight: 600; }
+  .holding { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 0.5px solid var(--divider); }
+  .tkr { width: 38px; height: 38px; border-radius: 10px; background: var(--surface-2); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: var(--text-primary); flex-shrink: 0; }
+  .tkr.g { background: rgba(54,135,39,0.18); color: var(--leaf); }
+  .h-mid { flex: 1; min-width: 0; }
+  .h-sym { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+  .h-name { font-size: 12px; color: var(--text-secondary); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .h-right { text-align: right; }
+  .h-val { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+  .h-chg { font-size: 12px; font-weight: 600; margin-top: 2px; }
+  .h-chg.up { color: var(--gain); }
+  .h-chg.down { color: var(--loss); }
+
+  /* Tab bar */
+  .tab-bar { height: 72px; display: flex; align-items: flex-start; padding: 8px 4px 18px; justify-content: space-around; background: rgba(14,20,17,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 4px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--leaf); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-34 { font-size: 34px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-13n { font-size: 13px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; color: var(--gain); }
+  .t-12 { font-size: 12px; font-weight: 500; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--fidelity-green); color: #FFF; font-size: 16px; padding: 14px 28px; border-radius: 8px; }
+  .btn-primary:active { background: var(--fidelity-green-pressed); transform: scale(0.98); }
+  .btn-deep { background: var(--fidelity-green-deep); color: #FFF; font-size: 16px; padding: 14px 28px; border-radius: 8px; }
+  .btn-outline { background: transparent; color: var(--leaf); border: 1.5px solid var(--leaf); font-size: 15px; font-weight: 700; padding: 12px 22px; border-radius: 8px; }
+  .btn-pill { background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--divider); font-size: 14px; font-weight: 600; padding: 10px 18px; border-radius: 500px; }
+  .btn-text { background: transparent; color: var(--leaf); font-size: 14px; font-weight: 700; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Quote row component */
+  .quote-row { display: flex; gap: 12px; align-items: center; }
+  .quote-card { flex: 1; background: var(--surface-2); border: 1px solid var(--divider); border-radius: 12px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .q-l .sym { font-size: 16px; font-weight: 800; color: var(--text-primary); }
+  .q-l .nm { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .q-r { text-align: right; }
+  .q-r .px { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+  .q-r .pct { font-size: 12px; font-weight: 700; color: var(--gain); margin-top: 2px; }
+  .q-r .pct.dn { color: var(--loss); }
+
+  /* Performance pill */
+  .perf-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .perf-pill { font-family: 'SF Mono', Menlo, monospace; font-size: 13px; font-weight: 700; padding: 8px 14px; border-radius: 8px; }
+  .perf-up { background: rgba(21,179,116,0.16); color: var(--gain); }
+  .perf-dn { background: rgba(229,84,75,0.16); color: var(--loss); }
+  .perf-flat { background: var(--surface-2); color: var(--text-secondary); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--fidelity-green); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-20 { border-radius: 20px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; align-items: center; justify-content: center; width: 46px; height: 46px; border-radius: 12px; background: var(--fidelity-green); }
+  .logo svg { width: 28px; height: 28px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 32 32" fill="none"><path d="M7 24c0-9 5.5-15.5 14-15.5 1.4 0 2.6.2 3.7.5-3.4 1.1-5.7 3-7.4 5.7 1.6-.6 3.2-.7 4.7-.3-2.8 1.6-4.6 3.9-5.6 7.1 1.3-.8 2.7-1.2 4.1-1.2-1.9 2.2-2.9 4.6-3 7.4H7z" fill="#FFFFFF"/><circle cx="22.5" cy="22.5" r="2" fill="#FFFFFF"/></svg>
+    </span>
+    <div class="page-title">Fidelity iOS — Design Tokens</div>
+    <div class="page-chip">Trust Green</div>
+  </div>
+  <p class="page-subtitle">Deep evergreen canvas (#0E1411) carrying Fidelity Green (#368727) and Heritage Green (#00754A). Gains read in #15B374, losses in #E5544B — the only saturated color the chrome allows. Numerals lean monospaced for column alignment; the brand stays calm, institutional, and legible over the dark field.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="scroll-body">
+            <div class="acct-head">
+              <div class="acct-greeting">Good morning</div>
+              <div class="acct-name">Accounts</div>
+              <div class="acct-total-label">Total account value</div>
+              <div class="acct-total">$428,164.92</div>
+              <div class="acct-delta">
+                <svg viewBox="0 0 24 24"><polygon points="12,5 20,17 4,17"/></svg>
+                +$3,841.20 <span class="muted">(+0.90%) today</span>
+              </div>
+            </div>
+
+            <div class="chart-wrap">
+              <div class="chart">
+                <svg viewBox="0 0 320 64" preserveAspectRatio="none">
+                  <defs><linearGradient id="gfill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#368727" stop-opacity="0.32"/><stop offset="1" stop-color="#368727" stop-opacity="0"/></linearGradient></defs>
+                  <path d="M0 46 L26 40 L52 44 L78 30 L104 34 L130 22 L156 26 L182 16 L208 22 L234 12 L260 18 L286 8 L320 14 L320 64 L0 64 Z" fill="url(#gfill)"/>
+                  <path d="M0 46 L26 40 L52 44 L78 30 L104 34 L130 22 L156 26 L182 16 L208 22 L234 12 L260 18 L286 8 L320 14" fill="none" stroke="#4FB23B" stroke-width="2"/>
+                </svg>
+                <div class="chart-tabs">
+                  <span class="chart-tab active">1D</span>
+                  <span class="chart-tab">1W</span>
+                  <span class="chart-tab">1M</span>
+                  <span class="chart-tab">1Y</span>
+                  <span class="chart-tab">All</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="sec-label">Watchlist <span class="more">Edit</span></div>
+            <div class="holding">
+              <div class="tkr g">AAPL</div>
+              <div class="h-mid"><div class="h-sym">AAPL</div><div class="h-name">Apple Inc.</div></div>
+              <div class="h-right"><div class="h-val">$229.87</div><div class="h-chg up">+1.42%</div></div>
+            </div>
+            <div class="holding">
+              <div class="tkr">FXAIX</div>
+              <div class="h-mid"><div class="h-sym">FXAIX</div><div class="h-name">Fidelity 500 Index Fund</div></div>
+              <div class="h-right"><div class="h-val">$198.34</div><div class="h-chg up">+0.88%</div></div>
+            </div>
+            <div class="holding">
+              <div class="tkr">NVDA</div>
+              <div class="h-mid"><div class="h-sym">NVDA</div><div class="h-name">NVIDIA Corp.</div></div>
+              <div class="h-right"><div class="h-val">$134.12</div><div class="h-chg down">−2.10%</div></div>
+            </div>
+            <div class="holding">
+              <div class="tkr">TSLA</div>
+              <div class="h-mid"><div class="h-sym">TSLA</div><div class="h-name">Tesla, Inc.</div></div>
+              <div class="h-right"><div class="h-val">$248.50</div><div class="h-chg up">+3.04%</div></div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Summary</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="4" height="9"/><rect x="10" y="6" width="4" height="14"/><rect x="17" y="3" width="4" height="17"/></svg><span>Planning</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><polyline points="3 17 9 11 13 15 21 6"/><polyline points="14 6 21 6 21 13"/></svg><span>Invest</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>News</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 20c1.5-4 12-4 14 0"/></svg><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#368727;"><div class="name">Fidelity Green</div>#368727</div>
+          <div class="swatch" style="background:#00754A;"><div class="name">Heritage Green</div>#00754A</div>
+          <div class="swatch" style="background:#4FB23B;"><div class="name">Leaf Accent</div>#4FB23B</div>
+          <div class="swatch" style="background:#0E1411;"><div class="name">Dark Canvas</div>#0E1411</div>
+          <div class="swatch" style="background:#16201B;"><div class="name">Surface 1</div>#16201B</div>
+          <div class="swatch" style="background:#1F2C24;"><div class="name">Surface 2</div>#1F2C24</div>
+          <div class="swatch" style="background:#E8EFE9; color:#0E1411;"><div class="name">Text Primary</div>#E8EFE9</div>
+          <div class="swatch" style="background:#9DB0A2; color:#0E1411;"><div class="name">Text Secondary</div>#9DB0A2</div>
+          <div class="swatch" style="background:#15B374;"><div class="name">Gain Green</div>#15B374</div>
+          <div class="swatch" style="background:#E5544B;"><div class="name">Loss Red</div>#E5544B</div>
+          <div class="swatch" style="background:#C8A24B; color:#1A1303;"><div class="name">Gold Tier</div>#C8A24B</div>
+          <div class="swatch" style="background:#26342B;"><div class="name">Divider</div>#26342B</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Average Sans (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Balance · 34pt · 800</div><div class="type-sample t-34">$428,164.92</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 26pt · 700</div><div class="type-sample t-26">Accounts</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Today's positions</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 18pt · 700</div><div class="type-sample t-18">Fidelity 500 Index Fund</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Your portfolio is up 0.90% in today's session.</div></div>
+        <div class="type-row"><div class="type-meta">Row Symbol · 15pt · 600</div><div class="type-sample t-15m">FXAIX</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Last updated 4:00 PM ET</div></div>
+        <div class="type-row"><div class="type-meta">Numeric Mono · 13pt · 600</div><div class="type-sample t-13n">+$3,841.20 (+0.90%)</div></div>
+        <div class="type-row"><div class="type-meta">Caption · 12pt · 500</div><div class="type-sample t-12">Brokerage · Individual ••3814</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Trade</button>
+          <button class="btn btn-deep">Transfer</button>
+          <button class="btn btn-outline">Watchlist</button>
+          <button class="btn btn-pill">Filter</button>
+          <button class="btn-text">View all holdings</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Quote Row</div>
+        <div class="quote-row">
+          <div class="quote-card">
+            <div class="q-l"><div class="sym">AAPL</div><div class="nm">Apple Inc.</div></div>
+            <div class="q-r"><div class="px">$229.87</div><div class="pct">+1.42%</div></div>
+          </div>
+        </div>
+        <div class="quote-row" style="margin-top:12px;">
+          <div class="quote-card">
+            <div class="q-l"><div class="sym">NVDA</div><div class="nm">NVIDIA Corp.</div></div>
+            <div class="q-r"><div class="px">$134.12</div><div class="pct dn">−2.10%</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Performance Indicators</div>
+        <div class="perf-row">
+          <div class="perf-pill perf-up">▲ +0.90%</div>
+          <div class="perf-pill perf-dn">▼ −2.10%</div>
+          <div class="perf-pill perf-flat">— 0.00%</div>
+          <div class="perf-pill perf-up">+$3,841.20</div>
+          <div class="perf-pill perf-dn">−$612.40</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Fidelity's dark mode is a deep evergreen, not pure black — canvas sits at <code>#0E1411</code> with cards lifting to <code>#16201B</code> and <code>#1F2C24</code>. Fidelity Green <code>#368727</code> stays the action color; the brighter <code>#4FB23B</code> Leaf handles selected tabs and links where contrast on the dark field matters. Semantic finance color is sacred: gains are always <code>#15B374</code>, losses always <code>#E5544B</code>, and they never swap or fade. Numerals use a tabular monospaced face so dollar columns and percentages align perfectly. Charts keep a green stroke with a low-opacity green fill — the only place a gradient appears.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Peloton iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #000000;
+    --surface-1: #121212;
+    --surface-2: #1C1C1E;
+    --surface-3: #262629;
+    --divider: #2C2C2E;
+    --text-primary: #FFFFFF;
+    --text-secondary: #B5B5BA;
+    --text-tertiary: #7A7A80;
+    --ink: #FFFFFF;
+    --peloton-red: #DF1E2E;
+    --red-pressed: #B81825;
+    --red-tint: #FF4B57;
+    --cadence: #E5402A;
+    --resistance: #F0A030;
+    --output: #DF1E2E;
+    --hr: #FF4B57;
+    --strive-blue: #3DB8E0;
+    --success: #2ECC71;
+    --error: #DF1E2E;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 900; letter-spacing: -0.8px; color: var(--ink); }
+  .page-chip { background: var(--peloton-red); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow-y: auto; scrollbar-width: none; }
+  .scroll-body::-webkit-scrollbar { display: none; }
+
+  /* Header */
+  .pl-head { display: flex; align-items: center; justify-content: space-between; padding: 4px 20px 14px; }
+  .pl-h-title { font-size: 22px; font-weight: 800; letter-spacing: -0.4px; }
+  .pl-h-actions { display: flex; gap: 16px; color: var(--text-primary); }
+  .pl-h-actions svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Discipline pills */
+  .disc-bar { display: flex; gap: 8px; padding: 0 16px 16px; overflow-x: auto; scrollbar-width: none; }
+  .disc-bar::-webkit-scrollbar { display: none; }
+  .disc { flex-shrink: 0; padding: 8px 16px; border-radius: 500px; font-size: 13px; font-weight: 600; background: var(--surface-2); color: var(--text-secondary); border: 1px solid var(--divider); }
+  .disc.active { background: #FFF; color: #000; border-color: #FFF; }
+
+  /* Class cards */
+  .class-list { padding: 0 16px 16px; }
+  .class-card { margin-bottom: 18px; border-radius: 14px; overflow: hidden; background: var(--surface-1); border: 1px solid var(--divider); }
+  .class-thumb { height: 150px; position: relative; }
+  .thumb-a { background: linear-gradient(150deg, #4A1014 0%, #2A0A0E 55%, #160508 100%); }
+  .thumb-b { background: linear-gradient(150deg, #1A2730 0%, #121A22 55%, #0A1014 100%); }
+  .thumb-a::after, .thumb-b::after { content: ''; position: absolute; right: 18px; bottom: 18px; width: 64px; height: 64px; border-radius: 50%; background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.15); }
+  .thumb-a::before { content: ''; position: absolute; right: 38px; bottom: 38px; width: 0; height: 0; border-left: 18px solid #FFF; border-top: 12px solid transparent; border-bottom: 12px solid transparent; z-index: 2; }
+  .thumb-b::before { content: ''; position: absolute; right: 38px; bottom: 38px; width: 0; height: 0; border-left: 18px solid #FFF; border-top: 12px solid transparent; border-bottom: 12px solid transparent; z-index: 2; }
+  .live-badge { position: absolute; top: 14px; left: 14px; display: flex; align-items: center; gap: 6px; background: var(--peloton-red); color: #FFF; font-size: 10px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase; padding: 5px 9px; border-radius: 5px; }
+  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: #FFF; }
+  .dur-badge { position: absolute; top: 14px; right: 14px; background: rgba(0,0,0,0.6); color: #FFF; font-size: 11px; font-weight: 700; padding: 5px 9px; border-radius: 5px; }
+  .class-body { padding: 14px 16px 16px; }
+  .class-disc { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--red-tint); }
+  .class-name { font-size: 17px; font-weight: 800; letter-spacing: -0.3px; margin-top: 4px; }
+  .class-inst { font-size: 14px; color: var(--text-secondary); margin-top: 3px; }
+  .class-meta { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 12px; color: var(--text-tertiary); }
+  .class-meta .star { color: #F0A030; }
+
+  /* In-class metrics */
+  .ic-card { margin: 0 16px 18px; border-radius: 14px; background: var(--surface-1); border: 1px solid var(--divider); padding: 16px; }
+  .ic-title { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 14px; }
+  .ic-ring-wrap { display: flex; align-items: center; gap: 16px; }
+  .ic-ring { width: 96px; height: 96px; flex-shrink: 0; position: relative; }
+  .ic-ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .ic-ring-val { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; color: #FFF; line-height: 1; }
+  .ic-ring-lbl { font-size: 9px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-tertiary); margin-top: 3px; }
+  .ic-metrics { flex: 1; }
+  .ic-m { display: flex; align-items: baseline; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--divider); }
+  .ic-m:last-child { border-bottom: none; }
+  .ic-m-lbl { font-size: 11px; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase; color: var(--text-secondary); }
+  .ic-m-val { font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums; }
+
+  /* Leaderboard */
+  .lb-card { margin: 0 16px 22px; border-radius: 14px; background: var(--surface-1); border: 1px solid var(--divider); overflow: hidden; }
+  .lb-head { padding: 14px 16px 10px; font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-secondary); }
+  .lb-row { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-top: 1px solid var(--divider); }
+  .lb-row.me { background: rgba(223,30,46,0.12); }
+  .lb-rank { font-size: 14px; font-weight: 800; width: 26px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+  .lb-row.me .lb-rank { color: var(--red-tint); }
+  .lb-av { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #5A2B82, #DF1E2E); flex-shrink: 0; }
+  .lb-name { flex: 1; font-size: 14px; font-weight: 600; }
+  .lb-out { font-size: 14px; font-weight: 800; font-variant-numeric: tabular-nums; }
+
+  /* Tab bar */
+  .tab-bar { height: 64px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: rgba(18,18,18,0.96); backdrop-filter: saturate(160%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 4px; }
+  .tab.active { color: #FFF; }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-44 { font-size: 44px; font-weight: 900; letter-spacing: -1px; color: var(--ink); }
+  .t-32 { font-size: 32px; font-weight: 900; letter-spacing: -0.6px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 800; letter-spacing: -0.4px; }
+  .t-17 { font-size: 17px; font-weight: 800; letter-spacing: -0.3px; }
+  .t-15 { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--red-tint); }
+  .t-11 { font-size: 11px; font-weight: 600; color: var(--text-tertiary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0.2px; }
+  .btn-primary { background: var(--peloton-red); color: #FFF; font-size: 15px; padding: 15px 30px; border-radius: 500px; }
+  .btn-primary:active { background: var(--red-pressed); transform: scale(0.98); }
+  .btn-white { background: #FFF; color: #000; font-size: 15px; font-weight: 700; padding: 15px 30px; border-radius: 500px; }
+  .btn-outline { background: transparent; color: #FFF; border: 1.5px solid rgba(255,255,255,0.4); font-size: 14px; font-weight: 700; padding: 13px 24px; border-radius: 500px; }
+  .btn-text { background: transparent; color: var(--red-tint); font-size: 14px; font-weight: 700; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Metric ring preview */
+  .ring-preview { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
+  .mini-ring { width: 84px; height: 84px; position: relative; }
+  .mini-c { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .mini-v { font-size: 20px; font-weight: 900; color: #FFF; line-height: 1; }
+  .mini-l { font-size: 8px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-tertiary); margin-top: 2px; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--peloton-red); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-5 { border-radius: 5px; }
+  .r-8 { border-radius: 8px; }
+  .r-14 { border-radius: 14px; }
+  .r-20 { border-radius: 20px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; background: var(--peloton-red); border-radius: 10px; }
+  .logo svg { width: 26px; height: 26px; fill: #FFF; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 24 24"><path d="M5 2h7.5a6.5 6.5 0 0 1 0 13H9v7H5V2zm4 4v5h3.5a2.5 2.5 0 0 0 0-5H9z"/></svg>
+    </span>
+    <div class="page-title">Peloton iOS — Design Tokens</div>
+    <div class="page-chip">Studio Black</div>
+  </div>
+  <p class="page-subtitle">Pure-black studio canvas (#000000) with Peloton Red #DF1E2E as the one brand color — brightened to #FF4B57 for text/active on black. Cinematic class thumbnails, the live LIVE badge, the big output ring, and a real-time leaderboard with your row highlighted in red.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="pl-head">
+            <div class="pl-h-title">Cycling</div>
+            <div class="pl-h-actions">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+              <svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="9" cy="6" r="2" fill="currentColor"/><circle cx="15" cy="12" r="2" fill="currentColor"/><circle cx="9" cy="18" r="2" fill="currentColor"/></svg>
+            </div>
+          </div>
+
+          <div class="disc-bar">
+            <div class="disc active">All</div>
+            <div class="disc">Live</div>
+            <div class="disc">45 min</div>
+            <div class="disc">Power Zone</div>
+            <div class="disc">Climb</div>
+            <div class="disc">Low Impact</div>
+          </div>
+
+          <div class="class-list">
+            <div class="class-card">
+              <div class="class-thumb thumb-a">
+                <div class="live-badge"><span class="live-dot"></span>Live</div>
+                <div class="dur-badge">45 min</div>
+              </div>
+              <div class="class-body">
+                <div class="class-disc">Power Zone Ride</div>
+                <div class="class-name">45 min Power Zone Max</div>
+                <div class="class-inst">Olivia Amato</div>
+                <div class="class-meta"><span class="star">★</span> 4.9 · 12,408 taken · 90s of work</div>
+              </div>
+            </div>
+
+            <div class="ic-card">
+              <div class="ic-title">In-Class · Output</div>
+              <div class="ic-ring-wrap">
+                <div class="ic-ring">
+                  <svg viewBox="0 0 96 96" width="96" height="96">
+                    <circle cx="48" cy="48" r="40" fill="none" stroke="#262629" stroke-width="9"/>
+                    <circle cx="48" cy="48" r="40" fill="none" stroke="#DF1E2E" stroke-width="9" stroke-linecap="round" stroke-dasharray="176 251" transform="rotate(-90 48 48)"/>
+                  </svg>
+                  <div class="ic-ring-center">
+                    <div class="ic-ring-val">312</div>
+                    <div class="ic-ring-lbl">Total kJ</div>
+                  </div>
+                </div>
+                <div class="ic-metrics">
+                  <div class="ic-m"><span class="ic-m-lbl">Cadence</span><span class="ic-m-val" style="color:#E5402A;">94</span></div>
+                  <div class="ic-m"><span class="ic-m-lbl">Resistance</span><span class="ic-m-val" style="color:#F0A030;">52</span></div>
+                  <div class="ic-m"><span class="ic-m-lbl">Output</span><span class="ic-m-val" style="color:#FF4B57;">218<span style="font-size:11px;color:var(--text-tertiary);"> W</span></span></div>
+                  <div class="ic-m"><span class="ic-m-lbl">Heart Rate</span><span class="ic-m-val">148<span style="font-size:11px;color:var(--text-tertiary);"> bpm</span></span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="lb-card">
+              <div class="lb-head">Leaderboard · 1,284 riders</div>
+              <div class="lb-row"><span class="lb-rank">1</span><div class="lb-av"></div><span class="lb-name">RideOrDie_KC</span><span class="lb-out">342</span></div>
+              <div class="lb-row"><span class="lb-rank">2</span><div class="lb-av"></div><span class="lb-name">SpinQueen</span><span class="lb-out">329</span></div>
+              <div class="lb-row me"><span class="lb-rank">3</span><div class="lb-av"></div><span class="lb-name">You</span><span class="lb-out">312</span></div>
+              <div class="lb-row"><span class="lb-rank">4</span><div class="lb-av"></div><span class="lb-name">PelotonPete</span><span class="lb-out">305</span></div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a2 2 0 0 1-2 2h-4v-7H9v7H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="12" cy="12" r="3.4"/><path d="M11 11l3 1-3 1z" fill="currentColor"/></svg><span>Classes</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 19V9m5 10V5m5 14v-7m5 7V8"/></svg><span>Schedule</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/></svg><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#000000;"><div class="name">Studio Black</div>#000000</div>
+          <div class="swatch" style="background:#121212;"><div class="name">Surface 1</div>#121212</div>
+          <div class="swatch" style="background:#1C1C1E;"><div class="name">Surface 2</div>#1C1C1E</div>
+          <div class="swatch" style="background:#2C2C2E;"><div class="name">Divider</div>#2C2C2E</div>
+          <div class="swatch" style="background:#DF1E2E;"><div class="name">Peloton Red</div>#DF1E2E</div>
+          <div class="swatch" style="background:#FF4B57;"><div class="name">Red (on black)</div>#FF4B57</div>
+          <div class="swatch" style="background:#B81825;"><div class="name">Red Pressed</div>#B81825</div>
+          <div class="swatch" style="background:#E5402A;"><div class="name">Cadence</div>#E5402A</div>
+          <div class="swatch" style="background:#F0A030; color:#1A1A1A;"><div class="name">Resistance</div>#F0A030</div>
+          <div class="swatch" style="background:#3DB8E0;"><div class="name">Strive / HR</div>#3DB8E0</div>
+          <div class="swatch" style="background:#2ECC71;"><div class="name">PR / Success</div>#2ECC71</div>
+          <div class="swatch" style="background:#FFFFFF; color:#000;"><div class="name">Text Primary</div>#FFFFFF</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter (Peloton's geometric sans)</div>
+        <div class="type-row"><div class="type-meta">Output Number · 44pt · 900</div><div class="type-sample t-44">312</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 900</div><div class="type-sample t-32">Cycling</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 800</div><div class="type-sample t-22">Trending Classes</div></div>
+        <div class="type-row"><div class="type-meta">Class Title · 17pt · 800</div><div class="type-sample t-17">45 min Power Zone Max</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 600</div><div class="type-sample t-15">Ride with Olivia and the leaderboard.</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">12,408 taken · 90s of work</div></div>
+        <div class="type-row"><div class="type-meta">Eyebrow · 12pt · 700</div><div class="type-sample t-12">Power Zone Ride</div></div>
+        <div class="type-row"><div class="type-meta">Caption · 11pt · 600</div><div class="type-sample t-11">Live in 4 minutes</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Take Class</button>
+          <button class="btn btn-white">Start Ride</button>
+          <button class="btn btn-outline">Add to Stack</button>
+          <button class="btn-text">See All</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">In-Class Metric Rings</div>
+        <div class="ring-preview">
+          <div class="mini-ring">
+            <svg viewBox="0 0 84 84" width="84" height="84"><circle cx="42" cy="42" r="35" fill="none" stroke="#262629" stroke-width="8"/><circle cx="42" cy="42" r="35" fill="none" stroke="#DF1E2E" stroke-width="8" stroke-linecap="round" stroke-dasharray="154 220" transform="rotate(-90 42 42)"/></svg>
+            <div class="mini-c"><div class="mini-v">218</div><div class="mini-l">Output W</div></div>
+          </div>
+          <div class="mini-ring">
+            <svg viewBox="0 0 84 84" width="84" height="84"><circle cx="42" cy="42" r="35" fill="none" stroke="#262629" stroke-width="8"/><circle cx="42" cy="42" r="35" fill="none" stroke="#E5402A" stroke-width="8" stroke-linecap="round" stroke-dasharray="176 220" transform="rotate(-90 42 42)"/></svg>
+            <div class="mini-c"><div class="mini-v">94</div><div class="mini-l">Cadence</div></div>
+          </div>
+          <div class="mini-ring">
+            <svg viewBox="0 0 84 84" width="84" height="84"><circle cx="42" cy="42" r="35" fill="none" stroke="#262629" stroke-width="8"/><circle cx="42" cy="42" r="35" fill="none" stroke="#3DB8E0" stroke-width="8" stroke-linecap="round" stroke-dasharray="132 220" transform="rotate(-90 42 42)"/></svg>
+            <div class="mini-c"><div class="mini-v">148</div><div class="mini-l">HR bpm</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-5">5</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Ring</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Peloton is born-dark: the canvas is <em>pure black</em> <code>#000000</code> so cinematic class thumbnails and the studio video feed bleed edge-to-edge. Cards lift to <code>#121212</code>. Peloton Red <code>#DF1E2E</code> is the only brand color — used for the LIVE badge, the primary "Take Class" button, the output ring, and your highlighted leaderboard row; on black it brightens to <code>#FF4B57</code> for text/active to clear AA. In-class metric colors (cadence red-orange, resistance amber, Strive/HR blue) are fixed semantics and never change theme. There is no light mode — the app is always studio-black.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

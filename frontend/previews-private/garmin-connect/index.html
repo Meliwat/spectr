@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Garmin Connect iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;500;700&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #000000;
+    --surface-1: #121417;
+    --surface-2: #1B1E22;
+    --surface-3: #23272C;
+    --divider: #2A2E33;
+    --text-primary: #FFFFFF;
+    --text-secondary: #A6ACB3;
+    --text-tertiary: #6B7178;
+    --ink: #FFFFFF;
+    --garmin-blue: #007CC3;
+    --garmin-blue-pressed: #00689F;
+    --garmin-blue-tint: #2A9FD6;
+    --battery-blue: #2EA8E0;
+    --intensity: #00A8A8;
+    --hr-red: #E5402A;
+    --hr-orange: #F0A030;
+    --hr-green: #4CAF50;
+    --steps-gold: #C8B560;
+    --success: #4CAF50;
+    --error: #E5402A;
+    --font: 'Roboto', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+    --font-cond: 'Roboto Condensed', 'Roboto', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 900; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--garmin-blue); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow-y: auto; scrollbar-width: none; }
+  .scroll-body::-webkit-scrollbar { display: none; }
+
+  /* Activity nav header */
+  .nav-head { display: flex; align-items: center; justify-content: space-between; padding: 4px 20px 14px; }
+  .nav-back { color: var(--text-primary); display: flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 500; }
+  .nav-back svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2.4; fill: none; }
+  .nav-actions { display: flex; gap: 16px; color: var(--text-primary); }
+  .nav-actions svg { width: 19px; height: 19px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Activity title */
+  .act-title-wrap { padding: 0 20px 16px; }
+  .act-type { font-size: 12px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--garmin-blue-tint); }
+  .act-name { font-family: var(--font-cond); font-size: 24px; font-weight: 700; color: var(--text-primary); margin-top: 4px; }
+  .act-when { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+
+  /* Map */
+  .map { height: 168px; margin: 0 16px 18px; border-radius: 12px; position: relative; overflow: hidden; background: linear-gradient(160deg, #1A2329 0%, #121A1F 60%, #0C1216 100%); }
+  .map-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px); background-size: 28px 28px; }
+  .map svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .map .route { fill: none; stroke: var(--garmin-blue); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 4px rgba(0,124,195,0.6)); }
+  .pin { position: absolute; width: 14px; height: 14px; border-radius: 50%; border: 3px solid #FFF; }
+  .pin.start { background: var(--success); left: 18%; top: 64%; }
+  .pin.end { background: var(--hr-red); right: 22%; top: 26%; }
+
+  /* Stat grid */
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; background: var(--divider); margin: 0 16px 18px; border-radius: 12px; overflow: hidden; }
+  .stat-cell { background: var(--surface-1); padding: 14px 12px; }
+  .stat-cell .label { font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-secondary); }
+  .stat-cell .val { font-family: var(--font-cond); font-size: 22px; font-weight: 700; color: var(--text-primary); margin-top: 4px; }
+  .stat-cell .unit { font-size: 11px; color: var(--text-tertiary); font-family: var(--font); font-weight: 500; }
+
+  /* Training Status card */
+  .ts-card { margin: 0 16px 18px; background: var(--surface-1); border-radius: 12px; padding: 16px; display: flex; align-items: center; gap: 14px; border: 1px solid var(--divider); }
+  .ts-ring { width: 52px; height: 52px; flex-shrink: 0; }
+  .ts-texts { flex: 1; }
+  .ts-label { font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-secondary); }
+  .ts-status { font-size: 16px; font-weight: 700; color: var(--garmin-blue-tint); margin-top: 2px; }
+  .ts-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+  /* Body Battery */
+  .bb-card { margin: 0 16px 18px; background: var(--surface-1); border-radius: 12px; padding: 16px; border: 1px solid var(--divider); }
+  .bb-top { display: flex; align-items: baseline; justify-content: space-between; }
+  .bb-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+  .bb-val { font-family: var(--font-cond); font-size: 22px; font-weight: 700; color: var(--battery-blue); }
+  .bb-bar { height: 8px; border-radius: 4px; background: var(--surface-3); margin-top: 12px; overflow: hidden; }
+  .bb-fill { height: 100%; width: 72%; border-radius: 4px; background: linear-gradient(90deg, #1E6FA8 0%, #2EA8E0 100%); }
+  .bb-scale { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-tertiary); margin-top: 6px; }
+
+  /* HR zones */
+  .hr-card { margin: 0 16px 22px; background: var(--surface-1); border-radius: 12px; padding: 16px; border: 1px solid var(--divider); }
+  .hr-name { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 12px; }
+  .hr-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .hr-z { font-size: 11px; color: var(--text-secondary); width: 44px; }
+  .hr-track { flex: 1; height: 10px; border-radius: 3px; background: var(--surface-3); overflow: hidden; }
+  .hr-bar { height: 100%; border-radius: 3px; }
+  .hr-pct { font-size: 11px; color: var(--text-secondary); width: 34px; text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* Tab bar */
+  .tab-bar { height: 64px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: rgba(18,20,23,0.96); backdrop-filter: saturate(160%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 500; gap: 4px; }
+  .tab.active { color: var(--garmin-blue-tint); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 900; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-family: var(--font-cond); font-size: 26px; font-weight: 700; letter-spacing: -0.2px; color: var(--ink); }
+  .t-40n { font-family: var(--font-cond); font-size: 40px; font-weight: 700; letter-spacing: -0.5px; color: var(--ink); }
+  .t-22 { font-family: var(--font-cond); font-size: 22px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 500; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--garmin-blue-tint); }
+  .t-11 { font-size: 11px; font-weight: 500; color: var(--text-tertiary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0.2px; }
+  .btn-primary { background: var(--garmin-blue); color: #FFF; font-size: 15px; padding: 14px 28px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .btn-primary:active { background: var(--garmin-blue-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--garmin-blue-tint); border: 1.5px solid var(--garmin-blue-tint); font-size: 14px; font-weight: 700; padding: 12px 22px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .btn-ghost { background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--divider); font-size: 14px; font-weight: 500; padding: 12px 20px; border-radius: 6px; }
+  .btn-text { background: transparent; color: var(--garmin-blue-tint); font-size: 14px; font-weight: 700; padding: 12px 0; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* Metric tiles preview */
+  .metric-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .metric-tile { background: var(--surface-2); border: 1px solid var(--divider); border-radius: 12px; padding: 16px; min-width: 110px; }
+  .metric-tile .ml { font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-secondary); }
+  .metric-tile .mv { font-family: var(--font-cond); font-size: 26px; font-weight: 700; color: var(--text-primary); margin-top: 4px; }
+  .metric-tile .mu { font-size: 11px; color: var(--text-tertiary); }
+  .metric-tile.accent .mv { color: var(--garmin-blue-tint); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--garmin-blue); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; background: var(--garmin-blue); border-radius: 8px; }
+  .logo svg { width: 30px; height: 30px; fill: #FFF; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 3.2 4.9 11.6h-2.3l-1-2.5H10.4l-1 2.5H7.1L12 5.2zm0 4.1-1.6 3.9h3.2L12 9.3z"/></svg>
+    </span>
+    <div class="page-title">Garmin Connect iOS — Design Tokens</div>
+    <div class="page-chip">Athletic Dark</div>
+  </div>
+  <p class="page-subtitle">True-black canvas (#000000) with Garmin Blue #007CC3 as the single brand accent — brightened to #2A9FD6 for text and active states so it clears AA on black. Activity data is king: condensed Roboto numerals, a glowing GPS route line, Training Status, Body Battery and color-coded HR zones.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="nav-head">
+            <div class="nav-back"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Activities</div>
+            <div class="nav-actions">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>
+              <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"/><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"/></svg>
+            </div>
+          </div>
+
+          <div class="act-title-wrap">
+            <div class="act-type">Running</div>
+            <div class="act-name">Morning Run</div>
+            <div class="act-when">Today at 6:42 AM · Cedar Loop Trail</div>
+          </div>
+
+          <div class="map">
+            <div class="map-grid"></div>
+            <svg viewBox="0 0 300 168" preserveAspectRatio="none"><path class="route" d="M54 108 C 70 70, 96 64, 118 78 S 150 118, 178 100 S 214 56, 234 44"/></svg>
+            <div class="pin start"></div>
+            <div class="pin end"></div>
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat-cell"><div class="label">Distance</div><div class="val">8.42<span class="unit"> km</span></div></div>
+            <div class="stat-cell"><div class="label">Time</div><div class="val">42:18</div></div>
+            <div class="stat-cell"><div class="label">Avg Pace</div><div class="val">5:02<span class="unit"> /km</span></div></div>
+            <div class="stat-cell"><div class="label">Avg HR</div><div class="val">156<span class="unit"> bpm</span></div></div>
+            <div class="stat-cell"><div class="label">Calories</div><div class="val">612<span class="unit"> C</span></div></div>
+            <div class="stat-cell"><div class="label">Elev Gain</div><div class="val">124<span class="unit"> m</span></div></div>
+          </div>
+
+          <div class="ts-card">
+            <svg class="ts-ring" viewBox="0 0 52 52">
+              <circle cx="26" cy="26" r="22" fill="none" stroke="#23272C" stroke-width="6"/>
+              <circle cx="26" cy="26" r="22" fill="none" stroke="#007CC3" stroke-width="6" stroke-linecap="round" stroke-dasharray="103 138" transform="rotate(-90 26 26)"/>
+            </svg>
+            <div class="ts-texts">
+              <div class="ts-label">Training Status</div>
+              <div class="ts-status">Productive</div>
+              <div class="ts-sub">VO₂ Max 52 · Load 388</div>
+            </div>
+          </div>
+
+          <div class="bb-card">
+            <div class="bb-top">
+              <span class="bb-name">Body Battery</span>
+              <span class="bb-val">72</span>
+            </div>
+            <div class="bb-bar"><div class="bb-fill"></div></div>
+            <div class="bb-scale"><span>0</span><span>Charged</span><span>100</span></div>
+          </div>
+
+          <div class="hr-card">
+            <div class="hr-name">Heart Rate Zones</div>
+            <div class="hr-row"><span class="hr-z">Z2</span><div class="hr-track"><div class="hr-bar" style="width:26%;background:#4CAF50;"></div></div><span class="hr-pct">9:48</span></div>
+            <div class="hr-row"><span class="hr-z">Z3</span><div class="hr-track"><div class="hr-bar" style="width:54%;background:#C8B560;"></div></div><span class="hr-pct">22:30</span></div>
+            <div class="hr-row"><span class="hr-z">Z4</span><div class="hr-track"><div class="hr-bar" style="width:38%;background:#F0A030;"></div></div><span class="hr-pct">8:12</span></div>
+            <div class="hr-row"><span class="hr-z">Z5</span><div class="hr-track"><div class="hr-bar" style="width:10%;background:#E5402A;"></div></div><span class="hr-pct">1:48</span></div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg><span>My Day</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 17l5-9 4 6 3-4 6 7"/><circle cx="8" cy="8" r="1.6"/></svg><span>Challenges</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="14" x2="9" y2="14"/></svg><span>Calendar</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/></svg><span>More</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#000000;"><div class="name">True Black Canvas</div>#000000</div>
+          <div class="swatch" style="background:#121417;"><div class="name">Surface 1</div>#121417</div>
+          <div class="swatch" style="background:#1B1E22;"><div class="name">Surface 2</div>#1B1E22</div>
+          <div class="swatch" style="background:#2A2E33;"><div class="name">Divider</div>#2A2E33</div>
+          <div class="swatch" style="background:#007CC3;"><div class="name">Garmin Blue</div>#007CC3</div>
+          <div class="swatch" style="background:#2A9FD6;"><div class="name">Blue (on dark)</div>#2A9FD6</div>
+          <div class="swatch" style="background:#2EA8E0;"><div class="name">Body Battery</div>#2EA8E0</div>
+          <div class="swatch" style="background:#00A8A8;"><div class="name">Intensity Min</div>#00A8A8</div>
+          <div class="swatch" style="background:#E5402A;"><div class="name">HR Zone 5</div>#E5402A</div>
+          <div class="swatch" style="background:#F0A030; color:#1A1A1A;"><div class="name">HR Zone 4</div>#F0A030</div>
+          <div class="swatch" style="background:#4CAF50;"><div class="name">HR Zone 2 / OK</div>#4CAF50</div>
+          <div class="swatch" style="background:#FFFFFF; color:#000;"><div class="name">Text Primary</div>#FFFFFF</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Roboto + Roboto Condensed (Garmin's metric face)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 900</div><div class="type-sample t-32">My Day</div></div>
+        <div class="type-row"><div class="type-meta">Hero Metric · 40pt · 700 Cond</div><div class="type-sample t-40n">8.42 km</div></div>
+        <div class="type-row"><div class="type-meta">Activity Name · 26pt · 700 Cond</div><div class="type-sample t-26">Morning Run</div></div>
+        <div class="type-row"><div class="type-meta">Stat Value · 22pt · 700 Cond</div><div class="type-sample t-22">156 bpm</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 500</div><div class="type-sample t-16">Productive — your training is paying off.</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Today at 6:42 AM · Cedar Loop Trail</div></div>
+        <div class="type-row"><div class="type-meta">Eyebrow / Label · 12pt · 700</div><div class="type-sample t-12">Training Status</div></div>
+        <div class="type-row"><div class="type-meta">Caption · 11pt · 500</div><div class="type-sample t-11">Last synced 4 min ago</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Start</button>
+          <button class="btn btn-outline">Add Note</button>
+          <button class="btn btn-ghost">Edit</button>
+          <button class="btn-text">View Splits</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Data Tiles & Training Status Ring</div>
+        <div class="metric-row">
+          <div class="metric-tile accent"><div class="ml">VO₂ Max</div><div class="mv">52</div><div class="mu">ml/kg/min</div></div>
+          <div class="metric-tile"><div class="ml">Steps</div><div class="mv">11,248</div><div class="mu">goal 10,000</div></div>
+          <div class="metric-tile accent"><div class="ml">Body Battery</div><div class="mv">72</div><div class="mu">charged</div></div>
+          <div class="metric-tile"><div class="ml">Intensity Min</div><div class="mv">88</div><div class="mu">weekly 150</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Ring</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Garmin Connect is dark-first and uses <em>true black</em> <code>#000000</code> as the canvas — it makes the GPS route line and HR-zone colors pop and saves OLED power on watch-paired phones. Cards lift to <code>#121417</code>. Garmin Blue <code>#007CC3</code> is the only brand color; on black it is brightened to <code>#2A9FD6</code> for text/active states to clear WCAG AA. Numerals are <strong>Roboto Condensed</strong> so long metric values (pace, distance, elevation) stay on one line. Data-viz colors (Body Battery blue, the green→gold→orange→red HR ramp) never change across themes — only chrome dims.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

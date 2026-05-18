@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Runna iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0E0E16;
+    --surface-1: #181826;
+    --surface-2: #222234;
+    --divider: #2C2C42;
+    --text-primary: #F3F3FB;
+    --text-secondary: #9C9CB8;
+    --text-tertiary: #65657E;
+    --ink: #FFFFFF;
+    --indigo: #4F46E5;
+    --indigo-bright: #6366F1;
+    --indigo-pressed: #4338CA;
+    --lime: #C2F94E;
+    --lime-deep: #A3D93B;
+    --easy: #34D399;
+    --tempo: #FBBF24;
+    --interval: #FB7185;
+    --long: #4F46E5;
+    --success: #34D399;
+    --error: #FB7185;
+    --font: 'Sora', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--indigo); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050509; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; padding: 0 18px; }
+
+  /* Plan header */
+  .plan-head { padding: 8px 2px 12px; display: flex; justify-content: space-between; align-items: flex-start; }
+  .plan-head .eb { font-size: 11px; font-weight: 700; color: var(--lime); letter-spacing: 1.2px; text-transform: uppercase; }
+  .plan-head .t { font-size: 24px; font-weight: 800; color: var(--ink); margin-top: 5px; letter-spacing: -0.3px; }
+  .plan-head .s { font-size: 12px; font-weight: 500; color: var(--text-secondary); margin-top: 3px; }
+  .week-pill { background: var(--surface-2); border: 1px solid var(--divider); color: var(--text-primary); font-size: 12px; font-weight: 700; padding: 7px 12px; border-radius: 999px; flex-shrink: 0; }
+
+  /* Week strip */
+  .week-strip { display: flex; gap: 7px; padding: 6px 0 14px; }
+  .day { flex: 1; aspect-ratio: 0.62; border-radius: 14px; background: var(--surface-1); border: 1px solid var(--divider); display: flex; flex-direction: column; align-items: center; padding: 9px 0 8px; position: relative; }
+  .day .dn { font-size: 10px; font-weight: 700; color: var(--text-tertiary); }
+  .day .dd { font-size: 14px; font-weight: 800; color: var(--text-primary); margin-top: auto; }
+  .day .dot { width: 7px; height: 7px; border-radius: 50%; margin-top: 6px; }
+  .day.done { background: rgba(52,211,153,0.12); border-color: rgba(52,211,153,0.35); }
+  .day.done .dd { color: var(--easy); }
+  .day.today { background: var(--indigo); border-color: var(--indigo-bright); }
+  .day.today .dn, .day.today .dd { color: #FFF; }
+  .day.rest .dd { color: var(--text-tertiary); }
+
+  /* Today's session card */
+  .sess { background: linear-gradient(150deg, #4F46E5 0%, #3A33B8 100%); border-radius: 22px; padding: 18px; position: relative; overflow: hidden; }
+  .sess::after { content: ''; position: absolute; right: -34px; bottom: -34px; width: 130px; height: 130px; border-radius: 50%; background: rgba(194,249,78,0.14); }
+  .sess-tag { display: inline-block; font-size: 10px; font-weight: 800; color: #1A1A1A; background: var(--lime); padding: 4px 10px; border-radius: 999px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .sess-t { font-size: 21px; font-weight: 800; color: #FFF; margin-top: 12px; letter-spacing: -0.3px; }
+  .sess-m { display: flex; gap: 18px; margin-top: 12px; }
+  .sess-m .it { }
+  .sess-m .k { font-size: 18px; font-weight: 800; color: #FFF; }
+  .sess-m .l { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.7); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .sess-cta { margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--lime); color: #1A1A1A; font-size: 15px; font-weight: 800; padding: 13px; border-radius: 14px; }
+  .sess-cta svg { width: 16px; height: 16px; fill: #1A1A1A; }
+
+  /* Workout structure */
+  .struct { margin-top: 16px; }
+  .struct-h { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 10px; }
+  .seg-bar { display: flex; gap: 3px; height: 30px; border-radius: 8px; overflow: hidden; }
+  .seg { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; color: rgba(0,0,0,0.55); }
+  .step-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--divider); }
+  .step-row:last-child { border-bottom: none; }
+  .step-ic { width: 32px; height: 32px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #1A1A1A; flex-shrink: 0; }
+  .step-tx { flex: 1; }
+  .step-tx .n { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+  .step-tx .d { font-size: 11px; font-weight: 500; color: var(--text-secondary); margin-top: 2px; }
+  .step-pace { font-size: 13px; font-weight: 800; color: var(--text-primary); }
+  .step-pace span { font-size: 10px; font-weight: 600; color: var(--text-tertiary); display: block; text-align: right; }
+
+  /* Tab bar */
+  .tab-bar { height: 68px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(14,14,22,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 3px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--lime); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 700; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 800; cursor: pointer; border: none; letter-spacing: 0.1px; }
+  .btn-primary { background: var(--lime); color: #1A1A1A; font-size: 16px; padding: 15px 30px; border-radius: 14px; }
+  .btn-primary:active { background: var(--lime-deep); transform: scale(0.98); }
+  .btn-indigo { background: var(--indigo); color: #FFF; font-size: 16px; padding: 15px 30px; border-radius: 14px; }
+  .btn-indigo:active { background: var(--indigo-pressed); }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1.5px solid var(--divider); font-size: 14px; font-weight: 700; padding: 13px 24px; border-radius: 14px; }
+  .btn-text { background: transparent; color: var(--lime); font-size: 14px; font-weight: 800; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Run type chips */
+  .rt-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .rt { font-family: var(--font); font-weight: 800; font-size: 13px; padding: 8px 14px; border-radius: 10px; color: #1A1A1A; }
+  .rt-easy { background: var(--easy); }
+  .rt-tempo { background: var(--tempo); }
+  .rt-interval { background: var(--interval); }
+  .rt-long { background: var(--indigo); color: #FFF; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--indigo); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-8 { border-radius: 8px; }
+  .r-10 { border-radius: 10px; }
+  .r-14 { border-radius: 14px; }
+  .r-18 { border-radius: 18px; }
+  .r-22 { border-radius: 22px; }
+  .r-pill { border-radius: 999px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Runna logomark */
+  .rlogo { display: inline-block; width: 46px; height: 46px; }
+  .rlogo svg { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="rlogo">
+      <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="14" fill="#4F46E5"/><path d="M15 35l6-22h8c4 0 6 2.5 6 6 0 4-2.5 6.5-6.5 7l4.5 9h-5l-4-8.5h-2L19 35zm6.5-12h4c1.8 0 3-1.2 3-3s-1-2.6-2.8-2.6h-2.7z" fill="#C2F94E"/></svg>
+    </span>
+    <div class="page-title">Runna iOS — Design Tokens</div>
+    <div class="page-chip">Plan + Pace</div>
+  </div>
+  <p class="page-subtitle">Runna pairs a deep training Indigo (#4F46E5) with an electric Lime (#C2F94E) for energy and "go" actions. The two signatures are the training-plan calendar — a week strip of color-coded run days — and the guided run-session card with its structured workout breakdown (warm-up → intervals → cooldown) and pace targets.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="scroll-body">
+            <div class="plan-head">
+              <div>
+                <div class="eb">5K Plan · Week 4 of 8</div>
+                <div class="t">Build week</div>
+                <div class="s">3 runs · 11.2 km this week</div>
+              </div>
+              <div class="week-pill">Week 4 ▾</div>
+            </div>
+
+            <div class="week-strip">
+              <div class="day done"><div class="dn">MON</div><div class="dd">12</div><div class="dot" style="background:#34D399"></div></div>
+              <div class="day rest"><div class="dn">TUE</div><div class="dd">13</div><div class="dot" style="background:#2C2C42"></div></div>
+              <div class="day done"><div class="dn">WED</div><div class="dd">14</div><div class="dot" style="background:#34D399"></div></div>
+              <div class="day rest"><div class="dn">THU</div><div class="dd">15</div><div class="dot" style="background:#2C2C42"></div></div>
+              <div class="day today"><div class="dn">FRI</div><div class="dd">16</div><div class="dot" style="background:#C2F94E"></div></div>
+              <div class="day"><div class="dn">SAT</div><div class="dd">17</div><div class="dot" style="background:#FBBF24"></div></div>
+              <div class="day"><div class="dn">SUN</div><div class="dd">18</div><div class="dot" style="background:#4F46E5"></div></div>
+            </div>
+
+            <div class="sess">
+              <span class="sess-tag">Today · Intervals</span>
+              <div class="sess-t">6 × 800m @ 5K pace</div>
+              <div class="sess-m">
+                <div class="it"><div class="k">8.4 km</div><div class="l">Distance</div></div>
+                <div class="it"><div class="k">~48 min</div><div class="l">Duration</div></div>
+                <div class="it"><div class="k">4:52</div><div class="l">Avg pace</div></div>
+              </div>
+              <div class="sess-cta"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Start guided run</div>
+            </div>
+
+            <div class="struct">
+              <div class="struct-h">Workout structure</div>
+              <div class="seg-bar">
+                <div class="seg" style="background:#34D399; flex:1.6">W-UP</div>
+                <div class="seg" style="background:#FB7185; flex:3.4">6 × 800M</div>
+                <div class="seg" style="background:#34D399; flex:1.4">C-DN</div>
+              </div>
+              <div class="step-row">
+                <div class="step-ic" style="background:#34D399">WU</div>
+                <div class="step-tx"><div class="n">Warm-up</div><div class="d">10 min easy jog</div></div>
+                <div class="step-pace">6:10<span>/km</span></div>
+              </div>
+              <div class="step-row">
+                <div class="step-ic" style="background:#FB7185">6×</div>
+                <div class="step-tx"><div class="n">800m intervals</div><div class="d">90s recovery jog between</div></div>
+                <div class="step-pace">4:35<span>/km</span></div>
+              </div>
+              <div class="step-row">
+                <div class="step-ic" style="background:#34D399">CD</div>
+                <div class="step-tx"><div class="n">Cool-down</div><div class="d">8 min easy jog</div></div>
+                <div class="step-pace">6:20<span>/km</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg><span>Plan</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M13 3L4 14h7l-2 7 9-11h-7z"/></svg><span>Run</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M21 7v5h-5"/></svg><span>Progress</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="3"/><circle cx="17" cy="13" r="3"/><path d="M3 20c0-3 3-4 6-4M11 20c0-3 3-4 6-4"/></svg><span>Club</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/></svg><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#4F46E5;"><div class="name">Runna Indigo</div>#4F46E5</div>
+          <div class="swatch" style="background:#6366F1;"><div class="name">Indigo Bright</div>#6366F1</div>
+          <div class="swatch" style="background:#C2F94E; color:#1A1A1A;"><div class="name">Runna Lime</div>#C2F94E</div>
+          <div class="swatch" style="background:#0E0E16;"><div class="name">Canvas</div>#0E0E16</div>
+          <div class="swatch" style="background:#181826;"><div class="name">Surface 1</div>#181826</div>
+          <div class="swatch" style="background:#2C2C42;"><div class="name">Divider</div>#2C2C42</div>
+          <div class="swatch" style="background:#34D399; color:#0A2A1F;"><div class="name">Easy run</div>#34D399</div>
+          <div class="swatch" style="background:#FBBF24; color:#3A2A00;"><div class="name">Tempo</div>#FBBF24</div>
+          <div class="swatch" style="background:#FB7185; color:#3A0A12;"><div class="name">Intervals</div>#FB7185</div>
+          <div class="swatch" style="background:#A3D93B; color:#1A1A1A;"><div class="name">Lime Pressed</div>#A3D93B</div>
+          <div class="swatch" style="background:#F3F3FB; color:#0E0E16;"><div class="name">Text Primary</div>#F3F3FB</div>
+          <div class="swatch" style="background:#9C9CB8; color:#0E0E16;"><div class="name">Text Secondary</div>#9C9CB8</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Sora (geometric, athletic)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 800</div><div class="type-sample t-32">Your plan</div></div>
+        <div class="type-row"><div class="type-meta">Plan Title · 26pt · 800</div><div class="type-sample t-26">Build week</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Workout structure</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 18pt · 700</div><div class="type-sample t-18">6 × 800m @ 5K pace</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">A controlled interval session to build your 5K speed and form.</div></div>
+        <div class="type-row"><div class="type-meta">Step Item · 15pt · 600</div><div class="type-sample t-15m">800m intervals · 90s recovery</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">3 runs · 11.2 km this week</div></div>
+        <div class="type-row"><div class="type-meta">Pace / Stat · 12pt · 700</div><div class="type-sample t-12">4:35 /KM · 5K PACE</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Start guided run</button>
+          <button class="btn btn-indigo">View plan</button>
+          <button class="btn btn-outline">Reschedule</button>
+          <button class="btn-text">Swap workout</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Run Type Color System</div>
+        <div class="rt-row">
+          <div class="rt rt-easy">Easy</div>
+          <div class="rt rt-tempo">Tempo</div>
+          <div class="rt rt-interval">Intervals</div>
+          <div class="rt rt-long">Long run</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Workout Structure Bar</div>
+        <div class="seg-bar" style="height:34px;">
+          <div class="seg" style="background:#34D399; flex:1.6">WARM-UP</div>
+          <div class="seg" style="background:#FB7185; flex:3.4">6 × 800M INTERVALS</div>
+          <div class="seg" style="background:#34D399; flex:1.4">COOL</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-18">18</div>
+          <div class="radius-box r-22">22</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Runna's app is dark-first — athletes train at dawn and dusk, and a dark UI keeps the screen low-glare on a wrist or armband. Canvas is a deep blue-black <code>#0E0E16</code> (tinted toward Indigo, never neutral); cards lift to <code>#181826</code>. The two brand colors carry every accent: Indigo <code>#4F46E5</code> for plan structure and primary surfaces, electric Lime <code>#C2F94E</code> for "go" — the Start button and the today marker. Run-type colors (Easy <code>#34D399</code>, Tempo <code>#FBBF24</code>, Intervals <code>#FB7185</code>, Long <code>#4F46E5</code>) are fixed across themes so athletes read the week at a glance. Lime always pairs with near-black text for contrast.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

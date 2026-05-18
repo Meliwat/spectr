@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Resy iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #000000;
+    --surface-1: #121212;
+    --surface-2: #1C1C1C;
+    --divider: #262626;
+    --text-primary: #F5F5F5;
+    --text-secondary: #9E9E9E;
+    --text-tertiary: #6A6A6A;
+    --ink: #FFFFFF;
+    --resy-red: #C73E3A;
+    --resy-red-bright: #E2504B;
+    --resy-red-press: #A8302D;
+    --notify-amber: #D99A2B;
+    --hit-gold: #C9A24B;
+    --success: #4FA773;
+    --error: #E2504B;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+    --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 700; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--resy-red); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.95), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; box-shadow: 0 0 0 1px #1A1A1A; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+
+  /* Restaurant hero */
+  .hero { height: 230px; position: relative; background: linear-gradient(165deg, #3A2826 0%, #241715 50%, #120B0A 100%); }
+  .hero::before { content: ''; position: absolute; bottom: 24%; left: 14%; right: 14%; height: 34%; background: linear-gradient(180deg, #5A3F3C 0%, #2E1F1D 100%); border-radius: 3px; }
+  .hero::after { content: ''; position: absolute; bottom: 20%; left: 30%; width: 16%; height: 14%; background: #B07A48; border-radius: 50% 50% 0 0; }
+  .hero-top { position: absolute; top: 14px; left: 16px; right: 16px; display: flex; justify-content: space-between; }
+  .hero-btn { width: 32px; height: 32px; border-radius: 16px; background: rgba(0,0,0,0.55); display: flex; align-items: center; justify-content: center; }
+  .hero-btn svg { width: 16px; height: 16px; stroke: #FFF; stroke-width: 2.2; fill: none; }
+  .hero-dots { position: absolute; bottom: 12px; left: 0; right: 0; display: flex; justify-content: center; gap: 5px; }
+  .hero-dot { width: 6px; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.4); }
+  .hero-dot.on { background: #FFF; }
+
+  /* Restaurant body */
+  .rbody { flex: 1; padding: 18px 20px 0; overflow-y: auto; scrollbar-width: none; }
+  .rbody::-webkit-scrollbar { display: none; }
+  .r-name { font-family: var(--font-display); font-size: 27px; font-weight: 700; letter-spacing: -0.3px; color: var(--text-primary); line-height: 1.15; }
+  .r-meta { display: flex; align-items: center; gap: 8px; margin-top: 9px; font-size: 13px; color: var(--text-secondary); flex-wrap: wrap; }
+  .r-sep { color: var(--text-tertiary); }
+  .r-rating { color: var(--hit-gold); font-weight: 700; }
+  .r-tagline { font-size: 14px; color: var(--text-secondary); margin-top: 12px; line-height: 1.55; font-style: italic; }
+
+  .cal-head { font-size: 12px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-secondary); margin: 22px 0 12px; }
+  .cal-row { display: flex; gap: 8px; }
+  .cal-day { flex: 1; height: 60px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; background: var(--surface-1); border: 1px solid var(--divider); }
+  .cal-day .dow { font-size: 10px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+  .cal-day .num { font-size: 17px; font-weight: 700; color: var(--text-primary); }
+  .cal-day.sel { background: var(--resy-red); border-color: var(--resy-red); }
+  .cal-day.sel .dow, .cal-day.sel .num { color: #FFF; }
+
+  .slot-cap { font-size: 12px; color: var(--text-secondary); margin: 16px 0 12px; }
+  .slot-grid { display: flex; gap: 9px; flex-wrap: wrap; }
+  .rslot { flex: 1; min-width: 70px; height: 56px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; background: var(--surface-1); border: 1px solid var(--resy-red); }
+  .rslot .t { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+  .rslot .typ { font-size: 9px; font-weight: 600; color: var(--text-secondary); letter-spacing: 0.3px; text-transform: uppercase; }
+  .rslot.solid { background: var(--resy-red); border-color: var(--resy-red); }
+  .rslot.solid .t { color: #FFF; }
+  .rslot.solid .typ { color: rgba(255,255,255,0.82); }
+  .rslot.notify { border-color: var(--divider); border-style: dashed; background: transparent; }
+  .rslot.notify .t { color: var(--notify-amber); font-size: 12px; }
+  .rslot.notify .typ { color: var(--notify-amber); }
+
+  /* Tab bar */
+  .tab-bar { height: 64px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: rgba(0,0,0,0.96); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 3px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--resy-red-bright); }
+  .tab svg { width: 21px; height: 21px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 230px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-d34 { font-family: var(--font-display); font-size: 34px; font-weight: 800; letter-spacing: -0.5px; color: var(--ink); }
+  .t-d27 { font-family: var(--font-display); font-size: 27px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 600; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15i { font-size: 15px; font-weight: 400; font-style: italic; color: var(--text-secondary); }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-13 { font-size: 13px; font-weight: 700; }
+  .t-12 { font-size: 12px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0.2px; }
+  .btn-primary { background: var(--resy-red); color: #FFF; font-size: 16px; padding: 14px 28px; border-radius: 8px; }
+  .btn-primary:active { background: var(--resy-red-press); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1px solid var(--text-secondary); font-size: 14px; font-weight: 600; padding: 12px 22px; border-radius: 8px; }
+  .btn-notify { background: transparent; color: var(--notify-amber); border: 1px solid var(--notify-amber); font-size: 14px; font-weight: 700; padding: 12px 22px; border-radius: 8px; }
+  .btn-text { background: transparent; color: var(--text-primary); font-size: 14px; font-weight: 600; padding: 12px 0; text-decoration: underline; text-underline-offset: 3px; border: none; cursor: pointer; }
+
+  /* Slot + notify components */
+  .comp-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .sd { width: 76px; height: 58px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; }
+  .sd .t { font-size: 14px; font-weight: 700; } .sd .y { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+  .sd-out { background: var(--surface-1); border: 1px solid var(--resy-red); }
+  .sd-out .t { color: var(--text-primary); } .sd-out .y { color: var(--text-secondary); }
+  .sd-solid { background: var(--resy-red); } .sd-solid .t { color: #FFF; } .sd-solid .y { color: rgba(255,255,255,0.82); }
+  .sd-notify { border: 1px dashed var(--divider); } .sd-notify .t { color: var(--notify-amber); font-size: 12px; } .sd-notify .y { color: var(--notify-amber); }
+  .notify-chip { display: inline-flex; align-items: center; gap: 7px; background: transparent; border: 1px solid var(--notify-amber); border-radius: 999px; padding: 8px 16px; }
+  .notify-chip span { font-size: 13px; font-weight: 700; color: var(--notify-amber); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--resy-red); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-2 { border-radius: 2px; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-10 { border-radius: 10px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 999px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; align-items: center; justify-content: center; width: 46px; height: 46px; border-radius: 12px; background: var(--ink); }
+  .logo span { font-family: var(--font-display); font-size: 26px; font-weight: 800; color: var(--resy-red); line-height: 1; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo"><span>R</span></span>
+    <div class="page-title">Resy iOS — Design Tokens</div>
+    <div class="page-chip">Editorial Black</div>
+  </div>
+  <p class="page-subtitle">Resy is black-first (#000000) with an editorial serif headline voice. Resy Red (#C73E3A) is the single reservation color — it brightens to #E2504B for active tabs. Reservation slots use red outlines (available) or solid red (book), and amber drives Notify. Restaurant photography stays full-color over the pure-black canvas.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="hero">
+            <div class="hero-top">
+              <div class="hero-btn"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+              <div class="hero-btn"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21.2l7.8-7.8 1-1.1a5.5 5.5 0 0 0 0-7.7z"/></svg></div>
+            </div>
+            <div class="hero-dots"><span class="hero-dot on"></span><span class="hero-dot"></span><span class="hero-dot"></span><span class="hero-dot"></span></div>
+          </div>
+
+          <div class="rbody">
+            <div class="r-name">Misi</div>
+            <div class="r-meta">
+              <span class="r-rating">★ 9.4</span><span class="r-sep">·</span>
+              <span>Italian</span><span class="r-sep">·</span>
+              <span>$$$</span><span class="r-sep">·</span>
+              <span>Williamsburg</span>
+            </div>
+            <div class="r-tagline">Handmade pasta and vegetable-forward antipasti from Missy Robbins.</div>
+
+            <div class="cal-head">Select a date</div>
+            <div class="cal-row">
+              <div class="cal-day"><span class="dow">Wed</span><span class="num">21</span></div>
+              <div class="cal-day sel"><span class="dow">Thu</span><span class="num">22</span></div>
+              <div class="cal-day"><span class="dow">Fri</span><span class="num">23</span></div>
+              <div class="cal-day"><span class="dow">Sat</span><span class="num">24</span></div>
+              <div class="cal-day"><span class="dow">Sun</span><span class="num">25</span></div>
+            </div>
+
+            <div class="slot-cap">Thu, May 22 · 2 guests · Dinner</div>
+            <div class="slot-grid">
+              <div class="rslot"><span class="t">6:00</span><span class="typ">Dining Room</span></div>
+              <div class="rslot solid"><span class="t">6:30</span><span class="typ">Dining Room</span></div>
+              <div class="rslot"><span class="t">9:45</span><span class="typ">Bar</span></div>
+              <div class="rslot notify"><span class="t">Notify</span><span class="typ">7–8 PM</span></div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/><circle cx="8" cy="5" r="1.6" fill="currentColor" stroke="none"/><circle cx="14" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="8" cy="19" r="1.6" fill="currentColor" stroke="none"/></svg><span>Hit List</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 11h18"/></svg><span>Reservations</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M12 3l2.5 7H22l-6 4.3 2.3 7L12 17l-6.3 4.3L8 14.3 2 10h7.5z"/></svg><span>Notify</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/></svg><span>Account</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#000000;"><div class="name">Resy Black</div>#000000</div>
+          <div class="swatch" style="background:#C73E3A;"><div class="name">Resy Red</div>#C73E3A</div>
+          <div class="swatch" style="background:#E2504B;"><div class="name">Red Bright</div>#E2504B</div>
+          <div class="swatch" style="background:#A8302D;"><div class="name">Red Pressed</div>#A8302D</div>
+          <div class="swatch" style="background:#D99A2B; color:#221700;"><div class="name">Notify Amber</div>#D99A2B</div>
+          <div class="swatch" style="background:#C9A24B; color:#221700;"><div class="name">Hit Gold</div>#C9A24B</div>
+          <div class="swatch" style="background:#121212;"><div class="name">Surface 1</div>#121212</div>
+          <div class="swatch" style="background:#1C1C1C;"><div class="name">Surface 2</div>#1C1C1C</div>
+          <div class="swatch" style="background:#262626;"><div class="name">Divider</div>#262626</div>
+          <div class="swatch" style="background:#F5F5F5; color:#000;"><div class="name">Text Primary</div>#F5F5F5</div>
+          <div class="swatch" style="background:#9E9E9E; color:#000;"><div class="name">Text Secondary</div>#9E9E9E</div>
+          <div class="swatch" style="background:#E2504B;"><div class="name">Error</div>#E2504B</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Playfair Display (editorial) + Inter (UI)</div>
+        <div class="type-row"><div class="type-meta">Display Title · 34pt · 800 · serif</div><div class="type-sample t-d34">Tonight in NYC</div></div>
+        <div class="type-row"><div class="type-meta">Restaurant Name · 27pt · 700 · serif</div><div class="type-sample t-d27">Misi</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">The Hit List</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 18pt · 600</div><div class="type-sample t-18">Lilia · Brooklyn</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">A counter seat with a view of the open kitchen.</div></div>
+        <div class="type-row"><div class="type-meta">Editorial Note · 15pt · 400 · italic</div><div class="type-sample t-15i">Handmade pasta from Missy Robbins.</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Italian · $$$ · Williamsburg</div></div>
+        <div class="type-row"><div class="type-meta">Slot Time · 13pt · 700</div><div class="type-sample t-13">6:00 · 6:30 · 9:45</div></div>
+        <div class="type-row"><div class="type-meta">Eyebrow · 12pt · 700 · upper</div><div class="type-sample t-12">Select a date</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Book Now</button>
+          <button class="btn btn-outline">Add to Hit List</button>
+          <button class="btn btn-notify">Notify Me</button>
+          <button class="btn-text">View full menu</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Reservation Slots &amp; Notify Chip</div>
+        <div class="comp-row">
+          <div class="sd sd-out"><span class="t">6:00</span><span class="y">Dining Room</span></div>
+          <div class="sd sd-solid"><span class="t">6:30</span><span class="y">Dining Room</span></div>
+          <div class="sd sd-notify"><span class="t">Notify</span><span class="y">7–8 PM</span></div>
+          <div class="notify-chip"><span>🔔 Notify when available</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-2">2</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Resy is dark-first by design — the canvas is pure black <code>#000000</code> to make full-color restaurant photography and the editorial serif headlines pop like a printed magazine. Surfaces lift to <code>#121212</code> / <code>#1C1C1C</code>. Resy Red <code>#C73E3A</code> stays the single reservation color; it brightens to <code>#E2504B</code> for active tabs and emphasis on black. Available slots are red-outlined, the recommended slot is solid red, and Notify uses amber <code>#D99A2B</code> with a dashed border. A light mode inverts to white, but black is the brand.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Miro iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #1B1B1F;
+    --board: #202024;
+    --surface-1: #26262B;
+    --surface-2: #313138;
+    --divider: #38383F;
+    --text-primary: #ECECEF;
+    --text-secondary: #9A9AA4;
+    --text-tertiary: #67677A;
+    --ink: #FFFFFF;
+    --miro-yellow: #FFD02F;
+    --miro-yellow-pressed: #E8B800;
+    --miro-ink: #050038;
+    --miro-blue: #4262FF;
+    --note-yellow: #FEF3B6;
+    --note-pink: #F8C8D8;
+    --note-green: #C7E8C7;
+    --note-blue: #BCE0F5;
+    --accent-red: #E5484D;
+    --accent-green: #2EA56A;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--miro-yellow); color: var(--miro-ink); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+
+  /* Board top bar */
+  .board-top { display: flex; align-items: center; justify-content: space-between; padding: 4px 16px 10px; }
+  .board-top .left { display: flex; align-items: center; gap: 12px; color: var(--text-secondary); }
+  .board-top .left .nm { color: var(--text-primary); font-size: 14px; font-weight: 600; }
+  .board-top svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .board-top .right { display: flex; align-items: center; gap: 14px; color: var(--text-secondary); }
+  .avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--miro-blue); color: #FFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+
+  /* Infinite canvas */
+  .canvas-wrap { flex: 1; position: relative; overflow: hidden; background:
+    linear-gradient(var(--divider) 1px, transparent 1px) 0 0 / 28px 28px,
+    linear-gradient(90deg, var(--divider) 1px, transparent 1px) 0 0 / 28px 28px,
+    var(--board); }
+  .note { position: absolute; width: 96px; height: 96px; border-radius: 4px; padding: 10px; font-size: 11px; font-weight: 600; color: #2A2A33; box-shadow: 0 8px 18px -8px rgba(0,0,0,0.55); }
+  .note.y { background: var(--note-yellow); }
+  .note.p { background: var(--note-pink); }
+  .note.g { background: var(--note-green); }
+  .note.b { background: var(--note-blue); }
+  .note.sel { outline: 2px solid var(--miro-blue); outline-offset: 2px; }
+  .note .grip { position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 30px; height: 4px; border-radius: 3px; background: var(--miro-blue); }
+  .conn { position: absolute; height: 2px; background: var(--text-tertiary); transform-origin: left center; }
+  .frame { position: absolute; border: 2px dashed var(--text-tertiary); border-radius: 6px; }
+  .frame .flabel { position: absolute; top: -22px; left: 0; font-size: 11px; font-weight: 700; color: var(--text-secondary); }
+  .cursor-tag { position: absolute; display: flex; align-items: center; gap: 5px; }
+  .cursor-tag .ar { width: 0; height: 0; border-left: 7px solid var(--miro-blue); border-top: 6px solid transparent; border-bottom: 6px solid transparent; transform: rotate(-35deg); }
+  .cursor-tag .nm { background: var(--miro-blue); color: #FFF; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; }
+
+  /* Floating toolbar */
+  .toolbar { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); display: flex; align-items: center; gap: 4px; background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 8px; box-shadow: 0 14px 32px -12px rgba(0,0,0,0.7); }
+  .tool { width: 40px; height: 40px; border-radius: 11px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); }
+  .tool svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tool.active { background: var(--miro-yellow); color: var(--miro-ink); }
+  .tool.active svg { stroke: var(--miro-ink); }
+
+  /* Zoom pill */
+  .zoom { position: absolute; right: 14px; bottom: 76px; background: var(--surface-1); border: 1px solid var(--divider); border-radius: 12px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 8px 20px -10px rgba(0,0,0,0.6); }
+  .zoom .zb { width: 38px; height: 36px; display: flex; align-items: center; justify-content: center; color: var(--text-primary); font-size: 18px; font-weight: 600; }
+  .zoom .zv { font-size: 11px; font-weight: 600; color: var(--text-secondary); padding: 4px 0; border-top: 1px solid var(--divider); border-bottom: 1px solid var(--divider); width: 100%; text-align: center; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 600; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--miro-yellow); color: var(--miro-ink); font-size: 15px; padding: 13px 26px; border-radius: 10px; }
+  .btn-primary:active { background: var(--miro-yellow-pressed); transform: scale(0.98); }
+  .btn-dark { background: var(--miro-ink); color: #FFF; font-size: 15px; padding: 13px 26px; border-radius: 10px; }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1px solid var(--divider); font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 10px; }
+  .btn-ghost { background: transparent; color: var(--miro-blue); font-size: 14px; font-weight: 600; padding: 12px 8px; border: none; cursor: pointer; }
+
+  /* Sticky note swatches demo */
+  .notes-demo { display: flex; gap: 12px; flex-wrap: wrap; }
+  .nd { width: 84px; height: 84px; border-radius: 4px; padding: 9px; font-size: 11px; font-weight: 600; color: #2A2A33; box-shadow: 0 6px 14px -8px rgba(0,0,0,0.5); }
+  .nd.y { background: var(--note-yellow); }
+  .nd.p { background: var(--note-pink); }
+  .nd.g { background: var(--note-green); }
+  .nd.b { background: var(--note-blue); }
+  .nd.o { background: #FCD9B6; }
+  .nd.v { background: #DCC9F0; }
+
+  /* Toolbar demo */
+  .tbar-demo { display: inline-flex; align-items: center; gap: 4px; background: var(--surface-2); border: 1px solid var(--divider); border-radius: 16px; padding: 8px; }
+  .tbar-demo .tool { width: 40px; height: 40px; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--miro-yellow); color: var(--miro-ink); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-10 { border-radius: 10px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  .miromark { display: inline-flex; width: 40px; height: 40px; border-radius: 10px; background: var(--miro-yellow); align-items: center; justify-content: center; }
+  .miromark svg { width: 24px; height: 24px; }
+  code { font-family: 'SF Mono', Menlo, monospace; font-size: 12px; background: var(--surface-2); padding: 2px 6px; border-radius: 4px; color: var(--text-primary); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="miromark">
+      <svg viewBox="0 0 32 32"><g fill="#050038"><path d="M21 4h3l-3 9 4-9h3l-2 11 3-11h3l-5 24h-4l3-13-5 13h-4l2-15-6 15H7l4-24z" transform="scale(0.78) translate(2 1)"/></g></svg>
+    </span>
+    <div class="page-title">Miro iOS — Design Tokens</div>
+    <div class="page-chip">Infinite Canvas</div>
+  </div>
+  <p class="page-subtitle">Miro Yellow (#FFD02F) on deep ink (#050038) is the unmistakable brand. The product is an infinite, pannable, zoomable canvas: a dotted-grid board with sticky notes, connectors, frames, and live multiplayer cursors. A floating rounded toolbar holds the creation tools; selection turns Miro Blue (#4262FF).</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="board-top">
+            <div class="left">
+              <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+              <span class="nm">Sprint Retro</span>
+              <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+            <div class="right">
+              <div class="avatar">AB</div>
+              <svg viewBox="0 0 24 24"><path d="M4 12h16M4 6h16M4 18h16"/></svg>
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="12" r="2"/></svg>
+            </div>
+          </div>
+
+          <div class="canvas-wrap">
+            <div class="frame" style="left:28px; top:34px; width:236px; height:188px;"><span class="flabel">What went well</span></div>
+
+            <div class="conn" style="left:104px; top:108px; width:78px; transform:rotate(22deg);"></div>
+            <div class="conn" style="left:150px; top:188px; width:70px; transform:rotate(-18deg);"></div>
+
+            <div class="note y sel" style="left:48px; top:60px;">Shipped block editor 2 days early<div class="grip"></div></div>
+            <div class="note p" style="left:160px; top:90px; transform:rotate(-4deg);">Pairing sessions worked great</div>
+            <div class="note g" style="left:78px; top:150px; transform:rotate(3deg);">QA caught 9 bugs pre-release</div>
+            <div class="note b" style="left:188px; top:188px; transform:rotate(-2deg);">Faster review turnaround</div>
+
+            <div class="cursor-tag" style="left:230px; top:130px;"><span class="ar"></span><span class="nm">Dana</span></div>
+
+            <div class="zoom">
+              <div class="zb">+</div>
+              <div class="zv">120%</div>
+              <div class="zb">−</div>
+            </div>
+
+            <div class="toolbar">
+              <div class="tool"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/><path d="M3 17l4 4"/></svg></div>
+              <div class="tool active"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/></svg></div>
+              <div class="tool"><svg viewBox="0 0 24 24"><path d="M4 20l4-1L19 8a2 2 0 0 0-3-3L5 16z"/></svg></div>
+              <div class="tool"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h13"/></svg></div>
+              <div class="tool"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg></div>
+              <div class="tool"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Dark Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#1B1B1F;"><div class="name">Dark Canvas</div>#1B1B1F</div>
+          <div class="swatch" style="background:#202024;"><div class="name">Dark Board</div>#202024</div>
+          <div class="swatch" style="background:#26262B;"><div class="name">Dark Surface 1</div>#26262B</div>
+          <div class="swatch" style="background:#38383F;"><div class="name">Dark Divider</div>#38383F</div>
+          <div class="swatch" style="background:#ECECEF; color:#1B1B1F;"><div class="name">Text Primary</div>#ECECEF</div>
+          <div class="swatch" style="background:#9A9AA4; color:#1B1B1F;"><div class="name">Text Secondary</div>#9A9AA4</div>
+          <div class="swatch" style="background:#FFD02F; color:#050038;"><div class="name">Miro Yellow</div>#FFD02F</div>
+          <div class="swatch" style="background:#050038;"><div class="name">Miro Ink</div>#050038</div>
+          <div class="swatch" style="background:#4262FF;"><div class="name">Miro Blue (select)</div>#4262FF</div>
+          <div class="swatch" style="background:#FEF3B6; color:#2A2A33;"><div class="name">Note Yellow</div>#FEF3B6</div>
+          <div class="swatch" style="background:#F8C8D8; color:#2A2A33;"><div class="name">Note Pink</div>#F8C8D8</div>
+          <div class="swatch" style="background:#E5484D;"><div class="name">Error</div>#E5484D</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter (SF Pro fallback)</div>
+        <div class="type-row"><div class="type-meta">Board Title · 28pt · 800</div><div class="type-sample t-26">Sprint Retro Q2</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">What went well</div></div>
+        <div class="type-row"><div class="type-meta">Frame Label · 18pt · 700</div><div class="type-sample t-18">Action items</div></div>
+        <div class="type-row"><div class="type-meta">Sticky Note · 16pt · 600</div><div class="type-sample" style="font-size:16px;font-weight:600;">Shipped 2 days early</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Drag any object on the infinite canvas — it pans and zooms with two fingers.</div></div>
+        <div class="type-row"><div class="type-meta">Toolbar / UI · 15pt · 600</div><div class="type-sample t-15m">Add sticky note</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Edited by Dana · 4 collaborators</div></div>
+        <div class="type-row"><div class="type-meta">Caption / Zoom · 12pt · 600</div><div class="type-sample t-12">120%</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Create board</button>
+          <button class="btn btn-dark">Share</button>
+          <button class="btn btn-outline">Templates</button>
+          <button class="btn btn-ghost">Invite members</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Sticky Note Palette</div>
+        <div class="notes-demo">
+          <div class="nd y">Yellow #FEF3B6</div>
+          <div class="nd p">Pink #F8C8D8</div>
+          <div class="nd g">Green #C7E8C7</div>
+          <div class="nd b">Blue #BCE0F5</div>
+          <div class="nd o">Orange #FCD9B6</div>
+          <div class="nd v">Violet #DCC9F0</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Floating Canvas Toolbar</div>
+        <div class="tbar-demo">
+          <div class="tool"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/><path d="M3 17l4 4"/></svg></div>
+          <div class="tool active"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/></svg></div>
+          <div class="tool"><svg viewBox="0 0 24 24"><path d="M4 20l4-1L19 8a2 2 0 0 0-3-3L5 16z"/></svg></div>
+          <div class="tool"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h13"/></svg></div>
+          <div class="tool"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+        </div>
+        <p style="color:var(--text-secondary); font-size:13px; margin-top:14px;">Active tool fills Miro Yellow with ink glyph. 40pt tiles, 11pt radius, in a 16pt-radius floating bar.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+        <p style="color:var(--text-secondary); font-size:13px; margin-top:14px;">Sticky notes use a tight 4pt radius (paper feel); UI chrome (toolbar, sheets) uses 12–16pt.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Miro's dark mode keeps the board a deep neutral <code>#202024</code> with a subtle dotted grid in <code>#38383F</code> — sticky notes stay full-color pastels (paper doesn't go dark) so the work pops. Miro Yellow <code>#FFD02F</code> and Miro Blue selection <code>#4262FF</code> are identical across themes. Chrome (toolbar, top bar, sheets) recedes to <code>#26262B</code>; text inverts to <code>#ECECEF</code>. Multiplayer cursors keep their per-user colors on both themes.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

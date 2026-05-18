@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by GitHub iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mona+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0D1117;
+    --surface-1: #161B22;
+    --surface-2: #21262D;
+    --surface-3: #30363D;
+    --border: #30363D;
+    --border-muted: #21262D;
+    --text-primary: #E6EDF3;
+    --text-secondary: #7D8590;
+    --text-tertiary: #6E7681;
+    --ink: #FFFFFF;
+    --accent-fg: #2F81F7;
+    --accent-emphasis: #1F6FEB;
+    --success-fg: #3FB950;
+    --btn-primary: #238636;
+    --btn-primary-hover: #2EA043;
+    --done-fg: #A371F7;
+    --attention-fg: #D29922;
+    --danger-fg: #F85149;
+    --contrib-0: #161B22;
+    --contrib-1: #0E4429;
+    --contrib-2: #006D32;
+    --contrib-3: #26A641;
+    --contrib-4: #39D353;
+    --font: 'Mona Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--btn-primary); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow-y: auto; scrollbar-width: none; }
+  .scroll-body::-webkit-scrollbar { display: none; }
+
+  /* Repo header */
+  .repo-head { padding: 6px 16px 14px; border-bottom: 1px solid var(--border-muted); }
+  .repo-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; color: var(--text-secondary); }
+  .repo-nav svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .repo-line { display: flex; align-items: center; gap: 7px; font-size: 15px; margin-bottom: 4px; }
+  .repo-line .mark { width: 17px; height: 17px; fill: var(--text-secondary); }
+  .repo-line .owner { color: var(--accent-fg); }
+  .repo-line .slash { color: var(--text-secondary); }
+  .repo-line .name { color: var(--accent-fg); font-weight: 700; }
+  .repo-desc { font-size: 13px; color: var(--text-secondary); margin: 8px 0 12px; line-height: 1.45; }
+  .repo-stats { display: flex; gap: 16px; font-size: 12px; color: var(--text-secondary); }
+  .repo-stats span { display: flex; align-items: center; gap: 5px; }
+  .repo-stats .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--accent-fg); }
+  .repo-stats svg { width: 13px; height: 13px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Tabs row */
+  .seg { display: flex; gap: 20px; padding: 10px 16px 0; border-bottom: 1px solid var(--border-muted); overflow-x: auto; scrollbar-width: none; }
+  .seg::-webkit-scrollbar { display: none; }
+  .seg-item { font-size: 14px; font-weight: 500; color: var(--text-secondary); padding-bottom: 10px; position: relative; white-space: nowrap; }
+  .seg-item.active { color: var(--text-primary); font-weight: 600; }
+  .seg-item.active::after { content: ''; position: absolute; bottom: 0; left: -2px; right: -2px; height: 2px; background: #F78166; border-radius: 2px; }
+  .seg-item .ct { color: var(--text-tertiary); font-size: 11px; background: var(--surface-2); padding: 1px 6px; border-radius: 999px; margin-left: 5px; }
+
+  /* Code browser */
+  .branch-bar { display: flex; align-items: center; gap: 8px; padding: 12px 16px; }
+  .branch-pill { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary); }
+  .branch-pill svg { width: 13px; height: 13px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .branch-meta { font-size: 12px; color: var(--text-secondary); margin-left: auto; }
+
+  .file-list { border: 1px solid var(--border); border-radius: 8px; margin: 0 16px 14px; overflow: hidden; }
+  .commit-strip { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: var(--surface-1); border-bottom: 1px solid var(--border); font-size: 12px; }
+  .commit-strip .av { width: 18px; height: 18px; border-radius: 50%; background: linear-gradient(135deg,#A371F7,#2F81F7); }
+  .commit-strip .msg { color: var(--text-primary); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .commit-strip .sha { font-family: var(--mono); color: var(--text-secondary); font-size: 11px; }
+  .frow { display: flex; align-items: center; gap: 10px; padding: 9px 14px; border-bottom: 1px solid var(--border-muted); font-size: 13px; }
+  .frow:last-child { border-bottom: none; }
+  .frow svg { width: 15px; height: 15px; flex-shrink: 0; }
+  .frow .fname { color: var(--text-primary); flex: 1; }
+  .frow .fmsg { color: var(--text-secondary); font-size: 12px; flex: 2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .frow .ftime { color: var(--text-tertiary); font-size: 11px; }
+  .ic-dir { fill: #7D8590; }
+  .ic-file { fill: none; stroke: #7D8590; stroke-width: 2; }
+
+  /* README card */
+  .readme { border: 1px solid var(--border); border-radius: 8px; margin: 0 16px 16px; overflow: hidden; }
+  .readme-head { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: var(--surface-1); border-bottom: 1px solid var(--border); font-size: 13px; font-weight: 600; color: var(--text-primary); }
+  .readme-head svg { width: 15px; height: 15px; stroke: var(--text-secondary); stroke-width: 2; fill: none; }
+  .readme-body { padding: 16px 14px; }
+  .readme-body h1 { font-size: 19px; font-weight: 700; padding-bottom: 8px; border-bottom: 1px solid var(--border-muted); margin-bottom: 10px; }
+  .readme-body p { font-size: 13px; color: var(--text-secondary); line-height: 1.55; }
+  .badge { display: inline-block; font-family: var(--mono); font-size: 10px; background: var(--success-fg); color: #0D1117; padding: 2px 7px; border-radius: 4px; margin-top: 10px; font-weight: 700; }
+
+  /* Tab bar */
+  .tab-bar { height: 66px; display: flex; align-items: flex-start; padding: 9px 4px 14px; justify-content: space-around; background: rgba(13,17,23,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 1px solid var(--border-muted); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-secondary); font-size: 10px; font-weight: 500; gap: 4px; }
+  .tab.active { color: var(--text-primary); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { stroke-width: 2.4; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: var(--mono); border: 1px solid var(--border); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #0D1117; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: var(--mono); font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-24 { font-size: 24px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .t-20 { font-size: 20px; font-weight: 600; letter-spacing: -0.2px; }
+  .t-16 { font-size: 16px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; }
+  .t-13mono { font-size: 13px; font-weight: 400; font-family: var(--mono); color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 400; color: var(--text-secondary); }
+  .t-12sb { font-size: 12px; font-weight: 600; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 600; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--btn-primary); color: #FFF; font-size: 14px; padding: 10px 16px; border-radius: 6px; border: 1px solid rgba(240,246,252,0.1); }
+  .btn-primary:active { background: var(--btn-primary-hover); }
+  .btn-default { background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--border); font-size: 14px; font-weight: 600; padding: 10px 16px; border-radius: 6px; }
+  .btn-default:active { background: var(--surface-3); }
+  .btn-danger { background: var(--surface-2); color: var(--danger-fg); border: 1px solid var(--border); font-size: 14px; font-weight: 600; padding: 10px 16px; border-radius: 6px; }
+  .btn-text { background: transparent; color: var(--accent-fg); font-size: 14px; font-weight: 500; padding: 10px 0; border: none; cursor: pointer; }
+
+  /* State labels */
+  .label-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .state { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 999px; color: #FFF; }
+  .st-open { background: var(--success-fg); }
+  .st-merged { background: var(--done-fg); }
+  .st-closed { background: var(--danger-fg); }
+  .st-draft { background: var(--text-tertiary); }
+  .tag { font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 999px; border: 1px solid; }
+  .tag-bug { color: #F85149; border-color: rgba(248,81,73,0.4); background: rgba(248,81,73,0.1); }
+  .tag-enh { color: #A371F7; border-color: rgba(163,113,247,0.4); background: rgba(163,113,247,0.1); }
+  .tag-good { color: #3FB950; border-color: rgba(63,185,80,0.4); background: rgba(63,185,80,0.1); }
+
+  /* Contribution graph */
+  .contrib { display: grid; grid-template-columns: repeat(15, 1fr); gap: 3px; }
+  .cq { width: 100%; aspect-ratio: 1; border-radius: 2px; }
+  .l0 { background: var(--contrib-0); border: 1px solid rgba(110,118,129,0.15); }
+  .l1 { background: var(--contrib-1); }
+  .l2 { background: var(--contrib-2); }
+  .l3 { background: var(--contrib-3); }
+  .l4 { background: var(--contrib-4); }
+  .contrib-legend { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text-secondary); margin-top: 12px; }
+  .contrib-legend .cq { width: 11px; flex: none; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--btn-primary); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 999px; }
+  .r-circle { border-radius: 50%; }
+
+  .gh-logo { display: inline-block; width: 40px; height: 40px; }
+  .gh-logo svg { width: 100%; height: 100%; fill: var(--text-primary); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="gh-logo">
+      <svg viewBox="0 0 24 24"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17 4.6 18 4.9 18 4.9c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .4.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
+    </span>
+    <div class="page-title">GitHub iOS — Design Tokens</div>
+    <div class="page-chip">Primer Dark</div>
+  </div>
+  <p class="page-subtitle">GitHub's Primer dark theme: canvas #0D1117, surfaces stepping to #161B22 / #21262D, hyperlinks in #2F81F7, the green "Code"/merge button #238636, and the contributions heatmap from #0E4429 to #39D353. The signature screen is the repo home + code browser: owner/name header, file tree, and the README rendered inline.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="scroll-body">
+            <div class="repo-head">
+              <div class="repo-nav">
+                <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+              </div>
+              <div class="repo-line">
+                <svg class="mark" viewBox="0 0 16 16"><path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8ZM5 12.25a.25.25 0 0 1 .25-.25h3.5a.25.25 0 0 1 .25.25v3.25a.25.25 0 0 1-.4.2l-1.45-1.087a.249.249 0 0 0-.3 0L5.4 15.7a.25.25 0 0 1-.4-.2Z"/></svg>
+                <span class="owner">vercel</span><span class="slash">/</span><span class="name">next.js</span>
+              </div>
+              <div class="repo-desc">The React Framework — used by some of the world's largest companies, Next.js enables you to create full-stack web applications.</div>
+              <div class="repo-stats">
+                <span><span class="dot"></span> TypeScript</span>
+                <span><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg> 128k</span>
+                <span><svg viewBox="0 0 24 24"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg> 27.4k</span>
+              </div>
+            </div>
+
+            <div class="seg">
+              <div class="seg-item active">Code</div>
+              <div class="seg-item">Issues<span class="ct">2.3k</span></div>
+              <div class="seg-item">Pull requests<span class="ct">481</span></div>
+              <div class="seg-item">Actions</div>
+            </div>
+
+            <div class="branch-bar">
+              <div class="branch-pill">
+                <svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M6 9v6M18 9a9 9 0 0 1-9 9"/></svg>
+                canary
+              </div>
+              <span class="branch-meta">3,492 commits</span>
+            </div>
+
+            <div class="file-list">
+              <div class="commit-strip">
+                <span class="av"></span>
+                <span class="msg">fix(turbopack): resolve workspace alias</span>
+                <span class="sha">a1f9c2e</span>
+              </div>
+              <div class="frow"><svg class="ic-dir" viewBox="0 0 16 16"><path d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5L6.06 1.56A1.75 1.75 0 0 0 4.82 1Z"/></svg><span class="fname">.github</span><span class="fmsg">chore: update workflows</span><span class="ftime">2d</span></div>
+              <div class="frow"><svg class="ic-dir" viewBox="0 0 16 16"><path d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5L6.06 1.56A1.75 1.75 0 0 0 4.82 1Z"/></svg><span class="fname">packages</span><span class="fmsg">feat: streaming metadata</span><span class="ftime">5h</span></div>
+              <div class="frow"><svg class="ic-file" viewBox="0 0 16 16"><path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Z"/></svg><span class="fname">package.json</span><span class="fmsg">15.2.0-canary.8</span><span class="ftime">5h</span></div>
+              <div class="frow"><svg class="ic-file" viewBox="0 0 16 16"><path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Z"/></svg><span class="fname">README.md</span><span class="fmsg">docs: update links</span><span class="ftime">1w</span></div>
+            </div>
+
+            <div class="readme">
+              <div class="readme-head">
+                <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                README.md
+              </div>
+              <div class="readme-body">
+                <h1>Next.js</h1>
+                <p>Next.js is a React framework for building full-stack web applications. You use React Components to build user interfaces, and Next.js for additional features and optimizations.</p>
+                <span class="badge">CI passing</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg><span>Notifications</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Explore</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 21c1-4 4-6 7-6s6 2 7 6"/></svg><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Primer Dark Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0D1117;"><div class="name">Canvas Default</div>#0D1117</div>
+          <div class="swatch" style="background:#161B22;"><div class="name">Canvas Subtle</div>#161B22</div>
+          <div class="swatch" style="background:#21262D;"><div class="name">Surface / Btn</div>#21262D</div>
+          <div class="swatch" style="background:#30363D;"><div class="name">Border Default</div>#30363D</div>
+          <div class="swatch" style="background:#E6EDF3; color:#0D1117;"><div class="name">FG Default</div>#E6EDF3</div>
+          <div class="swatch" style="background:#7D8590; color:#0D1117;"><div class="name">FG Muted</div>#7D8590</div>
+          <div class="swatch" style="background:#2F81F7;"><div class="name">Accent (link)</div>#2F81F7</div>
+          <div class="swatch" style="background:#238636;"><div class="name">Btn Primary</div>#238636</div>
+          <div class="swatch" style="background:#3FB950;"><div class="name">Success FG</div>#3FB950</div>
+          <div class="swatch" style="background:#A371F7;"><div class="name">Done (merged)</div>#A371F7</div>
+          <div class="swatch" style="background:#D29922; color:#0D1117;"><div class="name">Attention</div>#D29922</div>
+          <div class="swatch" style="background:#F85149;"><div class="name">Danger</div>#F85149</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Mona Sans · JetBrains/SF Mono for code</div>
+        <div class="type-row"><div class="type-meta">Display · 32pt · 800</div><div class="type-sample t-32">Build software better</div></div>
+        <div class="type-row"><div class="type-meta">Repo Title · 24pt · 700</div><div class="type-sample t-24">vercel / next.js</div></div>
+        <div class="type-row"><div class="type-meta">Section · 20pt · 600</div><div class="type-sample t-20">Pull requests</div></div>
+        <div class="type-row"><div class="type-meta">Subtitle · 16pt · 600</div><div class="type-sample t-16">Latest commit</div></div>
+        <div class="type-row"><div class="type-meta">Body · 14pt · 400</div><div class="type-sample t-14">Next.js is a React framework for full-stack apps.</div></div>
+        <div class="type-row"><div class="type-meta">Code · 13pt · mono · 400</div><div class="type-sample t-13mono">export default function Page() {}</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 12pt · 400</div><div class="type-sample t-12">opened 3 days ago by ijjk</div></div>
+        <div class="type-row"><div class="type-meta">SHA · 12pt · mono · 600</div><div class="type-sample t-13mono" style="color:var(--text-primary);">a1f9c2e</div></div>
+        <div class="type-row"><div class="type-meta">Label · 12pt · 500</div><div class="type-sample t-12sb">good first issue</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">&lt;&gt; Code</button>
+          <button class="btn btn-default">Watch</button>
+          <button class="btn btn-danger">Close issue</button>
+          <button class="btn-text">View all branches</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Issue / PR State Labels</div>
+        <div class="label-row">
+          <span class="state st-open">● Open</span>
+          <span class="state st-merged">⑂ Merged</span>
+          <span class="state st-closed">● Closed</span>
+          <span class="state st-draft">○ Draft</span>
+          <span class="tag tag-bug">bug</span>
+          <span class="tag tag-enh">enhancement</span>
+          <span class="tag tag-good">good first issue</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Contributions Heatmap</div>
+        <div class="contrib">
+          <div class="cq l0"></div><div class="cq l1"></div><div class="cq l0"></div><div class="cq l2"></div><div class="cq l3"></div><div class="cq l1"></div><div class="cq l4"></div><div class="cq l2"></div><div class="cq l0"></div><div class="cq l3"></div><div class="cq l4"></div><div class="cq l1"></div><div class="cq l2"></div><div class="cq l0"></div><div class="cq l1"></div>
+          <div class="cq l1"></div><div class="cq l3"></div><div class="cq l4"></div><div class="cq l2"></div><div class="cq l0"></div><div class="cq l1"></div><div class="cq l2"></div><div class="cq l4"></div><div class="cq l3"></div><div class="cq l1"></div><div class="cq l0"></div><div class="cq l2"></div><div class="cq l3"></div><div class="cq l4"></div><div class="cq l2"></div>
+          <div class="cq l0"></div><div class="cq l2"></div><div class="cq l1"></div><div class="cq l4"></div><div class="cq l3"></div><div class="cq l0"></div><div class="cq l1"></div><div class="cq l3"></div><div class="cq l2"></div><div class="cq l4"></div><div class="cq l1"></div><div class="cq l0"></div><div class="cq l2"></div><div class="cq l3"></div><div class="cq l1"></div>
+        </div>
+        <div class="contrib-legend">Less <span class="cq l0"></span><span class="cq l1"></span><span class="cq l2"></span><span class="cq l3"></span><span class="cq l4"></span> More</div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">This is GitHub's <strong>Primer "dark default"</strong> theme. The canvas is <code>#0D1117</code> with surfaces stepping up through <code>#161B22</code> (subtle) and <code>#21262D</code> (buttons), bordered by <code>#30363D</code>. Hyperlinks and active elements use accent <code>#2F81F7</code>; the famous green <code>#238636</code> is reserved for the "Code" and "Merge pull request" buttons. State is color-coded semantically: open = green <code>#3FB950</code>, merged = purple <code>#A371F7</code>, closed = red <code>#F85149</code>, draft = grey. The contributions heatmap runs <code>#0E4429 → #006D32 → #26A641 → #39D353</code> — GitHub's most recognizable visual.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

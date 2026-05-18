@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Kik iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #121316;
+    --surface-1: #1B1D21;
+    --surface-2: #25282D;
+    --divider: #31343A;
+    --text-primary: #F1F2F4;
+    --text-secondary: #9CA0A8;
+    --text-tertiary: #686C74;
+    --ink: #FFFFFF;
+    --kik-blue: #00B0F0;
+    --kik-blue-deep: #0093C8;
+    --kik-blue-pressed: #0086B8;
+    --kik-cyan: #4FCBF7;
+    --kik-green: #82BC23;
+    --bubble-out: #00B0F0;
+    --bubble-in: #25282D;
+    --link: #4FCBF7;
+    --success: #82BC23;
+    --error: #F0473E;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--kik-blue); color: #00323F; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+
+  /* Chat list header */
+  .list-head { display: flex; align-items: center; justify-content: space-between; padding: 4px 16px 12px; }
+  .list-title { font-size: 26px; font-weight: 800; color: var(--ink); letter-spacing: -0.4px; }
+  .list-actions { display: flex; gap: 16px; color: var(--kik-blue); }
+  .list-actions svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  .search { margin: 0 16px 8px; height: 36px; border-radius: 10px; background: var(--surface-2); display: flex; align-items: center; gap: 8px; padding: 0 12px; color: var(--text-tertiary); font-size: 14px; }
+  .search svg { width: 15px; height: 15px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Conversation rows */
+  .conv-list { flex: 1; overflow-y: auto; scrollbar-width: none; }
+  .conv-list::-webkit-scrollbar { display: none; }
+  .conv { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 0.5px solid var(--divider); }
+  .conv-av { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: #FFF; flex-shrink: 0; }
+  .av-1 { background: linear-gradient(160deg, #4FCBF7, #0093C8); }
+  .av-2 { background: linear-gradient(160deg, #82BC23, #4E7A12); }
+  .av-3 { background: linear-gradient(160deg, #7A6FF0, #3D2FB0); }
+  .av-bot { background: linear-gradient(160deg, #00B0F0, #0086B8); border-radius: 14px; }
+  .conv-mid { flex: 1; min-width: 0; }
+  .conv-name { font-size: 15px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 5px; }
+  .conv-name .bot-tag { background: var(--surface-2); color: var(--text-secondary); font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 4px; letter-spacing: 0.4px; }
+  .conv-prev { font-size: 13px; color: var(--text-secondary); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .conv-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; }
+  .conv-time { font-size: 11px; color: var(--text-tertiary); }
+  .conv-unread { background: var(--kik-blue); color: #00323F; font-size: 11px; font-weight: 700; min-width: 18px; height: 18px; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0 5px; }
+  .rcpt-mini { font-size: 11px; font-weight: 700; }
+  .rcpt-mini.S { color: var(--text-tertiary); }
+  .rcpt-mini.D { color: var(--text-secondary); }
+  .rcpt-mini.R { color: var(--kik-blue); }
+
+  /* Thread (mini, below) */
+  .thread { padding: 10px 14px; display: flex; flex-direction: column; gap: 4px; border-top: 0.5px solid var(--divider); background: var(--canvas); }
+  .row { display: flex; max-width: 80%; }
+  .row.in { align-self: flex-start; }
+  .row.out { align-self: flex-end; flex-direction: column; align-items: flex-end; }
+  .bubble { padding: 8px 13px; font-size: 14px; line-height: 1.32; border-radius: 16px; }
+  .bubble.in { background: var(--bubble-in); color: var(--text-primary); border-bottom-left-radius: 5px; }
+  .bubble.out { background: var(--kik-blue); color: #002A36; border-bottom-right-radius: 5px; font-weight: 500; }
+  .meta { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--text-tertiary); margin: 3px 4px 0 0; }
+  .meta .rc { font-weight: 700; color: var(--kik-blue); }
+
+  /* Input bar */
+  .input-bar { display: flex; align-items: center; gap: 10px; padding: 8px 14px 16px; border-top: 0.5px solid var(--divider); background: var(--surface-1); }
+  .input-ic { color: var(--text-secondary); }
+  .input-ic svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+  .input-field { flex: 1; height: 36px; border-radius: 18px; background: var(--surface-2); display: flex; align-items: center; padding: 0 14px; font-size: 14px; color: var(--text-tertiary); }
+  .input-send { font-size: 14px; font-weight: 700; color: var(--kik-blue); padding: 0 6px; }
+
+  /* Tab bar */
+  .tab-bar { height: 64px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: var(--surface-1); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 3px; }
+  .tab.active { color: var(--kik-blue); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-17 { font-size: 17px; font-weight: 700; }
+  .t-15 { font-size: 15px; font-weight: 700; }
+  .t-14 { font-size: 14px; font-weight: 400; }
+  .t-13 { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 600; color: var(--text-tertiary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--kik-blue); color: #00323F; font-size: 16px; padding: 13px 28px; border-radius: 22px; }
+  .btn-primary:active { background: var(--kik-blue-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--kik-cyan); border: 1.5px solid var(--kik-blue); font-size: 15px; font-weight: 700; padding: 11px 22px; border-radius: 22px; }
+  .btn-heritage { background: var(--kik-green); color: #1B2A06; font-size: 15px; font-weight: 700; padding: 12px 22px; border-radius: 22px; }
+  .btn-text { background: transparent; color: var(--kik-cyan); font-size: 15px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Chat bubbles demo */
+  .bub-demo { display: flex; flex-direction: column; gap: 8px; }
+  .bub { padding: 8px 13px; font-size: 14px; border-radius: 16px; max-width: 72%; }
+  .bub.b-in { background: var(--bubble-in); color: var(--text-primary); align-self: flex-start; border-bottom-left-radius: 5px; }
+  .bub.b-out { background: var(--kik-blue); color: #002A36; align-self: flex-end; border-bottom-right-radius: 5px; font-weight: 500; }
+
+  /* SDR receipts */
+  .sdr-row { display: flex; gap: 22px; align-items: center; }
+  .sdr { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .sdr .lt { font-size: 22px; font-weight: 800; }
+  .sdr .lb { font-size: 11px; color: var(--text-secondary); }
+  .sdr.S .lt { color: var(--text-tertiary); }
+  .sdr.D .lt { color: var(--text-secondary); }
+  .sdr.R .lt { color: var(--kik-blue); }
+
+  /* Kik Code */
+  .kcode { width: 120px; height: 120px; border-radius: 24px; background: var(--kik-blue); display: flex; align-items: center; justify-content: center; }
+  .kcode .ring { width: 96px; height: 96px; border-radius: 50%; border: 6px dotted #FFF; display: flex; align-items: center; justify-content: center; }
+  .kcode .core { width: 44px; height: 44px; border-radius: 12px; background: #FFF; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--kik-blue); color: #00323F; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-5 { border-radius: 5px; }
+  .r-10 { border-radius: 10px; }
+  .r-14 { border-radius: 14px; }
+  .r-16 { border-radius: 16px; }
+  .r-22 { border-radius: 22px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; width: 44px; height: 44px; border-radius: 12px; background: #00B0F0; align-items: center; justify-content: center; }
+  .logo svg { width: 26px; height: 26px; fill: #FFF; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 24 24"><path d="M4 4h3v7.2L13.4 4H17l-6.6 7.6L17.4 20H13.6L8 12.7 7 13.9V20H4z"/><circle cx="20" cy="6" r="2.2"/></svg>
+    </span>
+    <div class="page-title">Kik iOS — Design Tokens</div>
+    <div class="page-chip">Kik Blue Dark</div>
+  </div>
+  <p class="page-subtitle">Kik's modern Blue identity (#00B0F0) on a neutral dark canvas (#121316). Outgoing bubbles use the bright Kik Blue with dark-cyan ink; incoming sit at #25282D. The legacy Kik Green (#82BC23) survives as a heritage accent. Inter stands in for Kik's brand sans; anonymous usernames, the S/D/R receipt letters, bots, and Kik Codes are preserved.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="list-head">
+            <div class="list-title">Chats</div>
+            <div class="list-actions">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 10h.01M15 10h.01M8.5 14.5a4 4 0 0 0 7 0"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            </div>
+          </div>
+
+          <div class="search">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+            Search for people, groups, bots
+          </div>
+
+          <div class="conv-list">
+            <div class="conv">
+              <div class="conv-av av-1">@</div>
+              <div class="conv-mid">
+                <div class="conv-name">@nova_quill</div>
+                <div class="conv-prev">Got the file — looks great 👍</div>
+              </div>
+              <div class="conv-meta"><span class="conv-time">9:40</span><span class="rcpt-mini R">R</span></div>
+            </div>
+            <div class="conv">
+              <div class="conv-av av-2">DJ</div>
+              <div class="conv-mid">
+                <div class="conv-name">Design Jam</div>
+                <div class="conv-prev">@mara: pushed the new tokens</div>
+              </div>
+              <div class="conv-meta"><span class="conv-time">9:31</span><span class="conv-unread">3</span></div>
+            </div>
+            <div class="conv">
+              <div class="conv-av av-bot">B</div>
+              <div class="conv-mid">
+                <div class="conv-name">SketchBot <span class="bot-tag">BOT</span></div>
+                <div class="conv-prev">Tap to generate a new sketch</div>
+              </div>
+              <div class="conv-meta"><span class="conv-time">8:58</span><span class="rcpt-mini D">D</span></div>
+            </div>
+            <div class="conv">
+              <div class="conv-av av-3">@</div>
+              <div class="conv-mid">
+                <div class="conv-name">@pixel_drift</div>
+                <div class="conv-prev">You: see you on the call</div>
+              </div>
+              <div class="conv-meta"><span class="conv-time">Yest</span><span class="rcpt-mini S">S</span></div>
+            </div>
+          </div>
+
+          <div class="thread">
+            <div class="row in"><div class="bubble in">Hey! Anonymous-username chat 👀</div></div>
+            <div class="row out">
+              <div class="bubble out">Yep — no phone number needed</div>
+              <div class="meta">9:40 <span class="rc">R</span></div>
+            </div>
+            <div class="row in"><div class="bubble in">The blue bubbles look spot on</div></div>
+          </div>
+
+          <div class="input-bar">
+            <div class="input-ic"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+            <div class="input-field">Type a message</div>
+            <div class="input-send">Send</div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Chats</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>People</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M5 12h2M17 12h2M12 5v2M12 17v2M7 7l1.5 1.5M15.5 15.5L17 17M17 7l-1.5 1.5M8.5 15.5L7 17"/></svg><span>Discover</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><circle cx="17" cy="17" r="3"/></svg><span>Kik Code</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#00B0F0; color:#00323F;"><div class="name">Kik Blue</div>#00B0F0</div>
+          <div class="swatch" style="background:#0093C8;"><div class="name">Kik Blue Deep</div>#0093C8</div>
+          <div class="swatch" style="background:#0086B8;"><div class="name">Blue Pressed</div>#0086B8</div>
+          <div class="swatch" style="background:#4FCBF7; color:#00323F;"><div class="name">Kik Cyan</div>#4FCBF7</div>
+          <div class="swatch" style="background:#82BC23; color:#1B2A06;"><div class="name">Kik Green (heritage)</div>#82BC23</div>
+          <div class="swatch" style="background:#121316;"><div class="name">Canvas (Dark)</div>#121316</div>
+          <div class="swatch" style="background:#1B1D21;"><div class="name">Surface 1</div>#1B1D21</div>
+          <div class="swatch" style="background:#25282D;"><div class="name">Incoming Bubble</div>#25282D</div>
+          <div class="swatch" style="background:#31343A;"><div class="name">Divider</div>#31343A</div>
+          <div class="swatch" style="background:#F1F2F4; color:#1B1D21;"><div class="name">Text Primary</div>#F1F2F4</div>
+          <div class="swatch" style="background:#9CA0A8; color:#1B1D21;"><div class="name">Text Secondary</div>#9CA0A8</div>
+          <div class="swatch" style="background:#F0473E;"><div class="name">Error</div>#F0473E</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Kik Sans (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Large Title · 32pt · 800</div><div class="type-sample t-32">Chats</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 26pt · 800</div><div class="type-sample t-26">New Chat</div></div>
+        <div class="type-row"><div class="type-meta">Title 3 · 22pt · 700</div><div class="type-sample t-22">@nova_quill</div></div>
+        <div class="type-row"><div class="type-meta">Headline · 17pt · 700</div><div class="type-sample t-17">Username in chat header</div></div>
+        <div class="type-row"><div class="type-meta">Row Title · 15pt · 700</div><div class="type-sample t-15">Design Jam</div></div>
+        <div class="type-row"><div class="type-meta">Body / Bubble · 14pt · 400</div><div class="type-sample t-14">Yep — no phone number needed</div></div>
+        <div class="type-row"><div class="type-meta">Preview · 13pt · 500</div><div class="type-sample t-13">Got the file — looks great 👍</div></div>
+        <div class="type-row"><div class="type-meta">Caption · 11pt · 600</div><div class="type-sample t-11">9:40 · S / D / R</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Start Chat</button>
+          <button class="btn btn-outline">Add Username</button>
+          <button class="btn btn-heritage">Heritage Green</button>
+          <button class="btn-text">Scan Kik Code</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Chat Bubbles</div>
+        <div class="bub-demo">
+          <div class="bub b-in">Incoming — surface #25282D</div>
+          <div class="bub b-out">Outgoing — Kik Blue #00B0F0</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">S / D / R Message Receipts</div>
+        <div class="sdr-row">
+          <div class="sdr S"><span class="lt">S</span><span class="lb">Sent</span></div>
+          <div class="sdr D"><span class="lt">D</span><span class="lb">Delivered</span></div>
+          <div class="sdr R"><span class="lt">R</span><span class="lb">Read</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Kik Code</div>
+        <div class="kcode"><div class="ring"><div class="core"></div></div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-5">5</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-22">22</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Kik's dark mode uses a neutral near-black (<code>#121316</code>) so the modern Kik Blue stays vivid. The brand Blue <code>#00B0F0</code> drives the outgoing bubble (with dark-cyan ink <code>#002A36</code> for AA), buttons, and tab selection across both themes; incoming bubbles invert from light <code>#E9EAEC</code> to <code>#25282D</code>. The legacy Kik Green <code>#82BC23</code> survives only as a heritage accent. The single-letter S/D/R receipt turns Blue at "R" (Read). Chrome dims; brand Blue does not.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

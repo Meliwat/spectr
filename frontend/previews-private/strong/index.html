@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Strong iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #1A1A1A;
+    --surface-1: #242424;
+    --surface-2: #2E2E2E;
+    --surface-3: #383838;
+    --divider: #333333;
+    --text-primary: #F5F5F5;
+    --text-secondary: #9A9A9A;
+    --text-tertiary: #636363;
+    --ink: #FFFFFF;
+    --strong-blue: #2F80ED;
+    --strong-blue-pressed: #2566C0;
+    --strong-blue-soft: #16263D;
+    --pr-amber: #F2C94C;
+    --success: #27AE60;
+    --error: #EB5757;
+    --warn: #F2994A;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--strong-blue); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Workout header */
+  .wk-head { padding: 4px 18px 10px; border-bottom: 0.5px solid var(--divider); }
+  .wk-top { display: flex; align-items: center; justify-content: space-between; }
+  .wk-name { font-size: 22px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.4px; }
+  .wk-finish { background: var(--strong-blue); color: #FFF; font-size: 13px; font-weight: 700; padding: 8px 16px; border-radius: 8px; }
+  .wk-meta { display: flex; gap: 8px; margin-top: 8px; }
+  .wk-pill { background: var(--surface-2); border-radius: 7px; padding: 5px 10px; font-size: 12px; color: var(--text-secondary); font-weight: 600; }
+  .wk-pill b { color: var(--strong-blue); font-variant-numeric: tabular-nums; }
+
+  /* Rest timer bar */
+  .rest-bar { margin: 10px 18px 12px; height: 40px; background: var(--strong-blue-soft); border-radius: 8px; display: flex; align-items: center; padding: 0 12px; gap: 10px; position: relative; overflow: hidden; }
+  .rest-bar::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 62%; background: rgba(47,128,237,0.22); }
+  .rest-ic { width: 16px; height: 16px; stroke: var(--strong-blue); stroke-width: 2.5; fill: none; z-index: 1; }
+  .rest-txt { font-size: 13px; font-weight: 700; color: var(--strong-blue); flex: 1; z-index: 1; font-variant-numeric: tabular-nums; }
+  .rest-adj { font-size: 12px; font-weight: 700; color: var(--text-secondary); z-index: 1; }
+
+  /* Exercise block */
+  .ex-list { flex: 1; padding: 0 14px; overflow-y: auto; scrollbar-width: none; }
+  .ex-list::-webkit-scrollbar { display: none; }
+  .ex-block { background: var(--surface-1); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+  .ex-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .ex-thumb { width: 34px; height: 34px; border-radius: 9px; background: var(--surface-3); display: flex; align-items: center; justify-content: center; }
+  .ex-thumb svg { width: 19px; height: 19px; stroke: var(--strong-blue); stroke-width: 2; fill: none; }
+  .ex-name { font-size: 16px; font-weight: 700; color: var(--strong-blue); flex: 1; }
+  .ex-more { color: var(--text-tertiary); font-weight: 800; letter-spacing: 1px; }
+  .ex-note { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; }
+
+  .set-table { width: 100%; border-collapse: collapse; }
+  .set-table th { font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.4px; padding: 4px 6px; text-align: center; }
+  .set-table th:first-child, .set-table td:first-child { text-align: center; width: 36px; }
+  .set-table td { padding: 6px; text-align: center; font-size: 14px; font-variant-numeric: tabular-nums; }
+  .set-idx { color: var(--text-secondary); font-weight: 700; font-size: 14px; }
+  .set-idx.warm { color: var(--warn); }
+  .prev-cell { color: var(--text-tertiary); font-size: 12px; }
+  .cell-box { background: var(--surface-2); border-radius: 7px; padding: 7px 0; color: var(--text-primary); font-weight: 700; }
+  .cell-box.focus { box-shadow: 0 0 0 1.5px var(--strong-blue) inset; }
+  .row-done td .cell-box { background: rgba(39,174,96,0.18); color: var(--success); }
+  .check { width: 24px; height: 24px; border-radius: 7px; border: 1.5px solid var(--divider); display: inline-flex; align-items: center; justify-content: center; }
+  .check.on { background: var(--success); border-color: var(--success); }
+  .check.on svg { width: 13px; height: 13px; stroke: #fff; stroke-width: 3; fill: none; }
+  .add-set { margin-top: 10px; height: 34px; border-radius: 8px; background: var(--surface-2); color: var(--strong-blue); font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .pr-flag { display: inline-flex; align-items: center; gap: 3px; background: rgba(242,201,76,0.18); color: var(--pr-amber); font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 5px; margin-left: 6px; }
+
+  /* Tab bar */
+  .tab-bar { height: 66px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(26,26,26,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 3px; }
+  .tab.active { color: var(--strong-blue); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: rgba(47,128,237,0.18); }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-17n { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 700; }
+  .t-13 { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; }
+  .btn-primary { background: var(--strong-blue); color: #FFF; font-size: 16px; padding: 14px 28px; border-radius: 8px; }
+  .btn-primary:active { background: var(--strong-blue-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--strong-blue); border: 1.5px solid var(--strong-blue); font-size: 15px; font-weight: 600; padding: 11px 22px; border-radius: 8px; }
+  .btn-tonal { background: var(--strong-blue-soft); color: var(--strong-blue); font-size: 14px; font-weight: 700; padding: 11px 20px; border-radius: 8px; }
+  .btn-danger { background: transparent; color: var(--error); font-size: 14px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Set state demo */
+  .demo-set { display: flex; align-items: center; gap: 10px; }
+  .chip { font-family: var(--font); font-weight: 700; font-size: 13px; padding: 8px 12px; border-radius: 7px; }
+  .chip-idle { background: var(--surface-2); color: var(--text-primary); }
+  .chip-done { background: rgba(39,174,96,0.18); color: var(--success); }
+  .chip-pr { background: rgba(242,201,76,0.18); color: var(--pr-amber); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--strong-blue); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-7 { border-radius: 7px; }
+  .r-8 { border-radius: 8px; }
+  .r-14 { border-radius: 14px; }
+  .r-20 { border-radius: 20px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; width: 44px; height: 44px; border-radius: 10px; background: var(--strong-blue); align-items: center; justify-content: center; }
+  .logo svg { width: 26px; height: 26px; stroke: #fff; stroke-width: 2.6; fill: none; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 24 24"><path d="M5 9v6M9 7v10M15 7v10M19 9v6M9 12h6"/></svg>
+    </span>
+    <div class="page-title">Strong iOS — Design Tokens</div>
+    <div class="page-chip">Pure Dark</div>
+  </div>
+  <p class="page-subtitle">A flat near-black canvas (#1A1A1A) with a single Strong Blue accent (#2F80ED). The interface is the set-log table: tabular-figure cells, a slim rest-timer progress bar, an amber PR flag, and completed rows that fill green. Built for fast logging between sets.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="wk-head">
+            <div class="wk-top">
+              <div class="wk-name">Workout</div>
+              <div class="wk-finish">Finish</div>
+            </div>
+            <div class="wk-meta">
+              <div class="wk-pill">Time <b>38:52</b></div>
+              <div class="wk-pill">Volume <b>7,950 kg</b></div>
+              <div class="wk-pill">Sets <b>9</b></div>
+            </div>
+          </div>
+
+          <div class="rest-bar">
+            <svg class="rest-ic" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/></svg>
+            <span class="rest-txt">Rest Timer · 1:18</span>
+            <span class="rest-adj">−15  +15</span>
+          </div>
+
+          <div class="ex-list">
+            <div class="ex-block">
+              <div class="ex-head">
+                <div class="ex-thumb"><svg viewBox="0 0 24 24"><path d="M3 9v6M7 7v10M17 7v10M21 9v6M7 12h10"/></svg></div>
+                <div class="ex-name">Squat (Barbell)</div>
+                <div class="ex-more">⋯</div>
+              </div>
+              <div class="ex-note">Notes · Belt from set 2</div>
+              <table class="set-table">
+                <tr><th>Set</th><th>Previous</th><th>kg</th><th>Reps</th><th>✓</th></tr>
+                <tr class="row-done">
+                  <td><span class="set-idx warm">W</span></td>
+                  <td class="prev-cell">—</td>
+                  <td><div class="cell-box">40</div></td>
+                  <td><div class="cell-box">8</div></td>
+                  <td><span class="check on"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span></td>
+                </tr>
+                <tr class="row-done">
+                  <td><span class="set-idx">1</span></td>
+                  <td class="prev-cell">90 × 5</td>
+                  <td><div class="cell-box">100</div></td>
+                  <td><div class="cell-box">5</div></td>
+                  <td><span class="check on"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span></td>
+                </tr>
+                <tr>
+                  <td><span class="set-idx">2</span></td>
+                  <td class="prev-cell">95 × 5</td>
+                  <td><div class="cell-box focus">105</div></td>
+                  <td><div class="cell-box">5</div></td>
+                  <td><span class="check"></span></td>
+                </tr>
+              </table>
+              <div style="margin-top:8px;"><span class="pr-flag">▲ PR · Est. 1RM 117 kg</span></div>
+              <div class="add-set">+ Add Set</div>
+            </div>
+
+            <div class="ex-block">
+              <div class="ex-head">
+                <div class="ex-thumb"><svg viewBox="0 0 24 24"><path d="M12 3v18M6 8l6-5 6 5M6 16l6 5 6-5"/></svg></div>
+                <div class="ex-name">Romanian Deadlift</div>
+                <div class="ex-more">⋯</div>
+              </div>
+              <table class="set-table">
+                <tr><th>Set</th><th>Previous</th><th>kg</th><th>Reps</th><th>✓</th></tr>
+                <tr>
+                  <td><span class="set-idx">1</span></td>
+                  <td class="prev-cell">80 × 10</td>
+                  <td><div class="cell-box">85</div></td>
+                  <td><div class="cell-box">10</div></td>
+                  <td><span class="check"></span></td>
+                </tr>
+              </table>
+              <div class="add-set">+ Add Set</div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Profile</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>History</span></div>
+            <div class="tab active"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg><span>Workout</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 19V9M10 19V5M16 19v-7M22 19v-3"/></svg><span>Exercises</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.6-2-3.4-2.4 1a7 7 0 0 0-1.7-1l-.4-2.5h-4l-.4 2.5a7 7 0 0 0-1.7 1l-2.4-1-2 3.4 2 1.6a7 7 0 0 0 0 2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 1.7 1l.4 2.5h4l.4-2.5a7 7 0 0 0 1.7-1l2.4 1 2-3.4-2-1.6a7 7 0 0 0 .1-1z"/></svg><span>Settings</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette — Dark</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#1A1A1A;"><div class="name">Pure Canvas</div>#1A1A1A</div>
+          <div class="swatch" style="background:#242424;"><div class="name">Card Surface</div>#242424</div>
+          <div class="swatch" style="background:#2E2E2E;"><div class="name">Input Surface</div>#2E2E2E</div>
+          <div class="swatch" style="background:#383838;"><div class="name">Surface 3</div>#383838</div>
+          <div class="swatch" style="background:#333333;"><div class="name">Divider</div>#333333</div>
+          <div class="swatch" style="background:#2F80ED;"><div class="name">Strong Blue</div>#2F80ED</div>
+          <div class="swatch" style="background:#2566C0;"><div class="name">Blue Pressed</div>#2566C0</div>
+          <div class="swatch" style="background:#16263D;"><div class="name">Blue Soft</div>#16263D</div>
+          <div class="swatch" style="background:#F2C94C; color:#2A2206;"><div class="name">PR Amber</div>#F2C94C</div>
+          <div class="swatch" style="background:#27AE60;"><div class="name">Set Done</div>#27AE60</div>
+          <div class="swatch" style="background:#EB5757;"><div class="name">Error</div>#EB5757</div>
+          <div class="swatch" style="background:#F5F5F5; color:#1A1A1A;"><div class="name">Text Primary</div>#F5F5F5</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 800</div><div class="type-sample t-32">History</div></div>
+        <div class="type-row"><div class="type-meta">Workout Title · 26pt · 800</div><div class="type-sample t-26">Workout</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Personal Records</div></div>
+        <div class="type-row"><div class="type-meta">Exercise Name · 18pt · 700</div><div class="type-sample t-18">Squat (Barbell)</div></div>
+        <div class="type-row"><div class="type-meta">Metric · 17pt · 700 · tabular</div><div class="type-sample t-17n">7,950 kg · 38:52</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Log every set and track your strength over time.</div></div>
+        <div class="type-row"><div class="type-meta">Set Cell · 15pt · 700 · tabular</div><div class="type-sample t-15m">105 kg × 5</div></div>
+        <div class="type-row"><div class="type-meta">Caption · 13pt · 500</div><div class="type-sample t-13">Previous: 95 × 5</div></div>
+        <div class="type-row"><div class="type-meta">Column Label · 11pt · 700</div><div class="type-sample t-11">SET · PREVIOUS · KG · REPS</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Finish</button>
+          <button class="btn btn-outline">Add Exercise</button>
+          <button class="btn btn-tonal">+ Add Set</button>
+          <button class="btn-danger">Cancel Workout</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Set Row States &amp; PR Flag</div>
+        <div class="demo-set">
+          <span class="chip chip-idle">Set 2 · 105 × 5</span>
+          <span class="chip chip-done">✓ Logged</span>
+          <span class="chip chip-pr">▲ PR</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-7">7</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Strong is famously dark-first — a flat, near-black canvas <code>#1A1A1A</code> with almost no chrome. Cards lift subtly to <code>#242424</code>; editable set cells sit on <code>#2E2E2E</code>. Strong Blue <code>#2F80ED</code> is the single accent — Finish button, active tab, exercise titles, the rest-timer fill. Logged sets fill green <code>#27AE60</code> at 18% and an amber <code>#F2C94C</code> PR flag appears when you set a record. Every figure is tabular so the set table never reflows mid-workout.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

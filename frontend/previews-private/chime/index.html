@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Chime iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0E1411;
+    --surface-1: #16201B;
+    --surface-2: #1F2C25;
+    --divider: #243029;
+    --text-primary: #EAF2EC;
+    --text-secondary: #9DB0A4;
+    --text-tertiary: #6B7E72;
+    --ink: #F4FAF6;
+    --mint: #1EC677;
+    --mint-bright: #00D67E;
+    --mint-pressed: #16A862;
+    --mint-soft: #123A2A;
+    --positive: #00D67E;
+    --negative: #FF6B6B;
+    --warn: #FFB23E;
+    --spotme: #2EE6A6;
+    --font: 'DM Sans', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 700; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--mint); color: #062014; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-area { flex: 1; overflow-y: auto; scrollbar-width: none; }
+  .scroll-area::-webkit-scrollbar { display: none; }
+
+  /* App header */
+  .app-head { display: flex; align-items: center; justify-content: space-between; padding: 4px 20px 14px; }
+  .greet { font-size: 18px; font-weight: 700; color: var(--ink); }
+  .head-icons { display: flex; gap: 16px; }
+  .head-icon { width: 22px; height: 22px; }
+  .head-icon svg { width: 22px; height: 22px; stroke: var(--text-primary); stroke-width: 2; fill: none; }
+
+  /* Balance hero */
+  .balance-card { margin: 0 16px 16px; background: linear-gradient(150deg, #1EC677 0%, #12A862 100%); border-radius: 24px; padding: 24px 22px; box-shadow: 0 16px 32px -16px rgba(30,198,119,0.55); }
+  .bal-label { font-size: 13px; font-weight: 600; color: rgba(6,32,20,0.7); display: flex; align-items: center; gap: 6px; }
+  .bal-label svg { width: 14px; height: 14px; stroke: rgba(6,32,20,0.7); stroke-width: 2.4; fill: none; }
+  .bal-amount { font-size: 44px; font-weight: 700; color: #062014; letter-spacing: -1.5px; margin-top: 6px; }
+  .bal-amount .cents { font-size: 26px; vertical-align: super; }
+  .bal-sub { font-size: 13px; font-weight: 600; color: rgba(6,32,20,0.65); margin-top: 4px; }
+  .bal-actions { display: flex; gap: 10px; margin-top: 20px; }
+  .bal-btn { flex: 1; background: rgba(6,32,20,0.14); color: #062014; font-size: 13px; font-weight: 700; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .bal-btn svg { width: 15px; height: 15px; stroke: #062014; stroke-width: 2.4; fill: none; }
+
+  /* SpotMe banner */
+  .spotme { margin: 0 16px 16px; background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
+  .spotme-ic { width: 38px; height: 38px; border-radius: 12px; background: var(--mint-soft); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .spotme-ic svg { width: 19px; height: 19px; stroke: var(--spotme); stroke-width: 2.2; fill: none; }
+  .spotme-txt { flex: 1; }
+  .spotme-title { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+  .spotme-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .spotme-amt { font-size: 15px; font-weight: 700; color: var(--spotme); }
+
+  /* Section label */
+  .sec-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 20px 10px; }
+  .sec-label { font-size: 15px; font-weight: 700; color: var(--ink); }
+  .sec-link { font-size: 13px; font-weight: 700; color: var(--mint-bright); }
+
+  /* Transactions */
+  .tx-list { padding: 0 16px 12px; }
+  .tx { display: flex; align-items: center; gap: 12px; padding: 12px 4px; border-bottom: 1px solid var(--divider); }
+  .tx:last-child { border-bottom: none; }
+  .tx-ic { width: 42px; height: 42px; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 700; font-size: 15px; color: #FFF; }
+  .tx-ic.amz { background: linear-gradient(135deg, #2A3A33 0%, #1A2620 100%); }
+  .tx-ic.pay { background: var(--mint-soft); }
+  .tx-ic.pay svg { width: 19px; height: 19px; stroke: var(--spotme); stroke-width: 2.2; fill: none; }
+  .tx-ic.sbx { background: linear-gradient(135deg, #1E4D3A 0%, #0F3325 100%); }
+  .tx-body { flex: 1; min-width: 0; }
+  .tx-name { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .tx-meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .tx-amt { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+  .tx-amt.pos { color: var(--positive); }
+
+  /* Tab bar */
+  .tab-bar { height: 68px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(14,20,17,0.95); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: #6B7E72; font-size: 10px; font-weight: 600; gap: 4px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--mint-bright); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-44 { font-size: 44px; font-weight: 700; letter-spacing: -1.5px; color: var(--ink); }
+  .t-32 { font-size: 32px; font-weight: 700; letter-spacing: -0.6px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--mint); color: #062014; font-size: 16px; padding: 14px 28px; border-radius: 14px; }
+  .btn-primary:active { background: var(--mint-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--mint-bright); border: 1.5px solid var(--mint); font-size: 15px; font-weight: 700; padding: 12px 22px; border-radius: 14px; }
+  .btn-soft { background: var(--mint-soft); color: var(--mint-bright); border: none; font-size: 14px; font-weight: 700; padding: 12px 20px; border-radius: 12px; }
+  .btn-text { background: transparent; color: var(--mint-bright); font-size: 14px; font-weight: 700; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Transaction alert toast */
+  .alert { display: flex; align-items: center; gap: 14px; background: var(--surface-2); border: 1px solid var(--divider); border-radius: 18px; padding: 14px 16px; box-shadow: 0 12px 28px -12px rgba(0,0,0,0.7); }
+  .alert-ic { width: 44px; height: 44px; border-radius: 50%; background: var(--mint); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .alert-ic svg { width: 22px; height: 22px; stroke: #062014; stroke-width: 2.6; fill: none; }
+  .alert-body { flex: 1; }
+  .alert-title { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+  .alert-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .alert-amt { font-size: 16px; font-weight: 700; color: var(--positive); }
+
+  /* Status chips */
+  .chip-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .schip { font-size: 12px; font-weight: 700; padding: 7px 14px; border-radius: 500px; }
+  .schip.posted { background: var(--mint-soft); color: var(--mint-bright); }
+  .schip.pending { background: #3A2F12; color: var(--warn); }
+  .schip.spotme { background: rgba(46,230,166,0.14); color: var(--spotme); }
+  .schip.declined { background: #3A1F1F; color: var(--negative); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--mint); color: #062014; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-14 { border-radius: 14px; }
+  .r-16 { border-radius: 16px; }
+  .r-24 { border-radius: 24px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  .logo-mk { display: inline-block; width: 42px; height: 42px; }
+  .logo-mk svg { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo-mk">
+      <svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="30" fill="#1EC677"/><path d="M42 25.5c-2.2-3-5.8-4.9-9.9-4.9-7 0-12.7 5.7-12.7 12.7S25.1 46 32.1 46c4 0 7.6-1.9 9.9-4.8" fill="none" stroke="#062014" stroke-width="5.4" stroke-linecap="round"/></svg>
+    </span>
+    <div class="page-title">Chime iOS — Design Tokens</div>
+    <div class="page-chip">Mint Dark</div>
+  </div>
+  <p class="page-subtitle">Chime's Mint Green (#1EC677 / #00D67E) keeps its glow against a deep green-charcoal canvas (#0E1411). The balance hero stays a full mint gradient card; SpotMe and instant transaction alerts use a brighter mint (#2EE6A6) so positive money signals pop on dark while declines stay coral red.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="scroll-area">
+            <div class="app-head">
+              <div class="greet">Hi, Jordan</div>
+              <div class="head-icons">
+                <div class="head-icon"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
+                <div class="head-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21c1-4 4-6 7-6s6 2 7 6"/></svg></div>
+              </div>
+            </div>
+
+            <div class="balance-card">
+              <div class="bal-label"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20"/></svg> Checking</div>
+              <div class="bal-amount">$2,847<span class="cents">.19</span></div>
+              <div class="bal-sub">Available to spend</div>
+              <div class="bal-actions">
+                <div class="bal-btn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Move money</div>
+                <div class="bal-btn"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg> Pay anyone</div>
+              </div>
+            </div>
+
+            <div class="spotme">
+              <div class="spotme-ic"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6 4.4 2.3 7.2-6.3-4.6L5.7 21 8 13.8 2 9.4h7.6z"/></svg></div>
+              <div class="spotme-txt">
+                <div class="spotme-title">SpotMe is on</div>
+                <div class="spotme-sub">Overdraft up to your limit, fee-free</div>
+              </div>
+              <div class="spotme-amt">$200</div>
+            </div>
+
+            <div class="sec-row">
+              <div class="sec-label">Recent activity</div>
+              <div class="sec-link">See all</div>
+            </div>
+
+            <div class="tx-list">
+              <div class="tx">
+                <div class="tx-ic amz">A</div>
+                <div class="tx-body">
+                  <div class="tx-name">Amazon</div>
+                  <div class="tx-meta">Today · Card ····4821</div>
+                </div>
+                <div class="tx-amt">-$38.42</div>
+              </div>
+              <div class="tx">
+                <div class="tx-ic pay"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
+                <div class="tx-body">
+                  <div class="tx-name">From Maya R.</div>
+                  <div class="tx-meta">Today · Pay Anyone</div>
+                </div>
+                <div class="tx-amt pos">+$60.00</div>
+              </div>
+              <div class="tx">
+                <div class="tx-ic sbx">S</div>
+                <div class="tx-body">
+                  <div class="tx-name">Starbucks</div>
+                  <div class="tx-meta">Yesterday · Card ····4821</div>
+                </div>
+                <div class="tx-amt">-$6.75</div>
+              </div>
+              <div class="tx">
+                <div class="tx-ic sbx" style="background:linear-gradient(135deg,#1E4D3A,#0F3325);">P</div>
+                <div class="tx-body">
+                  <div class="tx-name">Direct deposit · Payroll</div>
+                  <div class="tx-meta">Fri · 2 days early</div>
+                </div>
+                <div class="tx-amt pos">+$1,284.10</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a2 2 0 0 1-2 2h-3v-7H8v7H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg><span>Move</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20"/></svg><span>Card</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 4 8-8"/><path d="M21 8v5h-5"/></svg><span>Grow</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21c1-4 4-6 7-6s6 2 7 6"/></svg><span>Me</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette (Dark)</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#1EC677; color:#062014;"><div class="name">Chime Mint</div>#1EC677</div>
+          <div class="swatch" style="background:#00D67E; color:#062014;"><div class="name">Mint Bright</div>#00D67E</div>
+          <div class="swatch" style="background:#16A862; color:#062014;"><div class="name">Mint Pressed</div>#16A862</div>
+          <div class="swatch" style="background:#2EE6A6; color:#062014;"><div class="name">SpotMe Mint</div>#2EE6A6</div>
+          <div class="swatch" style="background:#0E1411;"><div class="name">Dark Canvas</div>#0E1411</div>
+          <div class="swatch" style="background:#16201B;"><div class="name">Dark Surface 1</div>#16201B</div>
+          <div class="swatch" style="background:#1F2C25;"><div class="name">Dark Surface 2</div>#1F2C25</div>
+          <div class="swatch" style="background:#123A2A;"><div class="name">Mint Soft Fill</div>#123A2A</div>
+          <div class="swatch" style="background:#EAF2EC; color:#0E1411;"><div class="name">Text Primary</div>#EAF2EC</div>
+          <div class="swatch" style="background:#9DB0A4; color:#0E1411;"><div class="name">Text Secondary</div>#9DB0A4</div>
+          <div class="swatch" style="background:#FF6B6B; color:#2A0A0A;"><div class="name">Negative</div>#FF6B6B</div>
+          <div class="swatch" style="background:#FFB23E; color:#2A1A02;"><div class="name">Pending / Warn</div>#FFB23E</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — DM Sans</div>
+        <div class="type-row"><div class="type-meta">Balance Hero · 44pt · 700</div><div class="type-sample t-44">$2,847.19</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 700</div><div class="type-sample t-32">Move money</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Recent activity</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 18pt · 700</div><div class="type-sample t-18">SpotMe is on</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Get paid up to two days early with direct deposit.</div></div>
+        <div class="type-row"><div class="type-meta">Row Title · 15pt · 600</div><div class="type-sample t-15m">Direct deposit · Payroll</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Today · Card ····4821</div></div>
+        <div class="type-row"><div class="type-meta">Caption · 12pt · 600</div><div class="type-sample t-12">2 days early</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Move money</button>
+          <button class="btn btn-outline">Pay anyone</button>
+          <button class="btn btn-soft">Add to Spot</button>
+          <button class="btn-text">See all activity</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Instant Transaction Alert</div>
+        <div class="alert">
+          <div class="alert-ic"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+          <div class="alert-body">
+            <div class="alert-title">Direct deposit received</div>
+            <div class="alert-sub">Payroll · Available now · 2 days early</div>
+          </div>
+          <div class="alert-amt">+$1,284.10</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Transaction Status Chips</div>
+        <div class="chip-row">
+          <div class="schip posted">Posted</div>
+          <div class="schip pending">Pending</div>
+          <div class="schip spotme">SpotMe covered</div>
+          <div class="schip declined">Declined</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-24">24</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Chime's dark mode keeps the canvas a deep green-charcoal (<code>#0E1411</code>), not neutral black — the brand's mint warmth carries through. The balance hero stays a full <code>#1EC677 → #12A862</code> gradient card with near-black <code>#062014</code> text for maximum contrast. SpotMe and incoming money use a brighter mint <code>#2EE6A6</code> so positive amounts glow on dark; declines and negative balances use coral <code>#FF6B6B</code>, pending uses amber <code>#FFB23E</code>. Mint-soft fills shift from a pale tint to <code>#123A2A</code>. Card surfaces lift to <code>#16201B</code>.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

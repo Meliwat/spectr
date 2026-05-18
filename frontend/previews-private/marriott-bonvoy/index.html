@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Marriott Bonvoy iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #121214;
+    --surface-1: #1A1A1D;
+    --surface-2: #232327;
+    --divider: #2E2E33;
+    --text-primary: #EDEDEF;
+    --text-secondary: #A0A0A8;
+    --text-tertiary: #6C6C75;
+    --ink: #F7F7F8;
+    --navy: #16264A;
+    --navy-near-black: #1C1C1C;
+    --navy-line: #243A66;
+    --gold: #B3852A;
+    --gold-bright: #D2A23E;
+    --gold-pressed: #8F6A1F;
+    --success: #2E8B57;
+    --error: #C7453B;
+    --member-bg: #16264A;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--gold); color: #1C1206; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: #FFF; position: absolute; top: 0; left: 0; right: 0; z-index: 6; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+
+  .hotel-scroll { flex: 1; overflow-y: auto; scrollbar-width: none; }
+  .hotel-scroll::-webkit-scrollbar { display: none; }
+
+  /* Hotel hero */
+  .hero { position: relative; height: 256px; background: linear-gradient(160deg, #2E3A52 0%, #1F2940 45%, #141B2C 100%); }
+  .hero::before { content: ''; position: absolute; left: 0; right: 0; top: 38%; bottom: 0; background: linear-gradient(180deg, #3A4A66 0%, #20283C 100%); }
+  .hero::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 55%; background: linear-gradient(180deg, rgba(18,18,20,0) 0%, rgba(18,18,20,0.7) 100%); }
+  .hero-top { position: absolute; top: 54px; left: 0; right: 0; display: flex; justify-content: space-between; padding: 0 16px; z-index: 5; }
+  .hero-btn { width: 36px; height: 36px; border-radius: 18px; background: rgba(18,18,20,0.55); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; }
+  .hero-btn svg { width: 18px; height: 18px; stroke: #FFF; stroke-width: 2.2; fill: none; }
+  .hero-meta { position: absolute; left: 18px; right: 18px; bottom: 16px; z-index: 5; }
+  .hero-brand { font-size: 11px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--gold-bright); }
+  .hero-name { font-size: 23px; font-weight: 800; color: #FFF; letter-spacing: -0.3px; margin-top: 5px; line-height: 1.2; }
+  .hero-loc { font-size: 13px; color: rgba(255,255,255,0.82); margin-top: 5px; }
+
+  /* Hotel body */
+  .hotel-body { padding: 18px; }
+  .stars { display: flex; align-items: center; gap: 6px; font-size: 13px; }
+  .stars svg { width: 14px; height: 14px; fill: var(--gold-bright); }
+  .stars .num { font-weight: 700; color: var(--text-primary); }
+  .stars .cnt { color: var(--text-secondary); }
+
+  /* Bonvoy points panel */
+  .bonvoy { margin: 16px 0; background: var(--member-bg); border: 1px solid var(--navy-line); border-radius: 12px; padding: 16px; }
+  .bonvoy-top { display: flex; align-items: center; justify-content: space-between; }
+  .bonvoy-tier { font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--gold-bright); }
+  .bonvoy-name { font-size: 13px; color: rgba(255,255,255,0.7); margin-top: 2px; }
+  .bonvoy-bal { text-align: right; }
+  .bonvoy-bal .v { font-size: 22px; font-weight: 800; color: #FFF; }
+  .bonvoy-bal .l { font-size: 11px; color: rgba(255,255,255,0.6); letter-spacing: 0.4px; }
+  .bonvoy-bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,0.14); margin-top: 14px; overflow: hidden; }
+  .bonvoy-bar span { display: block; height: 100%; width: 64%; background: linear-gradient(90deg, #B3852A, #D2A23E); border-radius: 3px; }
+  .bonvoy-foot { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 8px; }
+
+  /* Rate select */
+  .rate-head { font-size: 16px; font-weight: 700; color: var(--text-primary); margin: 6px 0 12px; }
+  .rate { display: flex; align-items: center; justify-content: space-between; padding: 14px; border: 1px solid var(--divider); border-radius: 10px; margin-bottom: 10px; background: var(--surface-1); }
+  .rate.sel { border-color: var(--gold); background: rgba(179,133,42,0.1); }
+  .rate-info .nm { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+  .rate-info .ds { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+  .rate-price { text-align: right; }
+  .rate-price .amt { font-size: 17px; font-weight: 800; color: var(--text-primary); }
+  .rate-price .pt { font-size: 11px; color: var(--gold-bright); font-weight: 700; margin-top: 2px; }
+
+  /* Booking bar */
+  .book-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 76px; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; background: rgba(18,18,20,0.97); backdrop-filter: blur(20px); border-top: 1px solid var(--divider); }
+  .book-price .amt { font-size: 19px; font-weight: 800; color: var(--text-primary); }
+  .book-price .per { font-size: 13px; color: var(--text-secondary); }
+  .book-price .pts { font-size: 12px; color: var(--gold-bright); font-weight: 700; margin-top: 2px; }
+  .book-cta { background: var(--gold); color: #1C1206; font-size: 15px; font-weight: 700; padding: 13px 26px; border-radius: 8px; border: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--gold-bright); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--gold); color: #1C1206; font-size: 16px; padding: 14px 28px; border-radius: 8px; }
+  .btn-primary:active { background: var(--gold-pressed); transform: scale(0.98); }
+  .btn-navy { background: var(--navy); color: #FFF; font-size: 15px; font-weight: 700; padding: 13px 24px; border-radius: 8px; }
+  .btn-outline { background: transparent; color: var(--gold-bright); border: 1.5px solid var(--gold-bright); font-size: 15px; font-weight: 700; padding: 12px 22px; border-radius: 8px; }
+  .btn-text { background: transparent; color: var(--gold-bright); font-size: 15px; font-weight: 700; padding: 12px 0; text-decoration: underline; border: none; cursor: pointer; }
+
+  /* Mobile key */
+  .key-card { display: flex; align-items: center; gap: 14px; background: var(--navy); border: 1px solid var(--navy-line); border-radius: 14px; padding: 16px; }
+  .key-icon { width: 48px; height: 48px; border-radius: 12px; background: rgba(210,162,62,0.16); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .key-icon svg { width: 24px; height: 24px; stroke: var(--gold-bright); stroke-width: 2; fill: none; }
+  .key-meta .t { font-size: 14px; font-weight: 700; color: #FFF; }
+  .key-meta .s { font-size: 12px; color: rgba(255,255,255,0.65); margin-top: 3px; }
+  .key-meta .room { font-size: 11px; font-weight: 700; color: var(--gold-bright); margin-top: 6px; letter-spacing: 0.5px; }
+
+  /* Tier chips */
+  .tier-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .tier { font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 999px; letter-spacing: 0.6px; text-transform: uppercase; }
+  .tier.silver { background: #2A2A2E; color: #C7C7CE; border: 1px solid #3A3A40; }
+  .tier.gold { background: rgba(179,133,42,0.16); color: var(--gold-bright); border: 1px solid rgba(210,162,62,0.4); }
+  .tier.platinum { background: rgba(36,58,102,0.4); color: #9FB6E0; border: 1px solid var(--navy-line); }
+  .tier.ambassador { background: var(--navy); color: var(--gold-bright); border: 1px solid var(--gold); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--navy); color: var(--gold-bright); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-10 { border-radius: 10px; }
+  .r-14 { border-radius: 14px; }
+  .r-20 { border-radius: 20px; }
+  .r-pill { border-radius: 999px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Bonvoy logomark */
+  .logo { display: inline-flex; width: 46px; height: 46px; align-items: center; justify-content: center; background: var(--navy); border-radius: 12px; }
+  .logo svg { width: 26px; height: 26px; fill: var(--gold-bright); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 24 24"><path d="M12 2 4 8.5v13h4.6V14h6.8v7.5H20v-13L12 2Zm0 3.1 3.2 2.6V11h-1.6V8.9h-3.2V11H8.8V7.7L12 5.1Z"/></svg>
+    </span>
+    <div class="page-title">Marriott Bonvoy iOS — Design Tokens</div>
+    <div class="page-chip">Bonvoy Gold</div>
+  </div>
+  <p class="page-subtitle">Premium hotel booking and loyalty: a deep Bonvoy navy (<code>#16264A</code>) / near-black (<code>#1C1C1C</code>) base with gold (<code>#B3852A</code>) reserved for member value — points balances, tier badges, and the gold "Book" CTA. Big hotel hero photography, points-aware rate select, and the mobile key. Dark canvas sits at <code>#121214</code> with gold brightened to <code>#D2A23E</code>.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="hotel-scroll">
+            <div class="hero">
+              <div class="hero-top">
+                <div class="hero-btn"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+                <div style="display:flex;gap:10px;">
+                  <div class="hero-btn"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></div>
+                  <div class="hero-btn"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21.2l7.8-7.7 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+                </div>
+              </div>
+              <div class="hero-meta">
+                <div class="hero-brand">The Ritz-Carlton</div>
+                <div class="hero-name">The Ritz-Carlton, Half Moon Bay</div>
+                <div class="hero-loc">Half Moon Bay, California · Luxury</div>
+              </div>
+            </div>
+
+            <div class="hotel-body">
+              <div class="stars">
+                <svg viewBox="0 0 24 24"><polygon points="12,2 15.1,8.4 22,9.3 17,14.1 18.2,21 12,17.8 5.8,21 7,14.1 2,9.3 8.9,8.4"/></svg>
+                <span class="num">4.8</span><span class="cnt">· 2,341 reviews · Bonvoy Luxury</span>
+              </div>
+
+              <div class="bonvoy">
+                <div class="bonvoy-top">
+                  <div>
+                    <div class="bonvoy-tier">Titanium Elite</div>
+                    <div class="bonvoy-name">A. Morgan · Member</div>
+                  </div>
+                  <div class="bonvoy-bal">
+                    <div class="v">128,450</div>
+                    <div class="l">POINTS</div>
+                  </div>
+                </div>
+                <div class="bonvoy-bar"><span></span></div>
+                <div class="bonvoy-foot">21,550 points to your next free night · Redeem from 50,000</div>
+              </div>
+
+              <div class="rate-head">Choose your rate</div>
+              <div class="rate sel">
+                <div class="rate-info"><div class="nm">Member Rate</div><div class="ds">Free cancellation · Earn 2,180 pts</div></div>
+                <div class="rate-price"><div class="amt">$545</div><div class="pt">+ 2,180 pts</div></div>
+              </div>
+              <div class="rate">
+                <div class="rate-info"><div class="nm">Points Redemption</div><div class="ds">Standard room · No cash due</div></div>
+                <div class="rate-price"><div class="amt">68,000</div><div class="pt">points / night</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="book-bar">
+            <div class="book-price">
+              <span class="amt">$545</span> <span class="per">/ night</span>
+              <div class="pts">Earn 2,180 Bonvoy points</div>
+            </div>
+            <button class="book-cta">Book</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Dark Brand Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#121214;"><div class="name">Dark Canvas</div>#121214</div>
+          <div class="swatch" style="background:#1A1A1D;"><div class="name">Dark Surface 1</div>#1A1A1D</div>
+          <div class="swatch" style="background:#232327;"><div class="name">Dark Surface 2</div>#232327</div>
+          <div class="swatch" style="background:#16264A;"><div class="name">Bonvoy Navy</div>#16264A</div>
+          <div class="swatch" style="background:#1C1C1C;"><div class="name">Near-Black</div>#1C1C1C</div>
+          <div class="swatch" style="background:#243A66;"><div class="name">Navy Line</div>#243A66</div>
+          <div class="swatch" style="background:#B3852A; color:#1C1206;"><div class="name">Bonvoy Gold</div>#B3852A</div>
+          <div class="swatch" style="background:#D2A23E; color:#1C1206;"><div class="name">Gold Bright</div>#D2A23E</div>
+          <div class="swatch" style="background:#2E8B57;"><div class="name">Success</div>#2E8B57</div>
+          <div class="swatch" style="background:#EDEDEF; color:#121214;"><div class="name">Text Primary</div>#EDEDEF</div>
+          <div class="swatch" style="background:#A0A0A8; color:#121214;"><div class="name">Text Secondary</div>#A0A0A8</div>
+          <div class="swatch" style="background:#C7453B;"><div class="name">Error</div>#C7453B</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — SF Pro (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Large Title · 32pt · 800</div><div class="type-sample t-32">Stays</div></div>
+        <div class="type-row"><div class="type-meta">Points Balance · 26pt · 800</div><div class="type-sample t-26">128,450 pts</div></div>
+        <div class="type-row"><div class="type-meta">Hotel Name · 22pt · 700</div><div class="type-sample t-22">The Ritz-Carlton, Half Moon Bay</div></div>
+        <div class="type-row"><div class="type-meta">Section · 18pt · 700</div><div class="type-sample t-18">Choose your rate</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Free cancellation up to 48 hours before arrival.</div></div>
+        <div class="type-row"><div class="type-meta">Rate Title · 15pt · 600</div><div class="type-sample t-15m">Member Rate</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">2,341 reviews · Bonvoy Luxury</div></div>
+        <div class="type-row"><div class="type-meta">Eyebrow · 11pt · 700 · 1.2 tracking</div><div class="type-sample t-12">Titanium Elite</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Book</button>
+          <button class="btn btn-navy">Use points</button>
+          <button class="btn btn-outline">Add to trip</button>
+          <button class="btn-text">View all 64 photos</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Mobile Key</div>
+        <div class="key-card">
+          <div class="key-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1.5"/></svg></div>
+          <div class="key-meta">
+            <div class="t">Mobile Key ready</div>
+            <div class="s">Skip the front desk · Tap your phone to unlock</div>
+            <div class="room">ROOM 1408 · CHECK-IN 3:00 PM</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Elite Tier Badges</div>
+        <div class="tier-row">
+          <span class="tier silver">Silver Elite</span>
+          <span class="tier gold">Gold Elite</span>
+          <span class="tier platinum">Platinum Elite</span>
+          <span class="tier ambassador">Ambassador</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Marriott Bonvoy's dark mode keeps the premium, restrained feel: canvas at <code>#121214</code>, surfaces lifting to <code>#1A1A1D</code>. Bonvoy Navy <code>#16264A</code> stays the panel/CTA-secondary color across themes; gold <code>#B3852A</code> brightens to <code>#D2A23E</code> for points balances, tier eyebrows, and the gold "Book" CTA so member value still glows on dark. Gold is disciplined — it marks loyalty value (points, tiers, redemption), never decoration. Hotel photography stays full-color; only chrome dims.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

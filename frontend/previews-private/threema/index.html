@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Threema iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #121212;
+    --surface-1: #1C1C1E;
+    --surface-2: #262628;
+    --divider: #2C2C2E;
+    --text-primary: #ECECEC;
+    --text-secondary: #9A9A9F;
+    --text-tertiary: #6A6A6E;
+    --ink: #F4F4F4;
+    --green: #088A29;
+    --green-bright: #1FA53C;
+    --green-pressed: #066B20;
+    --bubble-out: #0C5E22;
+    --bubble-in: #262628;
+    --trust-red: #E5453A;
+    --trust-orange: #EF8B2C;
+    --trust-green: #15A33A;
+    --link: #4FB477;
+    --error: #E5453A;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--green); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+
+  /* Chat nav bar */
+  .chat-nav { height: 54px; display: flex; align-items: center; gap: 12px; padding: 0 14px; border-bottom: 0.5px solid var(--divider); background: rgba(18,18,18,0.96); }
+  .nav-back { color: var(--green-bright); }
+  .nav-back svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2.4; fill: none; }
+  .nav-avatar { width: 34px; height: 34px; border-radius: 17px; background: linear-gradient(150deg, #1FA53C, #088A29); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #FFF; }
+  .nav-id { flex: 1; line-height: 1.15; }
+  .nav-name { font-size: 16px; font-weight: 600; color: var(--text-primary); }
+  .nav-sub { font-size: 11px; color: var(--text-secondary); display: flex; align-items: center; gap: 5px; margin-top: 1px; }
+  .trust-dots { display: flex; gap: 3px; }
+  .tdot { width: 7px; height: 7px; border-radius: 50%; }
+  .tdot.r { background: var(--trust-red); }
+  .tdot.o { background: var(--trust-orange); }
+  .tdot.g { background: var(--trust-green); }
+  .nav-call svg { width: 21px; height: 21px; stroke: var(--green-bright); stroke-width: 2; fill: none; }
+
+  /* Chat body */
+  .chat-body { flex: 1; padding: 16px 12px; overflow-y: auto; scrollbar-width: none; display: flex; flex-direction: column; gap: 8px; }
+  .chat-body::-webkit-scrollbar { display: none; }
+  .day-sep { align-self: center; background: var(--surface-2); color: var(--text-secondary); font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 999px; margin: 4px 0; }
+  .bubble-row { display: flex; }
+  .bubble-row.out { justify-content: flex-end; }
+  .bubble { max-width: 78%; padding: 9px 13px 7px; font-size: 15px; line-height: 1.35; position: relative; }
+  .bubble.in { background: var(--bubble-in); color: var(--text-primary); border-radius: 16px 16px 16px 4px; }
+  .bubble.out { background: var(--bubble-out); color: #EAFBEF; border-radius: 16px 16px 4px 16px; }
+  .bubble .meta { display: flex; align-items: center; justify-content: flex-end; gap: 4px; font-size: 10px; margin-top: 4px; color: rgba(255,255,255,0.55); }
+  .bubble.in .meta { color: var(--text-tertiary); }
+  .check svg { width: 14px; height: 11px; stroke: #6FD68C; stroke-width: 2.4; fill: none; }
+
+  /* Composer */
+  .composer { height: 56px; display: flex; align-items: center; gap: 10px; padding: 0 12px; border-top: 0.5px solid var(--divider); background: rgba(18,18,18,0.96); }
+  .comp-plus svg { width: 24px; height: 24px; stroke: var(--green-bright); stroke-width: 2; fill: none; }
+  .comp-field { flex: 1; height: 38px; border-radius: 19px; background: var(--surface-2); border: 0.5px solid var(--divider); display: flex; align-items: center; padding: 0 16px; color: var(--text-tertiary); font-size: 14px; }
+  .comp-send { width: 36px; height: 36px; border-radius: 18px; background: var(--green); display: flex; align-items: center; justify-content: center; }
+  .comp-send svg { width: 17px; height: 17px; stroke: #FFF; stroke-width: 2.6; fill: none; }
+
+  /* Tab bar */
+  .tab-bar { height: 68px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(18,18,18,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: #818185; font-size: 10px; font-weight: 500; gap: 3px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--green-bright); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 600; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 500; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 600; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 600; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--green); color: #FFF; font-size: 16px; padding: 14px 28px; border-radius: 10px; }
+  .btn-primary:active { background: var(--green-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--green-bright); border: 1.5px solid var(--green-bright); font-size: 15px; font-weight: 600; padding: 12px 22px; border-radius: 10px; }
+  .btn-pill { background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--divider); font-size: 14px; font-weight: 500; padding: 10px 18px; border-radius: 999px; }
+  .btn-text { background: transparent; color: var(--green-bright); font-size: 15px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Trust level rows */
+  .trust-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .trust-row:last-child { border-bottom: none; }
+  .trust-badge { display: flex; gap: 4px; }
+  .trust-badge .tdot { width: 10px; height: 10px; }
+  .trust-label { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .trust-desc { font-size: 12px; color: var(--text-secondary); margin-top: 1px; }
+
+  /* QR verify */
+  .qr-row { display: flex; gap: 16px; align-items: center; }
+  .qr-box { width: 92px; height: 92px; background: #FFF; border-radius: 12px; padding: 10px; display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(5, 1fr); gap: 3px; flex-shrink: 0; }
+  .qr-box span { background: #088A29; border-radius: 1px; }
+  .qr-box span:nth-child(3),.qr-box span:nth-child(7),.qr-box span:nth-child(9),.qr-box span:nth-child(12),.qr-box span:nth-child(14),.qr-box span:nth-child(18),.qr-box span:nth-child(22) { background: transparent; }
+  .qr-meta { flex: 1; }
+  .qr-meta .id { font-family: 'SF Mono', Menlo, monospace; font-size: 16px; font-weight: 700; color: var(--text-primary); letter-spacing: 1px; }
+  .qr-meta .cap { font-size: 12px; color: var(--text-secondary); margin-top: 6px; line-height: 1.5; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--green); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-10 { border-radius: 10px; }
+  .r-16 { border-radius: 16px; }
+  .r-22 { border-radius: 22px; }
+  .r-pill { border-radius: 999px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Threema logomark */
+  .logo { display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; background: var(--green); border-radius: 11px; }
+  .logo svg { width: 26px; height: 26px; fill: #FFF; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 24 24"><path d="M12 2.6c-5 0-9 3.4-9 7.7 0 2.4 1.3 4.6 3.4 6-.2 1-.7 2.3-1.6 3.3 1.6-.2 3.1-.9 4.3-1.7 1 .2 1.9.3 2.9.3 5 0 9-3.4 9-7.9s-4-7.7-9-7.7zM8.2 11.7a1.35 1.35 0 1 1 0-2.7 1.35 1.35 0 0 1 0 2.7zm3.8 0a1.35 1.35 0 1 1 0-2.7 1.35 1.35 0 0 1 0 2.7zm3.8 0a1.35 1.35 0 1 1 0-2.7 1.35 1.35 0 0 1 0 2.7z"/></svg>
+    </span>
+    <div class="page-title">Threema iOS — Design Tokens</div>
+    <div class="page-chip">Privacy Dark</div>
+  </div>
+  <p class="page-subtitle">Privacy-first messenger with no phone number or email required. Threema Green (<code>#088A29</code>) anchors every action; the signature trust-level dots (red / orange / green) communicate contact verification at a glance. Dark canvas sits at <code>#121212</code> with the green brightened to <code>#1FA53C</code> for legibility on dark.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="chat-nav">
+            <div class="nav-back"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+            <div class="nav-avatar">LK</div>
+            <div class="nav-id">
+              <div class="nav-name">Lena Krüger</div>
+              <div class="nav-sub"><span class="trust-dots"><span class="tdot g"></span><span class="tdot g"></span><span class="tdot g"></span></span> Verified · ECHOX9P2</div>
+            </div>
+            <div class="nav-call"><svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.4 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg></div>
+          </div>
+
+          <div class="chat-body">
+            <div class="day-sep">Today</div>
+            <div class="bubble-row"><div class="bubble in">Hey! Did the encrypted backup finish syncing?<div class="meta">09:38</div></div></div>
+            <div class="bubble-row out"><div class="bubble out">Yep — fully end-to-end. No phone number attached, just my Threema ID.<div class="meta">09:39 <span class="check"><svg viewBox="0 0 24 16"><path d="M2 9l5 5 8-11"/><path d="M9 14l8-11"/></svg></span></div></div></div>
+            <div class="bubble-row"><div class="bubble in">Perfect. Scanning your QR now to bump you to green.<div class="meta">09:40</div></div></div>
+            <div class="bubble-row out"><div class="bubble out">Done — three green dots. Fully verified.<div class="meta">09:41 <span class="check"><svg viewBox="0 0 24 16"><path d="M2 9l5 5 8-11"/><path d="M9 14l8-11"/></svg></span></div></div></div>
+          </div>
+
+          <div class="composer">
+            <div class="comp-plus"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></div>
+            <div class="comp-field">Message</div>
+            <div class="comp-send"><svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg></div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.5 8.5 0 0 1-3.8-.9L3 21l2-5.2a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 8.4-8.4h.5a8.5 8.5 0 0 1 8 8z"/></svg><span>Chats</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>Contacts</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg><span>Calls</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 4v16M15 4v16M4 9h16M4 15h16"/></svg><span>My ID</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1h.1a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Settings</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Dark Brand Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#121212;"><div class="name">Dark Canvas</div>#121212</div>
+          <div class="swatch" style="background:#1C1C1E;"><div class="name">Dark Surface 1</div>#1C1C1E</div>
+          <div class="swatch" style="background:#262628;"><div class="name">Dark Surface 2</div>#262628</div>
+          <div class="swatch" style="background:#088A29;"><div class="name">Threema Green</div>#088A29</div>
+          <div class="swatch" style="background:#1FA53C;"><div class="name">Green Bright</div>#1FA53C</div>
+          <div class="swatch" style="background:#0C5E22;"><div class="name">Outgoing Bubble</div>#0C5E22</div>
+          <div class="swatch" style="background:#E5453A;"><div class="name">Trust Red</div>#E5453A</div>
+          <div class="swatch" style="background:#EF8B2C;"><div class="name">Trust Orange</div>#EF8B2C</div>
+          <div class="swatch" style="background:#15A33A;"><div class="name">Trust Green</div>#15A33A</div>
+          <div class="swatch" style="background:#ECECEC; color:#121212;"><div class="name">Text Primary</div>#ECECEC</div>
+          <div class="swatch" style="background:#9A9A9F; color:#121212;"><div class="name">Text Secondary</div>#9A9A9F</div>
+          <div class="swatch" style="background:#4FB477;"><div class="name">Link</div>#4FB477</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — SF Pro (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Large Title · 32pt · 800</div><div class="type-sample t-32">Chats</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 26pt · 700</div><div class="type-sample t-26">Verify Contact</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Your Threema ID</div></div>
+        <div class="type-row"><div class="type-meta">Nav Name · 18pt · 600</div><div class="type-sample t-18">Lena Krüger</div></div>
+        <div class="type-row"><div class="type-meta">Message Body · 16pt · 400</div><div class="type-sample t-16">Fully end-to-end encrypted, no metadata stored.</div></div>
+        <div class="type-row"><div class="type-meta">List Title · 15pt · 500</div><div class="type-sample t-15m">Encrypted backup synced</div></div>
+        <div class="type-row"><div class="type-meta">Secondary · 14pt · 400</div><div class="type-sample t-14">Matched from address book</div></div>
+        <div class="type-row"><div class="type-meta">Threema ID · 14pt · 600 mono</div><div class="type-sample t-12" style="font-family:'SF Mono',Menlo,monospace;letter-spacing:1px;">ECHOX9P2</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Scan QR Code</button>
+          <button class="btn btn-outline">Share My ID</button>
+          <button class="btn btn-pill">New Chat</button>
+          <button class="btn-text">Add via Threema ID</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Trust Levels</div>
+        <div class="trust-row">
+          <div class="trust-badge"><span class="tdot r"></span><span class="tdot r"></span><span class="tdot r"></span></div>
+          <div><div class="trust-label">Level 1 — Red</div><div class="trust-desc">Unknown contact · ID not verified, no shared key</div></div>
+        </div>
+        <div class="trust-row">
+          <div class="trust-badge"><span class="tdot o"></span><span class="tdot o"></span><span class="tdot o"></span></div>
+          <div><div class="trust-label">Level 2 — Orange</div><div class="trust-desc">Matched from address book · server-linked, not scanned</div></div>
+        </div>
+        <div class="trust-row">
+          <div class="trust-badge"><span class="tdot g"></span><span class="tdot g"></span><span class="tdot g"></span></div>
+          <div><div class="trust-label">Level 3 — Green</div><div class="trust-desc">Fully verified · QR code scanned in person</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">QR Verify Card</div>
+        <div class="qr-row">
+          <div class="qr-box"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+          <div class="qr-meta">
+            <div class="id">ECHOX9P2</div>
+            <div class="cap">Scan in person to raise the contact to three green dots — the only Level 3 verified state. Threema IDs are 8-character, random, and never tied to a phone number.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-22">22</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Threema's dark mode keeps the privacy-first calm: canvas at <code>#121212</code>, surfaces lifting to <code>#1C1C1E</code>. Threema Green <code>#088A29</code> brightens to <code>#1FA53C</code> for nav tint and links so it stays legible on dark. Outgoing bubbles deepen to <code>#0C5E22</code> while incoming sit on neutral <code>#262628</code>. The trust-level dots (<code>#E5453A</code> / <code>#EF8B2C</code> / <code>#15A33A</code>) keep their hue across themes — verification status must read identically in light and dark.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

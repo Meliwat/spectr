@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Feeld iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #000000;
+    --surface-1: #121212;
+    --surface-2: #1C1C1E;
+    --surface-3: #262626;
+    --divider: #2A2A2A;
+    --text-primary: #FFFFFF;
+    --text-secondary: #A8A8A8;
+    --text-tertiary: #6E6E6E;
+    --ink: #FFFFFF;
+    --acid: #E8FF63;
+    --acid-press: #D4EB4F;
+    --pink: #FF5C8A;
+    --pink-deep: #E0447A;
+    --lilac: #C9B8FF;
+    --success: #66E0A3;
+    --error: #FF6B6B;
+    --font: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font-body); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 700; letter-spacing: -0.6px; color: var(--ink); font-family: var(--font); }
+  .page-chip { background: var(--acid); color: #000; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Top bar */
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 6px 20px 14px; }
+  .topbar-title { font-family: var(--font); font-size: 22px; font-weight: 700; letter-spacing: -0.3px; color: var(--text-primary); }
+  .topbar-ico { width: 34px; height: 34px; border-radius: 17px; background: var(--surface-2); display: flex; align-items: center; justify-content: center; }
+  .topbar-ico svg { width: 17px; height: 17px; stroke: var(--text-primary); stroke-width: 2; fill: none; }
+
+  /* Profile card */
+  .pcard { flex: 1; margin: 0 16px 12px; border-radius: 28px; position: relative; overflow: hidden; background: linear-gradient(165deg, #2A2336 0%, #1A1622 55%, #0E0C14 100%); }
+  .pcard-photo { position: absolute; inset: 0; }
+  .pcard-photo::before { content: ''; position: absolute; top: 16%; left: 50%; transform: translateX(-50%); width: 130px; height: 130px; border-radius: 50%; background: radial-gradient(circle at 38% 32%, #FF8FB3 0%, #FF5C8A 45%, #C9408A 100%); box-shadow: 0 20px 60px -10px rgba(255,92,138,0.45); }
+  .pcard-photo::after { content: ''; position: absolute; top: 40%; left: 50%; transform: translateX(-50%); width: 210px; height: 230px; border-radius: 110px 110px 0 0; background: linear-gradient(180deg, #4A3C5E 0%, #2B2238 100%); }
+  .pcard-grad { position: absolute; left: 0; right: 0; bottom: 0; height: 56%; background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.72) 60%, rgba(0,0,0,0.92) 100%); }
+  .pcard-body { position: absolute; left: 0; right: 0; bottom: 0; padding: 20px 22px 18px; }
+  .pcard-name { font-family: var(--font); font-size: 26px; font-weight: 700; letter-spacing: -0.4px; color: #FFF; }
+  .pcard-sub { font-size: 14px; color: rgba(255,255,255,0.78); margin-top: 3px; }
+  .pcard-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+  .ptag { font-size: 11px; font-weight: 600; padding: 6px 11px; border-radius: 999px; }
+  .ptag-acid { background: var(--acid); color: #000; }
+  .ptag-out { background: rgba(255,255,255,0.10); color: #FFF; border: 1px solid rgba(255,255,255,0.22); }
+  .pcard-verify { position: absolute; top: 18px; right: 18px; display: flex; align-items: center; gap: 5px; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); padding: 6px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; color: #FFF; }
+  .pcard-verify svg { width: 12px; height: 12px; stroke: var(--acid); stroke-width: 2.5; fill: none; }
+
+  /* Action row */
+  .actions { display: flex; align-items: center; justify-content: center; gap: 22px; padding: 4px 0 12px; }
+  .act { border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .act svg { stroke-width: 2.2; fill: none; }
+  .act-pass { width: 52px; height: 52px; background: var(--surface-2); border: 1px solid var(--divider); }
+  .act-pass svg { width: 22px; height: 22px; stroke: var(--text-secondary); }
+  .act-like { width: 64px; height: 64px; background: var(--acid); box-shadow: 0 12px 30px -8px rgba(232,255,99,0.5); }
+  .act-like svg { width: 28px; height: 28px; stroke: #000; fill: #000; }
+  .act-star { width: 52px; height: 52px; background: var(--surface-2); border: 1px solid var(--divider); }
+  .act-star svg { width: 22px; height: 22px; stroke: var(--lilac); fill: var(--lilac); }
+
+  /* Tab bar */
+  .tab-bar { height: 64px; display: flex; align-items: center; padding: 6px 4px 14px; justify-content: space-around; background: rgba(0,0,0,0.92); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); gap: 4px; }
+  .tab svg { width: 23px; height: 23px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active { color: var(--text-primary); }
+  .tab.active svg { stroke: var(--acid); }
+  .tab-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--acid); }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font-body); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-family: var(--font); font-size: 32px; font-weight: 700; letter-spacing: -0.5px; }
+  .t-26 { font-family: var(--font); font-size: 26px; font-weight: 700; letter-spacing: -0.4px; }
+  .t-22 { font-family: var(--font); font-size: 22px; font-weight: 600; letter-spacing: -0.3px; }
+  .t-18 { font-family: var(--font); font-size: 18px; font-weight: 600; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 500; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 600; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 600; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--acid); color: #000; font-size: 16px; padding: 15px 30px; border-radius: 999px; }
+  .btn-primary:active { background: var(--acid-press); transform: scale(0.98); }
+  .btn-pink { background: var(--pink); color: #FFF; font-size: 16px; padding: 15px 30px; border-radius: 999px; }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1px solid rgba(255,255,255,0.28); font-size: 15px; font-weight: 500; padding: 13px 24px; border-radius: 999px; }
+  .btn-text { background: transparent; color: var(--acid); font-size: 15px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Desire chips */
+  .chip-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .chip { font-family: var(--font-body); font-size: 13px; font-weight: 600; padding: 9px 15px; border-radius: 999px; }
+  .chip-on { background: var(--acid); color: #000; }
+  .chip-off { background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--divider); }
+  .chip-pink { background: rgba(255,92,138,0.16); color: var(--pink); border: 1px solid rgba(255,92,138,0.4); }
+
+  /* Connection rows */
+  .conn-row { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .conn-row:last-child { border-bottom: none; }
+  .conn-av { width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0; }
+  .conn-a { background: radial-gradient(circle at 35% 30%, #FF8FB3, #C9408A); }
+  .conn-b { background: radial-gradient(circle at 35% 30%, #C9B8FF, #7B5CD6); }
+  .conn-meta { flex: 1; }
+  .conn-name { font-family: var(--font); font-size: 15px; font-weight: 600; color: var(--text-primary); }
+  .conn-msg { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+  .conn-time { font-size: 11px; color: var(--text-tertiary); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--acid); color: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-24 { border-radius: 24px; }
+  .r-28 { border-radius: 28px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; width: 42px; height: 42px; border-radius: 12px; background: var(--acid); align-items: center; justify-content: center; }
+  .logo svg { width: 24px; height: 24px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M5 4h13v3.4H8.6v4.1H17v3.4H8.6V20H5z" fill="#000"/></svg>
+    </span>
+    <div class="page-title">Feeld iOS — Design Tokens</div>
+    <div class="page-chip">Fluid Dark</div>
+  </div>
+  <p class="page-subtitle">Feeld is dark-native: a pure black canvas (#000000) with one electric accent — acid-yellow #E8FF63 — and a warm pink (#FF5C8A) for desire. The identity is fluid and non-binary; type is Space Grotesk's quirky humanist geometry. Cards are deeply rounded (28px), buttons are full pills, and the acid only ever lands on the one primary action.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="topbar">
+            <div class="topbar-ico"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg></div>
+            <div class="topbar-title">Discover</div>
+            <div class="topbar-ico"><svg viewBox="0 0 24 24"><path d="M3 6h13M3 12h18M8 18h13"/><circle cx="18" cy="6" r="2.4" fill="#E8FF63" stroke="none"/><circle cx="5" cy="18" r="2.4" fill="#E8FF63" stroke="none"/></svg></div>
+          </div>
+
+          <div class="pcard">
+            <div class="pcard-photo"></div>
+            <div class="pcard-grad"></div>
+            <div class="pcard-verify"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Verified</div>
+            <div class="pcard-body">
+              <div class="pcard-name">Robin &amp; Sky</div>
+              <div class="pcard-sub">Couple · 31 &amp; 29 · 2 km away</div>
+              <div class="pcard-tags">
+                <span class="ptag ptag-acid">Non-monogamy</span>
+                <span class="ptag ptag-out">Curious</span>
+                <span class="ptag ptag-out">She/They</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <div class="act act-pass"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></div>
+            <div class="act act-like"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+            <div class="act act-star"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9.5 17,14 18,21 12,17.5 6,21 7,14 2,9.5 9,9"/></svg></div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><span class="tab-dot"></span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21.2l8.8-8.8a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21c1-4 4-6 7-6s6 2 7 6"/></svg></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#000000;"><div class="name">Canvas Black</div>#000000</div>
+          <div class="swatch" style="background:#121212;"><div class="name">Surface 1</div>#121212</div>
+          <div class="swatch" style="background:#1C1C1E;"><div class="name">Surface 2</div>#1C1C1E</div>
+          <div class="swatch" style="background:#2A2A2A;"><div class="name">Divider</div>#2A2A2A</div>
+          <div class="swatch" style="background:#E8FF63; color:#000;"><div class="name">Acid Yellow</div>#E8FF63</div>
+          <div class="swatch" style="background:#D4EB4F; color:#000;"><div class="name">Acid Pressed</div>#D4EB4F</div>
+          <div class="swatch" style="background:#FF5C8A;"><div class="name">Desire Pink</div>#FF5C8A</div>
+          <div class="swatch" style="background:#E0447A;"><div class="name">Pink Deep</div>#E0447A</div>
+          <div class="swatch" style="background:#C9B8FF; color:#1a1a1a;"><div class="name">Lilac</div>#C9B8FF</div>
+          <div class="swatch" style="background:#FFFFFF; color:#000;"><div class="name">Text Primary</div>#FFFFFF</div>
+          <div class="swatch" style="background:#A8A8A8; color:#000;"><div class="name">Text Secondary</div>#A8A8A8</div>
+          <div class="swatch" style="background:#FF6B6B;"><div class="name">Error</div>#FF6B6B</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Space Grotesk + Inter</div>
+        <div class="type-row"><div class="type-meta">Display · 32pt · 700 · Grotesk</div><div class="type-sample t-32">Find your people</div></div>
+        <div class="type-row"><div class="type-meta">Profile Name · 26pt · 700</div><div class="type-sample t-26">Robin &amp; Sky</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 600</div><div class="type-sample t-22">Your Desires</div></div>
+        <div class="type-row"><div class="type-meta">Subsection · 18pt · 600</div><div class="type-sample t-18">About this connection</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400 · Inter</div><div class="type-sample t-16">Open, curious, and here to explore without judgment.</div></div>
+        <div class="type-row"><div class="type-meta">List Title · 15pt · 500</div><div class="type-sample t-15m">New connection with Alex</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Couple · 31 &amp; 29 · 2 km away</div></div>
+        <div class="type-row"><div class="type-meta">Chip · 12pt · 600</div><div class="type-sample t-12">Non-monogamy</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Like</button>
+          <button class="btn btn-pink">Send a Wink</button>
+          <button class="btn btn-outline">Skip</button>
+          <button class="btn-text">Edit Desires</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Desire &amp; Identity Chips</div>
+        <div class="chip-row">
+          <span class="chip chip-on">Non-monogamy</span>
+          <span class="chip chip-off">Kink</span>
+          <span class="chip chip-pink">Exploring</span>
+          <span class="chip chip-off">She/They</span>
+          <span class="chip chip-on">Verified only</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Connections List</div>
+        <div class="conn-row">
+          <div class="conn-av conn-a"></div>
+          <div class="conn-meta"><div class="conn-name">Alex</div><div class="conn-msg">Loved your prompt about Berlin 🖤</div></div>
+          <div class="conn-time">2m</div>
+        </div>
+        <div class="conn-row">
+          <div class="conn-av conn-b"></div>
+          <div class="conn-meta"><div class="conn-name">Jordan &amp; Lee</div><div class="conn-msg">You matched — say hi</div></div>
+          <div class="conn-time">1h</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-24">24</div>
+          <div class="radius-box r-28">28</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Feeld is dark-first by identity, not as an option — the canvas is true black <code>#000000</code> so profile photography and the acid accent feel like neon on velvet. Acid-yellow <code>#E8FF63</code> is rationed: it appears on exactly one primary action per screen (the Like button, the active tab dot) and never as a fill behind text-heavy areas. Desire pink <code>#FF5C8A</code> is the secondary emotional color. Surfaces lift in tiny steps (<code>#121212</code> → <code>#1C1C1E</code>) and dividers stay at <code>#2A2A2A</code> hairlines. There is no light mode in the shipping app.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

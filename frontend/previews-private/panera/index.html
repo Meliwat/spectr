@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Panera iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #14140F;
+    --surface-1: #1E1E18;
+    --surface-2: #28281F;
+    --divider: #33332A;
+    --text-primary: #F3EFE4;
+    --text-secondary: #B4AE9C;
+    --text-tertiary: #76705F;
+    --ink: #FBF9F1;
+    --panera-green: #4C8B2B;
+    --panera-green-bright: #6BBE45;
+    --panera-green-press: #3C6E22;
+    --warm-cream: #F4EFE1;
+    --bread-tan: #D8B271;
+    --soup-orange: #E07A2F;
+    --berry: #B0324B;
+    --gold-star: #F2B705;
+    --success: #6BBE45;
+    --error: #E0594B;
+    --font: 'Poppins', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font-body); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-family: var(--font); font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--panera-green); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Rewards banner */
+  .rewards { margin: 6px 16px 14px; background: linear-gradient(135deg, #4C8B2B 0%, #6BBE45 100%); border-radius: 18px; padding: 16px 18px; color: #FFF; }
+  .rewards-top { display: flex; align-items: center; justify-content: space-between; }
+  .rewards-label { font-family: var(--font); font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; opacity: 0.92; }
+  .rewards-chev { font-size: 14px; opacity: 0.9; }
+  .rewards-title { font-family: var(--font); font-size: 19px; font-weight: 700; margin-top: 8px; }
+  .rewards-sub { font-size: 12px; opacity: 0.92; margin-top: 3px; }
+  .rewards-bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,0.28); margin-top: 12px; overflow: hidden; }
+  .rewards-fill { width: 64%; height: 100%; background: #FFF; border-radius: 3px; }
+
+  /* Section header */
+  .menu-head { display: flex; align-items: baseline; justify-content: space-between; padding: 4px 18px 10px; }
+  .menu-title { font-family: var(--font); font-size: 20px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.2px; }
+  .menu-all { font-size: 12px; font-weight: 600; color: var(--panera-green-bright); }
+
+  /* Menu food cards */
+  .menu-list { flex: 1; padding: 0 16px 12px; overflow-y: auto; scrollbar-width: none; }
+  .menu-list::-webkit-scrollbar { display: none; }
+  .food { display: flex; gap: 14px; padding: 14px 0; border-bottom: 0.5px solid var(--divider); }
+  .food:last-child { border-bottom: none; }
+  .food-img { width: 92px; height: 92px; border-radius: 14px; flex-shrink: 0; position: relative; overflow: hidden; }
+  .img-soup { background: radial-gradient(circle at 50% 42%, #E89A4E 0%, #C9742B 45%, #8A4D1B 100%); }
+  .img-soup::before { content: ''; position: absolute; top: 26%; left: 22%; right: 22%; bottom: 22%; background: radial-gradient(circle, #F0C58A 0%, #D98F3E 70%); border-radius: 50%; }
+  .img-sand { background: linear-gradient(160deg, #E8C078 0%, #C99551 45%, #8C5E2C 100%); }
+  .img-sand::before { content: ''; position: absolute; top: 30%; left: 14%; right: 14%; height: 16%; background: #6C7A3A; }
+  .img-sand::after { content: ''; position: absolute; top: 46%; left: 14%; right: 14%; height: 14%; background: #C46B3A; }
+  .img-salad { background: radial-gradient(circle at 50% 50%, #7FB04A 0%, #4F7A2C 60%, #355320 100%); }
+  .img-salad::before { content: ''; position: absolute; top: 20%; left: 20%; width: 26%; height: 26%; background: #C0392B; border-radius: 50%; box-shadow: 38% 50% 0 #C0392B, 10% 90% 0 #E07A2F; }
+  .food-body { flex: 1; min-width: 0; }
+  .food-name { font-family: var(--font); font-size: 15px; font-weight: 600; color: var(--text-primary); }
+  .food-desc { font-size: 12px; color: var(--text-secondary); margin-top: 3px; line-height: 1.4; }
+  .food-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
+  .food-price { font-family: var(--font); font-size: 14px; font-weight: 700; color: var(--text-primary); }
+  .food-add { width: 30px; height: 30px; border-radius: 15px; background: var(--panera-green); display: flex; align-items: center; justify-content: center; }
+  .food-add svg { width: 15px; height: 15px; stroke: #FFF; stroke-width: 2.6; fill: none; }
+  .food-tag { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; color: var(--panera-green-bright); margin-top: 6px; letter-spacing: 0.3px; }
+
+  /* Tab bar */
+  .tab-bar { height: 68px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(20,20,15,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 3px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--panera-green-bright); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-family: var(--font); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-family: var(--font); font-size: 32px; font-weight: 800; letter-spacing: -0.5px; color: var(--ink); }
+  .t-26 { font-family: var(--font); font-size: 26px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-family: var(--font); font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-family: var(--font); font-size: 18px; font-weight: 600; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-family: var(--font); font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-13 { font-size: 13px; font-weight: 500; }
+  .t-12 { font-family: var(--font); font-size: 12px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0.2px; }
+  .btn-primary { background: var(--panera-green); color: #FFF; font-size: 16px; padding: 14px 28px; border-radius: 999px; }
+  .btn-primary:active { background: var(--panera-green-press); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--panera-green-bright); border: 1.5px solid var(--panera-green-bright); font-size: 14px; font-weight: 600; padding: 12px 22px; border-radius: 999px; }
+  .btn-pill { background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--divider); font-size: 13px; font-weight: 600; padding: 10px 18px; border-radius: 999px; }
+  .btn-text { background: transparent; color: var(--panera-green-bright); font-size: 14px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Rewards / qty stepper */
+  .comp-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .reward-chip { display: inline-flex; align-items: center; gap: 8px; background: var(--surface-2); border: 1px solid var(--divider); border-radius: 999px; padding: 8px 16px 8px 10px; }
+  .reward-coin { width: 22px; height: 22px; border-radius: 11px; background: linear-gradient(135deg, #6BBE45, #4C8B2B); }
+  .reward-chip span { font-family: var(--font); font-size: 13px; font-weight: 700; color: var(--text-primary); }
+  .stepper { display: inline-flex; align-items: center; gap: 16px; background: var(--surface-2); border: 1px solid var(--divider); border-radius: 999px; padding: 8px 16px; }
+  .stepper b { font-family: var(--font); font-size: 16px; color: var(--panera-green-bright); }
+  .stepper i { font-family: var(--font); font-size: 15px; font-weight: 700; color: var(--text-primary); font-style: normal; min-width: 16px; text-align: center; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--panera-green); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-6 { border-radius: 6px; }
+  .r-10 { border-radius: 10px; }
+  .r-14 { border-radius: 14px; }
+  .r-18 { border-radius: 18px; }
+  .r-24 { border-radius: 24px; }
+  .r-pill { border-radius: 999px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; align-items: center; justify-content: center; width: 46px; height: 46px; border-radius: 12px; background: var(--panera-green); }
+  .logo svg { width: 28px; height: 28px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M6 13c0-3.9 3.1-7 6.5-7S19 8.6 19 12c0 2.3-1.2 4-3 5v3a1.3 1.3 0 0 1-2.6 0c0-1-.5-2-1.1-3-.6 1-1.1 2-1.1 3a1.3 1.3 0 0 1-2.6 0v-2.4C6.6 16.4 6 14.8 6 13z" fill="#FFF"/><path d="M12.5 6c0 2.6-1.4 4.4-3.4 6" stroke="#4C8B2B" stroke-width="1.3" stroke-linecap="round"/></svg>
+    </span>
+    <div class="page-title">Panera iOS — Design Tokens</div>
+    <div class="page-chip">Warm Bakery Dark</div>
+  </div>
+  <p class="page-subtitle">Warm bakery-dark canvas (#14140F) keeps Panera's cream-and-hearth feel after sundown. Panera Green stays the single action color — it brightens to #6BBE45 on dark for legible CTAs and the MyPanera rewards arc. Soup and sandwich photography stays full-color; only the chrome dims.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="rewards">
+            <div class="rewards-top">
+              <span class="rewards-label">MyPanera Rewards</span>
+              <span class="rewards-chev">›</span>
+            </div>
+            <div class="rewards-title">You're 2 visits from a reward</div>
+            <div class="rewards-sub">Unlimited Sip Club renews May 28</div>
+            <div class="rewards-bar"><div class="rewards-fill"></div></div>
+          </div>
+
+          <div class="menu-head">
+            <div class="menu-title">Order Favorites</div>
+            <div class="menu-all">See all</div>
+          </div>
+
+          <div class="menu-list">
+            <div class="food">
+              <div class="food-img img-soup"></div>
+              <div class="food-body">
+                <div class="food-name">Broccoli Cheddar Soup</div>
+                <div class="food-desc">Chopped broccoli, carrots & cheddar in a creamy base. Bread Bowl available.</div>
+                <div class="food-tag">★ FREE WITH 2,500 PTS</div>
+                <div class="food-foot">
+                  <span class="food-price">$7.59</span>
+                  <div class="food-add"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="food">
+              <div class="food-img img-sand"></div>
+              <div class="food-body">
+                <div class="food-name">Toasted Italiano Sandwich</div>
+                <div class="food-desc">Salami, ham, capicola, peppers & house mustard on Ciabatta.</div>
+                <div class="food-foot">
+                  <span class="food-price">$11.29</span>
+                  <div class="food-add"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="food">
+              <div class="food-img img-salad"></div>
+              <div class="food-body">
+                <div class="food-name">Green Goddess Cobb Salad</div>
+                <div class="food-desc">Chicken, egg, avocado, tomatoes & greens with green goddess dressing.</div>
+                <div class="food-foot">
+                  <span class="food-price">$12.99</span>
+                  <div class="food-add"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v9a2 2 0 0 1-2 2h-4v-6H9v6H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 4h16v4H4z"/><path d="M5 8v12h14V8"/><path d="M9 12h6"/></svg><span>Order</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Rewards</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M6 2h12v20l-6-4-6 4z"/></svg><span>Favorites</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/></svg><span>Account</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#4C8B2B;"><div class="name">Panera Green</div>#4C8B2B</div>
+          <div class="swatch" style="background:#6BBE45;"><div class="name">Green Bright</div>#6BBE45</div>
+          <div class="swatch" style="background:#3C6E22;"><div class="name">Green Pressed</div>#3C6E22</div>
+          <div class="swatch" style="background:#F4EFE1; color:#3C6E22;"><div class="name">Warm Cream</div>#F4EFE1</div>
+          <div class="swatch" style="background:#D8B271; color:#3A2A12;"><div class="name">Bread Tan</div>#D8B271</div>
+          <div class="swatch" style="background:#E07A2F;"><div class="name">Soup Orange</div>#E07A2F</div>
+          <div class="swatch" style="background:#B0324B;"><div class="name">Berry Accent</div>#B0324B</div>
+          <div class="swatch" style="background:#F2B705; color:#3A2A00;"><div class="name">Gold Star</div>#F2B705</div>
+          <div class="swatch" style="background:#14140F;"><div class="name">Dark Canvas</div>#14140F</div>
+          <div class="swatch" style="background:#1E1E18;"><div class="name">Dark Surface 1</div>#1E1E18</div>
+          <div class="swatch" style="background:#F3EFE4; color:#14140F;"><div class="name">Text Primary</div>#F3EFE4</div>
+          <div class="swatch" style="background:#E0594B;"><div class="name">Error</div>#E0594B</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Poppins (brand display) + Inter (body)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 800</div><div class="type-sample t-32">Good morning</div></div>
+        <div class="type-row"><div class="type-meta">Hero · 26pt · 700</div><div class="type-sample t-26">You're 2 visits away</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Order Favorites</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 18pt · 600</div><div class="type-sample t-18">Broccoli Cheddar Soup</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Chopped broccoli & carrots in a creamy cheddar base.</div></div>
+        <div class="type-row"><div class="type-meta">Item Name · 15pt · 600</div><div class="type-sample t-15m">Toasted Italiano Sandwich</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Ready for pickup in 12–17 min</div></div>
+        <div class="type-row"><div class="type-meta">Price · 13pt · 500</div><div class="type-sample t-13">$7.59 · 720 cal</div></div>
+        <div class="type-row"><div class="type-meta">Reward Tag · 12pt · 700</div><div class="type-sample t-12">Free with 2,500 pts</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Add to Order</button>
+          <button class="btn btn-outline">Customize</button>
+          <button class="btn btn-pill">Pickup</button>
+          <button class="btn-text">View full menu</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">MyPanera Reward Chip &amp; Quantity Stepper</div>
+        <div class="comp-row">
+          <div class="reward-chip"><span class="reward-coin"></span><span>2,500 pts available</span></div>
+          <div class="stepper"><b>−</b><i>2</i><b>+</b></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-18">18</div>
+          <div class="radius-box r-24">24</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Panera's identity is bakery-warm, so dark mode is a warm near-black <code>#14140F</code> — never a cold gray. Cards lift to <code>#1E1E18</code>. Panera Green <code>#4C8B2B</code> is slightly too dark to read on the dark canvas, so the bright variant <code>#6BBE45</code> carries CTAs, active tabs, the MyPanera progress fill, and reward tags. Warm cream <code>#F4EFE1</code> inverts to <code>#F3EFE4</code> text. Food photography stays full-color and is the brightest thing on screen — appetite is the priority.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

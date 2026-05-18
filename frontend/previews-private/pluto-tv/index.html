@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Pluto TV iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0B0F1F;
+    --surface-1: #141A2E;
+    --surface-2: #1C2440;
+    --surface-3: #25304F;
+    --divider: #2A3556;
+    --text-primary: #FFFFFF;
+    --text-secondary: #9DA8C7;
+    --text-tertiary: #6B7595;
+    --ink: #FFFFFF;
+    --pluto-blue: #0048FF;
+    --pluto-blue-bright: #2C6BFF;
+    --pluto-yellow: #FFE100;
+    --pluto-cyan: #00C2FF;
+    --live-red: #FF3B5C;
+    --success: #21D07A;
+    --error: #FF4A6E;
+    --font: 'Manrope', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--pluto-blue); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #04060F; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,72,255,0.4), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+
+  .mini-player { margin: 0 0 8px; height: 150px; background: linear-gradient(150deg, #0A2A6B 0%, #062052 55%, #0B0F1F 100%); position: relative; overflow: hidden; }
+  .mini-player::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 70% 30%, rgba(0,194,255,0.3), transparent 60%); }
+  .mp-live { position: absolute; top: 12px; left: 14px; display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.4); padding: 4px 9px; border-radius: 5px; z-index: 2; }
+  .mp-live .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--live-red); }
+  .mp-live span { font-size: 10px; font-weight: 800; letter-spacing: 0.5px; }
+  .mp-body { position: absolute; left: 14px; right: 14px; bottom: 12px; z-index: 2; }
+  .mp-ch { font-size: 11px; font-weight: 700; color: var(--pluto-cyan); letter-spacing: 0.3px; }
+  .mp-title { font-size: 18px; font-weight: 800; letter-spacing: -0.3px; margin-top: 2px; }
+  .mp-prog { height: 3px; border-radius: 2px; background: rgba(255,255,255,0.2); margin-top: 8px; overflow: hidden; }
+  .mp-prog i { display: block; height: 100%; width: 44%; background: var(--pluto-yellow); }
+
+  .guide-head { display: flex; align-items: center; justify-content: space-between; padding: 6px 16px 8px; }
+  .guide-title { font-size: 15px; font-weight: 800; }
+  .guide-now { font-size: 11px; font-weight: 700; color: var(--text-secondary); }
+
+  .cats { display: flex; gap: 8px; padding: 0 16px 10px; overflow-x: auto; scrollbar-width: none; }
+  .cats::-webkit-scrollbar { display: none; }
+  .cat-pill { flex-shrink: 0; font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 999px; background: var(--surface-2); color: var(--text-secondary); }
+  .cat-pill.active { background: var(--pluto-blue); color: #FFF; }
+
+  .epg { flex: 1; overflow-y: auto; scrollbar-width: none; }
+  .epg::-webkit-scrollbar { display: none; }
+  .epg-timebar { display: flex; padding-left: 86px; position: sticky; top: 0; background: var(--canvas); z-index: 3; border-bottom: 0.5px solid var(--divider); }
+  .epg-timebar span { min-width: 96px; font-size: 10px; font-weight: 700; color: var(--text-tertiary); padding: 6px 0 6px 8px; }
+  .epg-row { display: flex; border-bottom: 0.5px solid var(--divider); height: 64px; }
+  .epg-ch { width: 86px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; background: var(--surface-1); border-right: 0.5px solid var(--divider); }
+  .epg-ch .num { font-size: 10px; font-weight: 800; color: var(--text-tertiary); }
+  .epg-ch .logo { width: 40px; height: 28px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; color: #FFF; }
+  .l1 { background: linear-gradient(135deg, #0048FF, #00C2FF); }
+  .l2 { background: linear-gradient(135deg, #7B2FF7, #C32BAC); }
+  .l3 { background: linear-gradient(135deg, #FF6B2C, #FF2C6B); }
+  .l4 { background: linear-gradient(135deg, #21D07A, #00A6A6); }
+  .l5 { background: linear-gradient(135deg, #FFB020, #FF6B2C); }
+  .epg-progs { display: flex; flex: 1; overflow: hidden; }
+  .prog { border-right: 1px solid var(--canvas); padding: 8px 10px; display: flex; flex-direction: column; justify-content: center; gap: 3px; overflow: hidden; }
+  .prog .p-title { font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .prog .p-time { font-size: 10px; font-weight: 500; color: var(--text-tertiary); }
+  .prog.on-now { background: var(--surface-2); border-left: 3px solid var(--pluto-yellow); }
+  .prog.on-now .p-title { color: #FFF; }
+  .prog.idle { background: var(--surface-1); }
+  .w1 { min-width: 130px; } .w2 { min-width: 180px; } .w3 { min-width: 110px; } .w4 { min-width: 220px; }
+
+  .tab-bar { height: 66px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(11,15,31,0.96); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 4px; }
+  .tab.active { color: var(--pluto-yellow); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; color: var(--ink); }
+  .t-24 { font-size: 24px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); }
+  .t-20 { font-size: 20px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-17 { font-size: 17px; font-weight: 700; }
+  .t-15 { font-size: 15px; font-weight: 400; }
+  .t-13m { font-size: 13px; font-weight: 600; }
+  .t-12 { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+  .t-10 { font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
+
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 800; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--pluto-blue); color: #FFF; font-size: 15px; padding: 13px 28px; border-radius: 8px; }
+  .btn-primary:active { background: #0039CC; transform: scale(0.98); }
+  .btn-yellow { background: var(--pluto-yellow); color: #0B0F1F; font-size: 15px; padding: 13px 28px; border-radius: 8px; }
+  .btn-yellow:active { filter: brightness(0.94); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1px solid rgba(255,255,255,0.3); font-size: 14px; font-weight: 700; padding: 12px 22px; border-radius: 8px; }
+  .btn-text { background: transparent; color: var(--pluto-cyan); font-size: 14px; font-weight: 700; padding: 12px 0; border: none; cursor: pointer; }
+
+  .ch-row { display: flex; gap: 14px; align-items: center; }
+  .ch-cell { width: 96px; height: 64px; background: var(--surface-2); border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+  .ch-cell .num { font-size: 10px; font-weight: 800; color: var(--text-tertiary); }
+  .ch-cell .logo { width: 44px; height: 30px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; }
+
+  .np-bar { display: flex; align-items: center; gap: 12px; background: var(--surface-2); border-radius: 12px; padding: 12px 14px; }
+  .np-thumb { width: 56px; height: 38px; border-radius: 6px; background: linear-gradient(135deg, #0048FF, #00C2FF); flex-shrink: 0; }
+  .np-info { flex: 1; }
+  .np-info .a { font-size: 13px; font-weight: 700; }
+  .np-info .b { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+  .np-live { display: flex; align-items: center; gap: 5px; }
+  .np-live .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--live-red); }
+  .np-live span { font-size: 10px; font-weight: 800; color: var(--live-red); letter-spacing: 0.4px; }
+
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--pluto-blue); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-10 { border-radius: 10px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  .logomark { display: inline-flex; align-items: center; height: 40px; }
+  .logomark svg { height: 30px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logomark">
+      <svg viewBox="0 0 140 36" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="4" width="36" height="28" rx="6" fill="#0048FF"/>
+        <path d="M10 11h9a6 6 0 0 1 0 12h-4v3h-5z M15 15v4h4a2 2 0 0 0 0-4z" fill="#FFE100"/>
+        <text x="44" y="27" font-family="Manrope, sans-serif" font-size="24" font-weight="800" fill="#FFFFFF" letter-spacing="-0.5">pluto<tspan fill="#FFE100">tv</tspan></text>
+      </svg>
+    </span>
+    <div class="page-title">Pluto TV iOS — Design Tokens</div>
+    <div class="page-chip">Live Guide</div>
+  </div>
+  <p class="page-subtitle">Deep navy canvas (#0B0F1F) anchored by Pluto Blue (#0048FF) and the signature yellow (#FFE100). Pluto TV is free linear television — the whole product is the EPG channel guide: a sticky time-bar, a fixed channel-logo column, and a scrolling program timeline where the "On Now" cell is marked with a yellow left border. A mini-player streams the current channel above the grid.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="mini-player">
+            <div class="mp-live"><span class="dot"></span><span>LIVE</span></div>
+            <div class="mp-body">
+              <div class="mp-ch">CH 612 · PLUTO TV ACTION</div>
+              <div class="mp-title">Renegade Pursuit</div>
+              <div class="mp-prog"><i></i></div>
+            </div>
+          </div>
+
+          <div class="guide-head">
+            <div class="guide-title">Live TV Guide</div>
+            <div class="guide-now">Now · 9:41 PM</div>
+          </div>
+
+          <div class="cats">
+            <div class="cat-pill active">All</div>
+            <div class="cat-pill">Featured</div>
+            <div class="cat-pill">Movies</div>
+            <div class="cat-pill">News</div>
+            <div class="cat-pill">Sports</div>
+            <div class="cat-pill">Comedy</div>
+          </div>
+
+          <div class="epg">
+            <div class="epg-timebar"><span>9:30 PM</span><span>10:00 PM</span><span>10:30 PM</span><span>11:00 PM</span></div>
+
+            <div class="epg-row">
+              <div class="epg-ch"><span class="num">612</span><span class="logo l1">ACTION</span></div>
+              <div class="epg-progs">
+                <div class="prog on-now w2"><span class="p-title">Renegade Pursuit</span><span class="p-time">9:00 – 10:00 PM</span></div>
+                <div class="prog idle w3"><span class="p-title">Steel Horizon</span><span class="p-time">10:00 PM</span></div>
+                <div class="prog idle w4"><span class="p-title">Night Patrol</span><span class="p-time">10:30 PM</span></div>
+              </div>
+            </div>
+
+            <div class="epg-row">
+              <div class="epg-ch"><span class="num">204</span><span class="logo l3">MOVIES</span></div>
+              <div class="epg-progs">
+                <div class="prog on-now w4"><span class="p-title">The Last Frontier</span><span class="p-time">8:45 – 10:45 PM</span></div>
+                <div class="prog idle w2"><span class="p-title">Desert Light</span><span class="p-time">10:45 PM</span></div>
+              </div>
+            </div>
+
+            <div class="epg-row">
+              <div class="epg-ch"><span class="num">021</span><span class="logo l5">NEWS24</span></div>
+              <div class="epg-progs">
+                <div class="prog on-now w1"><span class="p-title">Top of the Hour</span><span class="p-time">9:30 – 10:00</span></div>
+                <div class="prog idle w1"><span class="p-title">World Report</span><span class="p-time">10:00</span></div>
+                <div class="prog idle w2"><span class="p-title">The Briefing</span><span class="p-time">10:30 PM</span></div>
+              </div>
+            </div>
+
+            <div class="epg-row">
+              <div class="epg-ch"><span class="num">388</span><span class="logo l2">COMEDY</span></div>
+              <div class="epg-progs">
+                <div class="prog on-now w3"><span class="p-title">Laugh Track</span><span class="p-time">9:30 – 10:00</span></div>
+                <div class="prog idle w4"><span class="p-title">Improv Hour</span><span class="p-time">10:00 PM</span></div>
+              </div>
+            </div>
+
+            <div class="epg-row">
+              <div class="epg-ch"><span class="num">555</span><span class="logo l4">SPORTS</span></div>
+              <div class="epg-progs">
+                <div class="prog on-now w4"><span class="p-title">Game Night Live</span><span class="p-time">8:00 – 11:00 PM</span></div>
+                <div class="prog idle w2"><span class="p-title">Post-Game</span><span class="p-time">11:00 PM</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg><span>Live TV</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 5h16v12H4z"/><path d="M9 9l5 3-5 3z"/></svg><span>On Demand</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M5 4h14v17l-7-4-7 4z"/></svg><span>My Pluto</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21c1.5-4 4-6 7-6s5.5 2 7 6"/></svg><span>Account</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0B0F1F;"><div class="name">Canvas (Navy)</div>#0B0F1F</div>
+          <div class="swatch" style="background:#141A2E;"><div class="name">Surface 1</div>#141A2E</div>
+          <div class="swatch" style="background:#1C2440;"><div class="name">Surface 2</div>#1C2440</div>
+          <div class="swatch" style="background:#25304F;"><div class="name">Surface 3</div>#25304F</div>
+          <div class="swatch" style="background:#0048FF;"><div class="name">Pluto Blue</div>#0048FF</div>
+          <div class="swatch" style="background:#2C6BFF;"><div class="name">Blue Bright</div>#2C6BFF</div>
+          <div class="swatch" style="background:#FFE100; color:#0B0F1F;"><div class="name">Pluto Yellow</div>#FFE100</div>
+          <div class="swatch" style="background:#00C2FF; color:#0B0F1F;"><div class="name">Cyan (link)</div>#00C2FF</div>
+          <div class="swatch" style="background:#FF3B5C;"><div class="name">Live Red</div>#FF3B5C</div>
+          <div class="swatch" style="background:#9DA8C7; color:#0B0F1F;"><div class="name">Text Secondary</div>#9DA8C7</div>
+          <div class="swatch" style="background:#21D07A; color:#0B0F1F;"><div class="name">Success</div>#21D07A</div>
+          <div class="swatch" style="background:#FF4A6E;"><div class="name">Error</div>#FF4A6E</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Manrope (Pluto uses a humanist grotesque)</div>
+        <div class="type-row"><div class="type-meta">Display · 32pt · 800</div><div class="type-sample t-32">Live TV Guide</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 24pt · 800</div><div class="type-sample t-24">Pluto TV Action</div></div>
+        <div class="type-row"><div class="type-meta">Section · 20pt · 700</div><div class="type-sample t-20">Featured Channels</div></div>
+        <div class="type-row"><div class="type-meta">Now Playing · 17pt · 700</div><div class="type-sample t-17">Renegade Pursuit</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 400</div><div class="type-sample t-15">Free TV. No subscriptions, no fees — just press play.</div></div>
+        <div class="type-row"><div class="type-meta">Program Title · 13pt · 600</div><div class="type-sample t-13m">The Last Frontier</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 12pt · 500</div><div class="type-sample t-12">9:00 – 10:00 PM · Action</div></div>
+        <div class="type-row"><div class="type-meta">Live Badge · 10pt · 800 caps</div><div class="type-sample t-10">Live Now</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Watch Live</button>
+          <button class="btn btn-yellow">Start Watching</button>
+          <button class="btn btn-outline">+ Watchlist</button>
+          <button class="btn-text">Full Schedule</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Channel Cells (number + logo)</div>
+        <div class="ch-row">
+          <div class="ch-cell"><span class="num">612</span><span class="logo l1">ACTION</span></div>
+          <div class="ch-cell"><span class="num">204</span><span class="logo l3">MOVIES</span></div>
+          <div class="ch-cell"><span class="num">555</span><span class="logo l4">SPORTS</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Now-Playing Bar</div>
+        <div class="np-bar">
+          <div class="np-thumb"></div>
+          <div class="np-info">
+            <div class="a">Renegade Pursuit</div>
+            <div class="b">CH 612 · Pluto TV Action</div>
+          </div>
+          <div class="np-live"><span class="dot"></span><span>LIVE</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Pluto TV is dark-only — a deep cool navy <code>#0B0F1F</code>, not pure black, that evokes a late-night TV glow. The EPG grid is the product: the fixed channel column sits on <code>#141A2E</code>, idle program cells on <code>#141A2E</code>, and the "On Now" cell lifts to <code>#1C2440</code> with a 3pt <code>#FFE100</code> yellow left border — the single most important state in the app. Pluto Blue <code>#0048FF</code> drives primary CTAs and the active category pill; the yellow is reserved for "live/now" emphasis and the active tab. The live indicator is always a <code>#FF3B5C</code> dot + "LIVE" label. Video plays full-color in the mini-player; chrome stays dim.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

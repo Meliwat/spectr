@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Grammarly iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #121212;
+    --surface-1: #1C1C1E;
+    --surface-2: #262629;
+    --divider: #2C2C2E;
+    --text-primary: #E4E4E4;
+    --text-secondary: #9A9A9F;
+    --text-tertiary: #6A6A6E;
+    --ink: #F4F4F4;
+    --green: #15C39A;
+    --green-deep: #11A683;
+    --green-pressed: #0E8A6D;
+    --grammar-red: #E5484D;
+    --clarity-blue: #3B82F6;
+    --engagement-green: #16A34A;
+    --delivery-purple: #8B5CF6;
+    --premium-gold: #E0A82E;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--green); color: #06281F; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Doc header */
+  .doc-head { padding: 6px 20px 14px; display: flex; align-items: center; justify-content: space-between; }
+  .doc-back svg { width: 22px; height: 22px; stroke: var(--text-primary); stroke-width: 2.2; fill: none; }
+  .doc-title { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+  .doc-score { width: 38px; height: 38px; border-radius: 50%; border: 3px solid var(--green); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--green); }
+
+  /* Editor body */
+  .editor { flex: 1; padding: 8px 20px 0; overflow-y: auto; scrollbar-width: none; }
+  .editor::-webkit-scrollbar { display: none; }
+  .doc-h1 { font-size: 22px; font-weight: 700; color: var(--ink); margin-bottom: 14px; letter-spacing: -0.3px; }
+  .doc-p { font-size: 16px; line-height: 1.65; color: var(--text-primary); margin-bottom: 16px; }
+  .u-grammar { border-bottom: 2px solid var(--grammar-red); }
+  .u-clarity { background: rgba(59,130,246,0.18); border-bottom: 2px solid var(--clarity-blue); border-radius: 2px; padding: 0 1px; }
+  .u-engage { border-bottom: 2px dotted var(--engagement-green); }
+
+  /* Suggestion card */
+  .sug-wrap { padding: 4px 16px 0; }
+  .sug-card { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+  .sug-top { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .sug-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--grammar-red); }
+  .sug-cat { font-size: 12px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.4px; }
+  .sug-swap { font-size: 16px; margin-bottom: 6px; }
+  .sug-old { color: var(--grammar-red); text-decoration: line-through; }
+  .sug-arrow { color: var(--text-secondary); margin: 0 6px; }
+  .sug-new { color: var(--green); font-weight: 600; }
+  .sug-expl { font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 14px; }
+  .sug-actions { display: flex; gap: 10px; }
+  .sug-accept { flex: 1; background: var(--green); color: #06281F; font-size: 14px; font-weight: 700; padding: 10px 0; border-radius: 999px; border: none; text-align: center; }
+  .sug-dismiss { width: 44px; height: 40px; border-radius: 999px; border: 1px solid var(--divider); display: flex; align-items: center; justify-content: center; }
+  .sug-dismiss svg { width: 16px; height: 16px; stroke: var(--text-secondary); stroke-width: 2.4; fill: none; }
+
+  /* Tone row */
+  .tone-row { display: flex; align-items: center; gap: 8px; padding: 14px 20px 10px; }
+  .tone-emoji { font-size: 18px; }
+  .tone-label { font-size: 13px; color: var(--text-secondary); }
+  .tone-pill { background: var(--surface-2); border: 1px solid var(--divider); color: var(--text-primary); font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 999px; }
+
+  /* Bottom assistant bar */
+  .assist-bar { height: 64px; display: flex; align-items: center; padding: 0 18px 8px; gap: 14px; background: rgba(18,18,18,0.96); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .assist-g { width: 36px; height: 36px; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center; }
+  .assist-g svg { width: 20px; height: 20px; fill: #06281F; }
+  .assist-count { flex: 1; }
+  .assist-num { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+  .assist-sub { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
+  .assist-cta { background: var(--green); color: #06281F; font-size: 13px; font-weight: 700; padding: 9px 16px; border-radius: 999px; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-13 { font-size: 13px; font-weight: 600; }
+  .t-12 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--green); color: #06281F; font-size: 16px; padding: 14px 28px; border-radius: 999px; }
+  .btn-primary:active { background: var(--green-pressed); transform: scale(0.98); }
+  .btn-secondary { background: transparent; color: var(--green); border: 1.5px solid var(--green); font-size: 15px; font-weight: 600; padding: 12px 22px; border-radius: 999px; }
+  .btn-premium { background: var(--premium-gold); color: #2A1E04; font-size: 14px; font-weight: 700; padding: 11px 20px; border-radius: 999px; }
+  .btn-text { background: transparent; color: var(--green); font-size: 14px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Underline legend */
+  .legend-row { display: flex; flex-direction: column; gap: 14px; }
+  .legend { display: flex; align-items: center; gap: 12px; }
+  .legend-line { width: 64px; height: 0; flex-shrink: 0; }
+  .l-red { border-bottom: 2px solid var(--grammar-red); }
+  .l-blue { border-bottom: 2px solid var(--clarity-blue); }
+  .l-green { border-bottom: 2px dotted var(--engagement-green); }
+  .l-purple { border-bottom: 2px solid var(--delivery-purple); }
+  .legend-label { font-size: 13px; color: var(--text-primary); }
+  .legend-hex { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); margin-left: auto; }
+
+  /* Score chips */
+  .score-row { display: flex; gap: 14px; align-items: center; }
+  .score-ring { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 700; }
+  .ring-good { border: 4px solid var(--green); color: var(--green); }
+  .ring-mid { border: 4px solid var(--premium-gold); color: var(--premium-gold); }
+  .ring-low { border: 4px solid var(--grammar-red); color: var(--grammar-red); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--green); color: #06281F; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-20 { border-radius: 20px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; background: var(--green); border-radius: 10px; }
+  .logo svg { width: 26px; height: 26px; fill: #fff; }
+  code { font-family: 'SF Mono', Menlo, monospace; font-size: 12px; color: var(--green); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 6.32 17.74l-2.04-2.04A7.1 7.1 0 1 1 19.1 12h-5.6v2.9h8.34A10 10 0 0 0 12 2z"/></svg>
+    </span>
+    <div class="page-title">Grammarly iOS — Design Tokens</div>
+    <div class="page-chip">Assistant Green</div>
+  </div>
+  <p class="page-subtitle">Warm-dark canvas (#121212) with Grammarly Green (#15C39A) as the single brand accent — it carries CTAs, the document-score ring, and the assistant orb. Suggestion underlines are color-coded by category (red Correctness, blue Clarity, green Engagement, purple Delivery) and stay vivid on dark.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="doc-head">
+            <span class="doc-back"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></span>
+            <span class="doc-title">Cover Letter — Draft</span>
+            <span class="doc-score">87</span>
+          </div>
+
+          <div class="editor">
+            <div class="doc-h1">Application for Product Designer</div>
+            <div class="doc-p">Dear Hiring Team, I <span class="u-grammar">are</span> writing to express my strong interest in the Product Designer role at your company.</div>
+            <div class="doc-p">Over the past five years I <span class="u-clarity">have been responsible for the design of</span> mobile apps used by millions of people every single day.</div>
+            <div class="doc-p">I would <span class="u-engage">love</span> the opportunity to bring this craft to your team and help ship work you are proud of.</div>
+          </div>
+
+          <div class="tone-row">
+            <span class="tone-emoji">🙂</span>
+            <span class="tone-label">Tone sounds</span>
+            <span class="tone-pill">Confident</span>
+            <span class="tone-pill">Formal</span>
+          </div>
+
+          <div class="sug-wrap">
+            <div class="sug-card">
+              <div class="sug-top">
+                <span class="sug-dot"></span>
+                <span class="sug-cat">Correctness</span>
+              </div>
+              <div class="sug-swap"><span class="sug-old">are</span><span class="sug-arrow">→</span><span class="sug-new">am</span></div>
+              <div class="sug-expl">The subject "I" is singular and takes the verb "am". This is a subject–verb agreement issue.</div>
+              <div class="sug-actions">
+                <button class="sug-accept">Accept</button>
+                <button class="sug-dismiss"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="assist-bar">
+            <div class="assist-g"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 6.32 17.74l-2.04-2.04A7.1 7.1 0 1 1 19.1 12h-5.6v2.9h8.34A10 10 0 0 0 12 2z"/></svg></div>
+            <div class="assist-count">
+              <div class="assist-num">14 suggestions</div>
+              <div class="assist-sub">3 Correctness · 6 Clarity · 5 Engagement</div>
+            </div>
+            <div class="assist-cta">Review</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#15C39A;"><div class="name">Grammarly Green</div>#15C39A</div>
+          <div class="swatch" style="background:#11A683;"><div class="name">Green Deep</div>#11A683</div>
+          <div class="swatch" style="background:#0E8A6D;"><div class="name">Green Pressed</div>#0E8A6D</div>
+          <div class="swatch" style="background:#E5484D;"><div class="name">Correctness Red</div>#E5484D</div>
+          <div class="swatch" style="background:#3B82F6;"><div class="name">Clarity Blue</div>#3B82F6</div>
+          <div class="swatch" style="background:#16A34A;"><div class="name">Engagement Green</div>#16A34A</div>
+          <div class="swatch" style="background:#8B5CF6;"><div class="name">Delivery Purple</div>#8B5CF6</div>
+          <div class="swatch" style="background:#E0A82E; color:#2A1E04;"><div class="name">Premium Gold</div>#E0A82E</div>
+          <div class="swatch" style="background:#121212;"><div class="name">Dark Canvas</div>#121212</div>
+          <div class="swatch" style="background:#1C1C1E;"><div class="name">Dark Surface 1</div>#1C1C1E</div>
+          <div class="swatch" style="background:#E4E4E4; color:#121212;"><div class="name">Text Primary</div>#E4E4E4</div>
+          <div class="swatch" style="background:#9A9A9F; color:#121212;"><div class="name">Text Secondary</div>#9A9A9F</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter (Apercu / SF Pro in product)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 800</div><div class="type-sample t-32">Assistant</div></div>
+        <div class="type-row"><div class="type-meta">Doc Heading · 26pt · 700</div><div class="type-sample t-26">Application for Product Designer</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Weekly writing insights</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 18pt · 700</div><div class="type-sample t-18">Subject–verb agreement</div></div>
+        <div class="type-row"><div class="type-meta">Editor Body · 16pt · 400</div><div class="type-sample t-16">I am writing to express my strong interest in this role.</div></div>
+        <div class="type-row"><div class="type-meta">Suggestion Title · 15pt · 600</div><div class="type-sample t-15m">Consider a more concise phrase</div></div>
+        <div class="type-row"><div class="type-meta">Explanation · 14pt · 400</div><div class="type-sample t-14">The subject "I" is singular and takes "am".</div></div>
+        <div class="type-row"><div class="type-meta">Card Meta · 13pt · 600</div><div class="type-sample t-13">Accept · Dismiss</div></div>
+        <div class="type-row"><div class="type-meta">Category Tag · 12pt · 700</div><div class="type-sample t-12">Correctness</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Accept</button>
+          <button class="btn btn-secondary">Dismiss</button>
+          <button class="btn btn-premium">Try Premium</button>
+          <button class="btn-text">See all suggestions</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Suggestion Underline Categories</div>
+        <div class="legend-row">
+          <div class="legend"><span class="legend-line l-red"></span><span class="legend-label">Correctness — grammar, spelling, punctuation</span><span class="legend-hex">#E5484D</span></div>
+          <div class="legend"><span class="legend-line l-blue"></span><span class="legend-label">Clarity — wordiness, hard-to-read sentences</span><span class="legend-hex">#3B82F6</span></div>
+          <div class="legend"><span class="legend-line l-green"></span><span class="legend-label">Engagement — bland, repetitive language</span><span class="legend-hex">#16A34A</span></div>
+          <div class="legend"><span class="legend-line l-purple"></span><span class="legend-label">Delivery — tone, formality, confidence</span><span class="legend-hex">#8B5CF6</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Document Score Rings</div>
+        <div class="score-row">
+          <div class="score-ring ring-good">94</div>
+          <div class="score-ring ring-mid">71</div>
+          <div class="score-ring ring-low">48</div>
+          <span style="color:var(--text-secondary); font-size:13px;">Overall score ring — green ≥ 90, gold 60–89, red &lt; 60</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Grammarly's dark mode keeps a warm charcoal canvas <code>#121212</code> with cards lifted to <code>#1C1C1E</code> — never pure black. Grammarly Green <code>#15C39A</code> is the single brand accent and is identical across themes; on dark it stays the CTA fill, the score ring, and the assistant orb. The four suggestion-underline hues (red <code>#E5484D</code>, blue <code>#3B82F6</code>, green <code>#16A34A</code>, purple <code>#8B5CF6</code>) are slightly brightened on dark so they remain legible under body text. The document text inverts to <code>#E4E4E4</code> to preserve the calm, editorial reading surface — the editor is the product, so its chrome dims while the prose does not.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

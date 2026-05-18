@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Zwift iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #161616;
+    --surface-1: #1F1F1F;
+    --surface-2: #2A2A2A;
+    --surface-3: #353535;
+    --divider: #303030;
+    --text-primary: #FFFFFF;
+    --text-secondary: #A8AAAD;
+    --text-tertiary: #6C6E72;
+    --ink: #FFFFFF;
+    --zwift-orange: #FC6719;
+    --zwift-orange-pressed: #D9530E;
+    --zwift-orange-soft: #3A2110;
+    --hud-cyan: #2BD4D9;
+    --power: #FC6719;
+    --hr-red: #F0413E;
+    --cadence: #E8C547;
+    --success: #57C84D;
+    --font-display: 'Barlow Semi Condensed', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); font-family: var(--font-display); }
+  .page-chip { background: var(--zwift-orange); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 30; }
+  .status { position: absolute; top: 0; left: 0; right: 0; height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: #fff; z-index: 25; }
+
+  /* Virtual world */
+  .world { position: absolute; inset: 0; background:
+      linear-gradient(180deg, #1B3A5C 0%, #2E5C7E 26%, #4E8A6F 46%, #3E6F50 60%, #2C4F3A 100%); }
+  .world::before { content: ''; position: absolute; bottom: 0; left: -10%; right: -10%; height: 52%;
+      background: linear-gradient(180deg, rgba(60,120,75,0) 0%, #2F5740 40%, #234231 100%);
+      clip-path: polygon(0 38%, 22% 20%, 44% 34%, 66% 14%, 100% 30%, 100% 100%, 0 100%); }
+  .road { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 0; height: 0; border-left: 150px solid transparent; border-right: 150px solid transparent;
+      border-bottom: 320px solid #41464B; }
+  .road::after { content: ''; position: absolute; left: -4px; bottom: 0; width: 8px; height: 220px;
+      background: repeating-linear-gradient(180deg, #F2C94C 0 22px, transparent 22px 44px); transform: translateX(-1px); }
+  .rider { position: absolute; bottom: 120px; left: 50%; transform: translateX(-50%); width: 46px; height: 70px; z-index: 5; }
+  .rider .body { position: absolute; bottom: 14px; left: 9px; width: 28px; height: 34px; background: var(--zwift-orange); border-radius: 8px 8px 4px 4px; transform: skewX(-8deg); }
+  .rider .helm { position: absolute; bottom: 44px; left: 13px; width: 20px; height: 18px; background: #1B1B1B; border-radius: 50% 50% 40% 40%; }
+  .rider .wheel { position: absolute; bottom: 0; width: 30px; height: 30px; border: 3px solid #111; border-radius: 50%; left: 8px; }
+
+  /* Top route banner */
+  .route-banner { position: relative; z-index: 20; margin: 56px 14px 0; background: rgba(15,15,15,0.62); backdrop-filter: blur(8px); border-radius: 12px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; }
+  .route-flag { width: 30px; height: 30px; border-radius: 8px; background: var(--zwift-orange); display: flex; align-items: center; justify-content: center; }
+  .route-flag svg { width: 16px; height: 16px; stroke: #fff; stroke-width: 2.4; fill: none; }
+  .route-tx { flex: 1; }
+  .route-name { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: #fff; letter-spacing: 0.2px; }
+  .route-sub { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
+  .route-prog { width: 100%; height: 4px; background: rgba(255,255,255,0.18); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+  .route-prog i { display: block; width: 64%; height: 100%; background: var(--zwift-orange); }
+
+  /* Rider HUD */
+  .hud { position: absolute; bottom: 86px; left: 0; right: 0; z-index: 20; display: flex; justify-content: space-around; padding: 0 14px; }
+  .metric { background: rgba(12,12,12,0.6); backdrop-filter: blur(8px); border-radius: 12px; padding: 10px 4px; min-width: 88px; text-align: center; }
+  .metric .v { font-family: var(--font-display); font-size: 30px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+  .metric .u { font-size: 10px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.6px; margin-top: 4px; }
+  .v.power { color: var(--power); }
+  .v.cad { color: var(--cadence); }
+  .v.hr { color: var(--hr-red); }
+
+  /* Bottom action bar */
+  .action-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 78px; z-index: 22; display: flex; align-items: flex-start; padding: 12px 8px 18px; justify-content: space-around; background: rgba(18,18,18,0.92); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .act { display: flex; flex-direction: column; align-items: center; color: var(--text-secondary); font-size: 10px; font-weight: 600; gap: 4px; }
+  .act svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .act.power-up { color: var(--zwift-orange); }
+  .act.power-up svg { fill: rgba(252,103,25,0.2); }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 230px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-34 { font-size: 34px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); font-family: var(--font-display); font-variant-numeric: tabular-nums; }
+  .t-28 { font-size: 28px; font-weight: 800; color: var(--ink); font-family: var(--font-display); }
+  .t-22 { font-size: 22px; font-weight: 700; font-family: var(--font-display); }
+  .t-18 { font-size: 18px; font-weight: 700; font-family: var(--font-display); }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-13 { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font-display); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0.3px; }
+  .btn-primary { background: var(--zwift-orange); color: #FFF; font-size: 16px; padding: 14px 30px; border-radius: 10px; text-transform: uppercase; }
+  .btn-primary:active { background: var(--zwift-orange-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,0.5); font-size: 14px; font-weight: 700; padding: 11px 22px; border-radius: 10px; text-transform: uppercase; }
+  .btn-glass { background: rgba(255,255,255,0.1); color: #fff; backdrop-filter: blur(8px); font-size: 14px; font-weight: 700; padding: 11px 20px; border-radius: 10px; text-transform: uppercase; }
+  .btn-text { background: transparent; color: var(--zwift-orange); font-size: 14px; font-weight: 700; padding: 12px 0; border: none; cursor: pointer; font-family: var(--font); }
+
+  /* HUD chip demo */
+  .demo-hud { display: flex; gap: 12px; flex-wrap: wrap; }
+  .chip { font-family: var(--font-display); font-weight: 800; font-size: 22px; padding: 8px 14px; border-radius: 10px; background: rgba(12,12,12,0.7); font-variant-numeric: tabular-nums; }
+  .chip small { display: block; font-family: var(--font); font-size: 9px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.6px; }
+  .chip.power { color: var(--power); }
+  .chip.cad { color: var(--cadence); }
+  .chip.hr { color: var(--hr-red); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--zwift-orange); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-10 { border-radius: 10px; }
+  .r-12 { border-radius: 12px; }
+  .r-20 { border-radius: 20px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; width: 44px; height: 44px; border-radius: 12px; background: var(--zwift-orange); align-items: center; justify-content: center; }
+  .logo svg { width: 26px; height: 26px; stroke: #fff; stroke-width: 2.6; fill: none; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 24 24"><circle cx="6" cy="17" r="4"/><circle cx="18" cy="17" r="4"/><path d="M6 17l5-9h5l-3 9M9 8h5"/></svg>
+    </span>
+    <div class="page-title">Zwift iOS — Design Tokens</div>
+    <div class="page-chip">Ride HUD</div>
+  </div>
+  <p class="page-subtitle">A full-bleed virtual-world canvas with glassmorphic HUD overlays. Zwift Orange (#FC6719) is the brand action color; the live ride is read through translucent metric tiles — Power orange, Cadence yellow, Heart-rate red — over a 3D map on a dark #161616 base.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="world">
+            <div class="road"></div>
+            <div class="rider"><div class="wheel" style="left:2px;"></div><div class="wheel" style="left:18px;"></div><div class="body"></div><div class="helm"></div></div>
+          </div>
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="route-banner">
+            <div class="route-flag"><svg viewBox="0 0 24 24"><path d="M4 21V4M4 5h13l-3 4 3 4H4"/></svg></div>
+            <div class="route-tx">
+              <div class="route-name">Watopia · Volcano Flat</div>
+              <div class="route-sub">12.4 / 19.3 km · Lap 2 of 3</div>
+              <div class="route-prog"><i></i></div>
+            </div>
+          </div>
+
+          <div class="hud">
+            <div class="metric"><div class="v power">248</div><div class="u">Watts</div></div>
+            <div class="metric"><div class="v cad">92</div><div class="u">RPM</div></div>
+            <div class="metric"><div class="v hr">156</div><div class="u">BPM</div></div>
+          </div>
+
+          <div class="action-bar">
+            <div class="act"><svg viewBox="0 0 24 24"><path d="M12 3v18M5 10l7-7 7 7"/></svg><span>Action</span></div>
+            <div class="act power-up"><svg viewBox="0 0 24 24"><path d="M13 2L4 14h6l-1 8 9-12h-6z"/></svg><span>Power-Up</span></div>
+            <div class="act"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Workout</span></div>
+            <div class="act"><svg viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/></svg><span>Riders</span></div>
+            <div class="act"><svg viewBox="0 0 24 24"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg><span>Menu</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette — Dark + HUD</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#161616;"><div class="name">App Canvas</div>#161616</div>
+          <div class="swatch" style="background:#1F1F1F;"><div class="name">Card Surface</div>#1F1F1F</div>
+          <div class="swatch" style="background:#2A2A2A;"><div class="name">Surface 2</div>#2A2A2A</div>
+          <div class="swatch" style="background:#353535;"><div class="name">Surface 3</div>#353535</div>
+          <div class="swatch" style="background:#303030;"><div class="name">Divider</div>#303030</div>
+          <div class="swatch" style="background:#FC6719;"><div class="name">Zwift Orange</div>#FC6719</div>
+          <div class="swatch" style="background:#D9530E;"><div class="name">Orange Pressed</div>#D9530E</div>
+          <div class="swatch" style="background:#3A2110;"><div class="name">Orange Soft</div>#3A2110</div>
+          <div class="swatch" style="background:#2BD4D9; color:#082A2B;"><div class="name">HUD Cyan</div>#2BD4D9</div>
+          <div class="swatch" style="background:#E8C547; color:#2A2306;"><div class="name">Cadence Yellow</div>#E8C547</div>
+          <div class="swatch" style="background:#F0413E;"><div class="name">Heart-Rate Red</div>#F0413E</div>
+          <div class="swatch" style="background:#57C84D;"><div class="name">Success / Achv</div>#57C84D</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Barlow Semi Condensed (display) + Inter (text)</div>
+        <div class="type-row"><div class="type-meta">HUD Metric · 34pt · 800 · tabular</div><div class="type-sample t-34">248</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 28pt · 800</div><div class="type-sample t-28">RIDE</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Choose Your Route</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 18pt · 700</div><div class="type-sample t-18">Watopia · Volcano Flat</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400 · Inter</div><div class="type-sample t-16">Ride with thousands of others in immersive virtual worlds.</div></div>
+        <div class="type-row"><div class="type-meta">List Row · 15pt · 600 · Inter</div><div class="type-sample t-15m">Group Ride · 2.3 W/kg</div></div>
+        <div class="type-row"><div class="type-meta">Caption · 13pt · 500 · Inter</div><div class="type-sample t-13">12.4 / 19.3 km · Lap 2 of 3</div></div>
+        <div class="type-row"><div class="type-meta">Metric Unit · 11pt · 700</div><div class="type-sample t-11">WATTS · RPM · BPM</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Start Ride</button>
+          <button class="btn btn-outline">Free Ride</button>
+          <button class="btn btn-glass">Change Route</button>
+          <button class="btn-text">View all worlds</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Rider HUD Metric Tiles</div>
+        <div class="demo-hud">
+          <span class="chip power">248<small>Watts</small></span>
+          <span class="chip cad">92<small>RPM</small></span>
+          <span class="chip hr">156<small>BPM</small></span>
+          <span class="chip" style="color:var(--hud-cyan);">2.4<small>W/kg</small></span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode &amp; HUD Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Zwift is effectively always-dark — the screen is dominated by a full-bleed 3D virtual world, so all chrome is <strong>glassmorphic</strong>: translucent dark panels (<code>rgba(12,12,12,0.6)</code>) with <code>blur(8px)</code> so the road and riders read through. Zwift Orange <code>#FC6719</code> is the brand action color (Start Ride, the rider jersey, route progress, active power-up). Live ride metrics use a fixed semantic mapping — Power orange <code>#FC6719</code>, Cadence yellow <code>#E8C547</code>, Heart-rate red <code>#F0413E</code>, W/kg cyan <code>#2BD4D9</code> — in big tabular Barlow numerals so they're legible from a turbo trainer two metres away. App-shell screens (menus, route picker) sit on a solid <code>#161616</code> base.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

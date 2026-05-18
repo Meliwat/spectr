@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Viber iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #121118;
+    --surface-1: #1C1A24;
+    --surface-2: #26232F;
+    --divider: #322F3C;
+    --text-primary: #F3F1F8;
+    --text-secondary: #9D98AC;
+    --text-tertiary: #6C6779;
+    --ink: #FFFFFF;
+    --viber-purple: #7360F2;
+    --viber-purple-deep: #665CAC;
+    --viber-purple-pressed: #5B4ACC;
+    --viber-violet: #8F7DF7;
+    --bubble-out: #7360F2;
+    --bubble-in: #26232F;
+    --free-banner: #59267C;
+    --link: #9B8CFF;
+    --success: #46C26A;
+    --error: #F0506E;
+    --font: 'Manrope', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--viber-purple); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+
+  /* Chat nav */
+  .chat-nav { display: flex; align-items: center; gap: 10px; padding: 4px 14px 12px; border-bottom: 0.5px solid var(--divider); }
+  .nav-back { color: var(--viber-purple); }
+  .nav-back svg { width: 12px; height: 20px; stroke: currentColor; stroke-width: 3; fill: none; }
+  .nav-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(160deg, #8F7DF7, #665CAC); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #FFF; }
+  .nav-id { flex: 1; line-height: 1.2; }
+  .nav-name { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+  .nav-status { font-size: 11px; color: var(--success); margin-top: 1px; }
+  .nav-act { color: var(--viber-purple); display: flex; gap: 16px; }
+  .nav-act svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+
+  /* Free call banner */
+  .free-banner { margin: 10px 14px 4px; background: linear-gradient(135deg, #7360F2, #59267C); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; }
+  .free-banner svg { width: 18px; height: 18px; stroke: #FFF; stroke-width: 2; fill: none; }
+  .free-banner .ftxt { flex: 1; }
+  .free-banner .ftop { font-size: 13px; font-weight: 700; color: #FFF; }
+  .free-banner .fsub { font-size: 11px; color: rgba(255,255,255,0.8); margin-top: 1px; }
+  .free-banner .fbtn { background: rgba(255,255,255,0.22); color: #FFF; font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 999px; }
+
+  /* Thread */
+  .thread { flex: 1; padding: 8px 14px; overflow-y: auto; scrollbar-width: none; display: flex; flex-direction: column; gap: 4px; }
+  .thread::-webkit-scrollbar { display: none; }
+  .ts-sep { text-align: center; font-size: 11px; font-weight: 600; color: var(--text-tertiary); margin: 8px 0; }
+  .row { display: flex; max-width: 80%; }
+  .row.in { align-self: flex-start; }
+  .row.out { align-self: flex-end; flex-direction: column; align-items: flex-end; }
+  .bubble { padding: 9px 14px; font-size: 15px; line-height: 1.32; border-radius: 16px; position: relative; }
+  .bubble.in { background: var(--bubble-in); color: var(--text-primary); border-bottom-left-radius: 5px; }
+  .bubble.out { background: var(--viber-purple); color: #FFF; border-bottom-right-radius: 5px; }
+  .meta { display: flex; align-items: center; gap: 4px; margin: 3px 4px 0 0; font-size: 10px; color: var(--text-tertiary); }
+  .meta svg { width: 14px; height: 11px; stroke: var(--success); stroke-width: 2.5; fill: none; }
+  .gap { height: 6px; }
+  .sticker { width: 96px; height: 96px; background: radial-gradient(circle at 50% 40%, #8F7DF7, #59267C); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 44px; }
+
+  /* Input bar */
+  .input-bar { display: flex; align-items: center; gap: 10px; padding: 8px 14px 16px; border-top: 0.5px solid var(--divider); background: var(--surface-1); }
+  .input-ic { color: var(--text-secondary); }
+  .input-ic svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+  .input-field { flex: 1; height: 36px; border-radius: 18px; background: var(--surface-2); display: flex; align-items: center; padding: 0 14px; font-size: 14px; color: var(--text-tertiary); }
+  .input-send { width: 36px; height: 36px; border-radius: 50%; background: var(--viber-purple); display: flex; align-items: center; justify-content: center; color: #FFF; }
+  .input-send svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2.5; fill: none; }
+
+  /* Tab bar */
+  .tab-bar { height: 64px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: var(--surface-1); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 3px; }
+  .tab.active { color: var(--viber-purple); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+  .tab .badge { position: absolute; transform: translate(12px,-4px); background: var(--error); color: #FFF; font-size: 9px; font-weight: 700; min-width: 16px; height: 16px; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-17 { font-size: 17px; font-weight: 700; }
+  .t-15 { font-size: 15px; font-weight: 400; }
+  .t-14 { font-size: 14px; font-weight: 500; }
+  .t-13 { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 600; color: var(--text-tertiary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--viber-purple); color: #FFF; font-size: 16px; padding: 13px 26px; border-radius: 24px; }
+  .btn-primary:active { background: var(--viber-purple-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--viber-violet); border: 1.5px solid var(--viber-purple); font-size: 15px; font-weight: 700; padding: 11px 22px; border-radius: 24px; }
+  .btn-call { background: var(--success); color: #FFF; font-size: 15px; font-weight: 700; padding: 12px 22px; border-radius: 24px; }
+  .btn-text { background: transparent; color: var(--viber-violet); font-size: 15px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Chat bubbles demo */
+  .bub-demo { display: flex; flex-direction: column; gap: 8px; }
+  .bub { padding: 9px 14px; font-size: 15px; border-radius: 16px; max-width: 72%; }
+  .bub.b-in { background: var(--bubble-in); color: var(--text-primary); align-self: flex-start; border-bottom-left-radius: 5px; }
+  .bub.b-out { background: var(--viber-purple); color: #FFF; align-self: flex-end; border-bottom-right-radius: 5px; }
+
+  /* Receipts */
+  .rcpt-row { display: flex; gap: 18px; align-items: center; }
+  .rcpt { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
+  .rcpt svg { width: 16px; height: 12px; stroke-width: 2.5; fill: none; }
+  .rcpt.sent svg { stroke: var(--text-tertiary); }
+  .rcpt.delivered svg { stroke: var(--text-secondary); }
+  .rcpt.seen svg { stroke: var(--viber-violet); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--viber-purple); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-5 { border-radius: 5px; }
+  .r-10 { border-radius: 10px; }
+  .r-16 { border-radius: 16px; }
+  .r-20 { border-radius: 20px; }
+  .r-24 { border-radius: 24px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; width: 44px; height: 44px; border-radius: 11px; background: #7360F2; align-items: center; justify-content: center; }
+  .logo svg { width: 26px; height: 26px; fill: #FFF; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 24 24"><path d="M12 2C7 2 3 5.6 3 10c0 2.4 1.2 4.6 3.1 6.1V21l4.2-2.3c.5.1 1.1.1 1.7.1 5 0 9-3.6 9-8s-4-8-9-8zm4.8 11.6c-.3.7-1.4 1.3-2.2 1.4-.6.1-1.3.2-4.2-1-3.5-1.5-5.6-5.1-5.8-5.3-.2-.2-1.4-1.8-1.4-3.5s.9-2.5 1.2-2.8c.3-.3.7-.4.9-.4h.6c.2 0 .5 0 .7.5l1 2.4c.1.2.2.5 0 .8l-.4.6c-.2.2-.3.4-.1.7.2.3.9 1.5 2 2.4 1.3 1.2 2.5 1.5 2.8 1.7.3.1.5.1.7-.1l.9-1c.2-.3.5-.2.8-.1l2.3 1.1c.3.1.5.2.6.4.1.1.1.7-.2 1.5z"/></svg>
+    </span>
+    <div class="page-title">Viber iOS — Design Tokens</div>
+    <div class="page-chip">Purple Dark</div>
+  </div>
+  <p class="page-subtitle">Viber's Rakuten-purple identity on a deep aubergine-black canvas (#121118). Outgoing bubbles stay Viber Purple (#7360F2); incoming bubbles sit at #26232F. The free-call banner uses the purple→violet (#59267C) gradient. Manrope stands in for Viber's rounded brand sans; check-receipts and the sticker market are preserved.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="chat-nav">
+            <div class="nav-back"><svg viewBox="0 0 12 24"><path d="M11 1L2 12l9 11"/></svg></div>
+            <div class="nav-avatar">MA</div>
+            <div class="nav-id">
+              <div class="nav-name">Mara Aliyev</div>
+              <div class="nav-status">online</div>
+            </div>
+            <div class="nav-act">
+              <svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.5.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.5.1.4 0 .8-.2 1l-2.3 2.3z"/></svg>
+              <svg viewBox="0 0 24 24"><rect x="2" y="6" width="13" height="12" rx="3"/><path d="M15 10l6-3v10l-6-3z"/></svg>
+            </div>
+          </div>
+
+          <div class="free-banner">
+            <svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.5.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.5.1.4 0 .8-.2 1l-2.3 2.3z"/></svg>
+            <div class="ftxt">
+              <div class="ftop">Free Viber Call</div>
+              <div class="fsub">Call Mara free over Viber-to-Viber</div>
+            </div>
+            <div class="fbtn">Call</div>
+          </div>
+
+          <div class="thread">
+            <div class="ts-sep">Today</div>
+            <div class="row in"><div class="bubble in">Did the new sticker pack download? 🎨</div></div>
+            <div class="gap"></div>
+            <div class="row out">
+              <div class="bubble out">Yep! Sending you one now</div>
+              <div class="meta">9:38 <svg viewBox="0 0 18 12"><path d="M1 6l4 4 7-8M8 10l1 1 8-9"/></svg></div>
+            </div>
+            <div class="row out">
+              <div class="sticker">🎉</div>
+              <div class="meta">9:38 <svg viewBox="0 0 18 12"><path d="M1 6l4 4 7-8M8 10l1 1 8-9"/></svg></div>
+            </div>
+            <div class="gap"></div>
+            <div class="row in"><div class="bubble in">Love it 😄 The purple bubbles look great too</div></div>
+            <div class="row in"><div class="bubble in">Calling you free in a sec</div></div>
+            <div class="gap"></div>
+            <div class="row out">
+              <div class="bubble out">Sounds good — I'm on Viber</div>
+              <div class="meta">9:40 <svg viewBox="0 0 18 12"><path d="M1 6l4 4 7-8M8 10l1 1 8-9"/></svg></div>
+            </div>
+          </div>
+
+          <div class="input-bar">
+            <div class="input-ic"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+            <div class="input-field">Type a message</div>
+            <div class="input-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 10h.01M15 10h.01M8.5 14.5a4 4 0 0 0 7 0"/></svg></div>
+            <div class="input-send"><svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg></div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Chats</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.5.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.5.1.4 0 .8-.2 1l-2.3 2.3z"/></svg><span>Calls</span></div>
+            <div class="tab"><span class="badge">3</span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 10h.01M15 10h.01M8.5 14a4 4 0 0 0 7 0"/></svg><span>Explore</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 21c1-4 4-6 7-6s6 2 7 6"/></svg><span>More</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#7360F2;"><div class="name">Viber Purple</div>#7360F2</div>
+          <div class="swatch" style="background:#665CAC;"><div class="name">Viber Purple Deep</div>#665CAC</div>
+          <div class="swatch" style="background:#5B4ACC;"><div class="name">Purple Pressed</div>#5B4ACC</div>
+          <div class="swatch" style="background:#8F7DF7;"><div class="name">Viber Violet</div>#8F7DF7</div>
+          <div class="swatch" style="background:#59267C;"><div class="name">Banner Deep</div>#59267C</div>
+          <div class="swatch" style="background:#121118;"><div class="name">Canvas (Dark)</div>#121118</div>
+          <div class="swatch" style="background:#1C1A24;"><div class="name">Surface 1</div>#1C1A24</div>
+          <div class="swatch" style="background:#26232F;"><div class="name">Incoming Bubble</div>#26232F</div>
+          <div class="swatch" style="background:#322F3C;"><div class="name">Divider</div>#322F3C</div>
+          <div class="swatch" style="background:#F3F1F8; color:#1C1A24;"><div class="name">Text Primary</div>#F3F1F8</div>
+          <div class="swatch" style="background:#46C26A;"><div class="name">Online / Call</div>#46C26A</div>
+          <div class="swatch" style="background:#F0506E;"><div class="name">Error / Badge</div>#F0506E</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Viber Sans (Manrope fallback)</div>
+        <div class="type-row"><div class="type-meta">Large Title · 32pt · 800</div><div class="type-sample t-32">Chats</div></div>
+        <div class="type-row"><div class="type-meta">Title 1 · 26pt · 800</div><div class="type-sample t-26">Free Viber Call</div></div>
+        <div class="type-row"><div class="type-meta">Title 3 · 22pt · 700</div><div class="type-sample t-22">Mara Aliyev</div></div>
+        <div class="type-row"><div class="type-meta">Headline · 17pt · 700</div><div class="type-sample t-17">Contact name in chat header</div></div>
+        <div class="type-row"><div class="type-meta">Body / Bubble · 15pt · 400</div><div class="type-sample t-15">Love it — the purple bubbles look great</div></div>
+        <div class="type-row"><div class="type-meta">List Preview · 14pt · 500</div><div class="type-sample t-14">Calling you free in a sec · 9:40</div></div>
+        <div class="type-row"><div class="type-meta">Footnote · 13pt · 600</div><div class="type-sample t-13">Seen 9:41 · Delivered</div></div>
+        <div class="type-row"><div class="type-meta">Caption · 11pt · 600</div><div class="type-sample t-11">Today · online</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Send</button>
+          <button class="btn btn-call">Free Call</button>
+          <button class="btn btn-outline">Add Contact</button>
+          <button class="btn-text">View Stickers</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Chat Bubbles</div>
+        <div class="bub-demo">
+          <div class="bub b-in">Incoming — surface #26232F</div>
+          <div class="bub b-out">Outgoing — Viber Purple #7360F2</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Message Receipts</div>
+        <div class="rcpt-row">
+          <div class="rcpt sent"><svg viewBox="0 0 18 12"><path d="M2 6l4 4 9-9"/></svg> Sent</div>
+          <div class="rcpt delivered"><svg viewBox="0 0 18 12"><path d="M1 6l4 4 7-8M8 10l1 1 8-9"/></svg> Delivered</div>
+          <div class="rcpt seen"><svg viewBox="0 0 18 12"><path d="M1 6l4 4 7-8M8 10l1 1 8-9"/></svg> Seen</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-5">5</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-24">24</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Viber's dark mode uses a deep aubergine-tinted black (<code>#121118</code>) rather than neutral gray — a subtle nod to the purple brand. The signature Viber Purple <code>#7360F2</code> outgoing bubble is identical across themes; incoming bubbles invert from light <code>#EDEBF5</code> to <code>#26232F</code>. The free-call banner keeps its purple→deep-violet (<code>#59267C</code>) gradient. Seen receipts use violet <code>#8F7DF7</code>; the online indicator stays green <code>#46C26A</code>. Surfaces dim; brand purple and content do not.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

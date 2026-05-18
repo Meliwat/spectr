@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by KakaoTalk iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #1A1A1A;
+    --surface-1: #242424;
+    --surface-2: #2E2E2E;
+    --divider: #333333;
+    --text-primary: #EDEDED;
+    --text-secondary: #9A9A9A;
+    --text-tertiary: #6A6A6A;
+    --ink: #F5F5F5;
+    --kakao-yellow: #FEE500;
+    --kakao-yellow-pressed: #E6CF00;
+    --kakao-brown: #3C1E1E;
+    --kakao-brown-soft: #5A3A3A;
+    --chat-bg-dark: #1E2A33;
+    --bubble-in: #2E2E2E;
+    --bubble-out: #FEE500;
+    --link-blue: #4B9BFF;
+    --unread-yellow: #FEE500;
+    --success: #2ECC71;
+    --error: #F15E6C;
+    --font: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 900; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--kakao-yellow); color: var(--kakao-brown); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Friends top bar */
+  .top-nav { height: 52px; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; background: var(--canvas); border-bottom: 0.5px solid var(--divider); }
+  .top-title { font-size: 20px; font-weight: 900; color: var(--text-primary); letter-spacing: -0.3px; }
+  .top-acts { display: flex; gap: 18px; color: var(--text-secondary); }
+  .top-acts svg { width: 21px; height: 21px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Profile banner (my profile row) */
+  .me-row { display: flex; align-items: center; gap: 12px; padding: 16px 18px; background: var(--canvas); }
+  .me-avatar { width: 52px; height: 52px; border-radius: 18px; background: linear-gradient(135deg, #FEE500, #E6CF00); display: flex; align-items: center; justify-content: center; }
+  .me-avatar svg { width: 30px; height: 30px; fill: var(--kakao-brown); }
+  .me-meta { flex: 1; }
+  .me-name { font-size: 17px; font-weight: 700; color: var(--text-primary); }
+  .me-status { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+  .section-label { padding: 10px 18px 6px; font-size: 12px; font-weight: 700; color: var(--text-secondary); }
+
+  /* Friends list */
+  .friends { flex: 1; overflow-y: auto; scrollbar-width: none; }
+  .friends::-webkit-scrollbar { display: none; }
+  .friend { display: flex; align-items: center; gap: 12px; padding: 10px 18px; }
+  .f-avatar { width: 44px; height: 44px; border-radius: 16px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: #FFF; }
+  .fa-1 { background: linear-gradient(135deg, #FFB13C, #FF8E53); }
+  .fa-2 { background: linear-gradient(135deg, #6DC0F5, #4B9BFF); }
+  .fa-3 { background: linear-gradient(135deg, #A3D977, #6BBF59); color: var(--kakao-brown); }
+  .fa-4 { background: linear-gradient(135deg, #C792EA, #9B6FD6); }
+  .f-meta { flex: 1; line-height: 1.2; }
+  .f-name { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+  .f-status { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .f-music { display: flex; align-items: center; gap: 4px; color: var(--text-tertiary); }
+  .f-music svg { width: 13px; height: 13px; fill: currentColor; }
+
+  /* Chat thread (toggle preview pane) */
+  .chat-nav { height: 52px; display: flex; align-items: center; gap: 10px; padding: 0 14px; background: var(--chat-bg-dark); border-bottom: 0.5px solid #15202A; }
+  .chat-back { color: var(--text-primary); }
+  .chat-back svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2.4; fill: none; }
+  .chat-title { flex: 1; font-size: 16px; font-weight: 700; color: var(--text-primary); }
+  .chat-act svg { width: 20px; height: 20px; stroke: var(--text-secondary); stroke-width: 2; fill: none; }
+
+  .msg-list { flex: 1; padding: 16px 12px; overflow-y: auto; scrollbar-width: none; display: flex; flex-direction: column; gap: 12px; background: var(--chat-bg-dark); }
+  .msg-list::-webkit-scrollbar { display: none; }
+  .day-sep { align-self: center; font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.55); padding: 3px 14px; background: rgba(0,0,0,0.25); border-radius: 999px; }
+  .msg { display: flex; gap: 8px; max-width: 82%; }
+  .msg.in { align-self: flex-start; }
+  .msg.out { align-self: flex-end; flex-direction: row-reverse; }
+  .msg-avatar { width: 36px; height: 36px; border-radius: 14px; flex-shrink: 0; align-self: flex-start; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #FFF; }
+  .msg-col { display: flex; flex-direction: column; gap: 3px; max-width: 100%; }
+  .msg-name { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.78); margin-left: 2px; }
+  .bubble-line { display: flex; align-items: flex-end; gap: 5px; }
+  .msg.out .bubble-line { flex-direction: row-reverse; }
+  .bubble { padding: 9px 12px; border-radius: 14px; font-size: 14.5px; line-height: 1.35; }
+  .msg.in .bubble { background: var(--bubble-in); color: var(--text-primary); border-top-left-radius: 4px; }
+  .msg.out .bubble { background: var(--bubble-out); color: var(--kakao-brown); border-top-right-radius: 4px; font-weight: 500; }
+  .b-meta { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.1; }
+  .unread-mark { font-size: 11px; font-weight: 700; color: var(--unread-yellow); }
+  .b-time { font-size: 10px; color: rgba(255,255,255,0.5); }
+  .gifticon { width: 188px; border-radius: 16px; overflow: hidden; background: var(--surface-1); }
+  .gifticon-img { height: 120px; background: linear-gradient(135deg, #FFE08A, #FEC84B); display: flex; align-items: center; justify-content: center; }
+  .gifticon-img svg { width: 42px; height: 42px; fill: var(--kakao-brown); }
+  .gifticon-body { padding: 10px 12px; }
+  .gifticon-brand { font-size: 11px; color: var(--text-secondary); }
+  .gifticon-name { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-top: 2px; }
+
+  /* Composer */
+  .composer { display: flex; align-items: center; gap: 10px; padding: 10px 14px 16px; border-top: 0.5px solid #15202A; background: var(--canvas); }
+  .composer-ic { color: var(--text-secondary); flex-shrink: 0; }
+  .composer-ic svg { width: 24px; height: 24px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .composer-input { flex: 1; height: 38px; border-radius: 999px; background: var(--surface-2); display: flex; align-items: center; padding: 0 16px; font-size: 14px; color: var(--text-secondary); }
+  .composer-emo { color: var(--text-secondary); flex-shrink: 0; }
+  .composer-emo svg { width: 24px; height: 24px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Bottom tab bar */
+  .tab-bar { height: 64px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: rgba(26,26,26,0.96); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: #777; font-size: 10px; font-weight: 500; gap: 3px; }
+  .tab.active { color: var(--text-primary); }
+  .tab svg { width: 24px; height: 24px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+  .tab-badge { position: absolute; top: -3px; right: -7px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px; background: #FF3B30; color: #FFF; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .tab-ic { position: relative; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 900; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .t-20 { font-size: 20px; font-weight: 900; letter-spacing: -0.2px; }
+  .t-17 { font-size: 17px; font-weight: 700; }
+  .t-15 { font-size: 15px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 500; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--kakao-yellow); color: var(--kakao-brown); font-size: 16px; padding: 14px 28px; border-radius: 8px; }
+  .btn-primary:active { background: var(--kakao-yellow-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1px solid var(--divider); font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 8px; }
+  .btn-pill { background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--divider); font-size: 14px; font-weight: 500; padding: 10px 18px; border-radius: 999px; }
+  .btn-text { background: transparent; color: var(--link-blue); font-size: 14px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Chat bubbles demo */
+  .bubble-demo { display: flex; flex-direction: column; gap: 10px; background: var(--chat-bg-dark); padding: 16px; border-radius: 12px; }
+  .bd-row { display: flex; }
+  .bd-row.out { justify-content: flex-end; }
+  .bd { padding: 9px 12px; border-radius: 14px; font-size: 14px; max-width: 70%; }
+  .bd.in { background: var(--bubble-in); color: var(--text-primary); border-top-left-radius: 4px; }
+  .bd.out { background: var(--bubble-out); color: var(--kakao-brown); border-top-right-radius: 4px; font-weight: 500; }
+
+  /* Emoticon grid */
+  .emo-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .emo { width: 64px; height: 64px; border-radius: 16px; background: var(--surface-2); display: flex; align-items: center; justify-content: center; font-size: 32px; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--kakao-yellow); color: var(--kakao-brown); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-14 { border-radius: 14px; }
+  .r-16 { border-radius: 16px; }
+  .r-24 { border-radius: 24px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .kakao-logo { display: inline-flex; width: 46px; height: 46px; border-radius: 14px; background: var(--kakao-yellow); align-items: center; justify-content: center; }
+  .kakao-logo svg { width: 30px; height: 30px; fill: var(--kakao-brown); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="kakao-logo">
+      <svg viewBox="0 0 24 24"><path d="M12 3C6.5 3 2 6.6 2 11c0 2.8 1.9 5.3 4.8 6.7-.2.7-.8 2.6-.9 3-.1.5.2.5.4.3.2-.1 2.6-1.8 3.7-2.5.7.1 1.4.2 2 .2 5.5 0 10-3.6 10-8C22 6.6 17.5 3 12 3z"/></svg>
+    </span>
+    <div class="page-title">KakaoTalk iOS — Design Tokens</div>
+    <div class="page-chip">Kakao Yellow Dark</div>
+  </div>
+  <p class="page-subtitle">Warm-dark canvas (#1A1A1A) with Kakao Yellow (#FEE500) on outbound bubbles, the primary CTA, and the speech-bubble logo, paired with deep brown (#3C1E1E) for text on yellow. The chat backdrop is a desaturated blue-gray (#1E2A33) — KakaoTalk's signature thread color. Friends list and chat thread are the two anchor screens.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="top-nav">
+            <div class="top-title">Friends</div>
+            <div class="top-acts">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/><line x1="19" y1="3" x2="19" y2="9"/><line x1="16" y1="6" x2="22" y2="6"/></svg>
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.4"/><circle cx="12" cy="5" r="2.4"/><circle cx="12" cy="19" r="2.4"/></svg>
+            </div>
+          </div>
+
+          <div class="me-row">
+            <div class="me-avatar"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M4 21c1-5 4-7 8-7s7 2 8 7z"/></svg></div>
+            <div class="me-meta">
+              <div class="me-name">Ji-woo Park</div>
+              <div class="me-status">하루하루 감사하며 ☀️</div>
+            </div>
+          </div>
+
+          <div class="section-label">Friends · 4</div>
+
+          <div class="friends">
+            <div class="friend">
+              <div class="f-avatar fa-1">M</div>
+              <div class="f-meta">
+                <div class="f-name">Min-jun</div>
+                <div class="f-status">새로운 시작 🌱</div>
+              </div>
+            </div>
+            <div class="friend">
+              <div class="f-avatar fa-2">S</div>
+              <div class="f-meta">
+                <div class="f-name">Seo-yeon</div>
+                <div class="f-music"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span>NewJeans – Super Shy</span></div>
+              </div>
+            </div>
+            <div class="friend">
+              <div class="f-avatar fa-3">H</div>
+              <div class="f-meta">
+                <div class="f-name">Ha-eun</div>
+                <div class="f-status">출근중...☕</div>
+              </div>
+            </div>
+            <div class="friend">
+              <div class="f-avatar fa-4">D</div>
+              <div class="f-meta">
+                <div class="f-name">Do-yoon</div>
+                <div class="f-status">🎮 게임 한 판?</div>
+              </div>
+            </div>
+
+            <div class="section-label">Channels</div>
+            <div class="friend">
+              <div class="f-avatar" style="background:linear-gradient(135deg,#FEE500,#E6CF00);color:#3C1E1E;">K</div>
+              <div class="f-meta">
+                <div class="f-name">Kakao Friends</div>
+                <div class="f-status">신상 이모티콘 출시 🐥</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><div class="tab-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg></div><span>Friends</span></div>
+            <div class="tab"><div class="tab-ic"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="tab-badge">5</span></div><span>Chats</span></div>
+            <div class="tab"><div class="tab-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></div><span>Open</span></div>
+            <div class="tab"><div class="tab-ic"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/></svg></div><span>Shopping</span></div>
+            <div class="tab"><div class="tab-ic"><svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></div><span>More</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette — Dark</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#FEE500; color:#3C1E1E;"><div class="name">Kakao Yellow</div>#FEE500</div>
+          <div class="swatch" style="background:#E6CF00; color:#3C1E1E;"><div class="name">Yellow Pressed</div>#E6CF00</div>
+          <div class="swatch" style="background:#3C1E1E;"><div class="name">Kakao Brown</div>#3C1E1E</div>
+          <div class="swatch" style="background:#5A3A3A;"><div class="name">Brown Soft</div>#5A3A3A</div>
+          <div class="swatch" style="background:#1A1A1A;"><div class="name">Dark Canvas</div>#1A1A1A</div>
+          <div class="swatch" style="background:#1E2A33;"><div class="name">Chat Backdrop</div>#1E2A33</div>
+          <div class="swatch" style="background:#2E2E2E;"><div class="name">Inbound Bubble</div>#2E2E2E</div>
+          <div class="swatch" style="background:#EDEDED; color:#1A1A1A;"><div class="name">Text Primary</div>#EDEDED</div>
+          <div class="swatch" style="background:#9A9A9A; color:#1A1A1A;"><div class="name">Text Secondary</div>#9A9A9A</div>
+          <div class="swatch" style="background:#4B9BFF;"><div class="name">Link Blue</div>#4B9BFF</div>
+          <div class="swatch" style="background:#2ECC71;"><div class="name">Success</div>#2ECC71</div>
+          <div class="swatch" style="background:#F15E6C;"><div class="name">Error</div>#F15E6C</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — KakaoBig / SF Pro (Noto Sans KR fallback)</div>
+        <div class="type-row"><div class="type-meta">Large Title · 32pt · 900</div><div class="type-sample t-32">친구</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 26pt · 700</div><div class="type-sample t-26">새로운 채팅</div></div>
+        <div class="type-row"><div class="type-meta">Nav Title · 20pt · 900</div><div class="type-sample t-20">Friends</div></div>
+        <div class="type-row"><div class="type-meta">Profile Name · 17pt · 700</div><div class="type-sample t-17">Ji-woo Park</div></div>
+        <div class="type-row"><div class="type-meta">Message Body · 15pt · 400</div><div class="type-sample t-15">오늘 저녁 같이 먹을래? 7시쯤 어때 🍜</div></div>
+        <div class="type-row"><div class="type-meta">List Row · 15pt · 600</div><div class="type-sample t-15m">Min-jun</div></div>
+        <div class="type-row"><div class="type-meta">Status / Meta · 13pt · 400</div><div class="type-sample t-13">새로운 시작 🌱 · 오후 9:38</div></div>
+        <div class="type-row"><div class="type-meta">Sender / Tab · 12pt · 500</div><div class="type-sample t-12">Seo-yeon</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">확인</button>
+          <button class="btn btn-outline">친구 추가</button>
+          <button class="btn btn-pill">선물하기</button>
+          <button class="btn-text">전체 보기</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Chat Bubbles &amp; Read Marks</div>
+        <div class="bubble-demo">
+          <div class="bd-row"><div class="bd in">Inbound — neutral #2E2E2E</div></div>
+          <div class="bd-row out"><div class="bd out">Outbound — Kakao Yellow #FEE500</div></div>
+          <div class="bd-row out"><div class="bd out">읽음 표시 + 시간 to the side</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Emoticons &amp; Gifticon</div>
+        <div class="emo-row">
+          <div class="emo">🐥</div>
+          <div class="emo">🐰</div>
+          <div class="emo">🦁</div>
+          <div class="emo">🍑</div>
+          <div class="emo" style="background:linear-gradient(135deg,#FFE08A,#FEC84B);color:#3C1E1E;font-size:13px;font-weight:700;">Gifticon</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-24">24</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">KakaoTalk's dark mode keeps the brand yellow on the things that matter: outbound bubbles stay Kakao Yellow <code>#FEE500</code> with deep brown <code>#3C1E1E</code> text — the contrast reads cleanly on both themes. The chat thread backdrop shifts from light gray to a desaturated blue-gray <code>#1E2A33</code> (the dark equivalent of KakaoTalk's signature thread color); inbound bubbles sit at <code>#2E2E2E</code>. Friends/list canvas is <code>#1A1A1A</code> (warm, not pure black). The yellow unread mark and time dock to the bubble's inner side, not inside it.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

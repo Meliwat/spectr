@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Acorns iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800;6..12,900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #14121A;
+    --surface-1: #1E1B27;
+    --surface-2: #292533;
+    --divider: #383143;
+    --text-primary: #F2EFF6;
+    --text-secondary: #ADA4BC;
+    --text-tertiary: #756B85;
+    --ink: #FFFFFF;
+    --purple: #5A2B82;
+    --purple-bright: #7B43A8;
+    --purple-pressed: #47206A;
+    --purple-soft: #C8AEDF;
+    --green: #6FBF4E;
+    --green-bright: #84D962;
+    --green-pressed: #5AA53D;
+    --gold: #F2C84B;
+    --teal: #45C2B0;
+    --coral: #F2785C;
+    --error: #FF6B6B;
+    --font: 'Nunito Sans', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 900; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--green); color: #14302A; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 700; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow-y: auto; scrollbar-width: none; display: flex; flex-direction: column; }
+  .scroll-body::-webkit-scrollbar { display: none; }
+
+  /* Invest header */
+  .inv-head { padding: 4px 22px 6px; display: flex; align-items: center; justify-content: space-between; }
+  .inv-title { font-size: 22px; font-weight: 800; letter-spacing: -0.3px; color: var(--text-primary); }
+  .inv-bell { width: 34px; height: 34px; border-radius: 50%; background: var(--surface-2); display: flex; align-items: center; justify-content: center; color: var(--purple-soft); }
+  .inv-bell svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Portfolio total */
+  .pf-total { text-align: center; padding: 18px 22px 4px; }
+  .pf-amt { font-size: 38px; font-weight: 900; letter-spacing: -1px; color: var(--text-primary); }
+  .pf-delta { font-size: 14px; font-weight: 700; color: var(--green-bright); margin-top: 4px; }
+  .pf-delta span { color: var(--text-secondary); font-weight: 600; }
+
+  /* Donut */
+  .donut-wrap { display: flex; justify-content: center; padding: 14px 0 18px; }
+  .donut { width: 168px; height: 168px; border-radius: 50%; background:
+      conic-gradient(#5A2B82 0 38%, #6FBF4E 38% 64%, #45C2B0 64% 82%, #F2C84B 82% 100%);
+      display: flex; align-items: center; justify-content: center; position: relative; }
+  .donut::after { content: ''; width: 110px; height: 110px; border-radius: 50%; background: var(--canvas); }
+  .donut-center { position: absolute; text-align: center; }
+  .donut-center .dc-label { font-size: 11px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.4px; text-transform: uppercase; }
+  .donut-center .dc-val { font-size: 18px; font-weight: 800; color: var(--text-primary); margin-top: 3px; }
+
+  /* Legend */
+  .legend { padding: 0 22px 18px; }
+  .lg { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--divider); }
+  .lg:last-child { border-bottom: none; }
+  .lg-dot { width: 12px; height: 12px; border-radius: 4px; flex-shrink: 0; }
+  .lg-name { flex: 1; font-size: 14px; font-weight: 700; color: var(--text-primary); }
+  .lg-pct { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+  .lg-val { font-size: 14px; font-weight: 800; color: var(--text-primary); width: 78px; text-align: right; }
+
+  /* Round-Ups card */
+  .ru-card { margin: 0 18px 16px; background: linear-gradient(150deg, #5A2B82 0%, #7B43A8 100%); border-radius: 18px; padding: 18px; }
+  .ru-top { display: flex; align-items: center; justify-content: space-between; }
+  .ru-label { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.85); letter-spacing: 0.3px; }
+  .ru-pill { background: rgba(255,255,255,0.16); color: #FFF; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px; }
+  .ru-amt { font-size: 28px; font-weight: 900; color: #FFF; margin-top: 12px; letter-spacing: -0.5px; }
+  .ru-sub { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.8); margin-top: 2px; }
+
+  /* Found Money row */
+  .fm-title { font-size: 13px; font-weight: 800; color: var(--text-secondary); letter-spacing: 0.3px; padding: 4px 22px 8px; text-transform: uppercase; }
+  .fm { display: flex; align-items: center; gap: 14px; padding: 11px 22px; }
+  .fm-ic { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; font-weight: 900; color: #FFF; }
+  .fm-body { flex: 1; }
+  .fm-name { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+  .fm-sub { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-top: 2px; }
+  .fm-amt { font-size: 15px; font-weight: 800; color: var(--green-bright); }
+
+  /* Tab bar */
+  .tab-bar { height: 64px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: rgba(20,18,26,0.95); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: #756B85; font-size: 10px; font-weight: 700; gap: 3px; }
+  .tab.active { color: var(--green-bright); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 700; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 800; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-38 { font-size: 38px; font-weight: 900; letter-spacing: -1px; color: var(--ink); }
+  .t-28 { font-size: 28px; font-weight: 900; letter-spacing: -0.5px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 800; letter-spacing: -0.3px; }
+  .t-18 { font-size: 18px; font-weight: 800; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 700; }
+  .t-13 { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 700; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 800; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--green); color: #14302A; font-size: 16px; padding: 15px 30px; border-radius: 999px; }
+  .btn-primary:active { background: var(--green-pressed); transform: scale(0.98); }
+  .btn-secondary { background: var(--purple); color: #FFF; font-size: 15px; font-weight: 800; padding: 14px 26px; border-radius: 999px; }
+  .btn-outline { background: transparent; color: var(--purple-soft); border: 1.5px solid var(--purple-soft); font-size: 15px; font-weight: 800; padding: 13px 24px; border-radius: 999px; }
+  .btn-text { background: transparent; color: var(--green-bright); font-size: 14px; font-weight: 800; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Portfolio donut component */
+  .mini-donut-row { display: flex; align-items: center; gap: 20px; }
+  .mini-donut { width: 96px; height: 96px; border-radius: 50%; flex-shrink: 0; background:
+      conic-gradient(#5A2B82 0 38%, #6FBF4E 38% 64%, #45C2B0 64% 82%, #F2C84B 82% 100%);
+      display: flex; align-items: center; justify-content: center; }
+  .mini-donut::after { content: ''; width: 62px; height: 62px; border-radius: 50%; background: var(--surface-1); }
+  .mini-leg { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .ml { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+  .ml-dot { width: 10px; height: 10px; border-radius: 3px; }
+  .ml-name { flex: 1; font-weight: 700; color: var(--text-primary); }
+  .ml-pct { font-weight: 700; color: var(--text-secondary); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--green); color: #14302A; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-18 { border-radius: 18px; }
+  .r-24 { border-radius: 24px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Acorns logomark */
+  .logo { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: var(--green); }
+  .logo svg { width: 24px; height: 24px; fill: #14302A; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 32 32"><path d="M16 4c-1.2 0-2.2.9-2.4 2.1C9.7 7 7 10.5 7 14.7 7 20 11 27 16 27s9-7 9-12.3c0-4.2-2.7-7.7-6.6-8.6C18.2 4.9 17.2 4 16 4zm0 4.4c.7 0 1.3.6 1.3 1.3S16.7 11 16 11s-1.3-.6-1.3-1.3.6-1.3 1.3-1.3zM10.6 14.7c0-2.4 1.4-4.5 3.4-5.2-.1.4-.2.8-.2 1.2 0 1.6 1.1 2.9 2.6 3.2-1.6.4-2.8 1.8-2.8 3.5 0 1 .4 1.9 1.1 2.6-2.4-.8-4.1-3.1-4.1-5.3z"/></svg>
+    </span>
+    <div class="page-title">Acorns iOS — Design Tokens</div>
+    <div class="page-chip">Oak Green Dark</div>
+  </div>
+  <p class="page-subtitle">Deep-aubergine canvas (#14121A) tinted from Acorns Oak #5A2B82, with surfaces lifting to #1E1B27. Acorn Green (#6FBF4E) is the action color and growth signal; the portfolio donut, Round-Ups card, and Found Money rows stay full-color. Chrome dims; the green and purple never do.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="scroll-body">
+            <div class="inv-head">
+              <div class="inv-title">Invest</div>
+              <div class="inv-bell"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
+            </div>
+
+            <div class="pf-total">
+              <div class="pf-amt">$8,142.67</div>
+              <div class="pf-delta">▲ $214.38 (2.7%) <span>all time</span></div>
+            </div>
+
+            <div class="donut-wrap">
+              <div class="donut">
+                <div class="donut-center">
+                  <div class="dc-label">Aggressive</div>
+                  <div class="dc-val">100% invested</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="legend">
+              <div class="lg"><span class="lg-dot" style="background:#5A2B82"></span><span class="lg-name">Large Company</span><span class="lg-pct">38%</span><span class="lg-val">$3,094.21</span></div>
+              <div class="lg"><span class="lg-dot" style="background:#6FBF4E"></span><span class="lg-name">Small Company</span><span class="lg-pct">26%</span><span class="lg-val">$2,117.09</span></div>
+              <div class="lg"><span class="lg-dot" style="background:#45C2B0"></span><span class="lg-name">Intl. Large</span><span class="lg-pct">18%</span><span class="lg-val">$1,465.68</span></div>
+              <div class="lg"><span class="lg-dot" style="background:#F2C84B"></span><span class="lg-name">Real Estate</span><span class="lg-pct">18%</span><span class="lg-val">$1,465.69</span></div>
+            </div>
+
+            <div class="ru-card">
+              <div class="ru-top">
+                <div class="ru-label">ROUND-UPS</div>
+                <div class="ru-pill">Auto</div>
+              </div>
+              <div class="ru-amt">$4.62</div>
+              <div class="ru-sub">Pending · invests at $5.00</div>
+            </div>
+
+            <div class="fm-title">Found Money</div>
+            <div class="fm">
+              <div class="fm-ic" style="background:#1DB954">S</div>
+              <div class="fm-body"><div class="fm-name">Walmart</div><div class="fm-sub">1% back · 3 days ago</div></div>
+              <div class="fm-amt">+$3.20</div>
+            </div>
+            <div class="fm">
+              <div class="fm-ic" style="background:#5A2B82">N</div>
+              <div class="fm-body"><div class="fm-name">Nike</div><div class="fm-sub">5% back · 1 week ago</div></div>
+              <div class="fm-amt">+$6.45</div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M21 7v6h-6"/></svg><span>Invest</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9h4.5a2 2 0 0 1 0 4H9h5"/></svg><span>Later</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg><span>Spend</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg><span>Earn</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 21c1-4 4-6 7-6s6 2 7 6"/></svg><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette (Dark)</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#5A2B82;"><div class="name">Acorns Oak</div>#5A2B82</div>
+          <div class="swatch" style="background:#7B43A8;"><div class="name">Oak Bright</div>#7B43A8</div>
+          <div class="swatch" style="background:#6FBF4E; color:#14302A;"><div class="name">Acorn Green</div>#6FBF4E</div>
+          <div class="swatch" style="background:#84D962; color:#14302A;"><div class="name">Green Bright</div>#84D962</div>
+          <div class="swatch" style="background:#14121A;"><div class="name">Dark Canvas</div>#14121A</div>
+          <div class="swatch" style="background:#1E1B27;"><div class="name">Dark Surface 1</div>#1E1B27</div>
+          <div class="swatch" style="background:#292533;"><div class="name">Dark Surface 2</div>#292533</div>
+          <div class="swatch" style="background:#383143;"><div class="name">Divider</div>#383143</div>
+          <div class="swatch" style="background:#F2EFF6; color:#14121A;"><div class="name">Text Primary</div>#F2EFF6</div>
+          <div class="swatch" style="background:#45C2B0; color:#0E2A26;"><div class="name">Teal (slice)</div>#45C2B0</div>
+          <div class="swatch" style="background:#F2C84B; color:#3A2E0A;"><div class="name">Gold (slice)</div>#F2C84B</div>
+          <div class="swatch" style="background:#FF6B6B;"><div class="name">Error</div>#FF6B6B</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Nunito Sans (Acorns rounded sans)</div>
+        <div class="type-row"><div class="type-meta">Portfolio · 38pt · 900</div><div class="type-sample t-38">$8,142.67</div></div>
+        <div class="type-row"><div class="type-meta">Hero Number · 28pt · 900</div><div class="type-sample t-28">$4.62</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 800</div><div class="type-sample t-22">Invest</div></div>
+        <div class="type-row"><div class="type-meta">Subsection · 18pt · 800</div><div class="type-sample t-18">Round-Ups</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Spare change adds up over time.</div></div>
+        <div class="type-row"><div class="type-meta">Row Title · 15pt · 700</div><div class="type-sample t-15m">Large Company</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 600</div><div class="type-sample t-13">1% back · 3 days ago</div></div>
+        <div class="type-row"><div class="type-meta">Label · 12pt · 700</div><div class="type-sample t-12">ALL TIME</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Invest now</button>
+          <button class="btn btn-secondary">One-time</button>
+          <button class="btn btn-outline">Adjust portfolio</button>
+          <button class="btn-text">See history</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Portfolio Donut</div>
+        <div class="mini-donut-row">
+          <div class="mini-donut"></div>
+          <div class="mini-leg">
+            <div class="ml"><span class="ml-dot" style="background:#5A2B82"></span><span class="ml-name">Large Company</span><span class="ml-pct">38%</span></div>
+            <div class="ml"><span class="ml-dot" style="background:#6FBF4E"></span><span class="ml-name">Small Company</span><span class="ml-pct">26%</span></div>
+            <div class="ml"><span class="ml-dot" style="background:#45C2B0"></span><span class="ml-name">Intl. Large</span><span class="ml-pct">18%</span></div>
+            <div class="ml"><span class="ml-dot" style="background:#F2C84B"></span><span class="ml-name">Real Estate</span><span class="ml-pct">18%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-18">18</div>
+          <div class="radius-box r-24">24</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Acorns' dark mode is a deep aubergine, not pure black — canvas sits at <code>#14121A</code>, tinted from Acorns Oak <code>#5A2B82</code>. Surfaces lift to <code>#1E1B27</code>. Acorn Green <code>#6FBF4E</code> is the action color and the growth/positive signal — it stays vivid across themes. The portfolio donut keeps its full four-color allocation palette; the Round-Ups card stays purple; Found Money amounts stay green. Only chrome (dividers, secondary text) recedes — the data visualization never does.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

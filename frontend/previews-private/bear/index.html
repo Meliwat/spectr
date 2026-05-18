@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Bear iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #21252B;
+    --surface-1: #282C34;
+    --surface-2: #2F343D;
+    --divider: #353A42;
+    --text-primary: #E8EAED;
+    --text-secondary: #9DA3AD;
+    --text-tertiary: #6B7280;
+    --ink: #F4F5F7;
+    --bear-red: #E0566F;
+    --bear-orange: #FF8A65;
+    --bear-red-pressed: #C8485E;
+    --tag-blue: #5AAFEF;
+    --tag-green: #57C98B;
+    --tag-yellow: #F2C14E;
+    --link: #5AAFEF;
+    --error: #F2545B;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+    --serif: 'Lora', Georgia, 'Times New Roman', serif;
+    --mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: linear-gradient(135deg, var(--bear-red), var(--bear-orange)); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+
+  /* Editor nav */
+  .ed-nav { display: flex; align-items: center; justify-content: space-between; padding: 4px 16px 10px; }
+  .ed-nav-left { display: flex; align-items: center; gap: 6px; color: var(--bear-orange); font-size: 15px; font-weight: 500; }
+  .ed-nav-left svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2.4; fill: none; }
+  .ed-nav-right { display: flex; gap: 20px; color: var(--bear-orange); }
+  .ed-nav-right svg { width: 19px; height: 19px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Note body */
+  .note { flex: 1; padding: 4px 22px 0; overflow: hidden; }
+  .note-title { font-size: 24px; font-weight: 700; color: var(--ink); letter-spacing: -0.3px; line-height: 1.25; }
+  .note-meta { font-size: 12px; color: var(--text-tertiary); margin-top: 6px; }
+  .note-tags { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .ntag { font-size: 13px; font-weight: 500; color: var(--bear-red); }
+  .note-p { font-size: 16px; color: var(--text-primary); line-height: 1.55; margin-top: 16px; }
+  .note-p .lk { color: var(--link); text-decoration: underline; }
+  .note-h2 { font-size: 19px; font-weight: 700; color: var(--ink); margin-top: 20px; }
+  .note-todo { display: flex; align-items: center; gap: 10px; margin-top: 14px; font-size: 16px; color: var(--text-primary); }
+  .chk { width: 19px; height: 19px; border-radius: 5px; border: 2px solid var(--text-tertiary); flex-shrink: 0; }
+  .chk.done { background: linear-gradient(135deg, var(--bear-red), var(--bear-orange)); border-color: transparent; display: flex; align-items: center; justify-content: center; }
+  .chk.done svg { width: 11px; height: 11px; stroke: #FFF; stroke-width: 3.4; fill: none; }
+  .note-todo.done span:last-child { color: var(--text-tertiary); text-decoration: line-through; }
+  .note-quote { border-left: 3px solid var(--bear-orange); padding: 2px 0 2px 14px; margin-top: 18px; font-family: var(--serif); font-style: italic; font-size: 17px; color: var(--text-secondary); }
+  .note-code { background: var(--surface-1); border-radius: 8px; padding: 14px 16px; margin-top: 18px; font-family: var(--mono); font-size: 13px; color: var(--text-primary); line-height: 1.55; }
+  .note-code .kw { color: var(--bear-orange); }
+  .note-code .st { color: var(--tag-green); }
+
+  /* Info bar */
+  .info-bar { height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 22px; border-top: 0.5px solid var(--divider); background: rgba(40,44,52,0.85); backdrop-filter: blur(20px); }
+  .info-stat { font-size: 12px; color: var(--text-tertiary); }
+  .info-act { display: flex; gap: 22px; color: var(--bear-orange); }
+  .info-act svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: var(--mono); border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: var(--mono); font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-24 { font-size: 24px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .t-19 { font-size: 19px; font-weight: 700; }
+  .t-17 { font-size: 17px; font-weight: 600; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-16s { font-size: 17px; font-weight: 400; font-family: var(--serif); font-style: italic; color: var(--text-secondary); }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-13m { font-size: 13px; font-weight: 400; font-family: var(--mono); color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 500; color: var(--text-tertiary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 600; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: linear-gradient(135deg, var(--bear-red), var(--bear-orange)); color: #FFF; font-size: 16px; padding: 13px 26px; border-radius: 12px; }
+  .btn-primary:active { filter: brightness(0.92); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--bear-orange); border: 1px solid var(--bear-orange); font-size: 15px; font-weight: 500; padding: 11px 20px; border-radius: 12px; }
+  .btn-tag { background: var(--surface-2); color: var(--bear-red); border: 1px solid var(--divider); font-size: 14px; font-weight: 500; padding: 8px 14px; border-radius: 999px; }
+  .btn-text { background: transparent; color: var(--bear-orange); font-size: 15px; font-weight: 500; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Tag chips */
+  .tag-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .tagc { font-family: var(--font); font-weight: 500; font-size: 14px; padding: 6px 12px; border-radius: 8px; }
+  .tagc-red { color: var(--bear-red); background: rgba(224,86,111,0.14); }
+  .tagc-blue { color: var(--tag-blue); background: rgba(90,175,239,0.14); }
+  .tagc-green { color: var(--tag-green); background: rgba(87,201,139,0.14); }
+  .tagc-yellow { color: var(--tag-yellow); background: rgba(242,193,78,0.16); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: linear-gradient(135deg, var(--bear-red), var(--bear-orange)); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-5 { border-radius: 5px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-22 { border-radius: 22px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Bear logomark */
+  .bearmark { display: inline-flex; width: 44px; height: 48px; align-items: center; justify-content: center; }
+  .bearmark svg { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="bearmark">
+      <svg viewBox="0 0 64 64"><defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E0566F"/><stop offset="1" stop-color="#FF8A65"/></linearGradient></defs><circle cx="32" cy="34" r="20" fill="url(#bg)"/><circle cx="18" cy="16" r="8" fill="url(#bg)"/><circle cx="46" cy="16" r="8" fill="url(#bg)"/><circle cx="25" cy="32" r="3" fill="#21252B"/><circle cx="39" cy="32" r="3" fill="#21252B"/><path d="M28 42c2 2 6 2 8 0" stroke="#21252B" stroke-width="3" stroke-linecap="round" fill="none"/></svg>
+    </span>
+    <div class="page-title">Bear iOS — Design Tokens</div>
+    <div class="page-chip">Charcoal Dark</div>
+  </div>
+  <p class="page-subtitle">Bear's signature charcoal canvas (#21252B) frames a distraction-free Markdown editor. The red→orange gradient (#E0566F → #FF8A65) is the one brand accent — it tints the logo, primary actions, checkboxes and inline #hashtags. Text inverts to #E8EAED; the three type families (Inter / Lora / JetBrains Mono) carry Bear's prose, quote and code styles.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="ed-nav">
+            <div class="ed-nav-left"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg><span>Notes</span></div>
+            <div class="ed-nav-right">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+            </div>
+          </div>
+
+          <div class="note">
+            <div class="note-title">Sprint Planning — Q3</div>
+            <div class="note-meta">Edited today at 09:38 · 248 words</div>
+            <div class="note-tags">
+              <span class="ntag">#work/sprint</span>
+              <span class="ntag">#planning</span>
+            </div>
+            <p class="note-p">Kick-off notes for the Q3 cycle. Reference the <span class="lk">roadmap doc</span> before the standup.</p>
+            <div class="note-h2">Priorities</div>
+            <div class="note-todo done"><span class="chk done"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><span>Lock the release scope</span></div>
+            <div class="note-todo"><span class="chk"></span><span>Draft the migration plan</span></div>
+            <div class="note-todo"><span class="chk"></span><span>Review API contract</span></div>
+            <div class="note-quote">"Focus is saying no to the hundred other good ideas."</div>
+            <div class="note-code"><span class="kw">func</span> ship() { <span class="st">"🐻"</span> }</div>
+          </div>
+
+          <div class="info-bar">
+            <div class="info-stat">248 words · 1,492 chars</div>
+            <div class="info-act">
+              <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M9 9h6v6H9z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M4 12s3-7 8-7 8 7 8 7-3 7-8 7-8-7-8-7z"/><circle cx="12" cy="12" r="2.5"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#21252B;"><div class="name">Charcoal Canvas</div>#21252B</div>
+          <div class="swatch" style="background:#282C34;"><div class="name">Surface 1</div>#282C34</div>
+          <div class="swatch" style="background:#2F343D;"><div class="name">Surface 2</div>#2F343D</div>
+          <div class="swatch" style="background:#353A42;"><div class="name">Divider</div>#353A42</div>
+          <div class="swatch" style="background:#E8EAED; color:#21252B;"><div class="name">Text Primary</div>#E8EAED</div>
+          <div class="swatch" style="background:#9DA3AD; color:#21252B;"><div class="name">Text Secondary</div>#9DA3AD</div>
+          <div class="swatch" style="background:#E0566F;"><div class="name">Bear Red</div>#E0566F</div>
+          <div class="swatch" style="background:#FF8A65;"><div class="name">Bear Orange</div>#FF8A65</div>
+          <div class="swatch" style="background:#5AAFEF;"><div class="name">Tag Blue / Link</div>#5AAFEF</div>
+          <div class="swatch" style="background:#57C98B;"><div class="name">Tag Green</div>#57C98B</div>
+          <div class="swatch" style="background:#F2C14E; color:#222;"><div class="name">Tag Yellow</div>#F2C14E</div>
+          <div class="swatch" style="background:#F2545B;"><div class="name">Error</div>#F2545B</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter · Lora · JetBrains Mono</div>
+        <div class="type-row"><div class="type-meta">App Title · 32pt · 800 Inter</div><div class="type-sample t-32">Bear</div></div>
+        <div class="type-row"><div class="type-meta">Note Title · 24pt · 700 Inter</div><div class="type-sample t-24">Sprint Planning — Q3</div></div>
+        <div class="type-row"><div class="type-meta">Heading · 19pt · 700 Inter</div><div class="type-sample t-19">Priorities</div></div>
+        <div class="type-row"><div class="type-meta">Subhead · 17pt · 600 Inter</div><div class="type-sample t-17">Meet your editor</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400 Inter</div><div class="type-sample t-16">A distraction-free editor that gets out of the way.</div></div>
+        <div class="type-row"><div class="type-meta">Quote · 17pt · 400 Lora italic</div><div class="type-sample t-16s">Focus is saying no to good ideas.</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400 Inter</div><div class="type-sample t-14">Edited today at 09:38 · 248 words</div></div>
+        <div class="type-row"><div class="type-meta">Code · 13pt · 400 JetBrains Mono</div><div class="type-sample t-13m">func ship() { "🐻" }</div></div>
+        <div class="type-row"><div class="type-meta">Caption · 12pt · 500 Inter</div><div class="type-sample t-12">248 words · 1,492 chars</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">New Note</button>
+          <button class="btn btn-outline">Export PDF</button>
+          <button class="btn btn-tag">＃ Add Tag</button>
+          <button class="btn-text">Show all notes</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Hashtag Sidebar Chips</div>
+        <div class="tag-row">
+          <div class="tagc tagc-red">#work/sprint</div>
+          <div class="tagc tagc-blue">#ideas</div>
+          <div class="tagc tagc-green">#done</div>
+          <div class="tagc tagc-yellow">#starred</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-5">5</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-22">22</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Bear ships several themes; the default dark theme ("Charcoal") sits on <code>#21252B</code> — a warm blue-charcoal, never pure black. Cards and the tag sidebar lift to <code>#282C34</code>. The red→orange gradient (<code>#E0566F → #FF8A65</code>) is the single accent and is identical across light and dark — it reads beautifully on both. Body text inverts to <code>#E8EAED</code>; inline <code>#hashtags</code> stay red, links stay <code>#5AAFEF</code>. Markdown syntax markers dim to <code>#6B7280</code> so prose stays the focus. Code blocks darken to <code>#282C34</code> with JetBrains Mono.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

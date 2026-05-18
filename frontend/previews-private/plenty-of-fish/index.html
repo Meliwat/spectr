@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Plenty of Fish iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #121417;
+    --surface-1: #1A1D21;
+    --surface-2: #23272C;
+    --divider: #2C3036;
+    --text-primary: #EDEFF2;
+    --text-secondary: #9BA1AB;
+    --text-tertiary: #6B7079;
+    --ink: #F6F7F9;
+    --pof-blue: #0098DB;
+    --pof-blue-2: #00A6E2;
+    --pof-blue-pressed: #0079B0;
+    --pof-pink: #FF4F8B;
+    --pof-teal: #00C9B7;
+    --gold: #FFB23E;
+    --success: #20C997;
+    --error: #FF5267;
+    --font: 'Nunito Sans', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 900; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: linear-gradient(135deg, var(--pof-blue), var(--pof-blue-2)); color: #FFF; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 700; color: var(--text-primary); }
+
+  /* POF top bar */
+  .pof-top { display: flex; align-items: center; justify-content: space-between; padding: 4px 18px 12px; }
+  .pof-logo { display: flex; align-items: center; gap: 8px; }
+  .pof-logo svg { width: 26px; height: 26px; }
+  .pof-logo span { font-size: 20px; font-weight: 900; color: var(--ink); letter-spacing: -0.4px; }
+  .pof-top-act { display: flex; gap: 18px; color: var(--pof-blue); }
+  .pof-top-act svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2.2; fill: none; }
+
+  /* Tabs (Meet Me / Grid) */
+  .seg { display: flex; gap: 26px; padding: 0 18px 12px; border-bottom: 0.5px solid var(--divider); }
+  .seg-i { font-size: 15px; font-weight: 800; color: var(--text-tertiary); padding-bottom: 10px; position: relative; }
+  .seg-i.active { color: var(--text-primary); }
+  .seg-i.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--pof-blue); border-radius: 3px 3px 0 0; }
+
+  /* Profile match grid */
+  .pgrid { flex: 1; padding: 14px 14px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; overflow-y: auto; scrollbar-width: none; }
+  .pgrid::-webkit-scrollbar { display: none; }
+  .pcard { aspect-ratio: 3/4; border-radius: 16px; overflow: hidden; position: relative; }
+  .pc1 { background: linear-gradient(165deg, #4FA8D8 0%, #2D6A8C 60%, #1B3D52 100%); }
+  .pc2 { background: linear-gradient(165deg, #E08AA8 0%, #B05878 60%, #6F3650 100%); }
+  .pc3 { background: linear-gradient(165deg, #6FB8C0 0%, #3F8088 60%, #244C52 100%); }
+  .pc4 { background: linear-gradient(165deg, #D8A87F 0%, #A8784F 60%, #6F4828 100%); }
+  .pc-online { position: absolute; top: 10px; left: 10px; display: flex; align-items: center; gap: 5px; background: rgba(0,0,0,0.42); padding: 4px 9px; border-radius: 999px; }
+  .pc-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--pof-teal); }
+  .pc-on-t { font-size: 10px; font-weight: 800; color: #FFF; }
+  .pc-info { position: absolute; left: 0; right: 0; bottom: 0; padding: 26px 12px 12px; background: linear-gradient(180deg, transparent, rgba(0,0,0,0.78)); }
+  .pc-name { font-size: 16px; font-weight: 800; color: #FFF; }
+  .pc-meta { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.85); margin-top: 1px; }
+  .pc-like { position: absolute; bottom: 12px; right: 12px; width: 36px; height: 36px; border-radius: 50%; background: var(--pof-blue); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,152,219,0.5); }
+  .pc-like svg { width: 18px; height: 18px; stroke: #FFF; stroke-width: 2.4; fill: none; }
+
+  /* Tab bar */
+  .tab-bar { height: 70px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(18,20,23,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 800; gap: 4px; position: relative; }
+  .tab.active { color: var(--pof-blue); }
+  .tab svg { width: 23px; height: 23px; stroke: currentColor; stroke-width: 2.1; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+  .tab-badge { position: absolute; top: -4px; right: 6px; min-width: 16px; height: 16px; border-radius: 8px; background: var(--pof-pink); color: #FFF; font-size: 9px; font-weight: 800; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 700; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 900; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 800; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 800; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 700; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 700; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 800; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: linear-gradient(135deg, var(--pof-blue), var(--pof-blue-2)); color: #FFF; font-size: 16px; padding: 14px 28px; border-radius: 999px; }
+  .btn-primary:active { filter: brightness(0.93); transform: scale(0.98); }
+  .btn-solid { background: var(--pof-blue); color: #FFF; font-size: 15px; padding: 12px 22px; border-radius: 999px; }
+  .btn-outline { background: transparent; color: var(--pof-blue); border: 1.5px solid var(--pof-blue); font-size: 15px; font-weight: 700; padding: 11px 20px; border-radius: 999px; }
+  .btn-gold { background: var(--gold); color: #2A1B05; font-size: 14px; font-weight: 800; padding: 10px 18px; border-radius: 999px; }
+  .btn-text { background: transparent; color: var(--pof-blue); font-size: 15px; font-weight: 700; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Meet Me card mini */
+  .mm { background: var(--surface-2); border-radius: 20px; padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .mm-photo { width: 100%; aspect-ratio: 1/1; border-radius: 16px; background: linear-gradient(165deg, #4FA8D8, #2D6A8C); }
+  .mm-name { font-size: 18px; font-weight: 800; color: var(--text-primary); }
+  .mm-q { font-size: 13px; font-weight: 700; color: var(--text-secondary); }
+  .mm-acts { display: flex; gap: 14px; }
+  .mm-btn { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .mm-no { background: var(--surface-1); border: 1.5px solid var(--divider); }
+  .mm-no svg { width: 22px; height: 22px; stroke: var(--text-secondary); stroke-width: 2.6; fill: none; }
+  .mm-maybe { background: var(--surface-1); border: 1.5px solid var(--gold); }
+  .mm-maybe svg { width: 22px; height: 22px; stroke: var(--gold); stroke-width: 2.4; fill: none; }
+  .mm-yes { background: var(--pof-blue); box-shadow: 0 6px 16px rgba(0,152,219,0.5); }
+  .mm-yes svg { width: 24px; height: 24px; stroke: #FFF; stroke-width: 2.6; fill: none; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: linear-gradient(135deg, var(--pof-blue), var(--pof-blue-2)); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-6 { border-radius: 6px; }
+  .r-10 { border-radius: 10px; }
+  .r-16 { border-radius: 16px; }
+  .r-20 { border-radius: 20px; }
+  .r-28 { border-radius: 28px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="pof-logo">
+      <svg viewBox="0 0 48 48"><defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00A6E2"/><stop offset="1" stop-color="#0098DB"/></linearGradient></defs><path d="M30 14c-7 0-14 4.5-19 10 5 5.5 12 10 19 10 8 0 14-5 16-10-2-5-8-10-16-10z" fill="url(#pg)"/><path d="M11 24l-7-6v12z" fill="url(#pg)"/><circle cx="32" cy="22" r="2.4" fill="#FFF"/></svg>
+    </span>
+    <div class="page-title">Plenty of Fish iOS — Design Tokens</div>
+    <div class="page-chip">POF Blue Dark</div>
+  </div>
+  <p class="page-subtitle">Plenty of Fish leads with POF Blue (#0098DB → #00A6E2) — the logo, primary actions, the active tab and the like button all carry it. Inverted here onto a #121417 dark canvas with text at #EDEFF2. Nunito Sans (rounded, friendly, heavy) stands in for the POF UI face. Profile photos stay full-color over a dark grid; only the chrome dims.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="pof-top">
+            <div class="pof-logo">
+              <svg viewBox="0 0 48 48"><path d="M30 14c-7 0-14 4.5-19 10 5 5.5 12 10 19 10 8 0 14-5 16-10-2-5-8-10-16-10z" fill="url(#pg)"/><path d="M11 24l-7-6v12z" fill="url(#pg)"/><circle cx="32" cy="22" r="2.4" fill="#FFF"/></svg>
+              <span>POF</span>
+            </div>
+            <div class="pof-top-act">
+              <svg viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+            </div>
+          </div>
+
+          <div class="seg">
+            <div class="seg-i active">Matches</div>
+            <div class="seg-i">Meet Me</div>
+            <div class="seg-i">Search</div>
+          </div>
+
+          <div class="pgrid">
+            <div class="pcard pc1">
+              <div class="pc-online"><span class="pc-dot"></span><span class="pc-on-t">Online</span></div>
+              <div class="pc-info"><div class="pc-name">Sofia, 27</div><div class="pc-meta">3 mi · Active now</div></div>
+              <div class="pc-like"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+            </div>
+            <div class="pcard pc2">
+              <div class="pc-info"><div class="pc-name">Maya, 24</div><div class="pc-meta">5 mi · 2h ago</div></div>
+              <div class="pc-like"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+            </div>
+            <div class="pcard pc3">
+              <div class="pc-online"><span class="pc-dot"></span><span class="pc-on-t">Online</span></div>
+              <div class="pc-info"><div class="pc-name">Elena, 29</div><div class="pc-meta">2 mi · Active now</div></div>
+              <div class="pc-like"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+            </div>
+            <div class="pcard pc4">
+              <div class="pc-info"><div class="pc-name">Priya, 26</div><div class="pc-meta">7 mi · 1d ago</div></div>
+              <div class="pc-like"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg><span>Matches</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg><span>Meet Me</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Messages</span><span class="tab-badge">5</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/></svg><span>Me</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#121417;"><div class="name">Dark Canvas</div>#121417</div>
+          <div class="swatch" style="background:#1A1D21;"><div class="name">Surface 1</div>#1A1D21</div>
+          <div class="swatch" style="background:#23272C;"><div class="name">Surface 2</div>#23272C</div>
+          <div class="swatch" style="background:#2C3036;"><div class="name">Divider</div>#2C3036</div>
+          <div class="swatch" style="background:#EDEFF2; color:#121417;"><div class="name">Text Primary</div>#EDEFF2</div>
+          <div class="swatch" style="background:#9BA1AB; color:#121417;"><div class="name">Text Secondary</div>#9BA1AB</div>
+          <div class="swatch" style="background:#0098DB;"><div class="name">POF Blue</div>#0098DB</div>
+          <div class="swatch" style="background:#00A6E2;"><div class="name">POF Blue Light</div>#00A6E2</div>
+          <div class="swatch" style="background:#FF4F8B;"><div class="name">Accent Pink</div>#FF4F8B</div>
+          <div class="swatch" style="background:#00C9B7;"><div class="name">Online Teal</div>#00C9B7</div>
+          <div class="swatch" style="background:#FFB23E; color:#2A1B05;"><div class="name">Upgrade Gold</div>#FFB23E</div>
+          <div class="swatch" style="background:#FF5267;"><div class="name">Error</div>#FF5267</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — POF UI (Nunito Sans fallback)</div>
+        <div class="type-row"><div class="type-meta">Display · 32pt · 900</div><div class="type-sample t-32">Find your match</div></div>
+        <div class="type-row"><div class="type-meta">Title · 26pt · 800</div><div class="type-sample t-26">Meet Me</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 800</div><div class="type-sample t-22">People near you</div></div>
+        <div class="type-row"><div class="type-meta">Subsection · 18pt · 800</div><div class="type-sample t-18">Sofia, 27</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">You both like hiking and live jazz.</div></div>
+        <div class="type-row"><div class="type-meta">Card Name · 15pt · 700</div><div class="type-sample t-15m">Elena, 29 · 2 mi</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Active now · 3 miles away</div></div>
+        <div class="type-row"><div class="type-meta">Chip · 12pt · 700</div><div class="type-sample t-12">Online</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Send Message</button>
+          <button class="btn btn-solid">Like</button>
+          <button class="btn btn-outline">View Profile</button>
+          <button class="btn btn-gold">Upgrade</button>
+          <button class="btn-text">Skip</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Meet Me Card</div>
+        <div class="mm">
+          <div class="mm-photo"></div>
+          <div class="mm-name">Sofia, 27</div>
+          <div class="mm-q">Would you like to meet Sofia?</div>
+          <div class="mm-acts">
+            <div class="mm-btn mm-no"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></div>
+            <div class="mm-btn mm-maybe"><svg viewBox="0 0 24 24"><path d="M9.5 9a2.5 2.5 0 1 1 3 2.4c-.9.3-1.5 1-1.5 2.1M11 17.5h.01"/></svg></div>
+            <div class="mm-btn mm-yes"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-28">28</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">POF's dark canvas sits at <code>#121417</code> — a cool near-black, never pure black — with cards lifting to <code>#1A1D21</code>. POF Blue (<code>#0098DB → #00A6E2</code>) is identical across themes: it's the logo, the like button, the active tab and the primary CTA, and it pops over dark. The online indicator stays teal <code>#00C9B7</code>; unread message badges stay pink <code>#FF4F8B</code>; upgrade prompts stay gold <code>#FFB23E</code>. Profile photos remain full-color over the dark match grid — only the surrounding chrome dims.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

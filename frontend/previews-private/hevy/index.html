@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Hevy iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0E1116;
+    --surface-1: #161B22;
+    --surface-2: #1F2630;
+    --surface-3: #283040;
+    --divider: #262C36;
+    --text-primary: #F2F4F8;
+    --text-secondary: #9BA3B0;
+    --text-tertiary: #5E6675;
+    --ink: #FFFFFF;
+    --hevy-blue: #1E6FFF;
+    --hevy-blue-pressed: #1857CC;
+    --hevy-blue-soft: #14233F;
+    --pr-gold: #F5B83D;
+    --success: #2FBF71;
+    --error: #F1545B;
+    --warn: #F5A623;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--hevy-blue); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Workout header */
+  .wk-head { padding: 4px 18px 12px; }
+  .wk-top { display: flex; align-items: center; justify-content: space-between; }
+  .wk-name { font-size: 20px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.3px; }
+  .wk-finish { background: var(--hevy-blue); color: #FFF; font-size: 13px; font-weight: 700; padding: 7px 16px; border-radius: 10px; }
+  .wk-timer-row { display: flex; gap: 22px; margin-top: 12px; }
+  .wk-stat .lbl { font-size: 11px; color: var(--text-secondary); font-weight: 500; }
+  .wk-stat .val { font-size: 17px; color: var(--text-primary); font-weight: 700; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .wk-stat .val.live { color: var(--hevy-blue); }
+
+  /* Rest timer pill */
+  .rest-pill { margin: 6px 18px 14px; height: 44px; background: var(--hevy-blue-soft); border: 1px solid rgba(30,111,255,0.35); border-radius: 12px; display: flex; align-items: center; padding: 0 14px; gap: 10px; }
+  .rest-ring { width: 22px; height: 22px; border-radius: 50%; border: 3px solid rgba(30,111,255,0.3); border-top-color: var(--hevy-blue); }
+  .rest-txt { font-size: 14px; font-weight: 600; color: var(--hevy-blue); flex: 1; }
+  .rest-skip { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+
+  /* Exercise block */
+  .ex-list { flex: 1; padding: 0 14px; overflow-y: auto; scrollbar-width: none; }
+  .ex-list::-webkit-scrollbar { display: none; }
+  .ex-block { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 14px; margin-bottom: 14px; }
+  .ex-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .ex-thumb { width: 36px; height: 36px; border-radius: 10px; background: var(--surface-3); display: flex; align-items: center; justify-content: center; }
+  .ex-thumb svg { width: 20px; height: 20px; stroke: var(--hevy-blue); stroke-width: 2; fill: none; }
+  .ex-name { font-size: 15px; font-weight: 700; color: var(--hevy-blue); flex: 1; }
+  .ex-more { color: var(--text-tertiary); font-weight: 800; letter-spacing: 1px; }
+
+  .set-table { width: 100%; border-collapse: collapse; }
+  .set-table th { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; padding: 4px 6px; text-align: center; }
+  .set-table th:first-child, .set-table td:first-child { text-align: left; }
+  .set-table td { padding: 7px 6px; text-align: center; font-size: 14px; font-variant-numeric: tabular-nums; }
+  .set-idx { width: 28px; height: 28px; border-radius: 8px; background: var(--surface-2); color: var(--text-secondary); font-weight: 700; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; }
+  .prev-cell { color: var(--text-tertiary); font-size: 13px; }
+  .cell-box { background: var(--surface-2); border-radius: 8px; padding: 6px 0; color: var(--text-primary); font-weight: 600; }
+  .row-done .cell-box { background: rgba(47,191,113,0.16); color: var(--success); }
+  .check { width: 26px; height: 26px; border-radius: 8px; border: 1.5px solid var(--divider); display: inline-flex; align-items: center; justify-content: center; }
+  .check.on { background: var(--success); border-color: var(--success); }
+  .check.on svg { width: 14px; height: 14px; stroke: #fff; stroke-width: 3; fill: none; }
+  .pr-tag { display: inline-flex; align-items: center; gap: 3px; background: rgba(245,184,61,0.18); color: var(--pr-gold); font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 6px; margin-left: 6px; }
+  .add-set { margin-top: 10px; height: 34px; border-radius: 9px; background: var(--surface-2); color: var(--text-secondary); font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+
+  /* Tab bar */
+  .tab-bar { height: 68px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(14,17,22,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 3px; }
+  .tab.active { color: var(--hevy-blue); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: rgba(30,111,255,0.16); }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-17n { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-13 { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; }
+  .btn-primary { background: var(--hevy-blue); color: #FFF; font-size: 16px; padding: 14px 28px; border-radius: 12px; }
+  .btn-primary:active { background: var(--hevy-blue-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--hevy-blue); border: 1.5px solid var(--hevy-blue); font-size: 15px; font-weight: 600; padding: 11px 22px; border-radius: 12px; }
+  .btn-tonal { background: var(--hevy-blue-soft); color: var(--hevy-blue); font-size: 14px; font-weight: 700; padding: 11px 20px; border-radius: 10px; }
+  .btn-danger { background: transparent; color: var(--error); font-size: 14px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Set row demo */
+  .demo-set { display: flex; align-items: center; gap: 10px; }
+  .chip { font-family: var(--font); font-weight: 700; font-size: 13px; padding: 8px 12px; border-radius: 8px; }
+  .chip-idle { background: var(--surface-2); color: var(--text-primary); }
+  .chip-done { background: rgba(47,191,113,0.16); color: var(--success); }
+  .chip-pr { background: rgba(245,184,61,0.18); color: var(--pr-gold); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--hevy-blue); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-20 { border-radius: 20px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; width: 44px; height: 44px; border-radius: 12px; background: var(--hevy-blue); align-items: center; justify-content: center; }
+  .logo svg { width: 26px; height: 26px; stroke: #fff; stroke-width: 2.4; fill: none; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 24 24"><path d="M3 8v8M7 6v12M17 6v12M21 8v8M7 12h10"/></svg>
+    </span>
+    <div class="page-title">Hevy iOS — Design Tokens</div>
+    <div class="page-chip">Athletic Dark</div>
+  </div>
+  <p class="page-subtitle">A near-black training canvas (#0E1116) with Hevy Blue (#1E6FFF) as the single action color. The interface is the live workout log: a set table with tabular figures, a glanceable rest-timer pill, and gold PR badges that fire when you beat a record.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="wk-head">
+            <div class="wk-top">
+              <div class="wk-name">Push Day A</div>
+              <div class="wk-finish">Finish</div>
+            </div>
+            <div class="wk-timer-row">
+              <div class="wk-stat"><div class="lbl">Duration</div><div class="val live">41:08</div></div>
+              <div class="wk-stat"><div class="lbl">Volume</div><div class="val">8,420 kg</div></div>
+              <div class="wk-stat"><div class="lbl">Sets</div><div class="val">11</div></div>
+            </div>
+          </div>
+
+          <div class="rest-pill">
+            <div class="rest-ring"></div>
+            <div class="rest-txt">Rest · 1:24</div>
+            <div class="rest-skip">Skip</div>
+          </div>
+
+          <div class="ex-list">
+            <div class="ex-block">
+              <div class="ex-head">
+                <div class="ex-thumb"><svg viewBox="0 0 24 24"><path d="M3 9v6M7 7v10M17 7v10M21 9v6M7 12h10"/></svg></div>
+                <div class="ex-name">Bench Press (Barbell)</div>
+                <div class="ex-more">⋯</div>
+              </div>
+              <table class="set-table">
+                <tr><th>Set</th><th>Previous</th><th>kg</th><th>Reps</th><th></th></tr>
+                <tr class="row-done">
+                  <td><span class="set-idx">1</span></td>
+                  <td class="prev-cell">60 × 10</td>
+                  <td><div class="cell-box">60</div></td>
+                  <td><div class="cell-box">10</div></td>
+                  <td><span class="check on"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span></td>
+                </tr>
+                <tr class="row-done">
+                  <td><span class="set-idx">2</span></td>
+                  <td class="prev-cell">65 × 8</td>
+                  <td><div class="cell-box">70</div></td>
+                  <td><div class="cell-box">8</div></td>
+                  <td><span class="check on"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span></td>
+                </tr>
+                <tr>
+                  <td><span class="set-idx">3</span></td>
+                  <td class="prev-cell">70 × 6</td>
+                  <td><div class="cell-box">75</div></td>
+                  <td><div class="cell-box">6</div></td>
+                  <td><span class="check"></span></td>
+                </tr>
+              </table>
+              <div style="margin-top:8px;"><span class="pr-tag">★ NEW PR · 1RM 87.5 kg</span></div>
+              <div class="add-set">+ Add Set</div>
+            </div>
+
+            <div class="ex-block">
+              <div class="ex-head">
+                <div class="ex-thumb"><svg viewBox="0 0 24 24"><path d="M12 3v18M6 8l6-5 6 5M6 16l6 5 6-5"/></svg></div>
+                <div class="ex-name">Incline Dumbbell Press</div>
+                <div class="ex-more">⋯</div>
+              </div>
+              <table class="set-table">
+                <tr><th>Set</th><th>Previous</th><th>kg</th><th>Reps</th><th></th></tr>
+                <tr>
+                  <td><span class="set-idx">1</span></td>
+                  <td class="prev-cell">26 × 10</td>
+                  <td><div class="cell-box">28</div></td>
+                  <td><div class="cell-box">10</div></td>
+                  <td><span class="check"></span></td>
+                </tr>
+              </table>
+              <div class="add-set">+ Add Set</div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg><span>Profile</span></div>
+            <div class="tab active"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg><span>Workout</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg><span>History</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 19V9M10 19V5M16 19v-7M22 19v-3"/></svg><span>Exercises</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette — Dark</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0E1116;"><div class="name">Training Canvas</div>#0E1116</div>
+          <div class="swatch" style="background:#161B22;"><div class="name">Card Surface</div>#161B22</div>
+          <div class="swatch" style="background:#1F2630;"><div class="name">Input Surface</div>#1F2630</div>
+          <div class="swatch" style="background:#283040;"><div class="name">Surface 3</div>#283040</div>
+          <div class="swatch" style="background:#262C36;"><div class="name">Divider</div>#262C36</div>
+          <div class="swatch" style="background:#1E6FFF;"><div class="name">Hevy Blue</div>#1E6FFF</div>
+          <div class="swatch" style="background:#1857CC;"><div class="name">Blue Pressed</div>#1857CC</div>
+          <div class="swatch" style="background:#14233F;"><div class="name">Blue Soft</div>#14233F</div>
+          <div class="swatch" style="background:#F5B83D; color:#1A1206;"><div class="name">PR Gold</div>#F5B83D</div>
+          <div class="swatch" style="background:#2FBF71;"><div class="name">Set Done</div>#2FBF71</div>
+          <div class="swatch" style="background:#F1545B;"><div class="name">Error</div>#F1545B</div>
+          <div class="swatch" style="background:#F2F4F8; color:#0E1116;"><div class="name">Text Primary</div>#F2F4F8</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 800</div><div class="type-sample t-32">Workout</div></div>
+        <div class="type-row"><div class="type-meta">Routine Title · 26pt · 700</div><div class="type-sample t-26">Push Day A</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">This Week's Volume</div></div>
+        <div class="type-row"><div class="type-meta">Exercise Name · 18pt · 700</div><div class="type-sample t-18">Bench Press (Barbell)</div></div>
+        <div class="type-row"><div class="type-meta">Metric · 17pt · 700 · tabular</div><div class="type-sample t-17n">8,420 kg · 41:08</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Log every set, rep, and PR across your training history.</div></div>
+        <div class="type-row"><div class="type-meta">Cell · 15pt · 600</div><div class="type-sample t-15m">75 kg × 6</div></div>
+        <div class="type-row"><div class="type-meta">Caption · 13pt · 500</div><div class="type-sample t-13">Previous: 70 × 6</div></div>
+        <div class="type-row"><div class="type-meta">Column Label · 11pt · 600</div><div class="type-sample t-11">SET · PREVIOUS · KG · REPS</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Finish Workout</button>
+          <button class="btn btn-outline">Add Exercise</button>
+          <button class="btn btn-tonal">+ Add Set</button>
+          <button class="btn-danger">Discard Workout</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Set Row States &amp; PR Badge</div>
+        <div class="demo-set">
+          <span class="chip chip-idle">Set 3 · 75 × 6</span>
+          <span class="chip chip-done">✓ Completed</span>
+          <span class="chip chip-pr">★ NEW PR</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Hevy is dark-first — the app launches into a near-black training canvas <code>#0E1116</code> so the gym screen never glares. Cards lift to <code>#161B22</code>; editable set cells sit on <code>#1F2630</code>. Hevy Blue <code>#1E6FFF</code> is the only action color — finish button, active tab, exercise titles. Completed sets tint green <code>#2FBF71</code> at 16% and a gold <code>#F5B83D</code> PR badge fires when you beat a record. All numerics use tabular figures so the set table never shifts as you type.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

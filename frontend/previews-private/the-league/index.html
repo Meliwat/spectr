@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by The League iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0A0A0A;
+    --surface-1: #141414;
+    --surface-2: #1C1A17;
+    --divider: #2A2620;
+    --text-primary: #EDE9E2;
+    --text-secondary: #9E988C;
+    --text-tertiary: #6B665C;
+    --ink: #FBF8F2;
+    --league-black: #000000;
+    --gold: #C8A35A;
+    --gold-bright: #DBBA71;
+    --gold-deep: #A8863F;
+    --champagne: #E8DCC0;
+    --rose: #B98A8A;
+    --success: #6FAE8A;
+    --error: #C77A7A;
+    --serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+    --sans: 'Jost', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--sans); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-family: var(--serif); font-size: 34px; font-weight: 700; letter-spacing: 0.2px; color: var(--ink); }
+  .page-chip { background: var(--gold); color: #1A1408; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 999px; letter-spacing: 1.2px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(200,163,90,0.12) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 500; color: var(--text-primary); }
+
+  /* League top bar */
+  .lg-bar { display: flex; align-items: center; justify-content: space-between; padding: 2px 22px 16px; }
+  .lg-ic { width: 22px; height: 22px; stroke: var(--gold); stroke-width: 1.6; fill: none; }
+  .lg-word { font-family: var(--serif); font-size: 21px; font-weight: 700; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; }
+  .lg-sub { font-size: 9px; font-weight: 500; color: var(--text-secondary); letter-spacing: 3px; text-transform: uppercase; text-align: center; margin-top: 1px; }
+
+  /* Batch banner */
+  .batch { margin: 0 22px 14px; padding: 10px 14px; border: 1px solid var(--divider); border-radius: 4px; display: flex; align-items: center; justify-content: space-between; background: var(--surface-1); }
+  .batch-l { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-secondary); }
+  .batch-t { font-family: var(--serif); font-size: 17px; font-weight: 600; color: var(--gold); }
+
+  /* Prospect card */
+  .card-wrap { flex: 1; padding: 0 22px 14px; }
+  .prospect { position: relative; width: 100%; height: 100%; border-radius: 6px; overflow: hidden; border: 1px solid var(--divider); background: #100F0C; }
+  .pphoto { position: absolute; top: 0; left: 0; right: 0; height: 64%; background: linear-gradient(165deg, #4A4136 0%, #2E2820 55%, #1A160F 100%); }
+  .pphoto::before { content: ''; position: absolute; top: 26%; left: 30%; width: 40%; height: 30%; background: #5A4F40; border-radius: 50%; }
+  .pphoto::after { content: ''; position: absolute; bottom: 0; left: 16%; right: 16%; height: 30%; background: linear-gradient(180deg,#463D30,#2A2419); border-radius: 40% 40% 0 0; }
+  .pseal { position: absolute; top: 14px; right: 14px; width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--gold); display: flex; align-items: center; justify-content: center; background: rgba(10,10,10,0.6); }
+  .pseal svg { width: 15px; height: 15px; fill: var(--gold); }
+  .pbody { position: absolute; top: 64%; left: 0; right: 0; bottom: 0; padding: 14px 18px; }
+  .pname { font-family: var(--serif); font-size: 24px; font-weight: 700; color: var(--text-primary); letter-spacing: 0.2px; }
+  .pname .age { font-weight: 400; color: var(--text-secondary); }
+  .prule { width: 28px; height: 1px; background: var(--gold); margin: 8px 0; }
+  .pcred { font-size: 12px; color: var(--text-secondary); line-height: 1.7; }
+  .pcred b { color: var(--text-primary); font-weight: 500; }
+  .pcred .ic { color: var(--gold); margin-right: 6px; }
+
+  /* Card actions */
+  .pacts { position: absolute; bottom: 14px; left: 18px; right: 18px; display: flex; align-items: center; justify-content: space-between; }
+  .pa { border-radius: 50%; border: 1px solid var(--divider); display: flex; align-items: center; justify-content: center; background: var(--surface-1); }
+  .pa svg { fill: none; stroke-width: 1.8; }
+  .pa-pass { width: 48px; height: 48px; } .pa-pass svg { width: 20px; height: 20px; stroke: var(--text-secondary); }
+  .pa-heart { width: 56px; height: 56px; background: transparent; border: 1px solid var(--gold); } .pa-heart svg { width: 22px; height: 22px; stroke: var(--gold); }
+  .pa-msg { width: 48px; height: 48px; } .pa-msg svg { width: 19px; height: 19px; stroke: var(--gold); }
+
+  /* Tab bar */
+  .tab-bar { height: 64px; display: flex; align-items: flex-start; padding: 9px 4px 14px; justify-content: space-around; background: rgba(10,10,10,0.96); border-top: 1px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 9px; font-weight: 500; gap: 4px; letter-spacing: 1px; text-transform: uppercase; }
+  .tab.active { color: var(--gold); }
+  .tab svg { width: 21px; height: 21px; stroke: currentColor; stroke-width: 1.7; fill: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 8px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.6px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 6px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 500; font-family: var(--sans); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 230px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-disp { font-family: var(--serif); font-size: 34px; font-weight: 700; letter-spacing: 0.2px; color: var(--ink); }
+  .t-name { font-family: var(--serif); font-size: 26px; font-weight: 700; color: var(--ink); }
+  .t-title { font-family: var(--serif); font-size: 21px; font-weight: 600; }
+  .t-sub { font-size: 16px; font-weight: 500; letter-spacing: 0.3px; }
+  .t-body { font-size: 15px; font-weight: 400; }
+  .t-cred { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); }
+  .t-tab { font-size: 9px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--sans); font-weight: 600; cursor: pointer; border: none; }
+  .btn-primary { background: var(--gold); color: #1A1408; font-size: 13px; padding: 15px 30px; border-radius: 3px; letter-spacing: 1.6px; text-transform: uppercase; }
+  .btn-primary:active { background: var(--gold-deep); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--gold); border: 1px solid var(--gold); font-size: 13px; padding: 14px 26px; border-radius: 3px; letter-spacing: 1.6px; text-transform: uppercase; }
+  .btn-ghost { background: transparent; color: var(--text-secondary); border: 1px solid var(--divider); font-size: 13px; padding: 14px 26px; border-radius: 3px; letter-spacing: 1.4px; text-transform: uppercase; }
+  .btn-text { background: transparent; color: var(--gold); font-size: 12px; font-weight: 600; padding: 12px 0; letter-spacing: 1.4px; text-transform: uppercase; border: none; cursor: pointer; }
+
+  /* Prospect mini */
+  .mini { display: flex; gap: 14px; align-items: center; padding: 16px; border: 1px solid var(--divider); border-radius: 6px; background: var(--surface-2); }
+  .mini-av { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(160deg,#4A4136,#1A160F); border: 1px solid var(--gold); flex-shrink: 0; }
+  .mini-name { font-family: var(--serif); font-size: 18px; font-weight: 600; color: var(--text-primary); }
+  .mini-rule { width: 22px; height: 1px; background: var(--gold); margin: 6px 0; }
+  .mini-cred { font-size: 12px; color: var(--text-secondary); }
+
+  /* Concierge note */
+  .conc { padding: 18px; border: 1px solid var(--divider); border-left: 2px solid var(--gold); border-radius: 4px; background: var(--surface-2); }
+  .conc-h { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .conc-h svg { width: 15px; height: 15px; fill: var(--gold); }
+  .conc-h span { font-size: 11px; letter-spacing: 1.6px; text-transform: uppercase; color: var(--gold); }
+  .conc-t { font-family: var(--serif); font-size: 16px; font-style: italic; color: var(--text-primary); line-height: 1.6; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--gold); color: #1A1408; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; } .r-2 { border-radius: 2px; } .r-3 { border-radius: 3px; } .r-4 { border-radius: 4px; } .r-6 { border-radius: 6px; } .r-8 { border-radius: 8px; } .r-pill { border-radius: 500px; } .r-circle { border-radius: 50%; }
+
+  .crest { display: inline-flex; width: 42px; height: 42px; align-items: center; justify-content: center; }
+  .crest svg { width: 100%; height: 100%; }
+  code { font-family: 'SF Mono', Menlo, monospace; background: var(--surface-2); padding: 1px 5px; border-radius: 3px; color: var(--gold-bright); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="crest">
+      <svg viewBox="0 0 48 48"><path d="M24 3l17 6v13c0 12-8 19-17 23-9-4-17-11-17-23V9z" fill="none" stroke="#C8A35A" stroke-width="1.6"/><path d="M24 14l3 6 6 .8-4.5 4.4 1 6.3L24 28.5 18.5 31.5l1-6.3L15 20.8l6-.8z" fill="#C8A35A"/></svg>
+    </span>
+    <div class="page-title">The League iOS — Design Tokens</div>
+    <div class="page-chip">Exclusive Black & Gold</div>
+  </div>
+  <p class="page-subtitle">The League is a black-tie members club rendered as software: a true-black canvas (#0A0A0A), a single restrained gold (#C8A35A) for the crest, hairlines and one CTA, and a Cormorant-style display serif for names and headings. Chrome is replaced by 1px gold-tinted hairline borders; the prospect card reads like an embossed calling card.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="lg-bar">
+            <svg class="lg-ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.6-4.6"/></svg>
+            <div><div class="lg-word">The League</div><div class="lg-sub">Members Only</div></div>
+            <svg class="lg-ic" viewBox="0 0 24 24"><path d="M12 8a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/><path d="M19 12a7 7 0 0 1-.1 1.2l2 1.6-2 3.4-2.4-1a7 7 0 0 1-2 1.2l-.4 2.6h-4l-.4-2.6a7 7 0 0 1-2-1.2l-2.4 1-2-3.4 2-1.6A7 7 0 0 1 5 12c0-.4 0-.8.1-1.2l-2-1.6 2-3.4 2.4 1a7 7 0 0 1 2-1.2l.4-2.6h4l.4 2.6a7 7 0 0 1 2 1.2l2.4-1 2 3.4-2 1.6c.1.4.1.8.1 1.2z"/></svg>
+          </div>
+
+          <div class="batch">
+            <div class="batch-l">Today's Batch</div>
+            <div class="batch-t">7 Prospects</div>
+          </div>
+
+          <div class="card-wrap">
+            <div class="prospect">
+              <div class="pphoto"></div>
+              <div class="pseal"><svg viewBox="0 0 24 24"><path d="M12 2l2.5 5 5.5.7-4 4 1 5.5L12 14.5 7 17.2l1-5.5-4-4 5.5-.7z"/></svg></div>
+              <div class="pbody">
+                <div class="pname">Eleanor <span class="age">31</span></div>
+                <div class="prule"></div>
+                <div class="pcred">
+                  <div><span class="ic">◦</span><b>VP Strategy</b> · Goldman Sachs</div>
+                  <div><span class="ic">◦</span>Harvard Business School</div>
+                  <div><span class="ic">◦</span>2 mi · Tribeca, New York</div>
+                </div>
+              </div>
+              <div class="pacts">
+                <div class="pa pa-pass"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg></div>
+                <div class="pa pa-heart"><svg viewBox="0 0 24 24"><path d="M12 20.5l-1.3-1.2C6 15 3 12.2 3 8.8 3 6.1 5.1 4 7.7 4c1.5 0 3 .7 3.9 1.9C12.3 4.7 13.8 4 15.3 4 17.9 4 20 6.1 20 8.8c0 3.4-3 6.2-7.7 10.5L12 20.5z"/></svg></div>
+                <div class="pa pa-msg"><svg viewBox="0 0 24 24"><path d="M20 14a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z"/></svg></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/></svg><span>Prospects</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M12 20.5l-1.3-1.2C6 15 3 12.2 3 8.8 3 6.1 5.1 4 7.7 4c1.5 0 3 .7 3.9 1.9C12.3 4.7 13.8 4 15.3 4 17.9 4 20 6.1 20 8.8c0 3.4-3 6.2-7.7 10.5z"/></svg><span>Matches</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M20 14a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z"/></svg><span>Concierge</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/></svg><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Dark Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0A0A0A;"><div class="name">True Black Canvas</div>#0A0A0A</div>
+          <div class="swatch" style="background:#141414;"><div class="name">Surface 1</div>#141414</div>
+          <div class="swatch" style="background:#1C1A17;"><div class="name">Surface 2</div>#1C1A17</div>
+          <div class="swatch" style="background:#2A2620;"><div class="name">Gold Hairline</div>#2A2620</div>
+          <div class="swatch" style="background:#EDE9E2; color:#0A0A0A;"><div class="name">Text Primary</div>#EDE9E2</div>
+          <div class="swatch" style="background:#9E988C; color:#0A0A0A;"><div class="name">Text Secondary</div>#9E988C</div>
+          <div class="swatch" style="background:#C8A35A; color:#1A1408;"><div class="name">League Gold</div>#C8A35A</div>
+          <div class="swatch" style="background:#DBBA71; color:#1A1408;"><div class="name">Gold Bright</div>#DBBA71</div>
+          <div class="swatch" style="background:#A8863F; color:#1A1408;"><div class="name">Gold Deep</div>#A8863F</div>
+          <div class="swatch" style="background:#E8DCC0; color:#1A1408;"><div class="name">Champagne</div>#E8DCC0</div>
+          <div class="swatch" style="background:#6FAE8A; color:#0A0A0A;"><div class="name">Success</div>#6FAE8A</div>
+          <div class="swatch" style="background:#C77A7A;"><div class="name">Error</div>#C77A7A</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Cormorant Garamond serif + Jost sans</div>
+        <div class="type-row"><div class="type-meta">Wordmark · Serif 34pt · 700</div><div class="type-sample t-disp">The League</div></div>
+        <div class="type-row"><div class="type-meta">Prospect Name · Serif 26pt · 700</div><div class="type-sample t-name">Eleanor, 31</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · Serif 21pt · 600</div><div class="type-sample t-title">Today's Batch</div></div>
+        <div class="type-row"><div class="type-meta">Subtitle · Sans 16pt · 500</div><div class="type-sample t-sub">Concierge Introductions</div></div>
+        <div class="type-row"><div class="type-meta">Body · Sans 15pt · 400</div><div class="type-sample t-body">Each day, our concierge curates a small batch of vetted members.</div></div>
+        <div class="type-row"><div class="type-meta">Credential · Sans 13pt · 400</div><div class="type-sample t-cred">VP Strategy · Goldman Sachs</div></div>
+        <div class="type-row"><div class="type-meta">Eyebrow · Sans 11pt · 600 · 2px</div><div class="type-sample t-eyebrow">Members Only</div></div>
+        <div class="type-row"><div class="type-meta">Tab · Sans 9pt · 500 · 1px</div><div class="type-sample t-tab">Prospects</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Send Heart</button>
+          <button class="btn btn-outline">View Profile</button>
+          <button class="btn btn-ghost">Pass</button>
+          <button class="btn-text">Upgrade Membership</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Prospect Row (calling-card)</div>
+        <div class="mini">
+          <div class="mini-av"></div>
+          <div>
+            <div class="mini-name">Julian, 34</div>
+            <div class="mini-rule"></div>
+            <div class="mini-cred">Founder · Andreessen-backed · Stanford GSB</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Concierge Note</div>
+        <div class="conc">
+          <div class="conc-h"><svg viewBox="0 0 24 24"><path d="M12 2l2.5 5 5.5.7-4 4 1 5.5L12 14.5 7 17.2l1-5.5-4-4 5.5-.7z"/></svg><span>Your Concierge</span></div>
+          <div class="conc-t">"I think you and Eleanor would hit it off — you both ran the New York Marathon and studied at HBS. Shall I make an introduction?"</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-2">2</div>
+          <div class="radius-box r-3">3</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">The League is dark-native — it has no light mode in spirit. The canvas is a near-true-black <code>#0A0A0A</code> evoking a private club after dark; surfaces lift only to <code>#141414</code>. Gold <code>#C8A35A</code> is rationed: the crest, hairline rules, the single primary CTA, and the credential bullets — nothing else. There are no drop shadows; depth is created entirely by 1px gold-tinted hairline borders (<code>#2A2620</code>) and an embossed calling-card treatment. The display serif (Cormorant Garamond) carries the editorial, members-club gravitas; the sans (Jost) handles credentials and UI in a quiet uppercase.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

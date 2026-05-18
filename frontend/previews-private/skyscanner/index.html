@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Skyscanner iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0B0F14;
+    --surface-1: #141A22;
+    --surface-2: #1C242E;
+    --divider: #25303C;
+    --text-primary: #E8EDF2;
+    --text-secondary: #9AA7B4;
+    --text-tertiary: #66727E;
+    --ink: #F4F8FB;
+    --sky: #0770E3;
+    --sky-pressed: #0A5BBA;
+    --sky-bright: #05A8FA;
+    --navy: #05203C;
+    --green: #00A698;
+    --green-soft: #1FB8AB;
+    --amber: #FFB81C;
+    --red: #E5392E;
+    --price-low: #00A698;
+    --price-mid: #FFB81C;
+    --price-high: #E5392E;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--sky); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Top brand bar */
+  .app-bar { padding: 4px 18px 14px; display: flex; align-items: center; justify-content: space-between; }
+  .app-bar .wordmark { font-size: 19px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .app-bar .wordmark span { color: var(--sky); }
+  .app-bar .avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, var(--sky) 0%, var(--sky-bright) 100%); }
+
+  /* Trip-type segmented */
+  .seg { display: flex; gap: 6px; padding: 0 18px 12px; }
+  .seg-item { flex: 1; text-align: center; font-size: 12px; font-weight: 600; padding: 8px 0; border-radius: 8px; color: var(--text-secondary); background: var(--surface-1); border: 1px solid var(--divider); }
+  .seg-item.active { color: #FFF; background: var(--sky); border-color: var(--sky); }
+
+  /* Search card */
+  .search-card { margin: 0 18px 16px; background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; overflow: hidden; }
+  .field { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--divider); }
+  .field:last-child { border-bottom: none; }
+  .field svg { width: 18px; height: 18px; stroke: var(--sky); stroke-width: 2; fill: none; flex-shrink: 0; }
+  .field .lbl { font-size: 11px; color: var(--text-tertiary); font-weight: 600; letter-spacing: 0.2px; text-transform: uppercase; }
+  .field .val { font-size: 15px; color: var(--text-primary); font-weight: 600; margin-top: 2px; }
+  .field .swap { margin-left: auto; width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--divider); display: flex; align-items: center; justify-content: center; }
+  .field .swap svg { width: 14px; height: 14px; stroke: var(--text-secondary); }
+
+  .everywhere { display: flex; align-items: center; gap: 6px; margin: 0 18px 14px; }
+  .everywhere svg { width: 14px; height: 14px; stroke: var(--sky-bright); stroke-width: 2.4; fill: none; }
+  .everywhere span { font-size: 12px; color: var(--sky-bright); font-weight: 600; }
+
+  .search-btn { margin: 0 18px 18px; height: 50px; background: var(--sky); color: #FFF; border-radius: 12px; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 18px -8px rgba(7,112,227,0.7); }
+
+  /* Price calendar grid */
+  .cal-wrap { padding: 0 18px; }
+  .cal-title { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+  .cal-sub { font-size: 11px; color: var(--text-secondary); margin-bottom: 12px; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+  .day { aspect-ratio: 1; border-radius: 7px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; background: var(--surface-1); border: 1px solid var(--divider); }
+  .day .d { font-size: 11px; color: var(--text-primary); font-weight: 700; }
+  .day .p { font-size: 8px; margin-top: 1px; }
+  .day.low .p { color: var(--price-low); }
+  .day.mid .p { color: var(--price-mid); }
+  .day.high .p { color: var(--price-high); }
+  .day.sel { background: var(--sky); border-color: var(--sky); }
+  .day.sel .d, .day.sel .p { color: #FFF; }
+  .day.muted { opacity: 0.35; }
+
+  /* Tab bar */
+  .tab-bar { margin-top: auto; height: 64px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: rgba(11,15,20,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 4px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--sky); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 600; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--sky); color: #FFF; font-size: 16px; padding: 14px 28px; border-radius: 12px; }
+  .btn-primary:active { background: var(--sky-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--sky); border: 1.5px solid var(--sky); font-size: 14px; font-weight: 700; padding: 12px 20px; border-radius: 12px; }
+  .btn-pill { background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--divider); font-size: 13px; font-weight: 600; padding: 9px 16px; border-radius: 500px; }
+  .btn-text { background: transparent; color: var(--sky-bright); font-size: 14px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Price hint chips */
+  .price-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .price-chip { font-family: var(--font); font-weight: 700; font-size: 13px; padding: 7px 14px; border-radius: 8px; }
+  .price-chip.low { background: rgba(0,166,152,0.16); color: var(--price-low); }
+  .price-chip.mid { background: rgba(255,184,28,0.16); color: var(--price-mid); }
+  .price-chip.high { background: rgba(229,57,46,0.16); color: var(--price-high); }
+
+  /* Flight result row */
+  .flight { background: var(--surface-2); border: 1px solid var(--divider); border-radius: 14px; padding: 16px; }
+  .flight-top { display: flex; align-items: center; justify-content: space-between; }
+  .flight-time { font-size: 17px; font-weight: 700; color: var(--text-primary); }
+  .flight-route { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+  .flight-mid { flex: 1; text-align: center; padding: 0 12px; }
+  .flight-dur { font-size: 11px; color: var(--text-tertiary); }
+  .flight-line { height: 1px; background: var(--divider); margin: 6px 0; position: relative; }
+  .flight-line::after { content: ''; position: absolute; right: 0; top: -2px; width: 5px; height: 5px; border-radius: 50%; background: var(--sky); }
+  .flight-stop { font-size: 10px; color: var(--green); font-weight: 600; }
+  .flight-price { font-size: 19px; font-weight: 800; color: var(--text-primary); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--sky); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-24 { border-radius: 24px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; width: 42px; height: 42px; border-radius: 10px; background: var(--sky); align-items: center; justify-content: center; }
+  .logo svg { width: 26px; height: 26px; fill: #FFF; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 24 24"><path d="M2.5 19.5 21 12 2.5 4.5l1.6 6.2L14 12 4.1 13.3z"/></svg>
+    </span>
+    <div class="page-title">Skyscanner iOS — Design Tokens</div>
+    <div class="page-chip">Sky Blue Dark</div>
+  </div>
+  <p class="page-subtitle">Deep navy-black canvas (#0B0F14) lets Skyscanner Sky Blue (#0770E3) carry every primary action. The price-calendar traffic-light system — green #00A698 cheap, amber #FFB81C average, red #E5392E expensive — survives the dark inversion untouched, because price guidance must read identically in any theme.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="scroll-body">
+            <div class="app-bar">
+              <div class="wordmark">sky<span>scanner</span></div>
+              <div class="avatar"></div>
+            </div>
+
+            <div class="seg">
+              <div class="seg-item active">Return</div>
+              <div class="seg-item">One way</div>
+              <div class="seg-item">Multi-city</div>
+            </div>
+
+            <div class="search-card">
+              <div class="field">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 21s7-5.5 7-11a7 7 0 0 0-14 0c0 5.5 7 11 7 11z"/></svg>
+                <div>
+                  <div class="lbl">From</div>
+                  <div class="val">London (LON)</div>
+                </div>
+                <div class="swap"><svg viewBox="0 0 24 24"><path d="M7 16V4M7 4 3 8M7 4l4 4M17 8v12M17 20l4-4M17 20l-4-4"/></svg></div>
+              </div>
+              <div class="field">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 21s7-5.5 7-11a7 7 0 0 0-14 0c0 5.5 7 11 7 11z"/></svg>
+                <div>
+                  <div class="lbl">To</div>
+                  <div class="val">Everywhere</div>
+                </div>
+              </div>
+              <div class="field">
+                <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
+                <div>
+                  <div class="lbl">Depart · Return</div>
+                  <div class="val">12 Oct — 19 Oct</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="everywhere">
+              <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM2 12h20M12 2c3 3 3 17 0 20M12 2c-3 3-3 17 0 20"/></svg>
+              <span>Explore Everywhere — find the cheapest destination</span>
+            </div>
+
+            <div class="search-btn">Search flights</div>
+
+            <div class="cal-wrap">
+              <div class="cal-title">Cheapest month — October</div>
+              <div class="cal-sub">Green is a good deal · prices per person</div>
+              <div class="cal-grid">
+                <div class="day muted"><span class="d">29</span></div>
+                <div class="day muted"><span class="d">30</span></div>
+                <div class="day low"><span class="d">1</span><span class="p">£38</span></div>
+                <div class="day low"><span class="d">2</span><span class="p">£41</span></div>
+                <div class="day mid"><span class="d">3</span><span class="p">£74</span></div>
+                <div class="day mid"><span class="d">4</span><span class="p">£81</span></div>
+                <div class="day high"><span class="d">5</span><span class="p">£148</span></div>
+                <div class="day low"><span class="d">6</span><span class="p">£44</span></div>
+                <div class="day low"><span class="d">7</span><span class="p">£39</span></div>
+                <div class="day mid"><span class="d">8</span><span class="p">£69</span></div>
+                <div class="day mid"><span class="d">9</span><span class="p">£77</span></div>
+                <div class="day high"><span class="d">10</span><span class="p">£152</span></div>
+                <div class="day high"><span class="d">11</span><span class="p">£161</span></div>
+                <div class="day sel"><span class="d">12</span><span class="p">£42</span></div>
+                <div class="day low"><span class="d">13</span><span class="p">£40</span></div>
+                <div class="day low"><span class="d">14</span><span class="p">£37</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M2.5 19.5 21 12 2.5 4.5l1.6 6.2L14 12 4.1 13.3z"/></svg><span>Explore</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 7h18M3 12h18M3 17h18"/></svg><span>Trips</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span>Saved</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M6 19c1-3 3.5-4 6-4s5 1 6 4"/></svg><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Dark Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0B0F14;"><div class="name">Dark Canvas</div>#0B0F14</div>
+          <div class="swatch" style="background:#141A22;"><div class="name">Surface 1</div>#141A22</div>
+          <div class="swatch" style="background:#1C242E;"><div class="name">Surface 2</div>#1C242E</div>
+          <div class="swatch" style="background:#25303C;"><div class="name">Divider</div>#25303C</div>
+          <div class="swatch" style="background:#E8EDF2; color:#0B0F14;"><div class="name">Text Primary</div>#E8EDF2</div>
+          <div class="swatch" style="background:#9AA7B4; color:#0B0F14;"><div class="name">Text Secondary</div>#9AA7B4</div>
+          <div class="swatch" style="background:#0770E3;"><div class="name">Sky Blue</div>#0770E3</div>
+          <div class="swatch" style="background:#05A8FA;"><div class="name">Sky Bright</div>#05A8FA</div>
+          <div class="swatch" style="background:#00A698;"><div class="name">Price Low</div>#00A698</div>
+          <div class="swatch" style="background:#FFB81C; color:#222;"><div class="name">Price Avg</div>#FFB81C</div>
+          <div class="swatch" style="background:#E5392E;"><div class="name">Price High</div>#E5392E</div>
+          <div class="swatch" style="background:#05203C;"><div class="name">Deep Navy</div>#05203C</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Skyscanner Relative (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Display · 32pt · 800</div><div class="type-sample t-32">Explore everywhere</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 26pt · 700</div><div class="type-sample t-26">London → Barcelona</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Cheapest month</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 18pt · 700</div><div class="type-sample t-18">Direct · 2h 15m</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Prices shown are the cheapest available for this route.</div></div>
+        <div class="type-row"><div class="type-meta">Price · 15pt · 600</div><div class="type-sample t-15m">from £42 return</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">3 results · sorted by Best</div></div>
+        <div class="type-row"><div class="type-meta">Label · 12pt · 600</div><div class="type-sample t-12">DEPART · RETURN</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Search flights</button>
+          <button class="btn btn-outline">Set price alert</button>
+          <button class="btn btn-pill">Filters</button>
+          <button class="btn-text">View 64 deals</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Price Hint Chips (Traffic Light)</div>
+        <div class="price-row">
+          <div class="price-chip low">£38 · Cheap</div>
+          <div class="price-chip mid">£81 · Average</div>
+          <div class="price-chip high">£152 · Expensive</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Flight Result Row</div>
+        <div class="flight">
+          <div class="flight-top">
+            <div>
+              <div class="flight-time">07:25</div>
+              <div class="flight-route">LHR</div>
+            </div>
+            <div class="flight-mid">
+              <div class="flight-dur">2h 15m</div>
+              <div class="flight-line"></div>
+              <div class="flight-stop">Direct</div>
+            </div>
+            <div>
+              <div class="flight-time">10:40</div>
+              <div class="flight-route">BCN</div>
+            </div>
+            <div style="text-align:right;">
+              <div class="flight-price">£42</div>
+              <div class="flight-route">return</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-24">24</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Skyscanner's dark canvas is a cool navy-black <code>#0B0F14</code>, not pure black — it keeps the brand's aviation feel. Sky Blue <code>#0770E3</code> stays the primary action color across themes; on dark it gains a brighter sibling <code>#05A8FA</code> for links and the Everywhere accent. The traffic-light price system is sacred: green <code>#00A698</code>, amber <code>#FFB81C</code>, red <code>#E5392E</code> never shift hue between light and dark, because a "good deal" must always look the same. Cards lift from canvas via <code>#141A22</code> → <code>#1C242E</code> rather than shadows.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

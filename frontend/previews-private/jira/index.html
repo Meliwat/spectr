@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Jira iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #1D2125;
+    --surface-1: #22272B;
+    --surface-2: #2C333A;
+    --surface-3: #38414A;
+    --divider: #38414A;
+    --text-primary: #C7D1DB;
+    --text-secondary: #9FADBC;
+    --text-tertiary: #738496;
+    --ink: #DEE4EA;
+    --jira-blue: #0052CC;
+    --jira-blue-bright: #1868DB;
+    --jira-blue-pressed: #09326C;
+    --ink-navy: #172B4D;
+    --nav-navy: #1C2B41;
+    --green: #1F845A;
+    --green-bright: #4BCE97;
+    --yellow: #E2B203;
+    --red: #C9372C;
+    --red-bright: #F87168;
+    --purple: #6E5DC6;
+    --teal: #1D7F8C;
+    --epic-purple: #8270DB;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--jira-blue); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Board header */
+  .board-head { padding: 4px 16px 12px; }
+  .board-crumb { font-size: 12px; color: var(--text-tertiary); font-weight: 500; }
+  .board-title-row { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
+  .board-title { font-size: 22px; font-weight: 700; color: var(--ink); letter-spacing: -0.3px; }
+  .board-avatars { display: flex; }
+  .av { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--canvas); margin-left: -8px; font-size: 11px; font-weight: 700; color: #FFF; display: flex; align-items: center; justify-content: center; }
+  .av:first-child { margin-left: 0; }
+  .av-1 { background: #5E4DB2; }
+  .av-2 { background: #1D7F8C; }
+  .av-3 { background: #943D73; }
+
+  /* Sprint chip row */
+  .sprint-row { display: flex; gap: 8px; padding: 0 16px 12px; }
+  .sprint-pill { font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 6px; background: var(--surface-2); color: var(--text-secondary); }
+  .sprint-pill.active { background: var(--jira-blue); color: #FFF; }
+
+  /* Board columns */
+  .board { flex: 1; display: flex; gap: 12px; padding: 4px 16px 12px; overflow-x: auto; scrollbar-width: none; }
+  .board::-webkit-scrollbar { display: none; }
+  .col { flex: 0 0 232px; display: flex; flex-direction: column; }
+  .col-head { display: flex; align-items: center; gap: 8px; padding: 4px 2px 10px; }
+  .col-name { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-tertiary); }
+  .col-count { font-size: 11px; font-weight: 700; color: var(--text-tertiary); background: var(--surface-2); border-radius: 999px; padding: 1px 7px; }
+
+  .card { background: var(--surface-1); border-radius: 8px; padding: 12px; margin-bottom: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.4); border: 1px solid var(--divider); }
+  .card-summary { font-size: 13px; font-weight: 500; color: var(--text-primary); line-height: 1.4; }
+  .card-labels { display: flex; gap: 5px; margin-top: 10px; flex-wrap: wrap; }
+  .lab { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.3px; }
+  .lab-design { background: #3B2C5E; color: #C0B6F2; }
+  .lab-bug { background: #5D1F1A; color: #FD9891; }
+  .lab-api { background: #1C3329; color: #7EE2B8; }
+  .card-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+  .card-meta { display: flex; align-items: center; gap: 8px; }
+  .issue-type { width: 16px; height: 16px; border-radius: 3px; display: flex; align-items: center; justify-content: center; }
+  .it-story { background: #1F845A; }
+  .it-bug { background: #C9372C; }
+  .it-task { background: #1868DB; }
+  .issue-type svg { width: 10px; height: 10px; fill: #FFF; }
+  .issue-key { font-size: 11px; font-weight: 700; color: var(--text-tertiary); }
+  .pri svg { width: 14px; height: 14px; }
+  .card-av { width: 22px; height: 22px; border-radius: 50%; font-size: 10px; font-weight: 700; color: #FFF; display: flex; align-items: center; justify-content: center; }
+  .sp-badge { font-size: 10px; font-weight: 700; color: var(--text-secondary); background: var(--surface-2); border-radius: 999px; min-width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; padding: 0 5px; }
+
+  /* Tab bar */
+  .tab-bar { height: 68px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(29,33,37,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 500; gap: 3px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--jira-blue-bright); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 700; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 600; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 500; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 600; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--jira-blue); color: #FFF; font-size: 15px; padding: 12px 24px; border-radius: 6px; }
+  .btn-primary:active { background: var(--jira-blue-pressed); }
+  .btn-subtle { background: var(--surface-2); color: var(--text-primary); font-size: 14px; font-weight: 500; padding: 10px 18px; border-radius: 6px; }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1px solid var(--surface-3); font-size: 14px; font-weight: 500; padding: 10px 18px; border-radius: 6px; }
+  .btn-text { background: transparent; color: var(--jira-blue-bright); font-size: 14px; font-weight: 600; padding: 10px 4px; border: none; cursor: pointer; }
+
+  /* Status lozenges */
+  .loz-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .loz { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.4px; }
+  .loz-todo { background: var(--surface-3); color: var(--text-secondary); }
+  .loz-prog { background: #092957; color: #8FB8F6; }
+  .loz-done { background: #1C3329; color: #7EE2B8; }
+  .loz-block { background: #5D1F1A; color: #FD9891; }
+
+  /* Issue type chips */
+  .itype-row { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+  .itype { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 500; color: var(--text-primary); }
+  .itype i { width: 18px; height: 18px; border-radius: 3px; display: flex; align-items: center; justify-content: center; }
+  .itype i svg { width: 11px; height: 11px; fill: #FFF; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--jira-blue); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-3 { border-radius: 3px; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-block; width: 40px; height: 40px; }
+  .logo svg { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 32 32"><defs><linearGradient id="jg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0052CC"/><stop offset="1" stop-color="#2684FF"/></linearGradient></defs><path fill="url(#jg)" d="M15.6 0L4 11.6a1.4 1.4 0 000 2l11.6 11.6L19.7 21 13.7 15l6-6z"/><path fill="#2684FF" d="M16.4 32L28 20.4a1.4 1.4 0 000-2L16.4 6.8 12.3 11l6 6-6 6z"/></svg>
+    </span>
+    <div class="page-title">Jira iOS — Design Tokens</div>
+    <div class="page-chip">Atlassian Dark</div>
+  </div>
+  <p class="page-subtitle">Jira's neutral-dark canvas (#1D2125) with cards lifting to #22272B. Jira Blue (#0052CC) drives every primary action; on dark surfaces the brighter #1868DB carries links and active tabs. Status lozenges, issue-type icons, and the sprint board are the signature surface.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="board-head">
+            <div class="board-crumb">Mobile Apps · Projects</div>
+            <div class="board-title-row">
+              <div class="board-title">MOB board</div>
+              <div class="board-avatars">
+                <div class="av av-1">AK</div>
+                <div class="av av-2">RS</div>
+                <div class="av av-3">+4</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sprint-row">
+            <div class="sprint-pill active">Sprint 24</div>
+            <div class="sprint-pill">Backlog</div>
+            <div class="sprint-pill">Filters</div>
+          </div>
+
+          <div class="board">
+            <div class="col">
+              <div class="col-head"><span class="col-name">To Do</span><span class="col-count">5</span></div>
+              <div class="card">
+                <div class="card-summary">Onboarding carousel skips final step on iPhone SE</div>
+                <div class="card-labels"><span class="lab lab-bug">ios</span><span class="lab lab-design">ux</span></div>
+                <div class="card-foot">
+                  <div class="card-meta">
+                    <span class="issue-type it-bug"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/></svg></span>
+                    <span class="issue-key">MOB-412</span>
+                  </div>
+                  <div class="card-meta">
+                    <span class="sp-badge">5</span>
+                    <span class="card-av" style="background:#5E4DB2">AK</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-summary">Add pull-to-refresh on the activity feed</div>
+                <div class="card-labels"><span class="lab lab-api">api</span></div>
+                <div class="card-foot">
+                  <div class="card-meta">
+                    <span class="issue-type it-story"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/></svg></span>
+                    <span class="issue-key">MOB-419</span>
+                  </div>
+                  <div class="card-meta">
+                    <span class="sp-badge">3</span>
+                    <span class="card-av" style="background:#1D7F8C">RS</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="col-head"><span class="col-name">In Progress</span><span class="col-count">3</span></div>
+              <div class="card">
+                <div class="card-summary">Migrate auth flow to OAuth 2.0 PKCE</div>
+                <div class="card-labels"><span class="lab lab-api">backend</span><span class="lab lab-bug">p1</span></div>
+                <div class="card-foot">
+                  <div class="card-meta">
+                    <span class="issue-type it-task"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 6" stroke="#FFF" stroke-width="3" fill="none"/></svg></span>
+                    <span class="issue-key">MOB-388</span>
+                  </div>
+                  <div class="card-meta">
+                    <span class="sp-badge">8</span>
+                    <span class="card-av" style="background:#943D73">MJ</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-summary">Dark mode tokens for board columns</div>
+                <div class="card-labels"><span class="lab lab-design">design</span></div>
+                <div class="card-foot">
+                  <div class="card-meta">
+                    <span class="issue-type it-story"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/></svg></span>
+                    <span class="issue-key">MOB-401</span>
+                  </div>
+                  <div class="card-meta">
+                    <span class="sp-badge">2</span>
+                    <span class="card-av" style="background:#5E4DB2">AK</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Boards</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M9 11H5a2 2 0 0 0-2 2v6h6zM15 7h-6v12h6zM21 4h-6v15h6z"/></svg><span>Backlog</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span>Alerts</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M6 19c1-3 3.5-4 6-4s5 1 6 4"/></svg><span>You</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette (Dark)</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0052CC;"><div class="name">Jira Blue</div>#0052CC</div>
+          <div class="swatch" style="background:#1868DB;"><div class="name">Blue (on dark)</div>#1868DB</div>
+          <div class="swatch" style="background:#172B4D;"><div class="name">Ink Navy</div>#172B4D</div>
+          <div class="swatch" style="background:#1D2125;"><div class="name">Canvas</div>#1D2125</div>
+          <div class="swatch" style="background:#22272B;"><div class="name">Card Surface</div>#22272B</div>
+          <div class="swatch" style="background:#2C333A;"><div class="name">Surface 2</div>#2C333A</div>
+          <div class="swatch" style="background:#C7D1DB; color:#1D2125;"><div class="name">Text Primary</div>#C7D1DB</div>
+          <div class="swatch" style="background:#9FADBC; color:#1D2125;"><div class="name">Text Subtle</div>#9FADBC</div>
+          <div class="swatch" style="background:#1F845A;"><div class="name">Success Green</div>#1F845A</div>
+          <div class="swatch" style="background:#E2B203; color:#172B4D;"><div class="name">Warning</div>#E2B203</div>
+          <div class="swatch" style="background:#C9372C;"><div class="name">Danger</div>#C9372C</div>
+          <div class="swatch" style="background:#8270DB;"><div class="name">Epic Purple</div>#8270DB</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Atlassian Sans (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 700</div><div class="type-sample t-32">Your work</div></div>
+        <div class="type-row"><div class="type-meta">Board Title · 22pt · 700</div><div class="type-sample t-22">MOB board</div></div>
+        <div class="type-row"><div class="type-meta">Issue Title · 20pt · 600</div><div class="type-sample t-18">Migrate auth flow to OAuth 2.0</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Acceptance criteria are tracked in the description and verified by QA.</div></div>
+        <div class="type-row"><div class="type-meta">Card Summary · 15pt · 500</div><div class="type-sample t-15m">Add pull-to-refresh on the activity feed</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Updated 2 hours ago by Riya S.</div></div>
+        <div class="type-row"><div class="type-meta">Column Header · 12pt · 600 caps</div><div class="type-sample t-12">In Progress</div></div>
+        <div class="type-row"><div class="type-meta">Issue Key · 11pt · 700</div><div class="type-sample" style="font-size:11px;font-weight:700;color:var(--text-tertiary)">MOB-388</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Create</button>
+          <button class="btn btn-subtle">Assign to me</button>
+          <button class="btn btn-outline">Add child</button>
+          <button class="btn-text">View workflow</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Status Lozenges</div>
+        <div class="loz-row">
+          <span class="loz loz-todo">To Do</span>
+          <span class="loz loz-prog">In Progress</span>
+          <span class="loz loz-done">Done</span>
+          <span class="loz loz-block">Blocked</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Issue Type Icons</div>
+        <div class="itype-row">
+          <div class="itype"><i style="background:#1F845A"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/></svg></i>Story</div>
+          <div class="itype"><i style="background:#C9372C"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/></svg></i>Bug</div>
+          <div class="itype"><i style="background:#1868DB"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 6" stroke="#FFF" stroke-width="3" fill="none"/></svg></i>Task</div>
+          <div class="itype"><i style="background:#8270DB"><svg viewBox="0 0 24 24"><path d="M13 2L4 14h6l-1 8 9-12h-6z"/></svg></i>Epic</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-3">3</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Jira's dark theme is built on Atlassian's neutral ramp — canvas <code>#1D2125</code>, cards elevate to <code>#22272B</code>, columns and inputs to <code>#2C333A</code>. The signature Jira Blue <code>#0052CC</code> stays for brand moments, but interactive blue brightens to <code>#1868DB</code> so links and the active tab clear the dark canvas at WCAG AA. Status lozenges keep their semantic hue families (blue / green / red / neutral) with darkened fills and bright text. Text never goes pure white — primary is <code>#C7D1DB</code>, subtle <code>#9FADBC</code>, echoing the warm-neutral <code>#172B4D</code> ink of light mode inverted.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

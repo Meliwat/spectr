@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Canva iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #18191B;
+    --surface-1: #1F2023;
+    --surface-2: #27282C;
+    --divider: #303135;
+    --text-primary: #ECECEE;
+    --text-secondary: #A4A6AD;
+    --text-tertiary: #6F7178;
+    --ink: #F6F6F7;
+    --canva-cyan: #00C4CC;
+    --canva-purple: #7D2AE8;
+    --canva-blue: #3B5CFF;
+    --canva-pressed: #6A1FD0;
+    --pro-gold: #FFC24B;
+    --success: #1FC77C;
+    --error: #FF5163;
+    --font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: linear-gradient(135deg, var(--canva-cyan), var(--canva-purple)); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+
+  /* Home header */
+  .home-top { padding: 4px 18px 12px; display: flex; align-items: center; justify-content: space-between; }
+  .home-hi { font-size: 22px; font-weight: 800; color: var(--ink); letter-spacing: -0.3px; }
+  .home-av { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--canva-cyan), var(--canva-purple)); display: flex; align-items: center; justify-content: center; color: #FFF; font-weight: 700; font-size: 14px; }
+
+  .home-search { margin: 0 18px 16px; height: 46px; border-radius: 14px; background: var(--surface-2); display: flex; align-items: center; gap: 10px; padding: 0 14px; }
+  .home-search svg { width: 17px; height: 17px; stroke: var(--text-secondary); stroke-width: 2; fill: none; }
+  .home-search span { color: var(--text-secondary); font-size: 15px; }
+
+  /* Design type chips */
+  .types { padding: 0 18px; display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
+  .types::-webkit-scrollbar { display: none; }
+  .dtype { flex-shrink: 0; width: 76px; display: flex; flex-direction: column; align-items: center; gap: 7px; }
+  .dtype-ic { width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center; }
+  .dtype-ic svg { width: 24px; height: 24px; stroke: #FFF; stroke-width: 2; fill: none; }
+  .dtype-l { font-size: 11px; font-weight: 600; color: var(--text-secondary); }
+
+  /* Templates grid */
+  .sec-h { padding: 22px 18px 12px; display: flex; align-items: center; justify-content: space-between; }
+  .sec-t { font-size: 17px; font-weight: 700; color: var(--ink); }
+  .sec-a { font-size: 13px; font-weight: 600; color: var(--canva-cyan); }
+  .tpl-grid { padding: 0 18px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; flex: 1; overflow-y: auto; scrollbar-width: none; }
+  .tpl-grid::-webkit-scrollbar { display: none; }
+  .tpl { aspect-ratio: 3/4; border-radius: 12px; overflow: hidden; position: relative; }
+  .tpl-1 { background: linear-gradient(150deg, #00C4CC 0%, #3B5CFF 100%); }
+  .tpl-2 { background: linear-gradient(150deg, #7D2AE8 0%, #C13AE0 100%); }
+  .tpl-3 { background: linear-gradient(150deg, #FF7A59 0%, #FFC24B 100%); }
+  .tpl-4 { background: linear-gradient(150deg, #1FC77C 0%, #00C4CC 100%); }
+  .tpl-5 { background: linear-gradient(150deg, #3B5CFF 0%, #7D2AE8 100%); }
+  .tpl-6 { background: linear-gradient(150deg, #FF5163 0%, #FF7A59 100%); }
+  .tpl::after { content: ''; position: absolute; left: 12%; right: 12%; top: 22%; height: 10%; background: rgba(255,255,255,0.85); border-radius: 3px; box-shadow: 0 16px 0 rgba(255,255,255,0.55), 0 28px 0 rgba(255,255,255,0.35); }
+  .tpl-pro { position: absolute; top: 7px; right: 7px; background: var(--pro-gold); color: #1A1205; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 6px; letter-spacing: 0.3px; }
+
+  /* Tab bar */
+  .tab-bar { height: 70px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(24,25,27,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 4px; }
+  .tab.active { color: var(--text-primary); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab-fab { width: 46px; height: 46px; border-radius: 16px; background: linear-gradient(135deg, var(--canva-cyan), var(--canva-purple)); display: flex; align-items: center; justify-content: center; margin-top: -4px; box-shadow: 0 6px 16px rgba(125,42,232,0.45); }
+  .tab-fab svg { width: 24px; height: 24px; stroke: #FFF; stroke-width: 2.6; fill: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 600; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: linear-gradient(135deg, var(--canva-cyan), var(--canva-purple)); color: #FFF; font-size: 16px; padding: 14px 28px; border-radius: 999px; }
+  .btn-primary:active { filter: brightness(0.93); transform: scale(0.98); }
+  .btn-solid { background: var(--canva-purple); color: #FFF; font-size: 15px; padding: 12px 22px; border-radius: 999px; }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1.5px solid var(--divider); font-size: 15px; font-weight: 600; padding: 11px 20px; border-radius: 999px; }
+  .btn-pro { background: var(--pro-gold); color: #1A1205; font-size: 14px; font-weight: 800; padding: 10px 18px; border-radius: 999px; }
+  .btn-text { background: transparent; color: var(--canva-cyan); font-size: 15px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Design-type tiles */
+  .dt-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .dt { width: 90px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .dt-ic { width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center; }
+  .dt-ic svg { width: 24px; height: 24px; stroke: #FFF; stroke-width: 2; fill: none; }
+  .dt-l { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: linear-gradient(135deg, var(--canva-cyan), var(--canva-purple)); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-24 { border-radius: 24px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Canva logomark */
+  .clogo { display: inline-flex; width: 46px; height: 46px; align-items: center; justify-content: center; }
+  .clogo svg { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="clogo">
+      <svg viewBox="0 0 64 64"><defs><linearGradient id="cg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00C4CC"/><stop offset="1" stop-color="#7D2AE8"/></linearGradient></defs><circle cx="32" cy="32" r="30" fill="url(#cg)"/><path d="M41 39c-2.8 3-6.5 4.8-10.2 4.8-6 0-9.8-4.4-9.8-11.2 0-8.6 5.4-15.4 12-15.4 3.4 0 5.6 1.9 5.6 4.7 0 2.3-1.4 3.9-3.2 3.9-1.4 0-2.4-.9-2.4-2.3 0-1.2.7-2 .7-2.6 0-.5-.5-.8-1.1-.8-3.2 0-6.2 5.1-6.2 11 0 4.3 2.1 7.1 5.6 7.1 2.6 0 5-1.4 7-3.8z" fill="#FFF"/></svg>
+    </span>
+    <div class="page-title">Canva iOS — Design Tokens</div>
+    <div class="page-chip">Gradient Dark</div>
+  </div>
+  <p class="page-subtitle">Canva's identity is the cyan→purple gradient (#00C4CC → #7D2AE8) on a near-white workspace — inverted here to a #18191B dark canvas. The gradient is the brand: the logo, the create FAB, primary buttons and the template hero rails all carry it. Plus Jakarta Sans stands in for Canva Sans. Templates stay full-color; chrome dims, content does not.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="home-top">
+            <div class="home-hi">Hi, Mel 👋</div>
+            <div class="home-av">M</div>
+          </div>
+
+          <div class="home-search">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+            <span>Search templates, photos…</span>
+          </div>
+
+          <div class="types">
+            <div class="dtype"><div class="dtype-ic" style="background:linear-gradient(135deg,#00C4CC,#3B5CFF);"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><circle cx="9" cy="9" r="1.6"/><path d="M5 17l4-4 4 4 3-3 3 3"/></svg></div><div class="dtype-l">Instagram</div></div>
+            <div class="dtype"><div class="dtype-ic" style="background:linear-gradient(135deg,#7D2AE8,#C13AE0);"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/></svg></div><div class="dtype-l">Presentation</div></div>
+            <div class="dtype"><div class="dtype-ic" style="background:linear-gradient(135deg,#FF7A59,#FFC24B);"><svg viewBox="0 0 24 24"><path d="M6 3h9l5 5v13H6z"/><path d="M15 3v5h5"/></svg></div><div class="dtype-l">Doc</div></div>
+            <div class="dtype"><div class="dtype-ic" style="background:linear-gradient(135deg,#1FC77C,#00C4CC);"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div><div class="dtype-l">Whiteboard</div></div>
+            <div class="dtype"><div class="dtype-ic" style="background:linear-gradient(135deg,#3B5CFF,#7D2AE8);"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></div><div class="dtype-l">Video</div></div>
+          </div>
+
+          <div class="sec-h">
+            <div class="sec-t">Recommended</div>
+            <div class="sec-a">See all</div>
+          </div>
+
+          <div class="tpl-grid">
+            <div class="tpl tpl-1"><span class="tpl-pro">PRO</span></div>
+            <div class="tpl tpl-2"></div>
+            <div class="tpl tpl-3"></div>
+            <div class="tpl tpl-4"></div>
+            <div class="tpl tpl-5"><span class="tpl-pro">PRO</span></div>
+            <div class="tpl tpl-6"></div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 10l9-8 9 8v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Templates</span></div>
+            <div class="tab"><div class="tab-fab"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 7h18M3 12h18M3 17h12"/></svg><span>Projects</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/></svg><span>You</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#18191B;"><div class="name">Dark Canvas</div>#18191B</div>
+          <div class="swatch" style="background:#1F2023;"><div class="name">Surface 1</div>#1F2023</div>
+          <div class="swatch" style="background:#27282C;"><div class="name">Surface 2</div>#27282C</div>
+          <div class="swatch" style="background:#303135;"><div class="name">Divider</div>#303135</div>
+          <div class="swatch" style="background:#ECECEE; color:#18191B;"><div class="name">Text Primary</div>#ECECEE</div>
+          <div class="swatch" style="background:#A4A6AD; color:#18191B;"><div class="name">Text Secondary</div>#A4A6AD</div>
+          <div class="swatch" style="background:#00C4CC;"><div class="name">Canva Cyan</div>#00C4CC</div>
+          <div class="swatch" style="background:#7D2AE8;"><div class="name">Canva Purple</div>#7D2AE8</div>
+          <div class="swatch" style="background:#3B5CFF;"><div class="name">Canva Blue</div>#3B5CFF</div>
+          <div class="swatch" style="background:#FFC24B; color:#1A1205;"><div class="name">Pro Gold</div>#FFC24B</div>
+          <div class="swatch" style="background:#1FC77C;"><div class="name">Success</div>#1FC77C</div>
+          <div class="swatch" style="background:#FF5163;"><div class="name">Error</div>#FF5163</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Canva Sans (Plus Jakarta Sans fallback)</div>
+        <div class="type-row"><div class="type-meta">Display · 32pt · 800</div><div class="type-sample t-32">Create</div></div>
+        <div class="type-row"><div class="type-meta">Greeting · 26pt · 800</div><div class="type-sample t-26">Hi, Mel 👋</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">What will you design?</div></div>
+        <div class="type-row"><div class="type-meta">Subsection · 18pt · 700</div><div class="type-sample t-18">Recommended for you</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Start from a template or a blank canvas.</div></div>
+        <div class="type-row"><div class="type-meta">Label · 15pt · 600</div><div class="type-sample t-15m">Instagram Post</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Edited 2 hours ago · Shared</div></div>
+        <div class="type-row"><div class="type-meta">Chip · 12pt · 600</div><div class="type-sample t-12">Presentation</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Create a design</button>
+          <button class="btn btn-solid">Continue</button>
+          <button class="btn btn-outline">Use template</button>
+          <button class="btn btn-pro">Try Pro</button>
+          <button class="btn-text">See all</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Design Type Tiles</div>
+        <div class="dt-row">
+          <div class="dt"><div class="dt-ic" style="background:linear-gradient(135deg,#00C4CC,#3B5CFF);"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><circle cx="9" cy="9" r="1.6"/><path d="M5 17l4-4 4 4 3-3 3 3"/></svg></div><div class="dt-l">Instagram</div></div>
+          <div class="dt"><div class="dt-ic" style="background:linear-gradient(135deg,#7D2AE8,#C13AE0);"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/></svg></div><div class="dt-l">Presentation</div></div>
+          <div class="dt"><div class="dt-ic" style="background:linear-gradient(135deg,#FF7A59,#FFC24B);"><svg viewBox="0 0 24 24"><path d="M6 3h9l5 5v13H6z"/><path d="M15 3v5h5"/></svg></div><div class="dt-l">Doc</div></div>
+          <div class="dt"><div class="dt-ic" style="background:linear-gradient(135deg,#1FC77C,#00C4CC);"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div><div class="dt-l">Whiteboard</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-24">24</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Canva's product is famously near-white; its dark mode keeps the canvas warm-neutral at <code>#18191B</code> rather than pure black, with panels lifting to <code>#1F2023</code>. The cyan→purple brand gradient (<code>#00C4CC → #7D2AE8</code>) is identical across themes — it is the create FAB, the primary button and the logo, and it pops on dark. Pro features stay gold <code>#FFC24B</code>. Template thumbnails and user designs remain full-color — only the surrounding chrome dims, never the creative content.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

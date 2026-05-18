@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by iMessage iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #000000;
+    --surface-1: #1C1C1E;
+    --surface-2: #2C2C2E;
+    --divider: #38383A;
+    --text-primary: #FFFFFF;
+    --text-secondary: #98989F;
+    --text-tertiary: #636366;
+    --ink: #F2F2F7;
+    --imessage-blue: #007AFF;
+    --imessage-blue-pressed: #0062CC;
+    --sms-green: #34C759;
+    --sms-green-pressed: #248A3D;
+    --bubble-gray: #26262A;
+    --bubble-gray-light: #E9E9EB;
+    --tapback-bg: #2C2C2E;
+    --link: #2997FF;
+    --success: #30D158;
+    --error: #FF453A;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--imessage-blue); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Chat nav */
+  .chat-nav { display: flex; align-items: center; gap: 10px; padding: 4px 14px 12px; border-bottom: 0.5px solid var(--divider); }
+  .nav-back { color: var(--imessage-blue); }
+  .nav-back svg { width: 12px; height: 20px; stroke: currentColor; stroke-width: 3; fill: none; }
+  .nav-avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(160deg, #5E5CE6, #007AFF); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; color: #FFF; }
+  .nav-id { flex: 1; }
+  .nav-name { font-size: 13px; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 4px; }
+  .nav-name svg { width: 9px; height: 9px; stroke: var(--text-secondary); stroke-width: 3; fill: none; }
+  .nav-facetime { color: var(--imessage-blue); }
+  .nav-facetime svg { width: 24px; height: 24px; stroke: currentColor; stroke-width: 1.6; fill: none; }
+
+  /* Thread */
+  .thread { flex: 1; padding: 14px 14px 8px; overflow-y: auto; scrollbar-width: none; display: flex; flex-direction: column; gap: 3px; }
+  .thread::-webkit-scrollbar { display: none; }
+  .ts-sep { text-align: center; font-size: 11px; font-weight: 600; color: var(--text-tertiary); margin: 10px 0 6px; }
+  .ts-sep b { color: var(--text-secondary); font-weight: 600; }
+  .row { display: flex; max-width: 78%; }
+  .row.in { align-self: flex-start; }
+  .row.out { align-self: flex-end; }
+  .bubble { padding: 8px 14px; font-size: 15px; line-height: 1.3; border-radius: 19px; position: relative; }
+  .bubble.in { background: var(--bubble-gray); color: var(--text-primary); border-bottom-left-radius: 6px; }
+  .bubble.out { background: var(--imessage-blue); color: #FFF; border-bottom-right-radius: 6px; }
+  .bubble.sms { background: var(--sms-green); color: #FFF; border-bottom-right-radius: 6px; }
+  .tapback { position: absolute; top: -16px; right: -6px; background: var(--tapback-bg); border: 2px solid var(--canvas); border-radius: 16px; padding: 3px 7px; font-size: 11px; }
+  .row.in .tapback { right: auto; left: -6px; }
+  .gap { height: 9px; }
+  .delivered { align-self: flex-end; font-size: 10px; font-weight: 600; color: var(--text-secondary); margin: 2px 6px 4px 0; }
+  .typing { align-self: flex-start; background: var(--bubble-gray); border-radius: 19px; border-bottom-left-radius: 6px; padding: 12px 16px; display: flex; gap: 4px; }
+  .typing span { width: 7px; height: 7px; border-radius: 50%; background: var(--text-tertiary); }
+  .typing span:nth-child(2) { opacity: 0.7; }
+  .typing span:nth-child(3) { opacity: 0.45; }
+
+  /* Input bar */
+  .input-bar { display: flex; align-items: center; gap: 10px; padding: 8px 14px 16px; border-top: 0.5px solid var(--divider); background: rgba(0,0,0,0.7); backdrop-filter: blur(20px); }
+  .input-plus { width: 30px; height: 30px; border-radius: 50%; background: var(--surface-2); display: flex; align-items: center; justify-content: center; color: var(--text-secondary); }
+  .input-plus svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2.5; fill: none; }
+  .input-field { flex: 1; height: 34px; border-radius: 18px; border: 1px solid var(--divider); display: flex; align-items: center; padding: 0 14px; font-size: 14px; color: var(--text-tertiary); }
+  .input-send { width: 30px; height: 30px; border-radius: 50%; background: var(--imessage-blue); display: flex; align-items: center; justify-content: center; color: #FFF; }
+  .input-send svg { width: 15px; height: 15px; stroke: currentColor; stroke-width: 2.5; fill: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 700; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 600; letter-spacing: -0.2px; }
+  .t-17 { font-size: 17px; font-weight: 600; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15 { font-size: 15px; font-weight: 400; }
+  .t-13 { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 600; color: var(--text-tertiary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 600; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--imessage-blue); color: #FFF; font-size: 16px; padding: 13px 26px; border-radius: 14px; }
+  .btn-primary:active { background: var(--imessage-blue-pressed); transform: scale(0.98); }
+  .btn-sms { background: var(--sms-green); color: #FFF; font-size: 16px; padding: 13px 26px; border-radius: 14px; }
+  .btn-tinted { background: rgba(0,122,255,0.16); color: var(--imessage-blue); font-size: 15px; font-weight: 600; padding: 11px 20px; border-radius: 14px; }
+  .btn-text { background: transparent; color: var(--imessage-blue); font-size: 15px; font-weight: 500; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Chat bubbles demo */
+  .bub-demo { display: flex; flex-direction: column; gap: 8px; }
+  .bub { padding: 8px 14px; font-size: 15px; border-radius: 19px; max-width: 70%; }
+  .bub.b-in { background: var(--bubble-gray); color: var(--text-primary); align-self: flex-start; border-bottom-left-radius: 6px; }
+  .bub.b-out { background: var(--imessage-blue); color: #FFF; align-self: flex-end; border-bottom-right-radius: 6px; }
+  .bub.b-sms { background: var(--sms-green); color: #FFF; align-self: flex-end; border-bottom-right-radius: 6px; }
+
+  /* Tapback strip */
+  .tap-row { display: flex; gap: 10px; background: var(--surface-2); border-radius: 24px; padding: 8px 14px; width: fit-content; }
+  .tap-row span { font-size: 18px; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--imessage-blue); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-6 { border-radius: 6px; }
+  .r-10 { border-radius: 10px; }
+  .r-14 { border-radius: 14px; }
+  .r-19 { border-radius: 19px; }
+  .r-22 { border-radius: 22px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; width: 44px; height: 44px; border-radius: 11px; background: linear-gradient(180deg, #5DF675 0%, #1FCB4E 100%); align-items: center; justify-content: center; }
+  .logo svg { width: 26px; height: 26px; fill: #FFF; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 5.8 2 10.5c0 2.7 1.5 5.1 3.8 6.7-.2 1.6-1 3.1-2.1 4.3 2.1-.3 4.1-1.1 5.7-2.4 .8.2 1.7.3 2.6.3 5.5 0 10-3.8 10-8.9S17.5 2 12 2z"/></svg>
+    </span>
+    <div class="page-title">iMessage iOS — Design Tokens</div>
+    <div class="page-chip">System Dark</div>
+  </div>
+  <p class="page-subtitle">Apple's iMessage on a true-black canvas (#000000). Outgoing iMessages stay iMessage Blue (#007AFF); SMS/MMS fallback is Green (#34C759); incoming bubbles shift to dark gray (#26262A). SF Pro typography (Inter fallback), tapbacks, and typing dots are preserved.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="chat-nav">
+            <div class="nav-back"><svg viewBox="0 0 12 24"><path d="M11 1L2 12l9 11"/></svg></div>
+            <div class="nav-avatar">JD</div>
+            <div class="nav-id">
+              <div class="nav-name">Jamie Doe <svg viewBox="0 0 12 12"><path d="M3 5l3 4 3-7"/></svg></div>
+            </div>
+            <div class="nav-facetime"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="13" height="12" rx="3"/><path d="M15 10l6-3v10l-6-3z"/></svg></div>
+          </div>
+
+          <div class="thread">
+            <div class="ts-sep"><b>iMessage</b> · Today 9:38 AM</div>
+            <div class="row in"><div class="bubble in">Hey! Are we still on for the design review at 11?</div></div>
+            <div class="gap"></div>
+            <div class="row out"><div class="bubble out">Yep — I just pushed the tokens to the gallery <span class="tapback">👍</span></div></div>
+            <div class="row out"><div class="bubble out">Link is in the doc</div></div>
+            <div class="delivered">Delivered</div>
+            <div class="gap"></div>
+            <div class="row in"><div class="bubble in">Perfect, opening it now</div></div>
+            <div class="row in"><div class="bubble in">The blue bubbles look exactly right 🔵</div></div>
+            <div class="gap"></div>
+            <div class="ts-sep">SMS · sent as text message</div>
+            <div class="row out"><div class="bubble sms">(this one fell back to green SMS)</div></div>
+            <div class="gap"></div>
+            <div class="typing"><span></span><span></span><span></span></div>
+          </div>
+
+          <div class="input-bar">
+            <div class="input-plus"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+            <div class="input-field">iMessage</div>
+            <div class="input-send"><svg viewBox="0 0 24 24"><path d="M12 20V5M5 12l7-7 7 7"/></svg></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#007AFF;"><div class="name">iMessage Blue</div>#007AFF</div>
+          <div class="swatch" style="background:#0062CC;"><div class="name">Blue Pressed</div>#0062CC</div>
+          <div class="swatch" style="background:#34C759;"><div class="name">SMS Green</div>#34C759</div>
+          <div class="swatch" style="background:#248A3D;"><div class="name">Green Pressed</div>#248A3D</div>
+          <div class="swatch" style="background:#000000;"><div class="name">Canvas (Dark)</div>#000000</div>
+          <div class="swatch" style="background:#26262A;"><div class="name">Incoming Bubble</div>#26262A</div>
+          <div class="swatch" style="background:#E9E9EB; color:#1C1C1E;"><div class="name">Incoming (Light)</div>#E9E9EB</div>
+          <div class="swatch" style="background:#1C1C1E;"><div class="name">Surface 1</div>#1C1C1E</div>
+          <div class="swatch" style="background:#2C2C2E;"><div class="name">Surface 2</div>#2C2C2E</div>
+          <div class="swatch" style="background:#FFFFFF; color:#1C1C1E;"><div class="name">Text Primary</div>#FFFFFF</div>
+          <div class="swatch" style="background:#98989F; color:#1C1C1E;"><div class="name">Text Secondary</div>#98989F</div>
+          <div class="swatch" style="background:#FF453A;"><div class="name">Error / FaceTime</div>#FF453A</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — SF Pro (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Large Title · 32pt · 700</div><div class="type-sample t-32">Messages</div></div>
+        <div class="type-row"><div class="type-meta">Title 1 · 26pt · 700</div><div class="type-sample t-26">New Message</div></div>
+        <div class="type-row"><div class="type-meta">Title 3 · 22pt · 600</div><div class="type-sample t-22">Jamie Doe</div></div>
+        <div class="type-row"><div class="type-meta">Headline · 17pt · 600</div><div class="type-sample t-17">Contact name in nav bar</div></div>
+        <div class="type-row"><div class="type-meta">Body / Bubble · 16pt · 400</div><div class="type-sample t-16">Yep — I just pushed the tokens to the gallery</div></div>
+        <div class="type-row"><div class="type-meta">Message · 15pt · 400</div><div class="type-sample t-15">The blue bubbles look exactly right</div></div>
+        <div class="type-row"><div class="type-meta">Footnote · 13pt · 600</div><div class="type-sample t-13">Delivered · Read 9:41 AM</div></div>
+        <div class="type-row"><div class="type-meta">Caption · 11pt · 600</div><div class="type-sample t-11">iMessage · Today 9:38 AM</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Send</button>
+          <button class="btn btn-sms">Send as Text</button>
+          <button class="btn btn-tinted">Tapback</button>
+          <button class="btn-text">Edit</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Chat Bubbles</div>
+        <div class="bub-demo">
+          <div class="bub b-in">Incoming — dark gray #26262A</div>
+          <div class="bub b-out">Outgoing iMessage — blue #007AFF</div>
+          <div class="bub b-sms">SMS fallback — green #34C759</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Tapback Reaction Strip</div>
+        <div class="tap-row"><span>❤️</span><span>👍</span><span>👎</span><span>😂</span><span>‼️</span><span>❓</span></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-19">19</div>
+          <div class="radius-box r-22">22</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">iMessage uses a true-black canvas (<code>#000000</code>) in dark mode for OLED efficiency. The signature outgoing iMessage Blue <code>#007AFF</code> and SMS Green <code>#34C759</code> are identical across themes — they're brand-defining and read well on both. Incoming bubbles invert from light gray <code>#E9E9EB</code> to dark gray <code>#26262A</code>. Text inverts to pure white <code>#FFFFFF</code>, with metadata at <code>#98989F</code>. The blur-backed input bar dims; bubble tints and content do not.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

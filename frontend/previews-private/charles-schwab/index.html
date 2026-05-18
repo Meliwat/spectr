@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Charles Schwab iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0A1622;
+    --surface-1: #11212F;
+    --surface-2: #18303F;
+    --divider: #1F3A4A;
+    --text-primary: #E6EEF3;
+    --text-secondary: #9DB2BF;
+    --text-tertiary: #6A8392;
+    --ink: #F3F8FB;
+    --schwab-blue: #009DDC;
+    --schwab-blue-pressed: #0080B5;
+    --schwab-navy: #003B5C;
+    --sky: #46BEEC;
+    --gain: #18B07B;
+    --loss: #E2564E;
+    --gold: #C8A24B;
+    --link: #46BEEC;
+    --font: 'Source Sans 3', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--schwab-blue); color: #002233; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow-y: auto; scrollbar-width: none; display: flex; flex-direction: column; }
+  .scroll-body::-webkit-scrollbar { display: none; }
+
+  /* Navy account header */
+  .acct-hero { background: linear-gradient(160deg, #003B5C 0%, #002A42 100%); padding: 8px 20px 22px; }
+  .acct-row1 { display: flex; align-items: center; justify-content: space-between; }
+  .acct-title { font-size: 22px; font-weight: 800; color: #FFFFFF; letter-spacing: -0.3px; }
+  .acct-bell { width: 34px; height: 34px; border-radius: 17px; background: rgba(255,255,255,0.10); display: flex; align-items: center; justify-content: center; }
+  .acct-bell svg { width: 16px; height: 16px; stroke: #FFFFFF; stroke-width: 2; fill: none; }
+  .acct-tot-label { font-size: 12px; color: #9DC4D8; font-weight: 600; margin-top: 18px; letter-spacing: 0.2px; }
+  .acct-tot { font-size: 34px; font-weight: 800; color: #FFFFFF; letter-spacing: -0.8px; margin-top: 4px; }
+  .acct-chg { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 13px; font-weight: 700; color: #5FE3B0; }
+  .acct-chg .muted { color: #9DC4D8; font-weight: 600; }
+
+  /* Account list */
+  .sec-label { font-size: 13px; font-weight: 700; color: var(--text-primary); padding: 16px 20px 6px; letter-spacing: -0.1px; display: flex; justify-content: space-between; align-items: center; }
+  .sec-label .more { font-size: 12px; color: var(--sky); font-weight: 700; }
+  .acct-card { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 0.5px solid var(--divider); }
+  .acct-ic { width: 38px; height: 38px; border-radius: 10px; background: var(--surface-2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .acct-ic svg { width: 18px; height: 18px; stroke: var(--sky); stroke-width: 2; fill: none; }
+  .a-mid { flex: 1; min-width: 0; }
+  .a-name { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+  .a-num { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .a-right { text-align: right; }
+  .a-val { font-size: 16px; font-weight: 800; color: var(--text-primary); }
+  .a-chg { font-size: 12px; font-weight: 700; margin-top: 2px; }
+  .a-chg.up { color: var(--gain); }
+  .a-chg.down { color: var(--loss); }
+
+  /* Trade CTA */
+  .trade-cta { margin: 16px 20px 4px; }
+  .trade-btn { width: 100%; background: var(--schwab-blue); color: #002233; font-size: 16px; font-weight: 800; border: none; padding: 15px; border-radius: 8px; letter-spacing: 0.2px; }
+
+  /* Tab bar */
+  .tab-bar { height: 72px; display: flex; align-items: flex-start; padding: 8px 4px 18px; justify-content: space-around; background: rgba(10,22,34,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 4px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--sky); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-34 { font-size: 34px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 700; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-13n { font-size: 13px; font-weight: 700; font-family: 'SF Mono', Menlo, monospace; color: var(--gain); }
+  .t-12 { font-size: 12px; font-weight: 600; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 800; cursor: pointer; border: none; letter-spacing: 0.2px; }
+  .btn-primary { background: var(--schwab-blue); color: #002233; font-size: 16px; padding: 14px 28px; border-radius: 8px; }
+  .btn-primary:active { background: var(--schwab-blue-pressed); transform: scale(0.98); }
+  .btn-navy { background: var(--schwab-navy); color: #FFFFFF; font-size: 16px; padding: 14px 28px; border-radius: 8px; }
+  .btn-outline { background: transparent; color: var(--sky); border: 1.5px solid var(--sky); font-size: 15px; font-weight: 700; padding: 12px 22px; border-radius: 8px; }
+  .btn-pill { background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--divider); font-size: 14px; font-weight: 600; padding: 10px 18px; border-radius: 500px; }
+  .btn-text { background: transparent; color: var(--sky); font-size: 14px; font-weight: 700; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Trade ticket component */
+  .ticket { background: var(--surface-2); border: 1px solid var(--divider); border-radius: 12px; padding: 16px; }
+  .ticket-seg { display: flex; background: var(--canvas); border-radius: 8px; padding: 3px; gap: 3px; }
+  .seg { flex: 1; text-align: center; font-size: 13px; font-weight: 700; padding: 8px 0; border-radius: 6px; color: var(--text-secondary); }
+  .seg.on { background: var(--schwab-blue); color: #002233; }
+  .ticket-fld { display: flex; justify-content: space-between; align-items: center; padding: 12px 0 6px; border-bottom: 1px solid var(--divider); margin-top: 8px; }
+  .ticket-fld:last-child { border-bottom: none; }
+  .tf-l { font-size: 13px; color: var(--text-secondary); font-weight: 600; }
+  .tf-r { font-size: 16px; font-weight: 800; color: var(--text-primary); font-family: 'SF Mono', Menlo, monospace; }
+
+  /* Balances tile */
+  .bal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .bal-tile { background: var(--surface-2); border: 1px solid var(--divider); border-radius: 12px; padding: 14px 16px; }
+  .bt-l { font-size: 12px; color: var(--text-secondary); font-weight: 600; }
+  .bt-v { font-size: 19px; font-weight: 800; color: var(--text-primary); margin-top: 6px; font-family: 'SF Mono', Menlo, monospace; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--schwab-blue); color: #002233; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-20 { border-radius: 20px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; align-items: center; justify-content: center; width: 46px; height: 46px; border-radius: 12px; background: var(--schwab-navy); }
+  .logo svg { width: 30px; height: 30px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 36 36"><path d="M6 23c0-7 5-12 12-12 3 0 5.6 1 7.5 2.7l-3.2 3.4C21 19 19.6 18.4 18 18.4c-3 0-5.2 2-5.2 4.9 0 .3 0 .6.1.9l-6.7 1.4C6.1 24.9 6 24 6 23z" fill="#009DDC"/><path d="M30 13c0 7-5 12-12 12-3 0-5.6-1-7.5-2.7l3.2-3.4C15 17 16.4 17.6 18 17.6c3 0 5.2-2 5.2-4.9 0-.3 0-.6-.1-.9l6.7-1.4c.2.7.2 1.6.2 2.6z" fill="#FFFFFF"/></svg>
+    </span>
+    <div class="page-title">Charles Schwab iOS — Design Tokens</div>
+    <div class="page-chip">Schwab Blue</div>
+  </div>
+  <p class="page-subtitle">A deep navy field (#0A1622) anchored by Schwab Navy (#003B5C) and bright Schwab Blue (#009DDC). The account hero is a navy gradient; performance is the only saturated color — gain #18B07B, loss #E2564E. Numerals are tabular for column alignment; the trade ticket is the conversion centerpiece. Confident, trustworthy, brokerage-grade.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="scroll-body">
+            <div class="acct-hero">
+              <div class="acct-row1">
+                <div class="acct-title">Accounts</div>
+                <div class="acct-bell"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
+              </div>
+              <div class="acct-tot-label">TOTAL VALUE</div>
+              <div class="acct-tot">$612,408.55</div>
+              <div class="acct-chg">▲ +$5,204.18 <span class="muted">(+0.86%) today</span></div>
+            </div>
+
+            <div class="sec-label">Brokerage <span class="more">All accounts</span></div>
+            <div class="acct-card">
+              <div class="acct-ic"><svg viewBox="0 0 24 24"><polyline points="3 17 9 11 13 15 21 6"/><polyline points="14 6 21 6 21 13"/></svg></div>
+              <div class="a-mid"><div class="a-name">Individual</div><div class="a-num">Brokerage ••4471</div></div>
+              <div class="a-right"><div class="a-val">$428,910.22</div><div class="a-chg up">+0.94%</div></div>
+            </div>
+            <div class="acct-card">
+              <div class="acct-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+              <div class="a-mid"><div class="a-name">Roth IRA</div><div class="a-num">Retirement ••8820</div></div>
+              <div class="a-right"><div class="a-val">$158,330.07</div><div class="a-chg up">+0.71%</div></div>
+            </div>
+            <div class="acct-card">
+              <div class="acct-ic"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg></div>
+              <div class="a-mid"><div class="a-name">Schwab Bank</div><div class="a-num">Checking ••0153</div></div>
+              <div class="a-right"><div class="a-val">$25,168.26</div><div class="a-chg down">−0.02%</div></div>
+            </div>
+
+            <div class="trade-cta">
+              <button class="trade-btn">Trade</button>
+            </div>
+            <div style="height:14px;"></div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Accounts</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><polyline points="3 17 9 11 13 15 21 6"/><polyline points="14 6 21 6 21 13"/></svg><span>Trade</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Research</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Messages</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><span>More</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#009DDC; color:#002233;"><div class="name">Schwab Blue</div>#009DDC</div>
+          <div class="swatch" style="background:#003B5C;"><div class="name">Schwab Navy</div>#003B5C</div>
+          <div class="swatch" style="background:#46BEEC; color:#002233;"><div class="name">Sky Accent</div>#46BEEC</div>
+          <div class="swatch" style="background:#0A1622;"><div class="name">Dark Canvas</div>#0A1622</div>
+          <div class="swatch" style="background:#11212F;"><div class="name">Surface 1</div>#11212F</div>
+          <div class="swatch" style="background:#18303F;"><div class="name">Surface 2</div>#18303F</div>
+          <div class="swatch" style="background:#E6EEF3; color:#0A1622;"><div class="name">Text Primary</div>#E6EEF3</div>
+          <div class="swatch" style="background:#9DB2BF; color:#0A1622;"><div class="name">Text Secondary</div>#9DB2BF</div>
+          <div class="swatch" style="background:#18B07B;"><div class="name">Gain Green</div>#18B07B</div>
+          <div class="swatch" style="background:#E2564E;"><div class="name">Loss Red</div>#E2564E</div>
+          <div class="swatch" style="background:#C8A24B; color:#1A1303;"><div class="name">Gold Tier</div>#C8A24B</div>
+          <div class="swatch" style="background:#1F3A4A;"><div class="name">Divider</div>#1F3A4A</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Charles Modern (Source Sans 3 fallback)</div>
+        <div class="type-row"><div class="type-meta">Total Value · 34pt · 800</div><div class="type-sample t-34">$612,408.55</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 26pt · 800</div><div class="type-sample t-26">Accounts</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Place a trade</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 18pt · 700</div><div class="type-sample t-18">Individual Brokerage</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Review your order before placing it.</div></div>
+        <div class="type-row"><div class="type-meta">Account Name · 15pt · 700</div><div class="type-sample t-15m">Roth IRA</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">As of 4:00 PM ET · Delayed</div></div>
+        <div class="type-row"><div class="type-meta">Numeric Mono · 13pt · 700</div><div class="type-sample t-13n">+$5,204.18 (+0.86%)</div></div>
+        <div class="type-row"><div class="type-meta">Caption · 12pt · 600</div><div class="type-sample t-12">Brokerage ••4471</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Trade</button>
+          <button class="btn btn-navy">Transfer</button>
+          <button class="btn btn-outline">Add funds</button>
+          <button class="btn btn-pill">Filter</button>
+          <button class="btn-text">View all activity</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Trade Ticket</div>
+        <div class="ticket">
+          <div class="ticket-seg">
+            <div class="seg on">Buy</div>
+            <div class="seg">Sell</div>
+          </div>
+          <div class="ticket-fld"><div class="tf-l">Symbol</div><div class="tf-r">AAPL</div></div>
+          <div class="ticket-fld"><div class="tf-l">Quantity</div><div class="tf-r">25</div></div>
+          <div class="ticket-fld"><div class="tf-l">Order type</div><div class="tf-r">Limit</div></div>
+          <div class="ticket-fld"><div class="tf-l">Limit price</div><div class="tf-r">$229.50</div></div>
+          <div class="ticket-fld"><div class="tf-l">Est. cost</div><div class="tf-r">$5,737.50</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Balances Tiles</div>
+        <div class="bal-grid">
+          <div class="bal-tile"><div class="bt-l">Cash available</div><div class="bt-v">$25,168.26</div></div>
+          <div class="bal-tile"><div class="bt-l">Buying power</div><div class="bt-v">$50,336.52</div></div>
+          <div class="bal-tile"><div class="bt-l">Market value</div><div class="bt-v">$428,910.22</div></div>
+          <div class="bal-tile"><div class="bt-l">Day change</div><div class="bt-v" style="color:var(--gain);">+$3,841.20</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Schwab's dark mode is a deep maritime navy, not pure black — canvas sits at <code>#0A1622</code> with cards lifting to <code>#11212F</code> and <code>#18303F</code>. The account hero keeps its <code>#003B5C</code> navy gradient even on dark, preserving the brand's banker-blue identity. Schwab Blue <code>#009DDC</code> is the primary action; the brighter <code>#46BEEC</code> Sky handles links and selected tabs where contrast on the dark field matters. Gain/loss color is reserved strictly for financial semantics — gain <code>#18B07B</code>, loss <code>#E2564E</code> — and never used decoratively. All money values use tabular figures so balances, prices, and quantities align down every column. The trade ticket is the visual centerpiece: a segmented Buy/Sell control over right-aligned tabular fields and an estimated-cost summary.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

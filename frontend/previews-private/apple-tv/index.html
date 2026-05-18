@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Apple TV iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #000000;
+    --surface-1: #1C1C1E;
+    --surface-2: #2C2C2E;
+    --divider: #38383A;
+    --text-primary: #FFFFFF;
+    --text-secondary: #98989F;
+    --text-tertiary: #636366;
+    --ink: #FFFFFF;
+    --tvplus-blue: #0A84FF;
+    --tvplus-blue-pressed: #0060DF;
+    --mls-pink: #ED1A6F;
+    --live: #FF453A;
+    --gold: #FFD60A;
+    --success: #30D158;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--tvplus-blue); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); z-index: 6; }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Large title bar */
+  .titlebar { display: flex; align-items: center; justify-content: space-between; padding: 2px 18px 8px; }
+  .titlebar h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.7px; color: #fff; }
+  .titlebar .avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #5E5CE6, #BF5AF2); }
+
+  /* Hero (Up Next featured) */
+  .hero { position: relative; height: 380px; margin: 0 14px 8px; border-radius: 16px; overflow: hidden; }
+  .hero-art { position: absolute; inset: 0; background: radial-gradient(120% 100% at 50% 20%, #243B55 0%, #141E30 50%, #060A12 100%); }
+  .hero-art::before { content: ''; position: absolute; left: 50%; top: 20%; transform: translateX(-50%); width: 56%; height: 44%; background: linear-gradient(160deg, #3A6EA5 0%, #1A3552 80%); border-radius: 14px; box-shadow: 0 18px 40px rgba(0,0,0,0.5); }
+  .hero-art::after { content: ''; position: absolute; right: 16%; bottom: 34%; width: 22%; height: 22%; background: linear-gradient(160deg, #5AC8FA 0%, #1A6FA8 80%); border-radius: 50%; filter: blur(2px); opacity: 0.7; }
+  .hero-fade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(6,10,18,0) 40%, rgba(0,0,0,0.65) 72%, rgba(0,0,0,0.92) 100%); }
+  .hero-content { position: absolute; left: 0; right: 0; bottom: 16px; padding: 0 18px; }
+  .hero-brand { font-size: 11px; font-weight: 700; letter-spacing: 1.2px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .hero-brand .tvp { color: #fff; }
+  .hero-title { font-size: 28px; font-weight: 800; letter-spacing: -0.6px; line-height: 1.05; color: #fff; }
+  .hero-meta { font-size: 12px; color: var(--text-secondary); margin-top: 7px; font-weight: 500; }
+  .hero-meta .dot { color: var(--text-tertiary); margin: 0 6px; }
+  .hero-btns { display: flex; gap: 10px; margin-top: 14px; }
+  .hero-play { background: #fff; color: #000; font-weight: 600; font-size: 15px; padding: 12px 30px; border-radius: 12px; display: flex; align-items: center; gap: 7px; border: none; }
+  .hero-play svg { width: 14px; height: 14px; fill: #000; }
+  .hero-add { width: 44px; height: 44px; border-radius: 50%; background: rgba(120,120,128,0.36); display: flex; align-items: center; justify-content: center; border: none; backdrop-filter: blur(8px); }
+  .hero-add svg { width: 18px; height: 18px; stroke: #fff; stroke-width: 2.4; fill: none; }
+
+  /* Up Next row */
+  .row { padding: 4px 0 10px; }
+  .rail-head { display: flex; align-items: center; justify-content: space-between; padding: 0 18px 10px; }
+  .rail-title { font-size: 21px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
+  .rail-chev { color: var(--text-tertiary); }
+  .rail-chev svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2.5; fill: none; }
+  .upnext-row { display: flex; gap: 12px; padding: 0 18px 4px; overflow-x: auto; scrollbar-width: none; }
+  .upnext-row::-webkit-scrollbar { display: none; }
+  .unx { width: 196px; flex-shrink: 0; }
+  .unx-art { width: 196px; height: 112px; border-radius: 10px; position: relative; overflow: hidden; }
+  .ua1 { background: linear-gradient(150deg, #2C5364 0%, #0F2027 100%); }
+  .ua2 { background: linear-gradient(150deg, #42275A 0%, #1B1036 100%); }
+  .ua3 { background: linear-gradient(150deg, #1F4037 0%, #0B1B16 100%); }
+  .unx-prog { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: rgba(255,255,255,0.28); }
+  .unx-prog i { display: block; height: 100%; background: #fff; }
+  .unx-tvp { position: absolute; top: 8px; left: 8px; font-size: 9px; font-weight: 700; letter-spacing: 0.4px; color: #fff; background: rgba(0,0,0,0.4); padding: 3px 6px; border-radius: 5px; backdrop-filter: blur(4px); }
+  .unx-title { font-size: 14px; font-weight: 600; color: #fff; margin-top: 8px; line-height: 1.25; }
+  .unx-sub { font-size: 12px; font-weight: 400; color: var(--text-secondary); margin-top: 2px; }
+
+  /* Tab bar */
+  .tab-bar { height: 64px; display: flex; align-items: flex-start; padding: 8px 6px 14px; justify-content: space-around; background: rgba(0,0,0,0.92); backdrop-filter: saturate(180%) blur(20px); border-top: 0.33px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 500; gap: 3px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--tvplus-blue); }
+  .tab svg { width: 24px; height: 24px; stroke: currentColor; stroke-width: 1.9; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-34 { font-size: 34px; font-weight: 800; letter-spacing: -0.8px; color: var(--ink); }
+  .t-28 { font-size: 28px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-20 { font-size: 20px; font-weight: 600; }
+  .t-17 { font-size: 17px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 500; }
+  .t-11u { font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 600; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: #fff; color: #000; font-size: 15px; padding: 13px 30px; border-radius: 12px; }
+  .btn-primary:active { background: #E5E5EA; transform: scale(0.98); }
+  .btn-tint { background: var(--tvplus-blue); color: #fff; font-size: 15px; font-weight: 600; padding: 13px 26px; border-radius: 12px; }
+  .btn-tint:active { background: var(--tvplus-blue-pressed); }
+  .btn-glass { background: rgba(120,120,128,0.36); color: #fff; font-size: 15px; font-weight: 600; padding: 13px 24px; border-radius: 12px; backdrop-filter: blur(8px); }
+  .btn-text { background: transparent; color: var(--tvplus-blue); font-size: 15px; font-weight: 500; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* MLS / live preview */
+  .comp-row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  .mls-chip { display: inline-flex; align-items: center; gap: 7px; background: var(--mls-pink); color: #fff; font-size: 12px; font-weight: 700; letter-spacing: 0.3px; padding: 7px 14px; border-radius: 10px; }
+  .mls-chip svg { width: 13px; height: 13px; fill: #fff; }
+  .live-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--live); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 0.6px; padding: 5px 10px; border-radius: 6px; text-transform: uppercase; }
+  .live-badge .pulse { width: 7px; height: 7px; border-radius: 50%; background: #fff; }
+
+  /* Up Next thumb preview */
+  .thumb-prev { display: flex; gap: 12px; }
+  .thumb-prev .unx-art { width: 130px; height: 74px; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--tvplus-blue); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-6 { border-radius: 6px; }
+  .r-10 { border-radius: 10px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-22 { border-radius: 22px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Apple TV logomark */
+  .atv { display: inline-flex; align-items: center; gap: 2px; }
+  .atv svg { width: 30px; height: 30px; fill: #fff; }
+  .atv .plus { font-size: 22px; font-weight: 600; color: #fff; letter-spacing: -1px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="atv">
+      <svg viewBox="0 0 64 64"><path d="M44.6 33.9c-.1-6.8 5.5-10 5.8-10.2-3.2-4.6-8.1-5.3-9.8-5.4-4.2-.4-8.1 2.4-10.2 2.4-2.1 0-5.4-2.4-8.9-2.3-4.6.1-8.8 2.7-11.1 6.8-4.7 8.2-1.2 20.4 3.4 27 2.3 3.2 5 6.9 8.5 6.7 3.4-.1 4.7-2.2 8.8-2.2s5.3 2.2 8.9 2.1c3.7-.1 6-3.3 8.3-6.5 2.6-3.7 3.7-7.4 3.7-7.6-.1-.1-7.1-2.7-7.2-10.8M37.9 13.6c1.9-2.3 3.1-5.4 2.8-8.6-2.7.1-6 1.8-7.9 4.1-1.7 2-3.2 5.2-2.8 8.3 3 .2 6-1.5 7.9-3.8"/></svg>
+    </span>
+    <div class="page-title">Apple TV iOS — Design Tokens</div>
+    <div class="page-chip">True Black</div>
+  </div>
+  <p class="page-subtitle">Pure true-black canvas (#000000) for OLED — the Apple TV app is the most restrained streamer. SF Pro typography, generous whitespace, glass-and-blur chrome, system blue (#0A84FF) as the only accent (active tab + links), and a white "Play" button. The Up Next rail of 16:9 thumbnails with resume progress and the inset rounded hero are the signature screens; MLS Season Pass uses its hot-pink #ED1A6F.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="scroll-body">
+            <div class="titlebar">
+              <h1>Watch Now</h1>
+              <div class="avatar"></div>
+            </div>
+
+            <div class="hero">
+              <div class="hero-art"></div>
+              <div class="hero-fade"></div>
+              <div class="hero-content">
+                <div class="hero-brand">
+                  <span class="atv"><svg viewBox="0 0 64 64" style="width:14px;height:14px;"><path d="M44.6 33.9c-.1-6.8 5.5-10 5.8-10.2-3.2-4.6-8.1-5.3-9.8-5.4-4.2-.4-8.1 2.4-10.2 2.4-2.1 0-5.4-2.4-8.9-2.3-4.6.1-8.8 2.7-11.1 6.8-4.7 8.2-1.2 20.4 3.4 27 2.3 3.2 5 6.9 8.5 6.7 3.4-.1 4.7-2.2 8.8-2.2s5.3 2.2 8.9 2.1c3.7-.1 6-3.3 8.3-6.5 2.6-3.7 3.7-7.4 3.7-7.6-.1-.1-7.1-2.7-7.2-10.8M37.9 13.6c1.9-2.3 3.1-5.4 2.8-8.6-2.7.1-6 1.8-7.9 4.1-1.7 2-3.2 5.2-2.8 8.3 3 .2 6-1.5 7.9-3.8"/></svg></span>
+                  <span class="tvp">TV+</span><span>· New Episode</span>
+                </div>
+                <div class="hero-title">Severance</div>
+                <div class="hero-meta">Season 2<span class="dot">·</span>Episode 6<span class="dot">·</span>Thriller<span class="dot">·</span>TV-MA</div>
+                <div class="hero-btns">
+                  <button class="hero-play"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg>Play</button>
+                  <button class="hero-add"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="rail-head"><div class="rail-title">Up Next</div><div class="rail-chev"><svg viewBox="0 0 24 24"><polyline points="9,6 15,12 9,18"/></svg></div></div>
+              <div class="upnext-row">
+                <div class="unx">
+                  <div class="unx-art ua1"><div class="unx-tvp">Apple TV+</div><div class="unx-prog"><i style="width:62%"></i></div></div>
+                  <div class="unx-title">Ted Lasso</div>
+                  <div class="unx-sub">S3 E8 · 24 min left</div>
+                </div>
+                <div class="unx">
+                  <div class="unx-art ua2"><div class="unx-prog"><i style="width:38%"></i></div></div>
+                  <div class="unx-title">Slow Horses</div>
+                  <div class="unx-sub">S4 E2 · 41 min left</div>
+                </div>
+                <div class="unx">
+                  <div class="unx-art ua3"><div class="unx-tvp">Apple TV+</div></div>
+                  <div class="unx-title">The Morning Show</div>
+                  <div class="unx-sub">New Episode</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="rail-head"><div class="rail-title">MLS Season Pass</div><div class="rail-chev"><svg viewBox="0 0 24 24"><polyline points="9,6 15,12 9,18"/></svg></div></div>
+              <div class="upnext-row">
+                <div class="unx">
+                  <div class="unx-art ua2"><div class="unx-tvp" style="background:#ED1A6F;">● LIVE</div></div>
+                  <div class="unx-title">Inter Miami vs LA</div>
+                  <div class="unx-sub">Matchday 28 · 2nd Half</div>
+                </div>
+                <div class="unx">
+                  <div class="unx-art ua1"></div>
+                  <div class="unx-title">LAFC vs Seattle</div>
+                  <div class="unx-sub">Today · 7:30 PM</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><polygon points="5,3 21,12 5,21"/></svg><span>Watch Now</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M44.6 33.9c-.1-6.8 5.5-10 5.8-10.2" transform="scale(0.4)"/><circle cx="12" cy="12" r="9"/></svg><span>TV+</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M8 3l4 3 4-3"/></svg><span>Store</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#000000;"><div class="name">True Black Canvas</div>#000000</div>
+          <div class="swatch" style="background:#1C1C1E;"><div class="name">Surface 1</div>#1C1C1E</div>
+          <div class="swatch" style="background:#2C2C2E;"><div class="name">Surface 2</div>#2C2C2E</div>
+          <div class="swatch" style="background:#38383A;"><div class="name">Divider</div>#38383A</div>
+          <div class="swatch" style="background:#FFFFFF; color:#000;"><div class="name">Text Primary</div>#FFFFFF</div>
+          <div class="swatch" style="background:#98989F; color:#000;"><div class="name">Text Secondary</div>#98989F</div>
+          <div class="swatch" style="background:#0A84FF;"><div class="name">System Blue</div>#0A84FF</div>
+          <div class="swatch" style="background:#0060DF;"><div class="name">Blue Pressed</div>#0060DF</div>
+          <div class="swatch" style="background:#ED1A6F;"><div class="name">MLS Pink</div>#ED1A6F</div>
+          <div class="swatch" style="background:#FF453A;"><div class="name">Live Red</div>#FF453A</div>
+          <div class="swatch" style="background:#FFD60A; color:#000;"><div class="name">Rating Gold</div>#FFD60A</div>
+          <div class="swatch" style="background:#30D158; color:#000;"><div class="name">Success</div>#30D158</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — SF Pro (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Large Title · 34pt · 800</div><div class="type-sample t-34">Watch Now</div></div>
+        <div class="type-row"><div class="type-meta">Hero Title · 28pt · 800</div><div class="type-sample t-28">Severance</div></div>
+        <div class="type-row"><div class="type-meta">Row Header · 22pt · 700</div><div class="type-sample t-22">Up Next</div></div>
+        <div class="type-row"><div class="type-meta">Title 3 · 20pt · 600</div><div class="type-sample t-20">MLS Season Pass</div></div>
+        <div class="type-row"><div class="type-meta">Body · 17pt · 400</div><div class="type-sample t-17">A mystery thriller in which employees are severed.</div></div>
+        <div class="type-row"><div class="type-meta">Headline · 15pt · 600</div><div class="type-sample t-15m">Ted Lasso</div></div>
+        <div class="type-row"><div class="type-meta">Subhead · 13pt · 400</div><div class="type-sample t-13">S3 E8 · 24 min left</div></div>
+        <div class="type-row"><div class="type-meta">Caption · 12pt · 500</div><div class="type-sample t-12">Watch Now</div></div>
+        <div class="type-row"><div class="type-meta">Eyebrow · 11pt · 700 · +1.2</div><div class="type-sample t-11u">New Episode</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">▶ Play</button>
+          <button class="btn btn-tint">Subscribe</button>
+          <button class="btn btn-glass">+ Watchlist</button>
+          <button class="btn-text">More</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">MLS Season Pass &amp; Live Badge</div>
+        <div class="comp-row">
+          <span class="mls-chip"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>MLS Season Pass</span>
+          <span class="live-badge"><span class="pulse"></span>Live</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Up Next Thumbnail (16:9 + resume)</div>
+        <div class="thumb-prev">
+          <div class="unx-art ua1"><div class="unx-tvp">Apple TV+</div><div class="unx-prog"><i style="width:62%"></i></div></div>
+          <div class="unx-art ua2"><div class="unx-prog"><i style="width:38%"></i></div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-22">22</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">The Apple TV app is true-black <code>#000000</code> — not a charcoal — so OLED pixels switch off entirely and inset rounded artwork appears to float. It is the most restrained of all streamers: SF Pro typography, generous whitespace, and glass-and-blur chrome (the tab bar is a translucent <code>blur(20px)</code> material over true black). System blue <code>#0A84FF</code> is the only accent — it tints the active tab and text links — while the primary "Play" button is solid white <code>#FFFFFF</code> with a black label, and secondary actions use the iOS translucent fill <code>rgba(120,120,128,0.36)</code>. The signature Up Next rail uses 16:9 thumbnails with a thin white resume-progress bar; MLS Season Pass content carries its hot-pink <code>#ED1A6F</code>, and live sports get red <code>#FF453A</code>. Surfaces step up from <code>#000</code> → <code>#1C1C1E</code> → <code>#2C2C2E</code>.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

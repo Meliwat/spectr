@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Lemon8 iOS — Light</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --surface-1: #FAFAFA;
+    --surface-2: #F2F2F2;
+    --divider: #ECECEC;
+    --ink: #1A1A1A;
+    --text-secondary: #6B6B6B;
+    --text-tertiary: #9A9A9A;
+    --lemon-yellow: #FFE600;
+    --lemon-yellow-pressed: #E6CF00;
+    --tag-mint: #E4F5EC;
+    --tag-mint-ink: #1F8A52;
+    --tag-blush: #FCE8EE;
+    --tag-blush-ink: #C13E68;
+    --tag-sky: #E6F0FB;
+    --tag-sky-ink: #2D6FB8;
+    --tag-butter: #FFF6CC;
+    --tag-butter-ink: #8A7300;
+    --like-red: #FF2E63;
+    --success: #1FB877;
+    --error: #FF3B5C;
+    --font: 'Poppins', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+    --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #0C0C0C; color: #E8E8E8; font-family: var(--font-ui); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: #FFF; font-family: var(--font); }
+  .page-chip { background: var(--lemon-yellow); color: var(--ink); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: #A8A8A8; font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--ink); }
+
+  /* Top tabs */
+  .top-tabs { display: flex; align-items: center; gap: 22px; padding: 4px 18px 12px; }
+  .tt { font-family: var(--font); font-size: 18px; font-weight: 600; color: var(--text-tertiary); position: relative; padding-bottom: 6px; }
+  .tt.active { color: var(--ink); font-weight: 700; }
+  .tt.active::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 20px; height: 3px; background: var(--lemon-yellow); border-radius: 2px; }
+  .tt-search { margin-left: auto; }
+  .tt-search svg { width: 22px; height: 22px; stroke: var(--ink); stroke-width: 2; fill: none; }
+
+  /* Masonry feed */
+  .feed { flex: 1; overflow-y: auto; scrollbar-width: none; padding: 4px 10px 0; }
+  .feed::-webkit-scrollbar { display: none; }
+  .masonry { column-count: 2; column-gap: 10px; }
+  .card { break-inside: avoid; margin-bottom: 12px; background: var(--canvas); border-radius: 14px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04); }
+  .card-img { width: 100%; position: relative; }
+  .ci-1 { aspect-ratio: 3/4; background: linear-gradient(155deg, #F4C7A1 0%, #E89B6B 60%, #C76B3B 100%); }
+  .ci-2 { aspect-ratio: 1/1; background: linear-gradient(160deg, #BEDDD0 0%, #7FB89F 55%, #4F8A6E 100%); }
+  .ci-3 { aspect-ratio: 4/5; background: linear-gradient(150deg, #E3D1EC 0%, #B98FD0 55%, #8A5CB0 100%); }
+  .ci-4 { aspect-ratio: 3/4; background: linear-gradient(160deg, #F8D6DE 0%, #E89BAE 55%, #C76B82 100%); }
+  .ci-5 { aspect-ratio: 1/1; background: linear-gradient(150deg, #CFE0F0 0%, #8FB4D8 55%, #5C84B0 100%); }
+  .ci-6 { aspect-ratio: 4/5; background: linear-gradient(155deg, #F4E8B8 0%, #E0C870 55%, #B8A03B 100%); }
+  .img-tag { position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.55); color: #FFF; font-size: 10px; font-weight: 600; padding: 4px 8px; border-radius: 6px; backdrop-filter: blur(4px); }
+  .card-body { padding: 10px 11px 12px; }
+  .card-title { font-family: var(--font-ui); font-size: 13px; font-weight: 600; color: var(--ink); line-height: 1.35; }
+  .card-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 7px; }
+  .ctag { font-size: 9px; font-weight: 600; padding: 3px 7px; border-radius: 5px; }
+  .ctag.mint { background: var(--tag-mint); color: var(--tag-mint-ink); }
+  .ctag.blush { background: var(--tag-blush); color: var(--tag-blush-ink); }
+  .ctag.sky { background: var(--tag-sky); color: var(--tag-sky-ink); }
+  .card-foot { display: flex; align-items: center; gap: 6px; margin-top: 9px; }
+  .cf-av { width: 18px; height: 18px; border-radius: 50%; background: linear-gradient(135deg, #FFE600, #FF2E63); }
+  .cf-name { font-size: 11px; color: var(--text-secondary); flex: 1; }
+  .cf-like { display: flex; align-items: center; gap: 3px; font-size: 11px; color: var(--text-secondary); font-weight: 600; }
+  .cf-like svg { width: 13px; height: 13px; stroke: var(--text-secondary); stroke-width: 2; fill: none; }
+
+  /* Tab bar */
+  .tab-bar { height: 62px; display: flex; align-items: center; padding: 6px 4px 12px; justify-content: space-around; background: rgba(255,255,255,0.96); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 500; gap: 3px; }
+  .tab.active { color: var(--ink); }
+  .tab svg { width: 23px; height: 23px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+  .tab-post { width: 42px; height: 30px; background: var(--lemon-yellow); border-radius: 9px; display: flex; align-items: center; justify-content: center; }
+  .tab-post svg { width: 20px; height: 20px; stroke: var(--ink); stroke-width: 2.4; fill: none; }
+
+  /* Token sections */
+  .section { background: #161616; border: 1px solid #262626; border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #9A9A9A; margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid #2A2A2A; color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font-ui); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid #262626; }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: #9A9A9A; width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: #E8E8E8; }
+  .t-32 { font-family: var(--font); font-size: 32px; font-weight: 800; letter-spacing: -0.5px; color: #FFF; }
+  .t-26 { font-family: var(--font); font-size: 26px; font-weight: 700; letter-spacing: -0.3px; color: #FFF; }
+  .t-22 { font-family: var(--font); font-size: 22px; font-weight: 700; }
+  .t-18 { font-family: var(--font); font-size: 18px; font-weight: 600; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-13 { font-size: 13px; font-weight: 400; color: #A8A8A8; }
+  .t-11 { font-size: 11px; font-weight: 600; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font-ui); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--lemon-yellow); color: var(--ink); font-size: 15px; padding: 13px 28px; border-radius: 500px; }
+  .btn-primary:active { background: var(--lemon-yellow-pressed); transform: scale(0.98); }
+  .btn-dark { background: var(--ink); color: #FFF; font-size: 15px; padding: 13px 28px; border-radius: 500px; }
+  .btn-outline { background: transparent; color: #E8E8E8; border: 1px solid #404040; font-size: 14px; font-weight: 600; padding: 11px 22px; border-radius: 500px; }
+  .btn-follow { background: var(--lemon-yellow); color: var(--ink); font-size: 12px; font-weight: 700; padding: 7px 18px; border-radius: 500px; }
+  .btn-text { background: transparent; color: #E8E8E8; font-size: 14px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Pastel topic tags */
+  .tags-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .tag { font-size: 12px; font-weight: 600; padding: 7px 14px; border-radius: 8px; }
+  .tag.mint { background: var(--tag-mint); color: var(--tag-mint-ink); }
+  .tag.blush { background: var(--tag-blush); color: var(--tag-blush-ink); }
+  .tag.sky { background: var(--tag-sky); color: var(--tag-sky-ink); }
+  .tag.butter { background: var(--tag-butter); color: var(--tag-butter-ink); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--lemon-yellow); color: var(--ink); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-5 { border-radius: 5px; }
+  .r-8 { border-radius: 8px; }
+  .r-14 { border-radius: 14px; }
+  .r-20 { border-radius: 20px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 11px; background: var(--lemon-yellow); }
+  .logo span { font-family: var(--font); font-weight: 800; font-size: 22px; color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo"><span>8</span></span>
+    <div class="page-title">Lemon8 iOS — Design Tokens</div>
+    <div class="page-chip">Magazine Light</div>
+  </div>
+  <p class="page-subtitle">Bright editorial white canvas (#FFFFFF) with a two-column staggered masonry feed of rich lifestyle cards. Lemon8 Yellow (#FFE600) is used sparingly — paired only with ink (#1A1A1A) for the post FAB, active tab underline, and primary CTA. Pastel topic tags (mint, blush, sky, butter) categorize every card.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="top-tabs">
+            <div class="tt">Following</div>
+            <div class="tt active">For You</div>
+            <div class="tt">Nearby</div>
+            <div class="tt-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg></div>
+          </div>
+
+          <div class="feed">
+            <div class="masonry">
+              <div class="card">
+                <div class="card-img ci-1"><div class="img-tag">5 photos</div></div>
+                <div class="card-body">
+                  <div class="card-title">Autumn capsule wardrobe: 12 pieces, 30 outfits</div>
+                  <div class="card-tags"><span class="ctag blush">Fashion</span><span class="ctag butter" style="background:#FFF6CC;color:#8A7300;">OOTD</span></div>
+                  <div class="card-foot"><span class="cf-av"></span><span class="cf-name">mira.styles</span><span class="cf-like"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>2.4k</span></div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-img ci-2"></div>
+                <div class="card-body">
+                  <div class="card-title">Matcha latte recipe that actually tastes good</div>
+                  <div class="card-tags"><span class="ctag mint">Recipe</span></div>
+                  <div class="card-foot"><span class="cf-av"></span><span class="cf-name">cafe.notes</span><span class="cf-like"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>891</span></div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-img ci-3"><div class="img-tag">Guide</div></div>
+                <div class="card-body">
+                  <div class="card-title">My 6-step evening skincare routine for glass skin</div>
+                  <div class="card-tags"><span class="ctag blush">Beauty</span><span class="ctag sky">Skincare</span></div>
+                  <div class="card-foot"><span class="cf-av"></span><span class="cf-name">glow.diary</span><span class="cf-like"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>5.1k</span></div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-img ci-5"></div>
+                <div class="card-body">
+                  <div class="card-title">Kyoto in 3 days: a slow travel itinerary</div>
+                  <div class="card-tags"><span class="ctag sky">Travel</span></div>
+                  <div class="card-foot"><span class="cf-av"></span><span class="cf-name">wander.log</span><span class="cf-like"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>3.7k</span></div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-img ci-4"><div class="img-tag">8 photos</div></div>
+                <div class="card-body">
+                  <div class="card-title">Tiny apartment makeover under $300</div>
+                  <div class="card-tags"><span class="ctag butter" style="background:#FFF6CC;color:#8A7300;">Home</span></div>
+                  <div class="card-foot"><span class="cf-av"></span><span class="cf-name">cozy.corner</span><span class="cf-like"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>1.2k</span></div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-img ci-6"></div>
+                <div class="card-body">
+                  <div class="card-title">Sunday meal prep: 5 lunches in 90 minutes</div>
+                  <div class="card-tags"><span class="ctag mint">Recipe</span></div>
+                  <div class="card-foot"><span class="cf-av"></span><span class="cf-name">prep.kitchen</span><span class="cf-like"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>746</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Discover</span></div>
+            <div class="tab"><div class="tab-post"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 4h16v12H7l-3 3z"/></svg><span>Inbox</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 21c0-4 3.5-6 7-6s7 2 7 6"/></svg><span>Me</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#FFFFFF; color:#1A1A1A;"><div class="name">Canvas White</div>#FFFFFF</div>
+          <div class="swatch" style="background:#FAFAFA; color:#1A1A1A;"><div class="name">Surface 1</div>#FAFAFA</div>
+          <div class="swatch" style="background:#F2F2F2; color:#1A1A1A;"><div class="name">Surface 2</div>#F2F2F2</div>
+          <div class="swatch" style="background:#ECECEC; color:#1A1A1A;"><div class="name">Divider</div>#ECECEC</div>
+          <div class="swatch" style="background:#1A1A1A;"><div class="name">Ink</div>#1A1A1A</div>
+          <div class="swatch" style="background:#FFE600; color:#1A1A1A;"><div class="name">Lemon8 Yellow</div>#FFE600</div>
+          <div class="swatch" style="background:#6B6B6B;"><div class="name">Text Secondary</div>#6B6B6B</div>
+          <div class="swatch" style="background:#9A9A9A;"><div class="name">Text Tertiary</div>#9A9A9A</div>
+          <div class="swatch" style="background:#E4F5EC; color:#1F8A52;"><div class="name">Tag Mint</div>#E4F5EC</div>
+          <div class="swatch" style="background:#FCE8EE; color:#C13E68;"><div class="name">Tag Blush</div>#FCE8EE</div>
+          <div class="swatch" style="background:#E6F0FB; color:#2D6FB8;"><div class="name">Tag Sky</div>#E6F0FB</div>
+          <div class="swatch" style="background:#FF2E63;"><div class="name">Like Red</div>#FF2E63</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Poppins (display) + Inter (UI)</div>
+        <div class="type-row"><div class="type-meta">Display · 32pt · 800</div><div class="type-sample t-32">For You</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 26pt · 700</div><div class="type-sample t-26">Discover</div></div>
+        <div class="type-row"><div class="type-meta">Tab Header · 22pt · 700</div><div class="type-sample t-22">Following</div></div>
+        <div class="type-row"><div class="type-meta">Post Title · 18pt · 600</div><div class="type-sample t-18">My glass-skin routine</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Twelve pieces, thirty outfits — here is the full breakdown.</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 15pt · 600</div><div class="type-sample t-15m">Autumn capsule wardrobe</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 400</div><div class="type-sample t-13">mira.styles · 2.4k likes · 3d</div></div>
+        <div class="type-row"><div class="type-meta">Tag · 11pt · 600</div><div class="type-sample t-11">Fashion · OOTD</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Post</button>
+          <button class="btn btn-dark">Save</button>
+          <button class="btn btn-outline">Share</button>
+          <button class="btn btn-follow">Follow</button>
+          <button class="btn-text">See more like this</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Pastel Topic Tags</div>
+        <div class="tags-row">
+          <div class="tag mint">Recipe</div>
+          <div class="tag blush">Beauty</div>
+          <div class="tag sky">Travel</div>
+          <div class="tag butter">Home</div>
+          <div class="tag blush">Fashion</div>
+          <div class="tag sky">Wellness</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Lifestyle Card (masonry cell)</div>
+        <div style="max-width:200px; background:#FFF; border-radius:14px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.3);">
+          <div style="aspect-ratio:3/4; background:linear-gradient(155deg,#F4C7A1,#E89B6B 60%,#C76B3B);"></div>
+          <div style="padding:10px 11px 12px;">
+            <div style="font-size:13px;font-weight:600;color:#1A1A1A;line-height:1.35;">Autumn capsule wardrobe: 30 outfits</div>
+            <div style="display:flex;gap:5px;margin-top:7px;"><span style="font-size:9px;font-weight:600;padding:3px 7px;border-radius:5px;background:#FCE8EE;color:#C13E68;">Fashion</span></div>
+            <div style="display:flex;align-items:center;gap:6px;margin-top:9px;"><span style="width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#FFE600,#FF2E63);"></span><span style="font-size:11px;color:#6B6B6B;flex:1;">mira.styles</span><span style="font-size:11px;color:#6B6B6B;font-weight:600;">&#9825; 2.4k</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-5">5</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: #A8A8A8; font-size: 14px; line-height: 1.55;">Lemon8 is unapologetically light-first — it's a magazine, and the bright white canvas (<code>#FFFFFF</code>) is core to its editorial, Pinterest-meets-RED aesthetic. In dark mode the canvas drops to <code>#121212</code> with cards at <code>#1C1C1E</code>, but the pastel topic tags shift to muted dark equivalents (mint <code>#1F3A2C</code>, blush <code>#3A2630</code>, sky <code>#1F2F42</code>) so they stay legible without glowing. Lemon8 Yellow <code>#FFE600</code> is identical across themes and stays paired only with ink <code>#1A1A1A</code> text — never white-on-yellow. Photography in cards never dims.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

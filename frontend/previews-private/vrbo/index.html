@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Vrbo iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #101317;
+    --surface-1: #181C22;
+    --surface-2: #21262E;
+    --divider: #2A3038;
+    --text-primary: #EDEFF2;
+    --text-secondary: #A3AAB4;
+    --text-tertiary: #6B7280;
+    --ink: #F6F8FA;
+    --vrbo-blue: #245ABC;
+    --vrbo-blue-bright: #4F8BF0;
+    --vrbo-blue-pressed: #1B4794;
+    --sky-blue: #1D6FB8;
+    --gold-star: #F2B01E;
+    --success: #1F9D57;
+    --error: #E04444;
+    --pin-default: #245ABC;
+    --pin-selected: #F2B01E;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--vrbo-blue); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); position: absolute; top: 0; left: 0; right: 0; z-index: 6; color: #FFF; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+
+  .listing-scroll { flex: 1; overflow-y: auto; scrollbar-width: none; }
+  .listing-scroll::-webkit-scrollbar { display: none; }
+
+  /* Photo gallery */
+  .gallery { position: relative; height: 290px; background: linear-gradient(155deg, #3E6E9C 0%, #2C4F73 45%, #1A2E44 100%); }
+  .gallery::before { content: ''; position: absolute; left: 8%; right: 8%; bottom: 24%; top: 30%; background: linear-gradient(180deg, #4D7CA8 0%, #2E4A66 100%); border-radius: 4px; box-shadow: 4px 6px 0 rgba(0,0,0,0.25); }
+  .gallery::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 50%; background: linear-gradient(180deg, rgba(16,19,23,0) 0%, rgba(16,19,23,0.55) 100%); }
+  .gal-top { position: absolute; top: 54px; left: 0; right: 0; display: flex; justify-content: space-between; padding: 0 16px; z-index: 5; }
+  .gal-btn { width: 36px; height: 36px; border-radius: 18px; background: rgba(16,19,23,0.55); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; }
+  .gal-btn svg { width: 18px; height: 18px; stroke: #FFF; stroke-width: 2.2; fill: none; }
+  .gal-btn.heart svg { fill: rgba(0,0,0,0.3); }
+  .gal-count { position: absolute; bottom: 14px; right: 16px; background: rgba(16,19,23,0.7); color: #FFF; font-size: 12px; font-weight: 600; padding: 5px 11px; border-radius: 999px; display: flex; align-items: center; gap: 6px; z-index: 5; }
+  .gal-count svg { width: 13px; height: 13px; stroke: #FFF; stroke-width: 2; fill: none; }
+  .gal-dots { position: absolute; bottom: 14px; left: 0; right: 0; display: flex; justify-content: center; gap: 5px; z-index: 5; }
+  .gal-dots span { width: 6px; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.45); }
+  .gal-dots span.on { background: #FFF; width: 18px; }
+
+  /* Listing body */
+  .listing-body { padding: 18px 18px 0; }
+  .badge-row { display: flex; gap: 8px; margin-bottom: 10px; }
+  .lbadge { font-size: 11px; font-weight: 700; padding: 4px 9px; border-radius: 6px; letter-spacing: 0.2px; }
+  .lbadge.premier { background: rgba(36,90,188,0.18); color: var(--vrbo-blue-bright); border: 1px solid rgba(79,139,240,0.35); }
+  .lbadge.instant { background: rgba(31,157,87,0.16); color: #4ED98A; border: 1px solid rgba(78,217,138,0.3); }
+  .listing-title { font-size: 21px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.3px; line-height: 1.25; }
+  .listing-sub { font-size: 14px; color: var(--text-secondary); margin-top: 6px; }
+  .review-row { display: flex; align-items: center; gap: 6px; margin-top: 10px; font-size: 14px; }
+  .review-row svg { width: 15px; height: 15px; fill: var(--gold-star); }
+  .review-num { font-weight: 700; color: var(--text-primary); }
+  .review-count { color: var(--text-secondary); }
+  .facts { display: flex; gap: 18px; margin: 16px 0; padding: 14px 0; border-top: 1px solid var(--divider); border-bottom: 1px solid var(--divider); }
+  .fact { display: flex; flex-direction: column; gap: 3px; }
+  .fact .v { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+  .fact .l { font-size: 11px; color: var(--text-secondary); }
+  .desc { font-size: 14px; color: var(--text-secondary); line-height: 1.55; padding-bottom: 90px; }
+
+  /* Sticky booking bar */
+  .book-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 76px; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; background: rgba(16,19,23,0.97); backdrop-filter: blur(20px); border-top: 1px solid var(--divider); }
+  .book-price .amt { font-size: 19px; font-weight: 800; color: var(--text-primary); }
+  .book-price .per { font-size: 13px; color: var(--text-secondary); }
+  .book-price .dates { font-size: 12px; color: var(--text-secondary); margin-top: 2px; text-decoration: underline; }
+  .book-cta { background: var(--vrbo-blue); color: #FFF; font-size: 15px; font-weight: 700; padding: 13px 26px; border-radius: 10px; border: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); }
+  .t-21 { font-size: 21px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 600; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--vrbo-blue); color: #FFF; font-size: 16px; padding: 14px 28px; border-radius: 10px; }
+  .btn-primary:active { background: var(--vrbo-blue-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--vrbo-blue-bright); border: 1.5px solid var(--vrbo-blue-bright); font-size: 15px; font-weight: 700; padding: 12px 22px; border-radius: 10px; }
+  .btn-pill { background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--divider); font-size: 14px; font-weight: 600; padding: 10px 18px; border-radius: 999px; }
+  .btn-text { background: transparent; color: var(--vrbo-blue-bright); font-size: 15px; font-weight: 600; padding: 12px 0; text-decoration: underline; border: none; cursor: pointer; }
+
+  /* Map price pins */
+  .map-row { display: flex; gap: 12px; align-items: center; }
+  .pin { font-family: var(--font); font-weight: 700; font-size: 14px; padding: 7px 12px; border-radius: 999px; box-shadow: 0 3px 8px rgba(0,0,0,0.5); }
+  .pin-default { background: var(--vrbo-blue); color: #FFF; }
+  .pin-viewed { background: var(--surface-2); color: var(--text-secondary); border: 1px solid var(--divider); }
+  .pin-selected { background: var(--gold-star); color: #1A1206; }
+
+  /* Trip board card */
+  .board { display: flex; gap: 12px; background: var(--surface-2); border: 1px solid var(--divider); border-radius: 12px; padding: 12px; }
+  .board-thumb { width: 64px; height: 64px; border-radius: 8px; background: linear-gradient(150deg, #3E6E9C, #1A2E44); flex-shrink: 0; }
+  .board-meta { flex: 1; }
+  .board-name { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+  .board-loc { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+  .board-tag { display: inline-block; margin-top: 8px; font-size: 11px; font-weight: 700; color: var(--gold-star); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--vrbo-blue); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-6 { border-radius: 6px; }
+  .r-10 { border-radius: 10px; }
+  .r-14 { border-radius: 14px; }
+  .r-20 { border-radius: 20px; }
+  .r-pill { border-radius: 999px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Vrbo logomark */
+  .logo { display: inline-flex; width: 46px; height: 46px; align-items: center; justify-content: center; background: var(--vrbo-blue); border-radius: 12px; }
+  .logo svg { width: 28px; height: 28px; fill: #FFF; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 24 24"><path d="M3 11.2 12 3l9 8.2v.1h-2.4V20a1 1 0 0 1-1 1h-3.2v-5.6h-4.8V21H6.4a1 1 0 0 1-1-1v-8.7H3v-.1Z"/></svg>
+    </span>
+    <div class="page-title">Vrbo iOS — Design Tokens</div>
+    <div class="page-chip">Whole-Home Blue</div>
+  </div>
+  <p class="page-subtitle">Whole-home vacation rentals on a clean white canvas with Vrbo Blue (<code>#245ABC</code>) as the primary action color and Sky Blue (<code>#1D6FB8</code>) as support. Big swipeable photo galleries lead every listing; a single gold review star (<code>#F2B01E</code>) is the only warm accent. Dark canvas sits at <code>#101317</code> with the blue brightened to <code>#4F8BF0</code>.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="listing-scroll">
+            <div class="gallery">
+              <div class="gal-top">
+                <div class="gal-btn"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+                <div style="display:flex;gap:10px;">
+                  <div class="gal-btn"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></div>
+                  <div class="gal-btn heart"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21.2l7.8-7.7 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+                </div>
+              </div>
+              <div class="gal-dots"><span class="on"></span><span></span><span></span><span></span><span></span></div>
+              <div class="gal-count"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>1 / 42</div>
+            </div>
+
+            <div class="listing-body">
+              <div class="badge-row">
+                <div class="lbadge premier">Premier Host</div>
+                <div class="lbadge instant">Instant Book</div>
+              </div>
+              <div class="listing-title">Oceanfront Beach House with Private Deck</div>
+              <div class="listing-sub">Entire home in Outer Banks, North Carolina</div>
+              <div class="review-row">
+                <svg viewBox="0 0 24 24"><polygon points="12,2 15.1,8.4 22,9.3 17,14.1 18.2,21 12,17.8 5.8,21 7,14.1 2,9.3 8.9,8.4"/></svg>
+                <span class="review-num">4.9</span><span class="review-count">· 186 reviews</span>
+              </div>
+              <div class="facts">
+                <div class="fact"><span class="v">8</span><span class="l">Guests</span></div>
+                <div class="fact"><span class="v">4</span><span class="l">Bedrooms</span></div>
+                <div class="fact"><span class="v">3</span><span class="l">Bathrooms</span></div>
+                <div class="fact"><span class="v">Yes</span><span class="l">Whole home</span></div>
+              </div>
+              <div class="desc">Wake to the sound of the Atlantic from this fully private four-bedroom home. Steps from the sand, with a wraparound deck, full kitchen, and space for the whole family — never shared, always the entire place.</div>
+            </div>
+          </div>
+
+          <div class="book-bar">
+            <div class="book-price">
+              <span class="amt">$486</span> <span class="per">/ night</span>
+              <div class="dates">Jun 14 – 21 · 7 nights</div>
+            </div>
+            <button class="book-cta">Book now</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Dark Brand Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#101317;"><div class="name">Dark Canvas</div>#101317</div>
+          <div class="swatch" style="background:#181C22;"><div class="name">Dark Surface 1</div>#181C22</div>
+          <div class="swatch" style="background:#21262E;"><div class="name">Dark Surface 2</div>#21262E</div>
+          <div class="swatch" style="background:#245ABC;"><div class="name">Vrbo Blue</div>#245ABC</div>
+          <div class="swatch" style="background:#4F8BF0;"><div class="name">Blue Bright</div>#4F8BF0</div>
+          <div class="swatch" style="background:#1D6FB8;"><div class="name">Sky Blue</div>#1D6FB8</div>
+          <div class="swatch" style="background:#F2B01E; color:#1A1206;"><div class="name">Gold Star</div>#F2B01E</div>
+          <div class="swatch" style="background:#1F9D57;"><div class="name">Success</div>#1F9D57</div>
+          <div class="swatch" style="background:#E04444;"><div class="name">Error</div>#E04444</div>
+          <div class="swatch" style="background:#EDEFF2; color:#101317;"><div class="name">Text Primary</div>#EDEFF2</div>
+          <div class="swatch" style="background:#A3AAB4; color:#101317;"><div class="name">Text Secondary</div>#A3AAB4</div>
+          <div class="swatch" style="background:#2A3038;"><div class="name">Divider</div>#2A3038</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — SF Pro (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Large Title · 32pt · 800</div><div class="type-sample t-32">Search</div></div>
+        <div class="type-row"><div class="type-meta">Price Hero · 26pt · 800</div><div class="type-sample t-26">$486 / night</div></div>
+        <div class="type-row"><div class="type-meta">Listing Title · 21pt · 700</div><div class="type-sample t-21">Oceanfront Beach House</div></div>
+        <div class="type-row"><div class="type-meta">Section · 18pt · 700</div><div class="type-sample t-18">What this place offers</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Steps from the sand, with a wraparound deck and full kitchen.</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 15pt · 600</div><div class="type-sample t-15m">Entire home in Outer Banks</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">186 reviews · Whole home</div></div>
+        <div class="type-row"><div class="type-meta">Badge · 12pt · 700</div><div class="type-sample t-12">Premier Host</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Book now</button>
+          <button class="btn btn-outline">Contact host</button>
+          <button class="btn btn-pill">Filters</button>
+          <button class="btn-text">See all 42 photos</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Map Price Pins</div>
+        <div class="map-row">
+          <div class="pin pin-default">$486</div>
+          <div class="pin pin-viewed">$312</div>
+          <div class="pin pin-selected">$528</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Trip Board Card</div>
+        <div class="board">
+          <div class="board-thumb"></div>
+          <div class="board-meta">
+            <div class="board-name">Oceanfront Beach House</div>
+            <div class="board-loc">Outer Banks, NC · 4 BR · Sleeps 8</div>
+            <div class="board-tag">★ 4.9 · Saved to "Summer 2026"</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Vrbo's dark mode is a cool blue-charcoal: canvas at <code>#101317</code>, cards lifting to <code>#181C22</code>. Vrbo Blue <code>#245ABC</code> brightens to <code>#4F8BF0</code> for links, pins, and outline buttons so it reads on dark; the primary "Book now" fill stays the deeper brand blue. The single gold review star <code>#F2B01E</code> is the only warm pixel and is held constant across themes. Listing photography remains full-color and full-bleed — only the chrome dims.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by United iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0A1424;
+    --surface-1: #111E33;
+    --surface-2: #1A2A45;
+    --divider: #243652;
+    --text-primary: #E9EEF6;
+    --text-secondary: #97A6BE;
+    --text-tertiary: #5E7090;
+    --ink: #F6F9FD;
+    --united-blue: #002244;
+    --united-blue-mid: #1B3D6E;
+    --rhapsody: #1414FF;
+    --rhapsody-bright: #4A4AFF;
+    --premier-gold: #C2A14D;
+    --premier-gold-bright: #D8B863;
+    --success: #1E8E5A;
+    --warning: #C98A1E;
+    --error: #D8434F;
+    --on-time: #1E8E5A;
+    --font: 'Open Sans', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--rhapsody); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow-y: auto; scrollbar-width: none; display: flex; flex-direction: column; }
+  .scroll-body::-webkit-scrollbar { display: none; }
+
+  /* Flight detail header */
+  .fd-hd { padding: 8px 18px 18px; background: linear-gradient(155deg, #002244 0%, #04152C 100%); }
+  .fd-top { display: flex; align-items: center; justify-content: space-between; }
+  .fd-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #7FA0CE; }
+  .fd-status { background: rgba(30,142,90,0.22); color: #4FD18C; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
+  .fd-route { display: flex; align-items: flex-start; justify-content: space-between; margin-top: 14px; color: #FFF; }
+  .fd-city { flex: 1; }
+  .fd-iata { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; }
+  .fd-name { font-size: 12px; color: #9FBADC; margin-top: 2px; }
+  .fd-mid { flex: 0 0 70px; display: flex; flex-direction: column; align-items: center; padding-top: 8px; }
+  .fd-mid svg { width: 20px; height: 20px; fill: #FFF; }
+  .fd-dur { font-size: 11px; color: #9FBADC; margin-top: 4px; }
+  .fd-times { display: flex; justify-content: space-between; margin-top: 6px; font-size: 13px; font-weight: 600; color: #CFE0F2; }
+
+  /* Boarding pass */
+  .pass { margin: 16px; background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; overflow: hidden; }
+  .pass-hd { background: var(--united-blue); padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; }
+  .pass-hd .ua { display: flex; align-items: center; gap: 8px; }
+  .pass-hd .ua svg { width: 22px; height: 22px; }
+  .pass-hd .ua-txt { font-size: 13px; font-weight: 800; color: #FFF; letter-spacing: 0.5px; }
+  .pass-hd .grp { font-size: 11px; font-weight: 700; color: var(--premier-gold-bright); }
+  .pass-body { padding: 18px; }
+  .pass-name { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-secondary); }
+  .pass-pax { font-size: 18px; font-weight: 700; color: var(--text-primary); margin-top: 2px; }
+  .pass-grid { display: flex; gap: 16px; margin-top: 16px; }
+  .pass-cell { flex: 1; }
+  .pass-cell .lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-tertiary); }
+  .pass-cell .val { font-size: 22px; font-weight: 800; color: var(--text-primary); margin-top: 3px; }
+  .pass-cell .val.gold { color: var(--premier-gold-bright); }
+  .pass-divider { margin: 16px -18px; border-top: 1px dashed var(--divider); position: relative; }
+  .pass-divider::before, .pass-divider::after { content: ''; position: absolute; top: -10px; width: 20px; height: 20px; border-radius: 50%; background: var(--canvas); }
+  .pass-divider::before { left: -10px; }
+  .pass-divider::after { right: -10px; }
+  .pass-barcode { height: 54px; border-radius: 8px; background: repeating-linear-gradient(90deg, var(--text-primary) 0 2px, transparent 2px 4px, var(--text-primary) 4px 5px, transparent 5px 9px); }
+
+  /* Seat map */
+  .seatmap { margin: 0 16px 16px; background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 18px; }
+  .sm-title { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+  .sm-sub { font-size: 12px; color: var(--text-secondary); margin-bottom: 16px; }
+  .sm-cabin { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .seat { aspect-ratio: 1; border-radius: 6px 6px 3px 3px; background: var(--surface-2); border: 1px solid var(--divider); }
+  .seat.aisle { background: transparent; border: none; }
+  .seat.econ-plus { background: rgba(20,20,255,0.18); border-color: rgba(74,74,255,0.4); }
+  .seat.taken { background: #0B1424; border-color: #1A2A45; }
+  .seat.sel { background: var(--rhapsody); border-color: var(--rhapsody-bright); box-shadow: 0 0 0 2px rgba(74,74,255,0.45); }
+  .sm-legend { display: flex; gap: 16px; margin-top: 16px; font-size: 11px; color: var(--text-secondary); }
+  .sm-legend span { display: flex; align-items: center; gap: 6px; }
+  .lg-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+  /* Tab bar */
+  .tab-bar { height: 68px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(10,20,36,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 4px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--rhapsody-bright); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0.2px; }
+  .btn-primary { background: var(--rhapsody); color: #FFF; font-size: 16px; padding: 14px 28px; border-radius: 4px; }
+  .btn-primary:active { background: #0E0EC8; transform: scale(0.98); }
+  .btn-secondary { background: var(--united-blue-mid); color: #FFF; font-size: 15px; padding: 13px 24px; border-radius: 4px; }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1.5px solid var(--text-secondary); font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 4px; }
+  .btn-text { background: transparent; color: var(--rhapsody-bright); font-size: 14px; font-weight: 700; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Status chips */
+  .status-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .st-chip { font-size: 12px; font-weight: 700; padding: 7px 14px; border-radius: 999px; }
+  .st-ontime { background: rgba(30,142,90,0.18); color: #4FD18C; }
+  .st-boarding { background: rgba(20,20,255,0.22); color: #7A7AFF; }
+  .st-delayed { background: rgba(201,138,30,0.18); color: #E0A943; }
+  .st-canceled { background: rgba(216,67,79,0.18); color: #F0808A; }
+
+  /* Premier badge */
+  .premier-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .premier { display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 8px; background: linear-gradient(135deg, rgba(194,161,77,0.18), rgba(194,161,77,0.06)); border: 1px solid rgba(194,161,77,0.35); }
+  .premier .ring { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--premier-gold); display: flex; align-items: center; justify-content: center; color: var(--premier-gold-bright); font-size: 10px; font-weight: 800; }
+  .premier .lbl { font-size: 13px; font-weight: 700; color: var(--premier-gold-bright); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--rhapsody); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-3 { border-radius: 3px; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  code { font-family: 'SF Mono', Menlo, monospace; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+
+  /* United globe logomark */
+  .globe { display: inline-block; width: 44px; height: 44px; }
+  .globe svg { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="globe">
+      <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="21" fill="none" stroke="#1414FF" stroke-width="3"/><path d="M5 19h38M5 29h38M24 4c-7 6-7 34 0 40M24 4c7 6 7 34 0 40" fill="none" stroke="#1414FF" stroke-width="2.4"/></svg>
+    </span>
+    <div class="page-title">United iOS — Design Tokens</div>
+    <div class="page-chip">Rhapsody Dark</div>
+  </div>
+  <p class="page-subtitle">United pairs a deep "United Blue" (#002244) brand navy with electric "Rhapsody Blue" (#1414FF) as the primary action accent, and gold Premier accents for MileagePlus status. The signature flow is flight detail → boarding pass, with an interactive seat map. On dark, the canvas is a deep navy (#0A1424) so the brand survives.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="scroll-body">
+            <div class="fd-hd">
+              <div class="fd-top">
+                <span class="fd-eyebrow">UA 482 · Boeing 777</span>
+                <span class="fd-status">On Time</span>
+              </div>
+              <div class="fd-route">
+                <div class="fd-city">
+                  <div class="fd-iata">SFO</div>
+                  <div class="fd-name">San Francisco</div>
+                </div>
+                <div class="fd-mid">
+                  <svg viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L11 19v-5.5z"/></svg>
+                  <div class="fd-dur">5h 32m</div>
+                </div>
+                <div class="fd-city" style="text-align:right;">
+                  <div class="fd-iata">EWR</div>
+                  <div class="fd-name">Newark</div>
+                </div>
+              </div>
+              <div class="fd-times"><span>8:05 AM · Gate F12</span><span>4:37 PM · Term C</span></div>
+            </div>
+
+            <div class="pass">
+              <div class="pass-hd">
+                <div class="ua">
+                  <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="none" stroke="#FFF" stroke-width="3"/><path d="M5 19h38M5 29h38M24 4c-7 6-7 34 0 40M24 4c7 6 7 34 0 40" fill="none" stroke="#FFF" stroke-width="2.2"/></svg>
+                  <span class="ua-txt">UNITED</span>
+                </div>
+                <span class="grp">PREMIER · GROUP 1</span>
+              </div>
+              <div class="pass-body">
+                <div class="pass-name">Passenger</div>
+                <div class="pass-pax">CHEN, DAVID R</div>
+                <div class="pass-grid">
+                  <div class="pass-cell"><div class="lbl">Gate</div><div class="val">F12</div></div>
+                  <div class="pass-cell"><div class="lbl">Seat</div><div class="val">7A</div></div>
+                  <div class="pass-cell"><div class="lbl">Boards</div><div class="val gold">7:25</div></div>
+                </div>
+                <div class="pass-divider"></div>
+                <div class="pass-barcode"></div>
+              </div>
+            </div>
+
+            <div class="seatmap">
+              <div class="sm-title">Choose your seat</div>
+              <div class="sm-sub">Economy Plus · Row 7–9 · 7A selected</div>
+              <div class="sm-cabin">
+                <div class="seat econ-plus"></div><div class="seat econ-plus"></div><div class="seat econ-plus"></div><div class="seat aisle"></div><div class="seat taken"></div><div class="seat econ-plus"></div><div class="seat econ-plus"></div>
+                <div class="seat sel"></div><div class="seat taken"></div><div class="seat econ-plus"></div><div class="seat aisle"></div><div class="seat econ-plus"></div><div class="seat taken"></div><div class="seat econ-plus"></div>
+                <div class="seat econ-plus"></div><div class="seat econ-plus"></div><div class="seat taken"></div><div class="seat aisle"></div><div class="seat econ-plus"></div><div class="seat econ-plus"></div><div class="seat econ-plus"></div>
+              </div>
+              <div class="sm-legend">
+                <span><span class="lg-dot" style="background:rgba(20,20,255,0.4);"></span>Econ+</span>
+                <span><span class="lg-dot" style="background:#1414FF;"></span>Selected</span>
+                <span><span class="lg-dot" style="background:#0B1424;border:1px solid #1A2A45;"></span>Taken</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a2 2 0 0 1-2 2h-4v-6H9v6H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Book</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L11 19v-5.5z"/></svg><span>Flights</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg><span>Trips</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>MileagePlus</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#002244;"><div class="name">United Blue</div>#002244</div>
+          <div class="swatch" style="background:#1B3D6E;"><div class="name">United Blue Mid</div>#1B3D6E</div>
+          <div class="swatch" style="background:#1414FF;"><div class="name">Rhapsody Blue</div>#1414FF</div>
+          <div class="swatch" style="background:#4A4AFF;"><div class="name">Rhapsody Bright</div>#4A4AFF</div>
+          <div class="swatch" style="background:#C2A14D; color:#1A1A1A;"><div class="name">Premier Gold</div>#C2A14D</div>
+          <div class="swatch" style="background:#0A1424;"><div class="name">Dark Canvas</div>#0A1424</div>
+          <div class="swatch" style="background:#111E33;"><div class="name">Dark Surface 1</div>#111E33</div>
+          <div class="swatch" style="background:#1A2A45;"><div class="name">Dark Surface 2</div>#1A2A45</div>
+          <div class="swatch" style="background:#E9EEF6; color:#0A1424;"><div class="name">Text Primary</div>#E9EEF6</div>
+          <div class="swatch" style="background:#97A6BE; color:#0A1424;"><div class="name">Text Secondary</div>#97A6BE</div>
+          <div class="swatch" style="background:#1E8E5A;"><div class="name">On-Time Green</div>#1E8E5A</div>
+          <div class="swatch" style="background:#D8434F;"><div class="name">Error / Canceled</div>#D8434F</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Open Sans (United's brand face lineage)</div>
+        <div class="type-row"><div class="type-meta">Route IATA · 32pt · 800</div><div class="type-sample t-32">SFO → EWR</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 26pt · 800</div><div class="type-sample t-26">Your upcoming flight</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Choose your seat</div></div>
+        <div class="type-row"><div class="type-meta">Card / Pax · 18pt · 700</div><div class="type-sample t-18">CHEN, DAVID R</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Boarding begins at 7:25 AM from Gate F12, Terminal 3.</div></div>
+        <div class="type-row"><div class="type-meta">Data Value · 15pt · 600</div><div class="type-sample t-15m">Seat 7A · Economy Plus</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">5h 32m · Boeing 777-300ER</div></div>
+        <div class="type-row"><div class="type-meta">Eyebrow · 12pt · 700 · caps</div><div class="type-sample t-12">UA 482 · Boeing 777</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Check In</button>
+          <button class="btn btn-secondary">Boarding Pass</button>
+          <button class="btn btn-outline">Change Seat</button>
+          <button class="btn-text">Flight details</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Flight Status Chips</div>
+        <div class="status-row">
+          <span class="st-chip st-ontime">On Time</span>
+          <span class="st-chip st-boarding">Boarding</span>
+          <span class="st-chip st-delayed">Delayed 0:25</span>
+          <span class="st-chip st-canceled">Canceled</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">MileagePlus Premier Badge</div>
+        <div class="premier-row">
+          <div class="premier"><span class="ring">1K</span><span class="lbl">Premier 1K</span></div>
+          <div class="premier"><span class="ring">PG</span><span class="lbl">Premier Gold</span></div>
+          <div class="premier"><span class="ring">PS</span><span class="lbl">Premier Silver</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Boarding Pass &amp; Seat Map Anatomy</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6;">United's signature flow is <strong>flight detail → boarding pass</strong>. The pass has a solid United Blue <code>#002244</code> header with the globe mark and a gold <code>PREMIER · GROUP 1</code> band, a <code>Gate / Seat / Boards</code> grid, a perforated dashed divider with notch cut-outs, and a scannable barcode. The interactive <strong>seat map</strong> uses Rhapsody Blue <code>#1414FF</code> for the selected seat and a translucent blue for Economy Plus rows.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-3">3</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">United's dark mode keeps the brand navy alive: the canvas is a deep navy <code>#0A1424</code> (not neutral black) so the United Blue <code>#002244</code> pass header and flight-detail gradient still read as United. Rhapsody Blue <code>#1414FF</code> is the electric primary-action accent — buttons and the selected seat. Premier gold <code>#C2A14D</code> marks MileagePlus elite status only. Functional status colors are constant: on-time green <code>#1E8E5A</code>, delayed amber <code>#C98A1E</code>, canceled red <code>#D8434F</code>. The barcode inverts to a light bar pattern so a gate scanner reads a dimmed screen.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by iHeartRadio iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #120A0E;
+    --surface-1: #1E1216;
+    --surface-2: #2A171D;
+    --divider: #341C24;
+    --text-primary: #FFFFFF;
+    --text-secondary: #B8A0A8;
+    --text-tertiary: #7C6168;
+    --ink: #FFFFFF;
+    --iheart-red: #C6002B;
+    --iheart-coral: #F23A2F;
+    --iheart-magenta: #E40A5D;
+    --red-pressed: #9E0022;
+    --live: #F23A2F;
+    --success: #1ED760;
+    --error: #FF4D5E;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: linear-gradient(90deg, var(--iheart-red), var(--iheart-magenta)); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .np-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; padding: 0 24px; }
+
+  .np-top { display: flex; align-items: center; justify-content: space-between; padding: 4px 0 14px; }
+  .np-chev svg { width: 22px; height: 22px; stroke: var(--text-primary); stroke-width: 2.4; fill: none; }
+  .np-ctx { text-align: center; line-height: 1.25; }
+  .np-ctx-label { font-size: 10px; font-weight: 800; letter-spacing: 1.2px; color: var(--text-secondary); text-transform: uppercase; }
+  .np-ctx-title { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-top: 2px; }
+  .np-more svg { width: 22px; height: 22px; stroke: var(--text-primary); stroke-width: 2.4; fill: none; }
+
+  /* Station artwork w/ heart logo */
+  .art { width: 100%; aspect-ratio: 1/1; border-radius: 14px; position: relative; overflow: hidden; background: linear-gradient(150deg, #2A171D 0%, #1E1216 60%, #120A0E 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 24px 48px -22px rgba(198,0,43,0.45); }
+  .art::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 50% 42%, rgba(198,0,43,0.35), transparent 62%); }
+  .heart-mark { width: 44%; height: 44%; position: relative; z-index: 1; filter: drop-shadow(0 8px 22px rgba(198,0,43,0.55)); }
+  .heart-mark svg { width: 100%; height: 100%; }
+  .live-badge { position: absolute; top: 16px; left: 16px; display: flex; align-items: center; gap: 7px; background: var(--iheart-coral); padding: 6px 12px 6px 10px; border-radius: 999px; }
+  .live-dot { width: 7px; height: 7px; border-radius: 50%; background: #FFF; box-shadow: 0 0 0 0 rgba(255,255,255,0.7); animation: pulse 1.6s ease-out infinite; }
+  @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(255,255,255,0.7);} 70%{box-shadow:0 0 0 7px rgba(255,255,255,0);} 100%{box-shadow:0 0 0 0 rgba(255,255,255,0);} }
+  .live-badge span { font-size: 11px; font-weight: 900; letter-spacing: 0.8px; color: #FFF; }
+  .freq-badge { position: absolute; bottom: 16px; right: 16px; background: rgba(18,10,14,0.7); backdrop-filter: blur(8px); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 800; color: #FFF; letter-spacing: 0.3px; }
+
+  .np-meta { padding: 22px 0 8px; }
+  .np-station { font-size: 24px; font-weight: 800; letter-spacing: -0.4px; color: var(--text-primary); }
+  .np-now { font-size: 15px; font-weight: 500; color: var(--text-secondary); margin-top: 4px; }
+  .np-heart svg { width: 24px; height: 24px; fill: var(--iheart-coral); }
+  .np-titlerow { display: flex; align-items: flex-start; justify-content: space-between; }
+
+  /* Scanning bar (no scrubber for live radio) */
+  .scan { margin: 10px 0 4px; }
+  .scan-track { height: 4px; border-radius: 2px; background: var(--surface-2); position: relative; overflow: hidden; }
+  .scan-bar { position: absolute; top: 0; height: 100%; width: 38%; border-radius: 2px; background: linear-gradient(90deg, transparent, var(--iheart-coral), transparent); animation: scan 2.2s ease-in-out infinite; }
+  @keyframes scan { 0%{left:-38%;} 100%{left:100%;} }
+  .scan-label { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: var(--iheart-coral); margin-top: 10px; letter-spacing: 0.4px; text-transform: uppercase; }
+  .scan-label .ld { width: 6px; height: 6px; border-radius: 50%; background: var(--iheart-coral); }
+
+  /* Transport */
+  .transport { display: flex; align-items: center; justify-content: space-between; padding: 16px 0 20px; }
+  .tp-ic svg { width: 26px; height: 26px; fill: var(--text-primary); }
+  .tp-ic.sec svg { width: 22px; height: 22px; stroke: var(--text-secondary); stroke-width: 2; fill: none; }
+  .tp-play { width: 68px; height: 68px; border-radius: 50%; background: var(--iheart-red); display: flex; align-items: center; justify-content: center; box-shadow: 0 12px 28px -8px rgba(198,0,43,0.65); }
+  .tp-play svg { width: 26px; height: 26px; fill: #FFF; }
+
+  /* Bottom tab */
+  .tab-bar { height: 68px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(18,10,14,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 4px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--iheart-coral); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.grad { background: linear-gradient(135deg, #C6002B, #E40A5D); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 900; letter-spacing: 0.8px; text-transform: uppercase; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--iheart-red); color: #FFF; font-size: 16px; padding: 14px 30px; border-radius: 999px; }
+  .btn-primary:active { background: var(--red-pressed); transform: scale(0.98); }
+  .btn-coral { background: var(--iheart-coral); color: #FFF; font-size: 15px; font-weight: 700; padding: 13px 26px; border-radius: 999px; }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1.5px solid rgba(255,255,255,0.4); font-size: 14px; font-weight: 600; padding: 12px 22px; border-radius: 999px; }
+  .btn-text { background: transparent; color: var(--iheart-coral); font-size: 14px; font-weight: 700; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Live station rows */
+  .station { display: flex; align-items: center; gap: 12px; padding: 10px 0; }
+  .st-logo { width: 48px; height: 48px; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 12px; color: #FFF; }
+  .st-1 { background: linear-gradient(135deg, #C6002B, #E40A5D); }
+  .st-2 { background: linear-gradient(135deg, #2A171D, #4A2531); }
+  .station-meta { flex: 1; min-width: 0; }
+  .station-name { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+  .station-sub { font-size: 13px; color: var(--text-secondary); margin-top: 2px; display: flex; align-items: center; gap: 6px; }
+  .live-tag { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 900; color: var(--iheart-coral); letter-spacing: 0.5px; }
+  .live-tag .d { width: 5px; height: 5px; border-radius: 50%; background: var(--iheart-coral); }
+  .station-play svg { width: 28px; height: 28px; fill: var(--iheart-coral); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--iheart-red); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-14 { border-radius: 14px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; }
+  .logo svg { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 48 48" fill="none"><defs><linearGradient id="ih" x1="6" y1="6" x2="42" y2="42"><stop offset="0" stop-color="#C6002B"/><stop offset="1" stop-color="#E40A5D"/></linearGradient></defs><path d="M24 41C24 41 7 30 7 18.2 7 12 11.6 8 16.6 8c3.3 0 5.9 1.8 7.4 4.2C25.5 9.8 28.1 8 31.4 8 36.4 8 41 12 41 18.2 41 30 24 41 24 41z" fill="url(#ih)"/><path d="M19 23.5l3.4 3.4 6.8-7.2" stroke="#FFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+    </span>
+    <div class="page-title">iHeartRadio iOS — Design Tokens</div>
+    <div class="page-chip">Live Radio</div>
+  </div>
+  <p class="page-subtitle">Warm maroon-black canvas (#120A0E — a red-tinted dark, never pure black) where the iHeart Red→Magenta system (#C6002B→#E40A5D, with coral #F23A2F for live signals) is scarce. The signature is the live-station player: a heart-logo tile, a pulsing LIVE badge, and an indeterminate scanning bar — there is no scrubber because live radio cannot seek.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="np-body">
+            <div class="np-top">
+              <div class="np-chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></div>
+              <div class="np-ctx">
+                <div class="np-ctx-label">Live Station</div>
+                <div class="np-ctx-title">For You</div>
+              </div>
+              <div class="np-more"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></div>
+            </div>
+
+            <div class="art">
+              <div class="live-badge">
+                <span class="live-dot"></span>
+                <span>LIVE</span>
+              </div>
+              <div class="heart-mark">
+                <svg viewBox="0 0 48 48" fill="none"><path d="M24 42C24 42 6 30.5 6 17.8 6 11.2 10.9 7 16.2 7c3.5 0 6.3 1.9 7.8 4.5C25.5 8.9 28.3 7 31.8 7 37.1 7 42 11.2 42 17.8 42 30.5 24 42 24 42z" fill="#C6002B"/><path d="M18.5 24l4 4 7.5-8" stroke="#FFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+              </div>
+              <div class="freq-badge">103.5 FM</div>
+            </div>
+
+            <div class="np-meta">
+              <div class="np-titlerow">
+                <div>
+                  <div class="np-station">KIIS-FM Los Angeles</div>
+                  <div class="np-now">Now: Dua Lipa — Levitating</div>
+                </div>
+                <div class="np-heart"><svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-10-9.3C.6 8.5 2.4 5 6 5c2.1 0 3.6 1.2 4.5 2.6C11.4 6.2 12.9 5 15 5c3.6 0 5.4 3.5 4 6.7-2.5 4.7-10 9.3-10 9.3z"/></svg></div>
+              </div>
+              <div class="scan">
+                <div class="scan-track">
+                  <div class="scan-bar"></div>
+                </div>
+                <div class="scan-label"><span class="ld"></span>Streaming live</div>
+              </div>
+              <div class="transport">
+                <div class="tp-ic sec"><svg viewBox="0 0 24 24"><path d="M11 19l-7-7 7-7"/><path d="M20 19l-7-7 7-7"/></svg></div>
+                <div class="tp-ic"><svg viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg></div>
+                <div class="tp-play"><svg viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg></div>
+                <div class="tp-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2V21a2 2 0 1 1-4 0v-.1A1.7 1.7 0 0 0 7 19.4a1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0-1.2-2.9H1a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 2.6 7"/></svg></div>
+                <div class="tp-ic sec"><svg viewBox="0 0 24 24"><path d="M12 19l7-7-7-7"/><path d="M3 19l7-7-7-7"/></svg></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>For You</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg><span>Radio</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 6h13M3 12h13M3 18h9"/><circle cx="20" cy="16" r="2"/></svg><span>Podcasts</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>Library</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#120A0E;"><div class="name">Canvas</div>#120A0E</div>
+          <div class="swatch" style="background:#1E1216;"><div class="name">Surface 1</div>#1E1216</div>
+          <div class="swatch" style="background:#2A171D;"><div class="name">Surface 2</div>#2A171D</div>
+          <div class="swatch" style="background:#341C24;"><div class="name">Divider</div>#341C24</div>
+          <div class="swatch grad"><div class="name">iHeart System</div>C6002B→E40A5D</div>
+          <div class="swatch" style="background:#C6002B;"><div class="name">iHeart Red</div>#C6002B</div>
+          <div class="swatch" style="background:#F23A2F;"><div class="name">Coral (Live)</div>#F23A2F</div>
+          <div class="swatch" style="background:#E40A5D;"><div class="name">Magenta</div>#E40A5D</div>
+          <div class="swatch" style="background:#FFFFFF; color:#120A0E;"><div class="name">Text Primary</div>#FFFFFF</div>
+          <div class="swatch" style="background:#B8A0A8; color:#120A0E;"><div class="name">Text Secondary</div>#B8A0A8</div>
+          <div class="swatch" style="background:#1ED760; color:#06210F;"><div class="name">Success</div>#1ED760</div>
+          <div class="swatch" style="background:#FF4D5E;"><div class="name">Error</div>#FF4D5E</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — iHeart Sans (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 800</div><div class="type-sample t-32">For You</div></div>
+        <div class="type-row"><div class="type-meta">Station Name · 26pt · 800</div><div class="type-sample t-26">KIIS-FM Los Angeles</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Live Stations</div></div>
+        <div class="type-row"><div class="type-meta">Subhead · 18pt · 700</div><div class="type-sample t-18">Recommended for you</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Free music, thousands of live radio stations, and the podcasts you love.</div></div>
+        <div class="type-row"><div class="type-meta">Row Title · 15pt · 600</div><div class="type-sample t-15m">KIIS-FM Los Angeles</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Now: Dua Lipa — Levitating</div></div>
+        <div class="type-row"><div class="type-meta">LIVE Tag · 12pt · 900</div><div class="type-sample t-12">● Live · Top 40</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">▶ Listen Live</button>
+          <button class="btn btn-coral">Create Station</button>
+          <button class="btn btn-outline">Follow</button>
+          <button class="btn-text">See all</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Live Station Rows</div>
+        <div class="station">
+          <div class="st-logo st-1">103.5</div>
+          <div class="station-meta">
+            <div class="station-name">KIIS-FM Los Angeles</div>
+            <div class="station-sub"><span class="live-tag"><span class="d"></span>LIVE</span> Top 40 &amp; Pop</div>
+          </div>
+          <div class="station-play"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 8v8l6-4z"/></svg></div>
+        </div>
+        <div class="station">
+          <div class="st-logo st-2">Z100</div>
+          <div class="station-meta">
+            <div class="station-name">Z100 New York</div>
+            <div class="station-sub"><span class="live-tag"><span class="d"></span>LIVE</span> Hit Music Now</div>
+          </div>
+          <div class="station-play"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 8v8l6-4z"/></svg></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">iHeartRadio's dark mode is a warm maroon-black <code>#120A0E</code> — a red-tinted dark, never pure black — so the iHeart red system feels native to the canvas. The brand system (<code>#C6002B</code> red → <code>#E40A5D</code> magenta, with coral <code>#F23A2F</code> reserved for live signals) is scarce: it lights the circular play button, the heart logomark, the pulsing LIVE badge, and the indeterminate scanning bar. Because live radio cannot seek, there is no scrubber — the scanning bar conveys "streaming now" instead of progress. Chrome (chevrons, secondary transport, tab labels) stays monochrome <code>#B8A0A8</code> so the eye is pulled to the live station and its play control.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Noom iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #121212;
+    --surface-1: #1C1C1E;
+    --surface-2: #262629;
+    --divider: #2E2E31;
+    --text-primary: #F0F0F2;
+    --text-secondary: #9A9AA0;
+    --text-tertiary: #6A6A70;
+    --ink: #FFFFFF;
+    --noom-blue: #2A5DF6;
+    --noom-blue-pressed: #1E47C8;
+    --noom-teal: #1FC29B;
+    --noom-navy: #0C1B4D;
+    --food-green: #34C759;
+    --food-yellow: #FFC531;
+    --food-red: #FF5A52;
+    --coach: #7B61FF;
+    --success: #34C759;
+    --error: #FF5A52;
+    --font: 'Poppins', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--noom-blue); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; padding: 0 18px; }
+
+  /* Greeting */
+  .greet { padding: 8px 2px 14px; }
+  .greet .hi { font-size: 22px; font-weight: 700; color: var(--ink); letter-spacing: -0.3px; }
+  .greet .sub { font-size: 13px; font-weight: 500; color: var(--text-secondary); margin-top: 3px; }
+
+  /* Daily lesson card */
+  .lesson { background: linear-gradient(135deg, #2A5DF6 0%, #1FC29B 130%); border-radius: 20px; padding: 18px; position: relative; overflow: hidden; }
+  .lesson::after { content: ''; position: absolute; right: -30px; top: -30px; width: 110px; height: 110px; background: rgba(255,255,255,0.10); border-radius: 50%; }
+  .lesson-tag { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.85); letter-spacing: 1px; text-transform: uppercase; }
+  .lesson-title { font-size: 18px; font-weight: 700; color: #FFF; margin-top: 8px; line-height: 1.3; max-width: 80%; }
+  .lesson-meta { display: flex; align-items: center; gap: 8px; margin-top: 14px; }
+  .lesson-prog { flex: 1; height: 6px; background: rgba(255,255,255,0.25); border-radius: 3px; overflow: hidden; }
+  .lesson-prog i { display: block; height: 100%; width: 40%; background: #FFF; border-radius: 3px; }
+  .lesson-pct { font-size: 11px; font-weight: 700; color: #FFF; }
+  .lesson-cta { margin-top: 14px; display: inline-flex; align-items: center; gap: 6px; background: #FFF; color: var(--noom-blue); font-size: 13px; font-weight: 700; padding: 9px 16px; border-radius: 999px; }
+
+  /* Weight graph card */
+  .wcard { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 18px; padding: 16px 14px 12px; margin-top: 14px; }
+  .wcard-h { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+  .wcard-h .t { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+  .wcard-h .d { font-size: 11px; font-weight: 600; color: var(--text-tertiary); }
+  .wnow { font-size: 24px; font-weight: 800; color: var(--ink); }
+  .wnow span { font-size: 13px; font-weight: 600; color: var(--noom-teal); margin-left: 8px; }
+  .wgraph { position: relative; height: 90px; margin-top: 6px; }
+  .wgraph svg { width: 100%; height: 100%; display: block; }
+  .wx { display: flex; justify-content: space-between; margin-top: 6px; font-size: 9px; font-weight: 700; color: var(--text-tertiary); padding: 0 2px; }
+
+  /* Food log */
+  .flog { margin-top: 16px; }
+  .flog-h { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; display: flex; justify-content: space-between; align-items: baseline; }
+  .flog-h .cal { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+  .fbar { display: flex; height: 10px; border-radius: 5px; overflow: hidden; margin: 8px 0 12px; }
+  .fbar i { display: block; height: 100%; }
+  .frow { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--divider); }
+  .frow:last-child { border-bottom: none; }
+  .fdot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .fname { flex: 1; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .fcat { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px; }
+  .fcat-g { background: rgba(52,199,89,0.16); color: var(--food-green); }
+  .fcat-y { background: rgba(255,197,49,0.16); color: var(--food-yellow); }
+  .fcat-r { background: rgba(255,90,82,0.16); color: var(--food-red); }
+  .fkcal { font-size: 13px; font-weight: 700; color: var(--text-secondary); width: 52px; text-align: right; }
+
+  /* Tab bar */
+  .tab-bar { height: 68px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(18,18,18,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 3px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--noom-blue); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 600; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0.1px; }
+  .btn-primary { background: var(--noom-blue); color: #FFF; font-size: 16px; padding: 15px 30px; border-radius: 999px; }
+  .btn-primary:active { background: var(--noom-blue-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--noom-blue); border: 1.5px solid var(--noom-blue); font-size: 15px; font-weight: 700; padding: 13px 26px; border-radius: 999px; }
+  .btn-ghost { background: var(--surface-2); color: var(--text-primary); border: none; font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 999px; }
+  .btn-text { background: transparent; color: var(--noom-blue); font-size: 14px; font-weight: 700; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Food color system */
+  .food-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .foodc { flex: 1; min-width: 90px; border-radius: 14px; padding: 14px; color: #FFF; font-weight: 700; }
+  .foodc .lbl { font-size: 14px; }
+  .foodc .desc { font-size: 11px; font-weight: 500; opacity: 0.92; margin-top: 4px; }
+  .fg { background: var(--food-green); }
+  .fy { background: var(--food-yellow); color: #4A3A00; }
+  .fr { background: var(--food-red); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--noom-blue); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-20 { border-radius: 20px; }
+  .r-28 { border-radius: 28px; }
+  .r-pill { border-radius: 999px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Noom logomark */
+  .nlogo { display: inline-block; width: 46px; height: 46px; }
+  .nlogo svg { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="nlogo">
+      <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="14" fill="#2A5DF6"/><path d="M12 33V16h4l8 11V16h4v17h-4l-8-11v11z" fill="#FFF"/><circle cx="36" cy="19" r="3" fill="#1FC29B"/></svg>
+    </span>
+    <div class="page-title">Noom iOS — Design Tokens</div>
+    <div class="page-chip">Psych + Food</div>
+  </div>
+  <p class="page-subtitle">Noom pairs a confident Noom Blue (#2A5DF6) with a fresh Noom Teal (#1FC29B) across a friendly, coaching-led UI. The two signatures are the daily psychology lesson card (a bold gradient hero) and the food log driven by the green / yellow / red food-color system — the single most recognizable Noom mechanic.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="scroll-body">
+            <div class="greet">
+              <div class="hi">Good morning, Maya</div>
+              <div class="sub">Day 24 · You're building real momentum</div>
+            </div>
+
+            <div class="lesson">
+              <div class="lesson-tag">Today's Lesson</div>
+              <div class="lesson-title">Why Willpower Is a Myth (and What Works Instead)</div>
+              <div class="lesson-meta">
+                <div class="lesson-prog"><i></i></div>
+                <div class="lesson-pct">2 of 5</div>
+              </div>
+              <div class="lesson-cta">Continue lesson →</div>
+            </div>
+
+            <div class="wcard">
+              <div class="wcard-h"><div class="t">Weight</div><div class="d">Last 30 days</div></div>
+              <div class="wnow">164.2 lb <span>▼ 6.8 lb</span></div>
+              <div class="wgraph">
+                <svg viewBox="0 0 280 90" preserveAspectRatio="none">
+                  <defs><linearGradient id="wg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2A5DF6" stop-opacity="0.30"/><stop offset="1" stop-color="#2A5DF6" stop-opacity="0.02"/></linearGradient></defs>
+                  <path d="M4,16 C40,20 60,30 96,40 C132,50 150,52 188,62 C220,70 246,74 276,80 L276,90 L4,90 Z" fill="url(#wg)"/>
+                  <path d="M4,16 C40,20 60,30 96,40 C132,50 150,52 188,62 C220,70 246,74 276,80" fill="none" stroke="#2A5DF6" stroke-width="2.5" stroke-linecap="round"/>
+                  <line x1="4" y1="84" x2="276" y2="84" stroke="#1FC29B" stroke-width="1.5" stroke-dasharray="3 4"/>
+                  <circle cx="276" cy="80" r="3.5" fill="#2A5DF6" stroke="#1C1C1E" stroke-width="2"/>
+                </svg>
+              </div>
+              <div class="wx"><span>Apr 14</span><span>Apr 28</span><span>May 12</span></div>
+            </div>
+
+            <div class="flog">
+              <div class="flog-h"><span>Today's food</span><span class="cal">1,240 / 1,500 kcal</span></div>
+              <div class="fbar">
+                <i style="background:#34C759; width:58%"></i>
+                <i style="background:#FFC531; width:30%"></i>
+                <i style="background:#FF5A52; width:12%"></i>
+              </div>
+              <div class="frow">
+                <span class="fdot" style="background:#34C759"></span>
+                <span class="fname">Greek yogurt + berries</span>
+                <span class="fcat fcat-g">Green</span>
+                <span class="fkcal">180</span>
+              </div>
+              <div class="frow">
+                <span class="fdot" style="background:#FFC531"></span>
+                <span class="fname">Grilled chicken wrap</span>
+                <span class="fcat fcat-y">Yellow</span>
+                <span class="fkcal">420</span>
+              </div>
+              <div class="frow">
+                <span class="fdot" style="background:#FF5A52"></span>
+                <span class="fname">Dark chocolate (2 sq)</span>
+                <span class="fcat fcat-r">Red</span>
+                <span class="fkcal">160</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a2 2 0 0 1-2 2h-4v-7H9v7H5a2 2 0 0 1-2-2z"/></svg><span>Today</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M5 4h14v16l-7-3-7 3z"/></svg><span>Learn</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Log</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Coach</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/></svg><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#2A5DF6;"><div class="name">Noom Blue</div>#2A5DF6</div>
+          <div class="swatch" style="background:#1FC29B;"><div class="name">Noom Teal</div>#1FC29B</div>
+          <div class="swatch" style="background:#0C1B4D;"><div class="name">Noom Navy</div>#0C1B4D</div>
+          <div class="swatch" style="background:#121212;"><div class="name">Canvas (dark)</div>#121212</div>
+          <div class="swatch" style="background:#1C1C1E;"><div class="name">Surface 1</div>#1C1C1E</div>
+          <div class="swatch" style="background:#2E2E31;"><div class="name">Divider</div>#2E2E31</div>
+          <div class="swatch" style="background:#34C759;"><div class="name">Food Green</div>#34C759</div>
+          <div class="swatch" style="background:#FFC531; color:#4A3A00;"><div class="name">Food Yellow</div>#FFC531</div>
+          <div class="swatch" style="background:#FF5A52;"><div class="name">Food Red</div>#FF5A52</div>
+          <div class="swatch" style="background:#7B61FF;"><div class="name">Coach Purple</div>#7B61FF</div>
+          <div class="swatch" style="background:#F0F0F2; color:#121212;"><div class="name">Text Primary</div>#F0F0F2</div>
+          <div class="swatch" style="background:#9A9AA0; color:#121212;"><div class="name">Text Secondary</div>#9A9AA0</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Poppins (geometric, friendly)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 800</div><div class="type-sample t-32">Today</div></div>
+        <div class="type-row"><div class="type-meta">Greeting · 26pt · 700</div><div class="type-sample t-26">Good morning, Maya</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Today's lesson</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 18pt · 700</div><div class="type-sample t-18">Why willpower is a myth</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Small, consistent choices beat motivation. Here's the psychology behind it.</div></div>
+        <div class="type-row"><div class="type-meta">List Item · 15pt · 600</div><div class="type-sample t-15m">Grilled chicken wrap</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Day 24 · You're building momentum</div></div>
+        <div class="type-row"><div class="type-meta">Tag / Pill · 12pt · 600</div><div class="type-sample t-12">TODAY'S LESSON</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Continue lesson</button>
+          <button class="btn btn-outline">Log food</button>
+          <button class="btn btn-ghost">Skip for now</button>
+          <button class="btn-text">See all lessons</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Food Color System — the core Noom mechanic</div>
+        <div class="food-row">
+          <div class="foodc fg"><div class="lbl">Green</div><div class="desc">Lowest calorie density — eat the most</div></div>
+          <div class="foodc fy"><div class="lbl">Yellow</div><div class="desc">Moderate density — eat in balance</div></div>
+          <div class="foodc fr"><div class="lbl">Red</div><div class="desc">Highest density — eat mindfully</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Daily Lesson Card</div>
+        <div style="background:linear-gradient(135deg,#2A5DF6,#1FC29B 130%); border-radius:18px; padding:18px; color:#FFF;">
+          <div style="font-size:11px; font-weight:700; letter-spacing:1px; opacity:0.85;">TODAY'S LESSON · 4 MIN</div>
+          <div style="font-size:18px; font-weight:700; margin-top:8px;">The Habit Loop: Cue, Routine, Reward</div>
+          <div style="margin-top:14px; display:inline-flex; gap:6px; background:#FFF; color:#2A5DF6; font-size:13px; font-weight:700; padding:9px 16px; border-radius:999px;">Start lesson →</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-28">28</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Noom is light-first and cheerful, but its dark mode keeps the brand energy. Canvas drops to <code>#121212</code> with cards at <code>#1C1C1E</code>. Noom Blue <code>#2A5DF6</code> stays the primary action color and reads well on dark. The food-color system is sacrosanct — Green <code>#34C759</code>, Yellow <code>#FFC531</code>, Red <code>#FF5A52</code> never change hue across themes because users learn to read food at a glance by color. The lesson card keeps its blue→teal gradient; only the surrounding chrome dims.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

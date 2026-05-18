@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Raya iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #000000;
+    --surface-1: #0D0D0D;
+    --surface-2: #161616;
+    --divider: #242424;
+    --hairline: #2E2E2E;
+    --text-primary: #FFFFFF;
+    --text-secondary: #9A9A9A;
+    --text-tertiary: #5E5E5E;
+    --ink: #FFFFFF;
+    --accent: #FFFFFF;
+    --on-accent: #000000;
+    --error: #E5484D;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', Helvetica, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 30px; font-weight: 600; letter-spacing: -0.5px; color: var(--ink); }
+  .page-chip { background: #FFF; color: #000; font-size: 10px; font-weight: 600; padding: 4px 10px; border-radius: 999px; letter-spacing: 1.4px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #000; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.95), 0 0 0 1px rgba(255,255,255,0.1) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 500; color: var(--text-primary); z-index: 6; position: relative; }
+
+  /* Slideshow profile */
+  .slide-wrap { flex: 1; position: relative; }
+  .slide-photo { position: absolute; inset: 0; background: linear-gradient(170deg, #3A3A3A 0%, #1E1E1E 50%, #0A0A0A 100%); }
+  .slide-photo::before { content: ''; position: absolute; top: 18%; left: 26%; width: 48%; height: 34%; background: #4A4A4A; border-radius: 50%; }
+  .slide-photo::after { content: ''; position: absolute; bottom: 24%; left: 16%; right: 16%; height: 30%; background: linear-gradient(180deg,#444,#222); border-radius: 44% 44% 0 0; }
+  .slide-bars { position: absolute; top: 56px; left: 16px; right: 16px; display: flex; gap: 5px; z-index: 5; }
+  .slide-bar { flex: 1; height: 2.5px; border-radius: 2px; background: rgba(255,255,255,0.3); }
+  .slide-bar.on { background: #FFF; }
+  .slide-scrim { position: absolute; left: 0; right: 0; bottom: 0; height: 62%; background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.92) 100%); }
+
+  /* Music ticker */
+  .music { position: absolute; top: 76px; left: 16px; right: 16px; display: flex; align-items: center; gap: 8px; z-index: 5; }
+  .music svg { width: 13px; height: 13px; stroke: #FFF; fill: none; stroke-width: 2; }
+  .music span { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.85); letter-spacing: 0.2px; }
+  .music .eq { display: flex; align-items: flex-end; gap: 2px; height: 11px; margin-left: auto; }
+  .music .eq i { width: 2px; background: #FFF; border-radius: 1px; }
+  .music .eq i:nth-child(1) { height: 40%; } .music .eq i:nth-child(2) { height: 90%; } .music .eq i:nth-child(3) { height: 60%; } .music .eq i:nth-child(4) { height: 100%; }
+
+  /* Profile meta */
+  .pmeta { position: absolute; left: 20px; right: 20px; bottom: 96px; z-index: 5; }
+  .pname { font-size: 28px; font-weight: 600; color: #FFF; letter-spacing: -0.4px; }
+  .prole { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.92); margin-top: 6px; letter-spacing: 0.4px; text-transform: uppercase; }
+  .pbio { font-size: 14px; color: rgba(255,255,255,0.72); margin-top: 10px; line-height: 1.55; }
+  .ploc { display: flex; align-items: center; gap: 6px; margin-top: 10px; font-size: 12px; color: rgba(255,255,255,0.6); }
+  .ploc svg { width: 12px; height: 12px; stroke: rgba(255,255,255,0.6); fill: none; stroke-width: 2; }
+
+  /* Bottom actions — minimal */
+  .pacts { position: absolute; left: 0; right: 0; bottom: 18px; display: flex; align-items: center; justify-content: center; gap: 56px; z-index: 5; }
+  .pa { display: flex; align-items: center; justify-content: center; }
+  .pa svg { fill: none; stroke-width: 1.5; }
+  .pa-pass svg { width: 26px; height: 26px; stroke: rgba(255,255,255,0.9); }
+  .pa-heart { width: 60px; height: 60px; border-radius: 50%; border: 1px solid #FFF; }
+  .pa-heart svg { width: 24px; height: 24px; stroke: #FFF; }
+  .pa-note svg { width: 24px; height: 24px; stroke: rgba(255,255,255,0.9); }
+
+  /* Tab bar */
+  .tab-bar { position: absolute; left: 0; right: 0; bottom: 0; height: 56px; display: none; }
+
+  /* Top minimal nav dots */
+  .topnav { position: absolute; top: 56px; left: 0; right: 0; display: flex; align-items: center; justify-content: center; gap: 22px; z-index: 6; display: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 14px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.6px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 10px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 500; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-30 { font-size: 30px; font-weight: 600; letter-spacing: -0.5px; color: var(--ink); }
+  .t-28 { font-size: 28px; font-weight: 600; letter-spacing: -0.4px; color: var(--ink); }
+  .t-20 { font-size: 20px; font-weight: 600; letter-spacing: -0.2px; }
+  .t-16 { font-size: 16px; font-weight: 500; }
+  .t-15 { font-size: 15px; font-weight: 400; }
+  .t-13u { font-size: 13px; font-weight: 500; letter-spacing: 0.4px; text-transform: uppercase; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-11u { font-size: 11px; font-weight: 600; letter-spacing: 1.6px; text-transform: uppercase; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 600; cursor: pointer; border: none; }
+  .btn-primary { background: #FFF; color: #000; font-size: 14px; padding: 15px 30px; border-radius: 999px; letter-spacing: 0.3px; }
+  .btn-primary:active { background: #D8D8D8; transform: scale(0.99); }
+  .btn-outline { background: transparent; color: #FFF; border: 1px solid #FFF; font-size: 14px; padding: 14px 28px; border-radius: 999px; letter-spacing: 0.3px; }
+  .btn-ghost { background: transparent; color: var(--text-secondary); border: 1px solid var(--hairline); font-size: 14px; padding: 14px 28px; border-radius: 999px; }
+  .btn-text { background: transparent; color: #FFF; font-size: 12px; font-weight: 600; padding: 12px 0; letter-spacing: 1.4px; text-transform: uppercase; border: none; cursor: pointer; }
+
+  /* Slideshow control demo */
+  .ssc { position: relative; height: 150px; border-radius: 12px; overflow: hidden; background: linear-gradient(170deg,#3A3A3A,#0A0A0A); border: 1px solid var(--divider); }
+  .ssc-bars { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; gap: 5px; }
+  .ssc-bars i { flex: 1; height: 2.5px; border-radius: 2px; background: rgba(255,255,255,0.3); }
+  .ssc-bars i.on { background: #FFF; }
+  .ssc-music { position: absolute; bottom: 14px; left: 14px; display: flex; align-items: center; gap: 8px; }
+  .ssc-music svg { width: 13px; height: 13px; stroke: #FFF; fill: none; stroke-width: 2; }
+  .ssc-music span { font-size: 12px; color: rgba(255,255,255,0.85); }
+
+  /* Member chip */
+  .chip-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .mchip { font-size: 12px; font-weight: 500; color: #FFF; border: 1px solid var(--hairline); padding: 8px 16px; border-radius: 999px; letter-spacing: 0.3px; }
+  .mchip.solid { background: #FFF; color: #000; border-color: #FFF; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: #FFF; color: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; } .r-4 { border-radius: 4px; } .r-8 { border-radius: 8px; } .r-12 { border-radius: 12px; } .r-16 { border-radius: 16px; } .r-24 { border-radius: 24px; } .r-pill { border-radius: 500px; } .r-circle { border-radius: 50%; }
+
+  .raya-mark { display: inline-flex; width: 40px; height: 40px; align-items: center; justify-content: center; }
+  .raya-mark svg { width: 100%; height: 100%; }
+  code { font-family: 'SF Mono', Menlo, monospace; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; color: #DDD; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="raya-mark">
+      <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="none" stroke="#FFF" stroke-width="1.5"/><path d="M14 27V14h7a4 4 0 0 1 0 8h-7m7 0l5 5" fill="none" stroke="#FFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </span>
+    <div class="page-title">Raya iOS — Design Tokens</div>
+    <div class="page-chip">Pure Monochrome</div>
+  </div>
+  <p class="page-subtitle">Raya is uncompromisingly monochrome: pure black (#000000) and pure white (#FFFFFF), with no brand hue at all. The signature is a full-bleed slideshow profile set to the member's chosen song — segmented story bars, a music ticker, and an editorial caption. Color comes only from the member's photography; every UI element is black, white, or a gray between.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="slide-wrap">
+            <div class="slide-photo"></div>
+            <div class="slide-scrim"></div>
+            <div class="slide-bars"><span class="slide-bar on"></span><span class="slide-bar on"></span><span class="slide-bar"></span><span class="slide-bar"></span><span class="slide-bar"></span></div>
+            <div class="music">
+              <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+              <span>Frank Ocean — Pink + White</span>
+              <span class="eq"><i></i><i></i><i></i><i></i></span>
+            </div>
+            <div class="pmeta">
+              <div class="pname">Sasha</div>
+              <div class="prole">Director · Film &amp; Music</div>
+              <div class="pbio">Shooting a documentary in Lisbon this spring. Vinyl, film cameras, long dinners.</div>
+              <div class="ploc"><svg viewBox="0 0 24 24"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg> Los Angeles · 4 mi</div>
+            </div>
+            <div class="pacts">
+              <div class="pa pa-pass"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg></div>
+              <div class="pa pa-heart"><svg viewBox="0 0 24 24"><path d="M12 20.5l-1.4-1.3C5.7 14.6 2.5 11.7 2.5 8.2 2.5 5.5 4.6 3.4 7.2 3.4c1.5 0 3 .7 4 1.9 1-1.2 2.5-1.9 4-1.9 2.6 0 4.7 2.1 4.7 4.8 0 3.5-3.2 6.4-8.1 11z"/></svg></div>
+              <div class="pa pa-note"><svg viewBox="0 0 24 24"><path d="M20 14a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z"/></svg></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Monochrome Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#000000;"><div class="name">Pure Black Canvas</div>#000000</div>
+          <div class="swatch" style="background:#0D0D0D;"><div class="name">Surface 1</div>#0D0D0D</div>
+          <div class="swatch" style="background:#161616;"><div class="name">Surface 2</div>#161616</div>
+          <div class="swatch" style="background:#242424;"><div class="name">Divider</div>#242424</div>
+          <div class="swatch" style="background:#2E2E2E;"><div class="name">Hairline</div>#2E2E2E</div>
+          <div class="swatch" style="background:#5E5E5E;"><div class="name">Text Tertiary</div>#5E5E5E</div>
+          <div class="swatch" style="background:#9A9A9A; color:#000;"><div class="name">Text Secondary</div>#9A9A9A</div>
+          <div class="swatch" style="background:#FFFFFF; color:#000;"><div class="name">Pure White / Accent</div>#FFFFFF</div>
+          <div class="swatch" style="background:#000; border-color:#FFF;"><div class="name">On-Photo White</div>rgba 255 .92</div>
+          <div class="swatch" style="background:#D8D8D8; color:#000;"><div class="name">White Pressed</div>#D8D8D8</div>
+          <div class="swatch" style="background:#E5484D;"><div class="name">Error (rare)</div>#E5484D</div>
+          <div class="swatch" style="background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,0.92)); border-color:#333;"><div class="name">Photo Scrim</div>→ .92 black</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter (full monochrome scale)</div>
+        <div class="type-row"><div class="type-meta">Wordmark · 30pt · 600</div><div class="type-sample t-30">raya</div></div>
+        <div class="type-row"><div class="type-meta">Profile Name · 28pt · 600</div><div class="type-sample t-28">Sasha</div></div>
+        <div class="type-row"><div class="type-meta">Section · 20pt · 600</div><div class="type-sample t-20">Discover</div></div>
+        <div class="type-row"><div class="type-meta">Subtitle · 16pt · 500</div><div class="type-sample t-16">Members &amp; Introductions</div></div>
+        <div class="type-row"><div class="type-meta">Body / Bio · 15pt · 400</div><div class="type-sample t-15">Shooting a documentary in Lisbon this spring.</div></div>
+        <div class="type-row"><div class="type-meta">Role · 13pt · 500 · upper</div><div class="type-sample t-13u">Director · Film &amp; Music</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 400</div><div class="type-sample t-13">Los Angeles · 4 mi</div></div>
+        <div class="type-row"><div class="type-meta">Eyebrow · 11pt · 600 · 1.6px</div><div class="type-sample t-11u">Members Only</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Like</button>
+          <button class="btn btn-outline">Skip</button>
+          <button class="btn btn-ghost">Maybe Later</button>
+          <button class="btn-text">View Profile</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Slideshow Control (story bars + song)</div>
+        <div class="ssc">
+          <div class="ssc-bars"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div>
+          <div class="ssc-music">
+            <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            <span>SZA — Good Days</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Member Chips</div>
+        <div class="chip-row">
+          <div class="mchip solid">Film</div>
+          <div class="mchip">Music</div>
+          <div class="mchip">Design</div>
+          <div class="mchip">Travel</div>
+          <div class="mchip">Art</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-24">24</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Raya has no light mode and no brand color — it is permanently, deliberately monochrome. The canvas is pure black <code>#000000</code> (not a warm near-black); the only "accent" is pure white <code>#FFFFFF</code>, used for the wordmark, the single primary button, the active story bar, and the heart outline. Surfaces lift only to <code>#0D0D0D</code>/<code>#161616</code>; structure is drawn with hairlines (<code>#2E2E2E</code>), never shadows. The only color in the entire experience is the member's own full-bleed photography and video, which the UI deliberately recedes behind via a bottom black scrim. The signature slideshow plays the member's chosen song with a small white music ticker and segmented story bars.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

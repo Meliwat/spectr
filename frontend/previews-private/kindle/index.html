@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Kindle iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400;500;700&family=Amazon+Ember:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0E0E0E;
+    --surface-1: #1A1A1A;
+    --surface-2: #242424;
+    --divider: #2E2E2E;
+    --text-primary: #E8E8E8;
+    --text-secondary: #9A9A9A;
+    --text-tertiary: #6A6A6A;
+    --ink: #F4F4F4;
+    --amazon-orange: #FF9900;
+    --orange-pressed: #E88B00;
+    --kindle-blue: #4FB3D9;
+    --link: #1A98FF;
+    --sepia-bg: #FBF0D9;
+    --sepia-ink: #5F4B32;
+    --paper-bg: #FFFFFF;
+    --paper-ink: #1A1A1A;
+    --progress: #FF9900;
+    --success: #2FAE5F;
+    --error: #E0533D;
+    --serif: 'Bitter', Georgia, 'Times New Roman', serif;
+    --sans: 'Amazon Ember', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--sans); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 700; letter-spacing: -0.5px; color: var(--ink); }
+  .page-chip { background: var(--amazon-orange); color: #1A1A1A; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 4px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--sepia-bg); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 500; color: var(--sepia-ink); }
+
+  /* Reader page (sepia) */
+  .reader { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .reader-head { display: flex; align-items: center; justify-content: space-between; padding: 6px 22px 14px; color: rgba(95,75,50,0.6); font-size: 11px; }
+  .reader-head svg { width: 18px; height: 18px; stroke: rgba(95,75,50,0.7); stroke-width: 2; fill: none; }
+  .reader-head .ico-row { display: flex; gap: 18px; }
+  .reader-body { flex: 1; padding: 4px 26px 0; overflow: hidden; }
+  .chap-num { font-family: var(--sans); font-size: 11px; font-weight: 700; letter-spacing: 1.5px; color: rgba(95,75,50,0.55); text-transform: uppercase; margin-bottom: 14px; }
+  .chap-title { font-family: var(--serif); font-size: 24px; font-weight: 700; color: var(--sepia-ink); line-height: 1.25; margin-bottom: 22px; }
+  .reader-p { font-family: var(--serif); font-size: 15.5px; font-weight: 400; color: var(--sepia-ink); line-height: 1.72; margin-bottom: 16px; text-align: justify; -webkit-hyphens: auto; hyphens: auto; }
+  .reader-p .drop { float: left; font-family: var(--serif); font-size: 52px; line-height: 0.82; font-weight: 700; padding: 4px 8px 0 0; color: var(--sepia-ink); }
+  .reader-foot { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px 16px; color: rgba(95,75,50,0.55); font-size: 11px; }
+  .reader-foot .bar { flex: 1; height: 2px; background: rgba(95,75,50,0.18); border-radius: 1px; margin: 0 14px; position: relative; }
+  .reader-foot .bar i { position: absolute; left: 0; top: 0; bottom: 0; width: 38%; background: var(--amazon-orange); border-radius: 1px; }
+
+  /* Reader toolbar (the Aa / brightness controls) */
+  .reader-tb { background: rgba(251,240,217,0.96); border-top: 0.5px solid rgba(95,75,50,0.2); padding: 14px 22px 18px; }
+  .tb-row { display: flex; align-items: center; justify-content: space-between; }
+  .tb-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--sepia-ink); font-size: 10px; font-weight: 500; }
+  .tb-btn svg { width: 20px; height: 20px; stroke: var(--sepia-ink); stroke-width: 2; fill: none; }
+  .tb-btn.aa { font-family: var(--serif); font-size: 20px; font-weight: 700; line-height: 1; }
+  .tb-themes { display: flex; gap: 10px; margin-top: 14px; }
+  .theme-dot { width: 30px; height: 30px; border-radius: 50%; border: 1px solid rgba(95,75,50,0.25); }
+  .theme-dot.white { background: #FFFFFF; }
+  .theme-dot.sepia { background: #FBF0D9; outline: 2px solid var(--amazon-orange); outline-offset: 2px; }
+  .theme-dot.green { background: #C5E1C5; }
+  .theme-dot.dark { background: #2A2A2A; }
+  .theme-dot.black { background: #000000; }
+
+  /* Tab bar */
+  .tab-bar { height: 62px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: rgba(251,240,217,0.97); backdrop-filter: saturate(160%) blur(16px); border-top: 0.5px solid rgba(95,75,50,0.22); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: rgba(95,75,50,0.5); font-size: 10px; font-weight: 500; gap: 3px; }
+  .tab.active { color: #C77800; }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--sans); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 210px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 30px; font-weight: 700; letter-spacing: -0.4px; color: var(--ink); }
+  .t-24 { font-family: var(--serif); font-size: 24px; font-weight: 700; color: var(--ink); }
+  .t-20 { font-size: 20px; font-weight: 700; }
+  .t-17 { font-size: 17px; font-weight: 500; }
+  .t-16 { font-family: var(--serif); font-size: 16px; font-weight: 400; line-height: 1.72; }
+  .t-15m { font-size: 15px; font-weight: 500; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 500; }
+  .t-11 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-tertiary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--sans); font-weight: 700; cursor: pointer; border: none; }
+  .btn-primary { background: var(--amazon-orange); color: #1A1A1A; font-size: 15px; padding: 13px 26px; border-radius: 8px; }
+  .btn-primary:active { background: var(--orange-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1px solid var(--text-secondary); font-size: 14px; font-weight: 500; padding: 12px 20px; border-radius: 8px; }
+  .btn-pill { background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--divider); font-size: 13px; font-weight: 500; padding: 10px 18px; border-radius: 500px; }
+  .btn-text { background: transparent; color: var(--link); font-size: 14px; font-weight: 500; padding: 10px 0; border: none; cursor: pointer; }
+
+  /* Library cover */
+  .lib-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .lib-cell { display: flex; flex-direction: column; gap: 6px; }
+  .lib-cover { aspect-ratio: 2/3; border-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); position: relative; overflow: hidden; }
+  .lc-a { background: linear-gradient(160deg, #2E4A6B 0%, #1A2E45 60%, #0F1B2A 100%); }
+  .lc-b { background: linear-gradient(160deg, #7A3B2E 0%, #54271C 60%, #331610 100%); }
+  .lc-c { background: linear-gradient(160deg, #3B5E45 0%, #27402F 60%, #16281C 100%); }
+  .lib-cover .ct { position: absolute; left: 10px; right: 8px; top: 14px; font-family: var(--serif); font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.92); line-height: 1.2; }
+  .lib-cover .pct { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(255,255,255,0.2); }
+  .lib-cover .pct i { position: absolute; left: 0; bottom: 0; top: 0; background: var(--amazon-orange); }
+  .lib-meta { font-size: 11px; color: var(--text-secondary); }
+
+  /* Progress component */
+  .prog-demo { display: flex; flex-direction: column; gap: 14px; }
+  .prog-line { display: flex; align-items: center; gap: 12px; }
+  .prog-rail { flex: 1; height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
+  .prog-rail i { display: block; height: 100%; background: var(--amazon-orange); }
+  .prog-cap { font-size: 12px; color: var(--text-secondary); font-family: 'SF Mono', Menlo, monospace; width: 96px; }
+
+  /* Reading theme chips */
+  .theme-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .theme-card { width: 88px; border-radius: 8px; overflow: hidden; border: 1px solid var(--divider); }
+  .theme-card .swatch-top { height: 52px; display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-size: 18px; font-weight: 700; }
+  .theme-card .lbl { font-size: 11px; padding: 6px; text-align: center; color: var(--text-secondary); background: var(--surface-2); }
+  .tw { background: #FFFFFF; color: #1A1A1A; }
+  .ts { background: #FBF0D9; color: #5F4B32; }
+  .tg { background: #C5E1C5; color: #33492F; }
+  .tb { background: #2A2A2A; color: #D8D8D8; }
+  .tk { background: #000000; color: #C8C8C8; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--amazon-orange); color: #1A1A1A; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  code { font-family: 'SF Mono', Menlo, monospace; background: var(--surface-2); padding: 1px 5px; border-radius: 3px; font-size: 12px; color: var(--text-primary); }
+
+  /* Logomark */
+  .logo { display: inline-flex; width: 42px; height: 42px; align-items: center; justify-content: center; background: #1A1A1A; border-radius: 8px; }
+  .logo svg { width: 24px; height: 24px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 24 24"><path d="M4 4h10a4 4 0 0 1 4 4v12H7a3 3 0 0 1-3-3V4z" fill="none" stroke="#FF9900" stroke-width="1.7"/><path d="M14 4v16" stroke="#FF9900" stroke-width="1.7"/><circle cx="9" cy="12" r="1.6" fill="#FF9900"/></svg>
+    </span>
+    <div class="page-title">Kindle iOS — Design Tokens</div>
+    <div class="page-chip">Sepia Reader</div>
+  </div>
+  <p class="page-subtitle">Kindle's identity is the distraction-free reading page — sepia paper (#FBF0D9) with warm ink (#5F4B32), Amazon orange (#FF9900) for progress and the primary CTA, and a library of full-color cover art with reading-progress bars. The chrome vanishes the moment you open a book; the page is the product.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="reader">
+            <div class="reader-head">
+              <div class="ico-row">
+                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+              </div>
+              <div class="ico-row">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+              </div>
+            </div>
+
+            <div class="reader-body">
+              <div class="chap-num">Chapter Seven</div>
+              <div class="chap-title">The Lighthouse at Dawn</div>
+              <p class="reader-p"><span class="drop">T</span>he sea had been quiet for three days, and Mara had learned not to trust the quiet. She climbed the spiral stair before first light, counting the steps the way her father had taught her, each one worn soft by a century of keepers.</p>
+              <p class="reader-p">At the top the lamp still turned, patient and enormous, throwing its long arm of light across water the color of slate. She rested her palm on the brass and felt the faint warmth that never quite left it.</p>
+              <p class="reader-p">Below, the village was a scatter of dark roofs. Somewhere down there a boat was already missing, though no one knew it yet but her.</p>
+            </div>
+
+            <div class="reader-foot">
+              <span>38%</span>
+              <div class="bar"><i></i></div>
+              <span>14 min left in chapter</span>
+            </div>
+          </div>
+
+          <div class="reader-tb">
+            <div class="tb-row">
+              <div class="tb-btn aa">Aa</div>
+              <div class="tb-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M17 7l2-2M5 19l2-2"/></svg>Brightness</div>
+              <div class="tb-btn"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Layout</div>
+              <div class="tb-btn"><svg viewBox="0 0 24 24"><path d="M3 5h18M3 12h18M3 19h18"/></svg>Go To</div>
+            </div>
+            <div class="tb-themes">
+              <span class="theme-dot white"></span>
+              <span class="theme-dot sepia"></span>
+              <span class="theme-dot green"></span>
+              <span class="theme-dot dark"></span>
+              <span class="theme-dot black"></span>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><span>Library</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Discover</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 5h18v14H3z"/><path d="M3 9h18"/></svg><span>More</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#FF9900; color:#1A1A1A;"><div class="name">Amazon Orange</div>#FF9900</div>
+          <div class="swatch" style="background:#E88B00; color:#1A1A1A;"><div class="name">Orange Pressed</div>#E88B00</div>
+          <div class="swatch" style="background:#1A1A1A;"><div class="name">Kindle Black</div>#1A1A1A</div>
+          <div class="swatch" style="background:#FBF0D9; color:#5F4B32;"><div class="name">Sepia Paper</div>#FBF0D9</div>
+          <div class="swatch" style="background:#5F4B32;"><div class="name">Sepia Ink</div>#5F4B32</div>
+          <div class="swatch" style="background:#FFFFFF; color:#1A1A1A;"><div class="name">Paper White</div>#FFFFFF</div>
+          <div class="swatch" style="background:#0E0E0E;"><div class="name">Dark Canvas</div>#0E0E0E</div>
+          <div class="swatch" style="background:#1A1A1A;"><div class="name">Dark Surface 1</div>#1A1A1A</div>
+          <div class="swatch" style="background:#242424;"><div class="name">Dark Surface 2</div>#242424</div>
+          <div class="swatch" style="background:#4FB3D9; color:#0E0E0E;"><div class="name">Kindle Blue</div>#4FB3D9</div>
+          <div class="swatch" style="background:#1A98FF;"><div class="name">Link Blue</div>#1A98FF</div>
+          <div class="swatch" style="background:#E0533D;"><div class="name">Error</div>#E0533D</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Bitter (reading serif) + Amazon Ember (UI)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · Ember · 30 · 700</div><div class="type-sample t-32">Library</div></div>
+        <div class="type-row"><div class="type-meta">Chapter Title · Bitter · 24 · 700</div><div class="type-sample t-24">The Lighthouse at Dawn</div></div>
+        <div class="type-row"><div class="type-meta">Book Title · Ember · 20 · 700</div><div class="type-sample t-20">All the Light We Cannot See</div></div>
+        <div class="type-row"><div class="type-meta">Subtitle · Ember · 17 · 500</div><div class="type-sample t-17">by Anthony Doerr</div></div>
+        <div class="type-row"><div class="type-meta">Reading Body · Bitter · 16 · 400 · 1.72</div><div class="type-sample t-16">She climbed the spiral stair before first light, counting the steps.</div></div>
+        <div class="type-row"><div class="type-meta">List Title · Ember · 15 · 500</div><div class="type-sample t-15m">Continue reading</div></div>
+        <div class="type-row"><div class="type-meta">Meta · Ember · 14 · 400</div><div class="type-sample t-14">38% · 14 min left in chapter</div></div>
+        <div class="type-row"><div class="type-meta">Caption · Ember · 12 · 500</div><div class="type-sample t-12">Downloaded · 412 pages</div></div>
+        <div class="type-row"><div class="type-meta">Overline · Ember · 11 · 700 caps</div><div class="type-sample t-11">Chapter Seven</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Read now</button>
+          <button class="btn btn-outline">Download</button>
+          <button class="btn btn-pill">Add to Library</button>
+          <button class="btn-text">Sample this book</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Library — Cover Grid with Progress</div>
+        <div class="lib-grid">
+          <div class="lib-cell">
+            <div class="lib-cover lc-a"><div class="ct">All the Light We Cannot See</div><div class="pct"><i style="width:38%"></i></div></div>
+            <div class="lib-meta">38% · Anthony Doerr</div>
+          </div>
+          <div class="lib-cell">
+            <div class="lib-cover lc-b"><div class="ct">The Name of the Wind</div><div class="pct"><i style="width:72%"></i></div></div>
+            <div class="lib-meta">72% · P. Rothfuss</div>
+          </div>
+          <div class="lib-cell">
+            <div class="lib-cover lc-c"><div class="ct">Project Hail Mary</div><div class="pct"><i style="width:5%"></i></div></div>
+            <div class="lib-meta">New · Andy Weir</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Reading Progress</div>
+        <div class="prog-demo">
+          <div class="prog-line"><div class="prog-rail"><i style="width:38%"></i></div><span class="prog-cap">38% · ch. 7</span></div>
+          <div class="prog-line"><div class="prog-rail"><i style="width:72%"></i></div><span class="prog-cap">72% · 4h left</span></div>
+          <div class="prog-line"><div class="prog-rail"><i style="width:100%"></i></div><span class="prog-cap">Finished</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Reading Themes (Aa panel)</div>
+        <div class="theme-row">
+          <div class="theme-card"><div class="swatch-top tw">Aa</div><div class="lbl">White</div></div>
+          <div class="theme-card"><div class="swatch-top ts">Aa</div><div class="lbl">Sepia</div></div>
+          <div class="theme-card"><div class="swatch-top tg">Aa</div><div class="lbl">Green</div></div>
+          <div class="theme-card"><div class="swatch-top tb">Aa</div><div class="lbl">Dark</div></div>
+          <div class="theme-card"><div class="swatch-top tk">Aa</div><div class="lbl">Black</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Kindle's reading surface is theme-driven, not OS-driven: the reader honors the user's chosen page theme (White / Sepia / Green / Dark <code>#2A2A2A</code> / Black <code>#000000</code>) independent of system appearance. App chrome (Library, Home, settings) does follow system dark: canvas <code>#0E0E0E</code>, surfaces lift to <code>#1A1A1A</code>. Amazon Orange <code>#FF9900</code> is identical across themes — it is the progress and CTA signal everywhere. On a true-black reader theme, body ink is a dimmed <code>#C8C8C8</code> (never pure white) to reduce halation in the dark. Cover art always stays full-color; only chrome dims.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

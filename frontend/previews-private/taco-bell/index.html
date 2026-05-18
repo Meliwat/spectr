@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Taco Bell iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0E0A14;
+    --surface-1: #1A1322;
+    --surface-2: #261B32;
+    --divider: #34273F;
+    --text-primary: #F4EFF7;
+    --text-secondary: #A99BB6;
+    --text-tertiary: #6E6079;
+    --ink: #FFFFFF;
+    --tb-purple: #702082;
+    --tb-purple-bright: #8A2BA0;
+    --tb-magenta: #C72BC8;
+    --tb-pink: #E928A0;
+    --tb-yellow: #FFC700;
+    --tb-orange: #FF6A1A;
+    --success: #36C275;
+    --error: #FF4D6D;
+    --font: 'Sora', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: linear-gradient(120deg, var(--tb-purple), var(--tb-magenta)); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050308; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow-y: auto; scrollbar-width: none; display: flex; flex-direction: column; }
+  .scroll-body::-webkit-scrollbar { display: none; }
+
+  /* Builder header */
+  .b-head { padding: 4px 18px 14px; }
+  .b-eyebrow { font-size: 12px; font-weight: 700; color: var(--tb-yellow); text-transform: uppercase; letter-spacing: 1px; }
+  .b-title { font-size: 26px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.5px; margin-top: 6px; }
+  .b-sub { font-size: 13px; color: var(--text-secondary); margin-top: 6px; }
+
+  /* Box preview */
+  .box-prev { margin: 0 18px 16px; height: 150px; border-radius: 20px; background: linear-gradient(150deg, #702082 0%, #4A1559 60%, #2B0C36 100%); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid var(--divider); }
+  .box-prev::before { content: ''; position: absolute; right: -28px; top: -28px; width: 130px; height: 130px; background: radial-gradient(circle, rgba(199,43,200,0.35) 0%, transparent 70%); }
+  .box-prev::after { content: ''; position: absolute; left: -30px; bottom: -30px; width: 120px; height: 120px; background: radial-gradient(circle, rgba(255,199,0,0.22) 0%, transparent 70%); }
+  .taco { width: 96px; height: 70px; position: relative; z-index: 2; }
+  .taco-shell { position: absolute; bottom: 0; left: 8px; right: 8px; height: 44px; background: linear-gradient(180deg, #F2B441 0%, #D8902A 100%); border-radius: 0 0 60px 60px; }
+  .taco-fill { position: absolute; bottom: 30px; left: 14px; right: 14px; height: 26px; background: linear-gradient(180deg, #8FBF4A 0%, #C0392B 60%, #F2B441 100%); border-radius: 40px 40px 0 0; }
+  .box-tag { position: absolute; left: 14px; bottom: 12px; z-index: 3; font-size: 13px; font-weight: 800; color: #FFF; letter-spacing: -0.2px; text-shadow: 0 1px 4px rgba(0,0,0,0.5); }
+  .box-tag span { display: block; font-size: 11px; font-weight: 600; color: var(--tb-yellow); margin-top: 2px; }
+  .box-price { position: absolute; right: 14px; bottom: 12px; z-index: 3; font-size: 20px; font-weight: 800; color: var(--tb-yellow); }
+
+  /* Step pills */
+  .steps { display: flex; gap: 8px; padding: 0 18px 14px; overflow-x: auto; scrollbar-width: none; }
+  .steps::-webkit-scrollbar { display: none; }
+  .step { flex-shrink: 0; display: flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border-radius: 999px; background: var(--surface-1); border: 1px solid var(--divider); font-size: 12px; font-weight: 700; color: var(--text-secondary); }
+  .step .num { width: 16px; height: 16px; border-radius: 8px; background: var(--surface-2); color: var(--text-secondary); font-size: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+  .step.done { border-color: var(--success); color: var(--text-primary); }
+  .step.done .num { background: var(--success); color: #06210F; }
+  .step.active { background: linear-gradient(120deg, var(--tb-purple), var(--tb-magenta)); border-color: transparent; color: #FFF; }
+  .step.active .num { background: rgba(255,255,255,0.25); color: #FFF; }
+
+  /* Customizer rows */
+  .cust-head { padding: 6px 18px 10px; font-size: 18px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.3px; }
+  .cust { padding: 0 18px 16px; }
+  .opt { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .opt:last-child { border-bottom: none; }
+  .opt-thumb { width: 46px; height: 46px; border-radius: 12px; flex-shrink: 0; }
+  .opt-thumb.beef { background: linear-gradient(150deg, #8A4B2A, #5A2E16); }
+  .opt-thumb.chicken { background: linear-gradient(150deg, #D8902A, #A86618); }
+  .opt-thumb.beans { background: linear-gradient(150deg, #6E4326, #44260F); }
+  .opt-thumb.steak { background: linear-gradient(150deg, #6B3320, #3F1C10); }
+  .opt-info { flex: 1; }
+  .opt-name { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+  .opt-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .opt-price { font-size: 13px; font-weight: 700; color: var(--text-secondary); margin-right: 4px; }
+  .radio { width: 24px; height: 24px; border-radius: 12px; border: 2px solid var(--divider); flex-shrink: 0; position: relative; }
+  .radio.on { border-color: var(--tb-magenta); }
+  .radio.on::after { content: ''; position: absolute; inset: 4px; border-radius: 50%; background: var(--tb-magenta); }
+  .stepper { display: flex; align-items: center; gap: 12px; }
+  .stepper button { width: 26px; height: 26px; border-radius: 13px; border: 1.5px solid var(--tb-magenta); background: transparent; color: var(--tb-magenta); font-size: 15px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+  .stepper .qty { font-size: 14px; font-weight: 800; color: var(--text-primary); min-width: 14px; text-align: center; }
+
+  /* Bottom CTA */
+  .cta-bar { padding: 12px 18px; background: rgba(14,10,20,0.96); border-top: 1px solid var(--divider); display: flex; align-items: center; gap: 12px; }
+  .cta-price { display: flex; flex-direction: column; }
+  .cta-price .lbl { font-size: 11px; color: var(--text-secondary); font-weight: 600; }
+  .cta-price .amt { font-size: 19px; font-weight: 800; color: var(--text-primary); }
+  .cta-btn { flex: 1; background: linear-gradient(120deg, var(--tb-purple) 0%, var(--tb-magenta) 100%); color: #FFF; border: none; font-family: var(--font); font-size: 15px; font-weight: 800; padding: 15px; border-radius: 14px; letter-spacing: 0.2px; }
+
+  /* Tab bar */
+  .tab-bar { height: 70px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(14,10,20,0.96); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: #7A6C86; font-size: 10px; font-weight: 700; gap: 4px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--tb-magenta); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 800; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 700; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 800; cursor: pointer; border: none; letter-spacing: 0.2px; }
+  .btn-primary { background: linear-gradient(120deg, var(--tb-purple), var(--tb-magenta)); color: #FFF; font-size: 15px; padding: 14px 28px; border-radius: 14px; }
+  .btn-primary:active { transform: scale(0.98); filter: brightness(0.95); }
+  .btn-yellow { background: var(--tb-yellow); color: #2A1530; font-size: 15px; padding: 14px 28px; border-radius: 14px; }
+  .btn-outline { background: transparent; color: var(--tb-magenta); border: 1.5px solid var(--tb-magenta); font-size: 14px; font-weight: 700; padding: 12px 22px; border-radius: 12px; }
+  .btn-text { background: transparent; color: var(--tb-yellow); font-size: 14px; font-weight: 800; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Cravings tile */
+  .crave { display: flex; gap: 14px; background: var(--surface-2); border: 1px solid var(--divider); border-radius: 16px; padding: 14px; }
+  .crave-img { width: 72px; height: 72px; border-radius: 14px; background: linear-gradient(150deg, #8A2BA0, #4A1559); flex-shrink: 0; }
+  .crave-body { flex: 1; }
+  .crave-name { font-size: 15px; font-weight: 800; color: var(--text-primary); }
+  .crave-sub { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+  .crave-foot { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+  .crave-price { font-size: 15px; font-weight: 800; color: var(--tb-yellow); }
+  .crave-add { margin-left: auto; background: linear-gradient(120deg, var(--tb-purple), var(--tb-magenta)); color: #FFF; font-size: 12px; font-weight: 800; padding: 7px 16px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.3px; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: linear-gradient(120deg, var(--tb-purple), var(--tb-magenta)); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-6 { border-radius: 6px; }
+  .r-10 { border-radius: 10px; }
+  .r-14 { border-radius: 14px; }
+  .r-20 { border-radius: 20px; }
+  .r-28 { border-radius: 28px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Bell logomark */
+  .bell { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, var(--tb-purple), var(--tb-magenta)); }
+  .bell svg { width: 24px; height: 24px; fill: #FFF; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="bell">
+      <svg viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 0-2 2v.6C6.6 5.5 4 8.6 4 12.5V17l-2 2v1h20v-1l-2-2v-4.5c0-3.9-2.6-7-6-7.9V4a2 2 0 0 0-2-2zm0 20a3 3 0 0 0 3-3H9a3 3 0 0 0 3 3z"/></svg>
+    </span>
+    <div class="page-title">Taco Bell iOS — Design Tokens</div>
+    <div class="page-chip">Live Más Dark</div>
+  </div>
+  <p class="page-subtitle">Taco Bell iOS runs on a deep purple-black canvas (#0E0A14) with the brand's Taco Bell Purple (#702082) and electric Magenta (#C72BC8) gradient, plus a hot-sauce Yellow (#FFC700) accent. The signature screen is the build-your-box customizer: a gradient box preview, numbered step pills, and radio/stepper option rows. Bold, neon, playful.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="scroll-body">
+            <div class="b-head">
+              <div class="b-eyebrow">Build Your Box</div>
+              <div class="b-title">Cravings Box</div>
+              <div class="b-sub">Pick a main, a side, a drink &amp; a sweet — your way.</div>
+            </div>
+
+            <div class="box-prev">
+              <div class="taco">
+                <div class="taco-fill"></div>
+                <div class="taco-shell"></div>
+              </div>
+              <div class="box-tag">Cravings Box<span>4 items · customizable</span></div>
+              <div class="box-price">$5.99</div>
+            </div>
+
+            <div class="steps">
+              <div class="step done"><span class="num">✓</span>Main</div>
+              <div class="step active"><span class="num">2</span>Side</div>
+              <div class="step"><span class="num">3</span>Drink</div>
+              <div class="step"><span class="num">4</span>Sweet</div>
+            </div>
+
+            <div class="cust-head">Choose your side</div>
+            <div class="cust">
+              <div class="opt">
+                <div class="opt-thumb beef"></div>
+                <div class="opt-info">
+                  <div class="opt-name">Nacho Fries</div>
+                  <div class="opt-sub">Bold seasoned fries + nacho cheese</div>
+                </div>
+                <div class="radio on"></div>
+              </div>
+              <div class="opt">
+                <div class="opt-thumb chicken"></div>
+                <div class="opt-info">
+                  <div class="opt-name">Cinnamon Twists</div>
+                  <div class="opt-sub">Light, crispy &amp; sweet</div>
+                </div>
+                <div class="radio"></div>
+              </div>
+              <div class="opt">
+                <div class="opt-thumb beans"></div>
+                <div class="opt-info">
+                  <div class="opt-name">Chips &amp; Cheese</div>
+                  <div class="opt-sub">Add guac</div>
+                </div>
+                <span class="opt-price">+$1.00</span>
+                <div class="radio"></div>
+              </div>
+              <div class="opt">
+                <div class="opt-thumb steak"></div>
+                <div class="opt-info">
+                  <div class="opt-name">Black Beans</div>
+                  <div class="opt-sub">Make it vegetarian</div>
+                </div>
+                <div class="stepper">
+                  <button>−</button><span class="qty">1</span><button>+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="cta-bar">
+            <div class="cta-price">
+              <span class="lbl">Box total</span>
+              <span class="amt">$5.99</span>
+            </div>
+            <button class="cta-btn">Add to Order</button>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 10l9-8 9 8v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v16"/></svg><span>Menu</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Rewards</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1.6"/><circle cx="18" cy="21" r="1.6"/><path d="M2 3h3l3 12h11l3-8H7"/></svg><span>Bag</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M6 19c1-3 3.5-4 6-4s5 1 6 4"/></svg><span>Account</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#702082;"><div class="name">Taco Bell Purple</div>#702082</div>
+          <div class="swatch" style="background:#8A2BA0;"><div class="name">Purple Bright</div>#8A2BA0</div>
+          <div class="swatch" style="background:#C72BC8;"><div class="name">Electric Magenta</div>#C72BC8</div>
+          <div class="swatch" style="background:#E928A0;"><div class="name">Hot Pink</div>#E928A0</div>
+          <div class="swatch" style="background:#FFC700; color:#2A1530;"><div class="name">Hot Sauce Yellow</div>#FFC700</div>
+          <div class="swatch" style="background:#FF6A1A;"><div class="name">Fire Orange</div>#FF6A1A</div>
+          <div class="swatch" style="background:#0E0A14;"><div class="name">Purple-Black Canvas</div>#0E0A14</div>
+          <div class="swatch" style="background:#1A1322;"><div class="name">Dark Surface 1</div>#1A1322</div>
+          <div class="swatch" style="background:#261B32;"><div class="name">Dark Surface 2</div>#261B32</div>
+          <div class="swatch" style="background:#F4EFF7; color:#0E0A14;"><div class="name">Text Primary</div>#F4EFF7</div>
+          <div class="swatch" style="background:#A99BB6; color:#0E0A14;"><div class="name">Text Secondary</div>#A99BB6</div>
+          <div class="swatch" style="background:#FF4D6D;"><div class="name">Error</div>#FF4D6D</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Nvariel / Geist (Sora fallback)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 800</div><div class="type-sample t-32">Live Más</div></div>
+        <div class="type-row"><div class="type-meta">Builder Title · 26pt · 800</div><div class="type-sample t-26">Cravings Box</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Build your box</div></div>
+        <div class="type-row"><div class="type-meta">Step / Card · 18pt · 800</div><div class="type-sample t-18">Choose your side</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Pick a main, a side, a drink and a sweet — exactly your way.</div></div>
+        <div class="type-row"><div class="type-meta">Option · 15pt · 600</div><div class="type-sample t-15m">Nacho Fries</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Bold seasoned fries + nacho cheese</div></div>
+        <div class="type-row"><div class="type-meta">Eyebrow · 12pt · 700</div><div class="type-sample t-12">BUILD YOUR BOX</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Add to Order</button>
+          <button class="btn btn-yellow">Apply Reward</button>
+          <button class="btn btn-outline">Customize</button>
+          <button class="btn-text">Skip this step</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Cravings Menu Tile</div>
+        <div class="crave">
+          <div class="crave-img"></div>
+          <div class="crave-body">
+            <div class="crave-name">Crunchwrap Supreme</div>
+            <div class="crave-sub">Seasoned beef, nacho cheese, crunchy tostada</div>
+            <div class="crave-foot">
+              <span class="crave-price">$5.49</span>
+              <span class="crave-add">Add</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Step &amp; Reward Chips</div>
+        <div class="btn-row">
+          <span style="background:linear-gradient(120deg,var(--tb-purple),var(--tb-magenta));color:#FFF;font-size:12px;font-weight:800;padding:6px 14px;border-radius:999px;">STEP 2 OF 4</span>
+          <span style="background:var(--tb-yellow);color:#2A1530;font-size:12px;font-weight:800;padding:6px 14px;border-radius:999px;">FREE REWARD</span>
+          <span style="background:var(--success);color:#06210F;font-size:12px;font-weight:800;padding:6px 14px;border-radius:999px;">DONE</span>
+          <span style="background:var(--surface-2);color:var(--tb-magenta);border:1px solid var(--tb-magenta);font-size:11px;font-weight:800;padding:6px 14px;border-radius:999px;">CANTINA</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-28">28</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Taco Bell's app is dark-first — the canvas is a purple-tinted near-black (<code>#0E0A14</code>), not neutral gray, so the brand purple feels native rather than applied. The signature <code>#702082 → #C72BC8</code> purple-to-magenta gradient drives every primary CTA, active step, and accent. Hot Sauce Yellow <code>#FFC700</code> is the high-energy highlight for prices, rewards, and eyebrows. Surfaces lift on a purple bias (<code>#1A1322</code>, <code>#261B32</code>) and food imagery stays vivid against the neon chrome.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

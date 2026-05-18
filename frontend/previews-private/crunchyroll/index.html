@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Crunchyroll iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #000000;
+    --surface-1: #16171A;
+    --surface-2: #23252B;
+    --surface-3: #2E3035;
+    --divider: #2A2C31;
+    --text-primary: #FFFFFF;
+    --text-secondary: #A0A0A0;
+    --text-tertiary: #6A6C70;
+    --ink: #FFFFFF;
+    --orange: #F47521;
+    --orange-pressed: #D8610F;
+    --orange-tint: #FF8C42;
+    --premium: #FFC107;
+    --simulcast: #2BB673;
+    --new-blue: #2A9DF4;
+    --error: #E03E3E;
+    --font: 'Lato', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 900; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--orange); color: #FFF; font-size: 11px; font-weight: 900; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.95), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 30; }
+
+  .status { position: absolute; top: 0; left: 0; right: 0; height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 700; color: #FFF; z-index: 25; }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Hero key art */
+  .hero { position: relative; height: 420px; flex-shrink: 0; background: linear-gradient(160deg, #3A2A6B 0%, #5B3A82 30%, #C2492F 70%, #1A0F0A 100%); }
+  .hero::before { content: ''; position: absolute; top: 18%; left: 50%; transform: translateX(-50%); width: 150px; height: 150px; background: radial-gradient(circle at 40% 35%, #FFD9A8 0%, #E8975A 45%, #7A3B22 100%); border-radius: 50%; box-shadow: 0 0 60px rgba(244,117,33,0.4); }
+  .hero::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 65%; background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.55) 55%, #000000 100%); }
+  .hero-meta { position: absolute; left: 20px; right: 20px; bottom: 18px; z-index: 5; }
+  .hero-badges { display: flex; gap: 8px; margin-bottom: 12px; }
+  .badge { font-size: 10px; font-weight: 900; letter-spacing: 0.4px; text-transform: uppercase; padding: 4px 8px; border-radius: 4px; }
+  .badge-sim { background: var(--simulcast); color: #FFF; }
+  .badge-prem { background: var(--premium); color: #1A1304; }
+  .hero-title { font-size: 30px; font-weight: 900; letter-spacing: -0.5px; line-height: 1.08; color: #FFF; }
+  .hero-sub { font-size: 13px; color: #D8D8D8; margin-top: 8px; }
+  .hero-tags { font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
+
+  /* Detail body */
+  .detail { flex: 1; overflow-y: auto; scrollbar-width: none; padding: 16px 20px 16px; }
+  .detail::-webkit-scrollbar { display: none; }
+  .play-btn { width: 100%; height: 52px; background: var(--orange); color: #FFF; border: none; border-radius: 8px; font-family: var(--font); font-size: 16px; font-weight: 900; display: flex; align-items: center; justify-content: center; gap: 10px; letter-spacing: 0.3px; }
+  .play-btn svg { width: 18px; height: 18px; fill: #FFF; }
+  .action-row { display: flex; justify-content: space-around; margin: 18px 0 20px; }
+  .action { display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--text-secondary); font-size: 11px; font-weight: 700; }
+  .action svg { width: 22px; height: 22px; stroke: var(--text-secondary); stroke-width: 2; fill: none; }
+  .seg { display: flex; gap: 24px; border-bottom: 1px solid var(--divider); margin-bottom: 16px; }
+  .seg-item { font-size: 14px; font-weight: 900; color: var(--text-secondary); padding-bottom: 10px; position: relative; }
+  .seg-item.active { color: #FFF; }
+  .seg-item.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 3px; background: var(--orange); border-radius: 2px; }
+
+  /* Episode list */
+  .ep { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .ep-thumb { width: 112px; height: 64px; border-radius: 6px; flex-shrink: 0; position: relative; overflow: hidden; }
+  .ep-thumb.t1 { background: linear-gradient(150deg, #5B3A82 0%, #C2492F 100%); }
+  .ep-thumb.t2 { background: linear-gradient(150deg, #234E70 0%, #2BB673 100%); }
+  .ep-num { position: absolute; top: 4px; left: 4px; background: rgba(0,0,0,0.7); color: #FFF; font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 3px; }
+  .ep-prog { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(255,255,255,0.25); }
+  .ep-prog span { display: block; height: 100%; background: var(--orange); }
+  .ep-info { flex: 1; min-width: 0; }
+  .ep-title { font-size: 13px; font-weight: 700; color: #FFF; }
+  .ep-desc { font-size: 12px; color: var(--text-secondary); margin-top: 3px; line-height: 1.35; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+
+  /* Tab bar */
+  .tab-bar { height: 64px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: rgba(0,0,0,0.95); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 700; gap: 4px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--orange); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 700; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 900; letter-spacing: -0.5px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 900; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 900; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 700; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.4px; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 900; cursor: pointer; border: none; letter-spacing: 0.3px; }
+  .btn-primary { background: var(--orange); color: #FFF; font-size: 16px; padding: 14px 28px; border-radius: 8px; }
+  .btn-primary:active { background: var(--orange-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: #FFF; border: 1.5px solid rgba(255,255,255,0.4); font-size: 14px; font-weight: 700; padding: 12px 22px; border-radius: 8px; }
+  .btn-ghost { background: var(--surface-2); color: #FFF; font-size: 14px; font-weight: 700; padding: 12px 20px; border-radius: 8px; }
+  .btn-text { background: transparent; color: var(--orange); font-size: 14px; font-weight: 900; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Badges */
+  .badge-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .b { font-size: 11px; font-weight: 900; letter-spacing: 0.4px; text-transform: uppercase; padding: 5px 10px; border-radius: 4px; }
+  .b-sim { background: var(--simulcast); color: #FFF; }
+  .b-prem { background: var(--premium); color: #1A1304; }
+  .b-new { background: var(--new-blue); color: #FFF; }
+  .b-dub { background: transparent; color: #FFF; border: 1px solid rgba(255,255,255,0.5); }
+
+  /* Episode progress demo */
+  .prog-demo { display: flex; flex-direction: column; gap: 14px; }
+  .prog-track { height: 4px; background: var(--surface-3); border-radius: 2px; overflow: hidden; }
+  .prog-track span { display: block; height: 100%; background: var(--orange); }
+  .prog-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--orange); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 10px; background: var(--orange); }
+  .logo svg { width: 26px; height: 26px; fill: #FFF; }
+  code { font-family: 'SF Mono', Menlo, monospace; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; font-size: 12px; color: var(--orange-tint); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 32 32"><path d="M16 3C8.8 3 3 8.8 3 16s5.8 13 13 13 13-5.8 13-13S23.2 3 16 3zm0 6.5a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13zm6.6 1.1a3.2 3.2 0 1 1-4.3 4.3 4.4 4.4 0 0 0 4.3-4.3z"/></svg>
+    </span>
+    <div class="page-title">Crunchyroll iOS — Design Tokens</div>
+    <div class="page-chip">OLED Black</div>
+  </div>
+  <p class="page-subtitle">True-black OLED canvas (#000000) with a single Crunchyroll Orange (#F47521) accent. Full-bleed anime key-art heroes fade through a bottom-to-black scrim into a resume-aware episode list. Chrome stays minimal so the art carries the screen.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="scroll-body">
+            <div class="hero">
+              <div class="hero-meta">
+                <div class="hero-badges">
+                  <span class="badge badge-sim">Simulcast</span>
+                  <span class="badge badge-prem">Premium</span>
+                </div>
+                <div class="hero-title">Solar Blade Chronicles</div>
+                <div class="hero-sub">★ 4.9 · 2024 · TV-14 · Action, Fantasy</div>
+                <div class="hero-tags">Sub | Dub · 24 Episodes · Subtitled in 8 languages</div>
+              </div>
+            </div>
+
+            <div class="detail">
+              <button class="play-btn"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg> Start Watching E1</button>
+              <div class="action-row">
+                <div class="action"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Watchlist</div>
+                <div class="action"><svg viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-6 0v4H5l1 12h12l1-12h-3z"/></svg>Rate</div>
+                <div class="action"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>Share</div>
+                <div class="action"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Comments</div>
+              </div>
+
+              <div class="seg">
+                <div class="seg-item active">Episodes</div>
+                <div class="seg-item">Details</div>
+                <div class="seg-item">More Like This</div>
+              </div>
+
+              <div class="ep">
+                <div class="ep-thumb t1">
+                  <span class="ep-num">E1</span>
+                  <div class="ep-prog"><span style="width:72%"></span></div>
+                </div>
+                <div class="ep-info">
+                  <div class="ep-title">The Blade Awakens</div>
+                  <div class="ep-desc">Rei discovers the dormant solar blade beneath the old shrine as the eclipse begins.</div>
+                </div>
+              </div>
+              <div class="ep">
+                <div class="ep-thumb t2">
+                  <span class="ep-num">E2</span>
+                  <div class="ep-prog"><span style="width:0%"></span></div>
+                </div>
+                <div class="ep-info">
+                  <div class="ep-title">Embers of the Eclipse</div>
+                  <div class="ep-desc">A rival clan moves on the shrine; Rei makes a desperate first stand alone.</div>
+                </div>
+              </div>
+              <div class="ep">
+                <div class="ep-thumb t1">
+                  <span class="ep-num">E3</span>
+                  <div class="ep-prog"><span style="width:0%"></span></div>
+                </div>
+                <div class="ep-info">
+                  <div class="ep-title">The Long Road North</div>
+                  <div class="ep-desc">With the blade bonded, Rei sets out to find the last forge-keeper.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-bar">
+              <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+              <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><span>Browse</span></div>
+              <div class="tab"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>Watchlist</span></div>
+              <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 4h12a2 2 0 0 1 2 2v15l-8-4-8 4V6a2 2 0 0 1 2-2z"/></svg><span>Manga</span></div>
+              <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/></svg><span>Profile</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#000000;"><div class="name">OLED Canvas</div>#000000</div>
+          <div class="swatch" style="background:#16171A;"><div class="name">Surface 1</div>#16171A</div>
+          <div class="swatch" style="background:#23252B;"><div class="name">Surface 2</div>#23252B</div>
+          <div class="swatch" style="background:#2A2C31;"><div class="name">Divider</div>#2A2C31</div>
+          <div class="swatch" style="background:#F47521;"><div class="name">Crunchyroll Orange</div>#F47521</div>
+          <div class="swatch" style="background:#D8610F;"><div class="name">Orange Pressed</div>#D8610F</div>
+          <div class="swatch" style="background:#FFC107; color:#1A1304;"><div class="name">Premium Gold</div>#FFC107</div>
+          <div class="swatch" style="background:#2BB673;"><div class="name">Simulcast Green</div>#2BB673</div>
+          <div class="swatch" style="background:#2A9DF4;"><div class="name">New Blue</div>#2A9DF4</div>
+          <div class="swatch" style="background:#FFFFFF; color:#000;"><div class="name">Text Primary</div>#FFFFFF</div>
+          <div class="swatch" style="background:#A0A0A0; color:#000;"><div class="name">Text Secondary</div>#A0A0A0</div>
+          <div class="swatch" style="background:#E03E3E;"><div class="name">Error</div>#E03E3E</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Lato (Crunchyroll product face)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 900</div><div class="type-sample t-32">Browse</div></div>
+        <div class="type-row"><div class="type-meta">Hero Title · 28pt · 900</div><div class="type-sample t-26">Solar Blade Chronicles</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 900</div><div class="type-sample t-22">Continue Watching</div></div>
+        <div class="type-row"><div class="type-meta">Row Header · 18pt · 700</div><div class="type-sample t-18">Popular This Season</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Rei discovers the dormant solar blade beneath the old shrine.</div></div>
+        <div class="type-row"><div class="type-meta">Episode Title · 15pt · 700</div><div class="type-sample t-15m">E1 — The Blade Awakens</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">2024 · TV-14 · Action, Fantasy</div></div>
+        <div class="type-row"><div class="type-meta">Badge · 11pt · 900 caps</div><div class="type-sample t-12">Simulcast</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Start Watching</button>
+          <button class="btn btn-outline">Add to Watchlist</button>
+          <button class="btn btn-ghost">Resume E7</button>
+          <button class="btn-text">See all episodes</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Content Badges</div>
+        <div class="badge-row">
+          <span class="b b-sim">Simulcast</span>
+          <span class="b b-prem">Premium</span>
+          <span class="b b-new">New Episode</span>
+          <span class="b b-dub">Sub | Dub</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Episode Progress Bar</div>
+        <div class="prog-demo">
+          <div><div class="prog-label">Resumable — 72% watched</div><div class="prog-track"><span style="width:72%"></span></div></div>
+          <div><div class="prog-label">Nearly finished — 94%</div><div class="prog-track"><span style="width:94%"></span></div></div>
+          <div><div class="prog-label">Unstarted — 0%</div><div class="prog-track"><span style="width:0%"></span></div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Crunchyroll is OLED-first — there is no light mode. Canvas is true black <code>#000000</code> so key-art bleeds edge-to-edge and the hero scrim resolves to a perfect black floor. Surfaces lift to <code>#16171A</code> / <code>#23252B</code> for sheets and rows. Crunchyroll Orange <code>#F47521</code> is the only accent — used for the primary CTA, the active tab, the segmented underline, and the episode-progress bar. Premium Gold <code>#FFC107</code> appears only on the Premium badge. Posters and thumbnails stay full-color; chrome recedes so the art is the interface.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

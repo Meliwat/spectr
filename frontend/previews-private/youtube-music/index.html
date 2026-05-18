@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by YouTube Music iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #030303;
+    --surface-1: #1F1F1F;
+    --surface-2: #272727;
+    --divider: #303030;
+    --text-primary: #FFFFFF;
+    --text-secondary: #AAAAAA;
+    --text-tertiary: #717171;
+    --ink: #FFFFFF;
+    --yt-red: #FF0000;
+    --yt-red-press: #CC0000;
+    --yt-white: #FFFFFF;
+    --chip-bg: #2A2A2A;
+    --success: #2BA640;
+    --error: #FF4E45;
+    --font: 'Roboto', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 900; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--yt-red); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #000; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.95), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); z-index: 5; }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Now Playing immersive — signature screen */
+  .np {
+    flex: 1; position: relative; display: flex; flex-direction: column;
+    background: linear-gradient(180deg, #3A2F4A 0%, #281F36 38%, #120D1B 70%, #030303 100%);
+    overflow: hidden;
+  }
+  .np-art-backdrop {
+    position: absolute; inset: -20% -20% 40% -20%;
+    background: radial-gradient(circle at 50% 30%, #6B4A8C 0%, #422E5C 45%, transparent 72%);
+    filter: blur(40px); opacity: 0.85;
+  }
+  .np-top { display: flex; align-items: center; justify-content: space-between; padding: 6px 20px 0; position: relative; z-index: 2; }
+  .np-top svg { width: 22px; height: 22px; stroke: var(--text-primary); stroke-width: 2; fill: none; }
+  .np-source { font-size: 11px; font-weight: 500; color: var(--text-secondary); letter-spacing: 0.6px; text-transform: uppercase; }
+
+  .np-art {
+    width: 232px; height: 232px; border-radius: 8px; margin: 26px auto 0;
+    background: linear-gradient(140deg, #C13584 0%, #833AB4 45%, #5851DB 100%);
+    box-shadow: 0 24px 60px -20px rgba(0,0,0,0.7); position: relative; z-index: 2; overflow: hidden;
+  }
+  .np-art::before { content: ''; position: absolute; inset: 26% 24% 30% 24%; background: rgba(255,255,255,0.14); border-radius: 50%; }
+  .np-art::after { content: ''; position: absolute; left: 50%; top: 50%; width: 26px; height: 26px; background: #030303; border-radius: 50%; transform: translate(-50%,-50%); }
+
+  .np-toggle { display: flex; gap: 6px; justify-content: center; margin: 22px auto 0; background: rgba(255,255,255,0.08); padding: 4px; border-radius: 999px; position: relative; z-index: 2; }
+  .np-toggle span { font-size: 12px; font-weight: 700; padding: 7px 18px; border-radius: 999px; color: var(--text-secondary); }
+  .np-toggle span.active { background: var(--yt-white); color: #030303; }
+
+  .np-meta { padding: 22px 24px 0; position: relative; z-index: 2; }
+  .np-track { font-size: 22px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.3px; }
+  .np-artist { font-size: 14px; font-weight: 500; color: var(--text-secondary); margin-top: 4px; }
+
+  .np-scrub { padding: 20px 24px 0; position: relative; z-index: 2; }
+  .np-bar { height: 3px; background: rgba(255,255,255,0.22); border-radius: 2px; position: relative; }
+  .np-bar::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 42%; background: var(--yt-white); border-radius: 2px; }
+  .np-bar::after { content: ''; position: absolute; left: 42%; top: 50%; width: 12px; height: 12px; background: var(--yt-white); border-radius: 50%; transform: translate(-50%,-50%); }
+  .np-time { display: flex; justify-content: space-between; margin-top: 8px; font-size: 11px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+
+  .np-ctrls { display: flex; align-items: center; justify-content: space-between; padding: 14px 32px 0; position: relative; z-index: 2; }
+  .np-ctrls svg { stroke: var(--text-primary); fill: var(--text-primary); }
+  .np-ic { width: 26px; height: 26px; }
+  .np-play { width: 64px; height: 64px; border-radius: 50%; background: var(--yt-white); display: flex; align-items: center; justify-content: center; }
+  .np-play svg { width: 26px; height: 26px; fill: #030303; stroke: none; }
+
+  .np-upnext { margin-top: auto; padding: 16px 22px 14px; position: relative; z-index: 2; display: flex; align-items: center; gap: 10px; border-top: 0.5px solid rgba(255,255,255,0.12); }
+  .np-upnext-art { width: 40px; height: 40px; border-radius: 4px; background: linear-gradient(135deg, #FF8A00, #E52E71); flex-shrink: 0; }
+  .np-upnext-txt { flex: 1; line-height: 1.25; }
+  .np-upnext-label { font-size: 10px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.6px; text-transform: uppercase; }
+  .np-upnext-track { font-size: 13px; font-weight: 500; color: var(--text-primary); margin-top: 2px; }
+  .np-upnext svg { width: 20px; height: 20px; stroke: var(--text-secondary); stroke-width: 2; fill: none; }
+
+  /* Tab bar */
+  .tab-bar { height: 60px; display: flex; align-items: flex-start; padding: 8px 4px 12px; justify-content: space-around; background: #0A0A0A; border-top: 0.5px solid var(--divider); position: relative; z-index: 3; }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 500; gap: 3px; }
+  .tab.active { color: var(--text-primary); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 900; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 500; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 500; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--yt-white); color: #030303; font-size: 15px; padding: 13px 30px; border-radius: 999px; }
+  .btn-primary:active { background: #DDDDDD; transform: scale(0.98); }
+  .btn-red { background: var(--yt-red); color: #FFF; font-size: 15px; padding: 13px 26px; border-radius: 999px; }
+  .btn-red:active { background: var(--yt-red-press); }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1px solid #5A5A5A; font-size: 14px; font-weight: 500; padding: 11px 20px; border-radius: 999px; }
+  .btn-text { background: transparent; color: var(--text-primary); font-size: 14px; font-weight: 700; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Player mini bar */
+  .mini { display: flex; align-items: center; gap: 12px; background: #282828; border-radius: 8px; padding: 8px 12px; }
+  .mini-art { width: 40px; height: 40px; border-radius: 4px; background: linear-gradient(135deg, #C13584, #5851DB); flex-shrink: 0; }
+  .mini-txt { flex: 1; line-height: 1.2; }
+  .mini-track { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+  .mini-artist { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+  .mini-ic { width: 22px; height: 22px; fill: var(--text-primary); }
+
+  /* Scrubber states */
+  .scrub-demo { display: flex; flex-direction: column; gap: 18px; }
+  .scrub { height: 3px; background: rgba(255,255,255,0.22); border-radius: 2px; position: relative; }
+  .scrub-fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 2px; }
+  .scrub-thumb { position: absolute; top: 50%; width: 12px; height: 12px; border-radius: 50%; transform: translate(-50%,-50%); }
+  .scrub-rest .scrub-fill { width: 30%; background: #FFFFFF; }
+  .scrub-rest .scrub-thumb { left: 30%; background: #FFFFFF; }
+  .scrub-active .scrub-fill { width: 64%; background: #FF0000; }
+  .scrub-active .scrub-thumb { left: 64%; background: #FF0000; width: 16px; height: 16px; box-shadow: 0 0 0 6px rgba(255,0,0,0.18); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--yt-red); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-2 { border-radius: 2px; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-24 { border-radius: 24px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .ytm { display: inline-flex; width: 40px; height: 40px; align-items: center; justify-content: center; }
+  .ytm svg { width: 40px; height: 40px; }
+  code { font-family: 'SF Mono', Menlo, monospace; font-size: 0.92em; color: var(--text-primary); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="ytm">
+      <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="22" fill="#FF0000"/><circle cx="24" cy="24" r="13" fill="none" stroke="#FFFFFF" stroke-width="2.4"/><polygon points="20,17 32,24 20,31" fill="#FFFFFF"/></svg>
+    </span>
+    <div class="page-title">YouTube Music iOS — Design Tokens</div>
+    <div class="page-chip">Immersive Dark</div>
+  </div>
+  <p class="page-subtitle">Near-black canvas (#030303) — darker than most music apps to make album art and the immersive Now Playing backdrop glow. YT Music Red (#FF0000) is the structural accent; the primary play control is a white circle on the art-derived gradient. The Song / Video toggle is the signature switch.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="np">
+            <div class="np-art-backdrop"></div>
+
+            <div class="np-top">
+              <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+              <div class="np-source">FROM YOUR LIBRARY</div>
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+            </div>
+
+            <div class="np-art"></div>
+
+            <div class="np-toggle">
+              <span class="active">Song</span>
+              <span>Video</span>
+            </div>
+
+            <div class="np-meta">
+              <div class="np-track">Midnight City</div>
+              <div class="np-artist">M83 · Hurry Up, We're Dreaming</div>
+            </div>
+
+            <div class="np-scrub">
+              <div class="np-bar"></div>
+              <div class="np-time"><span>1:48</span><span>-2:34</span></div>
+            </div>
+
+            <div class="np-ctrls">
+              <svg class="np-ic" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 4l-4 8 4 8M9 4v16" stroke="#FFF"/></svg>
+              <svg class="np-ic" viewBox="0 0 24 24"><polygon points="19,5 9,12 19,19"/><rect x="5" y="5" width="2.5" height="14"/></svg>
+              <div class="np-play"><svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg></div>
+              <svg class="np-ic" viewBox="0 0 24 24"><polygon points="5,5 15,12 5,19"/><rect x="16.5" y="5" width="2.5" height="14"/></svg>
+              <svg class="np-ic" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><path d="M7 4l4 8-4 8M15 4v16"/></svg>
+            </div>
+
+            <div class="np-upnext">
+              <div class="np-upnext-art"></div>
+              <div class="np-upnext-txt">
+                <div class="np-upnext-label">Up Next</div>
+                <div class="np-upnext-track">Reckoner — Radiohead</div>
+              </div>
+              <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.5" y2="6"/><line x1="3" y1="12" x2="3.5" y2="12"/><line x1="3" y1="18" x2="3.5" y2="18"/></svg>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v9a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 12c2-5 16-5 18 0M3 12c2 5 16 5 18 0"/><circle cx="12" cy="12" r="3"/></svg><span>Samples</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Explore</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 19V5l7 4 7-4v14"/><circle cx="9" cy="17" r="2.5"/></svg><span>Library</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#030303;"><div class="name">Canvas</div>#030303</div>
+          <div class="swatch" style="background:#1F1F1F;"><div class="name">Surface 1</div>#1F1F1F</div>
+          <div class="swatch" style="background:#272727;"><div class="name">Surface 2</div>#272727</div>
+          <div class="swatch" style="background:#303030;"><div class="name">Divider</div>#303030</div>
+          <div class="swatch" style="background:#FF0000;"><div class="name">YT Music Red</div>#FF0000</div>
+          <div class="swatch" style="background:#CC0000;"><div class="name">Red Pressed</div>#CC0000</div>
+          <div class="swatch" style="background:#FFFFFF; color:#030303;"><div class="name">Primary / Play</div>#FFFFFF</div>
+          <div class="swatch" style="background:#AAAAAA; color:#030303;"><div class="name">Text Secondary</div>#AAAAAA</div>
+          <div class="swatch" style="background:#717171;"><div class="name">Text Tertiary</div>#717171</div>
+          <div class="swatch" style="background:#2A2A2A;"><div class="name">Chip Background</div>#2A2A2A</div>
+          <div class="swatch" style="background:#2BA640;"><div class="name">Success</div>#2BA640</div>
+          <div class="swatch" style="background:#FF4E45;"><div class="name">Error</div>#FF4E45</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Roboto (YouTube system face)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 900</div><div class="type-sample t-32">Listen again</div></div>
+        <div class="type-row"><div class="type-meta">Now Playing · 26pt · 700</div><div class="type-sample t-26">Midnight City</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Mixed for you</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 18pt · 700</div><div class="type-sample t-18">Your Liked Songs</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Auto-generated playlists based on what you listen to most.</div></div>
+        <div class="type-row"><div class="type-meta">Row Title · 15pt · 500</div><div class="type-sample t-15m">Reckoner</div></div>
+        <div class="type-row"><div class="type-meta">Subtitle · 14pt · 400</div><div class="type-sample t-14">Radiohead · In Rainbows</div></div>
+        <div class="type-row"><div class="type-meta">Toggle · 12pt · 700</div><div class="type-sample t-12">Song · Video</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Play</button>
+          <button class="btn btn-red">Subscribe</button>
+          <button class="btn btn-outline">Shuffle</button>
+          <button class="btn-text">See all</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Player Mini Bar</div>
+        <div class="mini">
+          <div class="mini-art"></div>
+          <div class="mini-txt">
+            <div class="mini-track">Midnight City</div>
+            <div class="mini-artist">M83</div>
+          </div>
+          <svg class="mini-ic" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>
+          <svg class="mini-ic" viewBox="0 0 24 24"><polygon points="5,5 15,12 5,19"/><rect x="16.5" y="5" width="2.5" height="14"/></svg>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Scrubber — Rest &amp; Scrubbing</div>
+        <div class="scrub-demo">
+          <div class="scrub scrub-rest"><div class="scrub-fill"></div><div class="scrub-thumb"></div></div>
+          <div class="scrub scrub-active"><div class="scrub-fill"></div><div class="scrub-thumb"></div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-2">2</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-24">24</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">YouTube Music is dark-only on iOS. Canvas sits at near-black <code>#030303</code> — deliberately darker than Spotify's <code>#121212</code> so the immersive Now Playing backdrop (a blurred, scaled copy of the album art) reads as a glow. The Song/Video toggle pill is the signature control. Primary playback is a <code>#FFFFFF</code> circle — YT Music Red <code>#FF0000</code> is reserved for brand chrome, subscribe CTAs and the active scrubber, never the play button itself. Album art is never dimmed; only chrome recedes.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

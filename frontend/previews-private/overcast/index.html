@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Overcast iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #121212;
+    --surface-1: #1C1C1E;
+    --surface-2: #2A2A2C;
+    --divider: #303032;
+    --text-primary: #F2F2F2;
+    --text-secondary: #9A9A9A;
+    --text-tertiary: #6A6A6A;
+    --ink: #FFFFFF;
+    --oc-orange: #FC7E0F;
+    --oc-orange-pressed: #E06A00;
+    --oc-blue: #2D7FF9;
+    --oc-cream: #F7F5EF;
+    --oc-paper: #FBFAF6;
+    --success: #34C759;
+    --error: #FF3B30;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--oc-orange); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+
+  /* NP header */
+  .np-top { display: flex; align-items: center; justify-content: space-between; padding: 4px 18px 14px; }
+  .np-top svg { width: 22px; height: 22px; stroke: var(--oc-orange); stroke-width: 2.4; fill: none; }
+  .np-label { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+
+  /* Cover */
+  .cover-wrap { padding: 6px 34px 20px; }
+  .cover { width: 100%; aspect-ratio: 1/1; border-radius: 10px; background: linear-gradient(160deg, #2B3A55 0%, #1C2740 60%, #121A2E 100%); position: relative; overflow: hidden; box-shadow: 0 18px 40px -18px rgba(0,0,0,0.7); }
+  .cover::before { content: 'ATP'; position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; font-size: 56px; font-weight: 800; letter-spacing: -2px; color: rgba(255,255,255,0.92); }
+  .cover::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 6px; background: var(--oc-orange); }
+
+  .track { padding: 0 34px 12px; }
+  .track-ep { font-size: 17px; font-weight: 700; color: var(--text-primary); line-height: 1.3; }
+  .track-show { font-size: 14px; font-weight: 500; color: var(--text-secondary); margin-top: 4px; }
+
+  /* Scrubber */
+  .scrub { padding: 4px 34px 2px; }
+  .scrub-bar { height: 3px; border-radius: 2px; background: var(--surface-2); position: relative; }
+  .scrub-fill { position: absolute; left: 0; top: 0; height: 100%; width: 38%; border-radius: 2px; background: var(--oc-orange); }
+  .scrub-knob { position: absolute; left: 38%; top: 50%; transform: translate(-50%,-50%); width: 14px; height: 14px; border-radius: 50%; background: var(--oc-orange); box-shadow: 0 1px 4px rgba(0,0,0,0.5); }
+  .scrub-times { display: flex; justify-content: space-between; margin-top: 9px; font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+
+  /* Transport */
+  .transport { display: flex; align-items: center; justify-content: space-between; padding: 12px 36px 14px; }
+  .t-btn svg { stroke: var(--text-primary); stroke-width: 2; fill: none; }
+  .t-skip { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .t-skip svg { width: 27px; height: 27px; }
+  .t-skip span { font-size: 9px; font-weight: 700; color: var(--text-secondary); }
+  .t-play { width: 66px; height: 66px; border-radius: 50%; border: 2.5px solid var(--oc-orange); display: flex; align-items: center; justify-content: center; }
+  .t-play svg { width: 24px; height: 24px; fill: var(--oc-orange); stroke: none; }
+
+  /* Effect toggles row */
+  .fx-row { display: flex; justify-content: space-around; padding: 8px 22px 14px; }
+  .fx { display: flex; flex-direction: column; align-items: center; gap: 5px; color: var(--text-secondary); font-size: 10px; font-weight: 600; }
+  .fx svg { width: 19px; height: 19px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .fx.on { color: var(--oc-orange); }
+
+  /* Tab bar */
+  .tab-bar { height: 68px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(18,18,18,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); margin-top: auto; }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 3px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--oc-orange); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 600; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 600; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--oc-orange); color: #FFF; font-size: 16px; padding: 14px 26px; border-radius: 10px; }
+  .btn-primary:active { background: var(--oc-orange-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--oc-orange); border: 1.5px solid var(--oc-orange); font-size: 15px; font-weight: 600; padding: 12px 22px; border-radius: 10px; }
+  .btn-list { background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--divider); font-size: 15px; font-weight: 500; padding: 12px 20px; border-radius: 10px; }
+  .btn-text { background: transparent; color: var(--oc-orange); font-size: 15px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Settings toggle rows (Smart Speed / Voice Boost) */
+  .opt-row { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid var(--divider); }
+  .opt-row:last-child { border-bottom: none; }
+  .opt-label { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+  .opt-sub { font-size: 12px; color: var(--text-secondary); margin-top: 3px; max-width: 260px; }
+  .toggle { width: 50px; height: 30px; border-radius: 15px; background: var(--oc-orange); position: relative; flex-shrink: 0; }
+  .toggle.off { background: var(--surface-2); }
+  .toggle::after { content: ''; position: absolute; top: 3px; left: 23px; width: 24px; height: 24px; border-radius: 50%; background: #FFF; transition: left .2s; }
+  .toggle.off::after { left: 3px; }
+
+  /* Playlist rows */
+  .pl-list { display: flex; flex-direction: column; }
+  .pl { display: flex; align-items: center; gap: 14px; padding: 14px 2px; border-bottom: 1px solid var(--divider); }
+  .pl:last-child { border-bottom: none; }
+  .pl-ic { width: 38px; height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .pl-ic svg { width: 18px; height: 18px; stroke: #FFF; stroke-width: 2; fill: none; }
+  .pl-info { flex: 1; }
+  .pl-name { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+  .pl-meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .pl-count { font-size: 14px; font-weight: 600; color: var(--text-secondary); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--oc-orange); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-10 { border-radius: 10px; }
+  .r-14 { border-radius: 14px; }
+  .r-20 { border-radius: 20px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; }
+  .logo svg { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="11" fill="#FC7E0F"/><circle cx="24" cy="24" r="13" fill="none" stroke="#FFF" stroke-width="3.4"/><circle cx="24" cy="24" r="3.4" fill="#FFF"/></svg>
+    </span>
+    <div class="page-title">Overcast iOS — Design Tokens</div>
+    <div class="page-chip">Smart Speed</div>
+  </div>
+  <p class="page-subtitle">Overcast is the audiophile's podcast app: a single warm Orange (#FC7E0F) accent over a clean canvas (a paper-cream light theme #FBFAF6 and a true dark #121212). Its calling cards are the Smart Speed and Voice Boost toggles, the orange-ringed circular play control, and tidy playlist rows.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="np-top">
+            <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>
+            <span class="np-label">Now Playing</span>
+            <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </div>
+
+          <div class="cover-wrap"><div class="cover"></div></div>
+
+          <div class="track">
+            <div class="track-ep">512: The Anti-Trust Episode</div>
+            <div class="track-show">Accidental Tech Podcast</div>
+          </div>
+
+          <div class="scrub">
+            <div class="scrub-bar"><div class="scrub-fill"></div><div class="scrub-knob"></div></div>
+            <div class="scrub-times"><span>48:12</span><span>-1:22:40</span></div>
+          </div>
+
+          <div class="transport">
+            <div class="t-btn t-skip"><svg viewBox="0 0 24 24"><path d="M11 5L4 12l7 7"/><path d="M20 5l-7 7 7 7"/></svg><span>30</span></div>
+            <div class="t-play"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></div>
+            <div class="t-btn t-skip"><svg viewBox="0 0 24 24"><path d="M13 5l9 7-9 7"/><path d="M2 5l9 7-9 7"/></svg><span>30</span></div>
+          </div>
+
+          <div class="fx-row">
+            <div class="fx on"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 4v5h5"/></svg>1.3×</div>
+            <div class="fx on"><svg viewBox="0 0 24 24"><path d="M4 9v6M8 5v14M12 8v8M16 6v12M20 10v4"/></svg>Smart Speed</div>
+            <div class="fx on"><svg viewBox="0 0 24 24"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M15 9a4 4 0 0 1 0 6"/></svg>Voice Boost</div>
+            <div class="fx"><svg viewBox="0 0 24 24"><path d="M5 5h14v16l-7-4-7 4z"/></svg>Star</div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span>Playlists</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5"/></svg><span>Podcasts</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/></svg><span>Settings</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#FC7E0F;"><div class="name">Overcast Orange</div>#FC7E0F</div>
+          <div class="swatch" style="background:#E06A00;"><div class="name">Orange Pressed</div>#E06A00</div>
+          <div class="swatch" style="background:#FBFAF6; color:#1A1A1A;"><div class="name">Paper Canvas</div>#FBFAF6</div>
+          <div class="swatch" style="background:#F7F5EF; color:#1A1A1A;"><div class="name">Cream Surface</div>#F7F5EF</div>
+          <div class="swatch" style="background:#121212;"><div class="name">Dark Canvas</div>#121212</div>
+          <div class="swatch" style="background:#1C1C1E;"><div class="name">Dark Surface 1</div>#1C1C1E</div>
+          <div class="swatch" style="background:#2A2A2C;"><div class="name">Dark Surface 2</div>#2A2A2C</div>
+          <div class="swatch" style="background:#2D7FF9;"><div class="name">Link Blue</div>#2D7FF9</div>
+          <div class="swatch" style="background:#34C759; color:#0A0A0A;"><div class="name">Success</div>#34C759</div>
+          <div class="swatch" style="background:#F2F2F2; color:#1A1A1A;"><div class="name">Text (dark mode)</div>#F2F2F2</div>
+          <div class="swatch" style="background:#1A1A1A;"><div class="name">Text (light mode)</div>#1A1A1A</div>
+          <div class="swatch" style="background:#9A9A9A; color:#1A1A1A;"><div class="name">Text Secondary</div>#9A9A9A</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter (SF Pro on device)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 800</div><div class="type-sample t-32">Playlists</div></div>
+        <div class="type-row"><div class="type-meta">Now Playing Ep · 26pt · 700</div><div class="type-sample t-26">The Anti-Trust Episode</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Recommended for You</div></div>
+        <div class="type-row"><div class="type-meta">Episode Title · 18pt · 700</div><div class="type-sample t-18">512: The Anti-Trust Episode</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Smart Speed shortens silences without altering pitch or tempo.</div></div>
+        <div class="type-row"><div class="type-meta">Row Title · 15pt · 600</div><div class="type-sample t-15m">Accidental Tech Podcast</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">1 hr 38 min · 4 new episodes</div></div>
+        <div class="type-row"><div class="type-meta">Caption · 12pt · 600</div><div class="type-sample t-12">SAVED 1 HR 12 MIN WITH SMART SPEED</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Add Podcast</button>
+          <button class="btn btn-outline">Recommend</button>
+          <button class="btn btn-list">Edit Playlist</button>
+          <button class="btn-text">See all episodes</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Smart Speed &amp; Voice Boost</div>
+        <div class="opt-row">
+          <div><div class="opt-label">Smart Speed</div><div class="opt-sub">Dynamically shortens silences in talk shows — no pitch change</div></div>
+          <div class="toggle"></div>
+        </div>
+        <div class="opt-row">
+          <div><div class="opt-label">Voice Boost</div><div class="opt-sub">Loudness and EQ tuned for spoken-word clarity</div></div>
+          <div class="toggle"></div>
+        </div>
+        <div class="opt-row">
+          <div><div class="opt-label">Mono</div><div class="opt-sub">Collapse stereo to one channel for single-earbud listening</div></div>
+          <div class="toggle off"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Playlist Rows</div>
+        <div class="pl-list">
+          <div class="pl">
+            <div class="pl-ic" style="background:#FC7E0F;"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div>
+            <div class="pl-info"><div class="pl-name">All Episodes</div><div class="pl-meta">Most recent first</div></div>
+            <div class="pl-count">128</div>
+          </div>
+          <div class="pl">
+            <div class="pl-ic" style="background:#2D7FF9;"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9"/><path d="M12 3v9l6 3"/></svg></div>
+            <div class="pl-info"><div class="pl-name">In Progress</div><div class="pl-meta">Resume where you left off</div></div>
+            <div class="pl-count">6</div>
+          </div>
+          <div class="pl">
+            <div class="pl-ic" style="background:#34C759;"><svg viewBox="0 0 24 24"><path d="M5 5h14v16l-7-4-7 4z"/></svg></div>
+            <div class="pl-info"><div class="pl-name">Starred</div><div class="pl-meta">Saved for later</div></div>
+            <div class="pl-count">19</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Overcast ships a warm <strong>paper-cream light theme</strong> (<code>#FBFAF6</code> canvas, <code>#F7F5EF</code> surfaces) and a true <strong>dark theme</strong> (<code>#121212</code> canvas, <code>#1C1C1E</code> surfaces). Overcast Orange <code>#FC7E0F</code> is the single accent and is identical across themes — it rings the circular play control, colors the scrubber, marks active Smart Speed / Voice Boost toggles, and tints links and the tab selection. The UI is deliberately restrained: one accent, generous list spacing, no gradients in chrome. Cover artwork stays full-color; everything else is monochrome so the orange reads instantly.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

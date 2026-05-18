@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Locket iOS — Warm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFF7EC;
+    --app-bg-top: #FFE9CC;
+    --app-bg-bot: #FFD9A8;
+    --surface-1: #FFFFFF;
+    --surface-2: #FFF1DD;
+    --divider: #F2E2C9;
+    --text-primary: #2C2014;
+    --text-secondary: #8A7A63;
+    --text-tertiary: #B8A88E;
+    --ink: #FFFFFF;
+    --locket-gold: #FFB02E;
+    --locket-amber: #FF9E2C;
+    --locket-deep: #F08A1D;
+    --locket-cream: #FFF7EC;
+    --locket-coral: #FF7A59;
+    --success: #38C172;
+    --error: #FF5A5A;
+    /* page shell (shared dark catalog chrome) */
+    --pg-bg: #1A1409;
+    --pg-surface: #241C0E;
+    --pg-divider: #3A2E18;
+    --pg-text-2: #C7B48E;
+    --font: 'Poppins', -apple-system, BlinkMacSystemFont, 'SF Pro Rounded', 'SF Pro Display', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #120D05; color: #F4E8D2; font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: #FFFFFF; }
+  .page-chip { background: var(--locket-gold); color: #3A2400; font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--pg-text-2); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: linear-gradient(180deg, var(--app-bg-top) 0%, var(--app-bg-bot) 100%); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 700; color: var(--text-primary); }
+
+  /* Top bar */
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 2px 18px 8px; }
+  .friends-pill { display: flex; align-items: center; gap: 8px; background: #FFFFFF; border-radius: 999px; padding: 8px 16px 8px 10px; box-shadow: 0 6px 16px rgba(180,120,30,0.18); }
+  .friends-av { display: flex; }
+  .friends-av i { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #FFF; margin-left: -8px; }
+  .friends-av i:first-child { margin-left: 0; background: linear-gradient(135deg,#FFB02E,#FF7A59); }
+  .friends-av i:nth-child(2) { background: linear-gradient(135deg,#7AC0FF,#5A8CFF); }
+  .friends-av i:nth-child(3) { background: linear-gradient(135deg,#8AE0B0,#38C172); }
+  .friends-pill span { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+  .topbar-ic { width: 38px; height: 38px; border-radius: 50%; background: #FFFFFF; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 16px rgba(180,120,30,0.18); }
+  .topbar-ic svg { width: 19px; height: 19px; stroke: var(--text-primary); stroke-width: 2; fill: none; }
+
+  /* Camera viewfinder (square, full-bleed friend photo) */
+  .vf-wrap { padding: 6px 18px 0; }
+  .viewfinder { aspect-ratio: 1/1; border-radius: 40px; overflow: hidden; position: relative; background: linear-gradient(160deg, #F5B96B 0%, #E88B3C 45%, #C56A22 100%); box-shadow: 0 24px 48px -22px rgba(160,100,20,0.55); }
+  .viewfinder::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 50% 38%, rgba(255,235,200,0.5), transparent 55%); }
+  .vf-sender { position: absolute; top: 16px; left: 16px; display: flex; align-items: center; gap: 8px; background: rgba(44,32,20,0.32); backdrop-filter: blur(6px); border-radius: 999px; padding: 6px 14px 6px 6px; }
+  .vf-sender i { width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg,#FFD9A8,#FF9E2C); }
+  .vf-sender span { font-size: 13px; font-weight: 700; color: #FFF; }
+  .vf-cap { position: absolute; left: 0; right: 0; bottom: 18px; text-align: center; }
+  .vf-cap span { display: inline-block; background: rgba(44,32,20,0.36); backdrop-filter: blur(6px); color: #FFF; font-size: 15px; font-weight: 600; padding: 8px 16px; border-radius: 16px; }
+
+  /* Capture row */
+  .cap-row { display: flex; align-items: center; justify-content: space-around; padding: 24px 26px 14px; }
+  .cap-side { width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.6); display: flex; align-items: center; justify-content: center; }
+  .cap-side svg { width: 22px; height: 22px; stroke: var(--text-primary); stroke-width: 2; fill: none; }
+  .cap-btn { width: 84px; height: 84px; border-radius: 50%; background: #FFFFFF; border: 5px solid rgba(255,255,255,0.55); display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 26px rgba(180,120,30,0.32); }
+  .cap-btn .ring { width: 66px; height: 66px; border-radius: 50%; border: 4px solid var(--locket-gold); }
+
+  /* History strip */
+  .hist { padding: 8px 18px 4px; }
+  .hist-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .hist-title { font-size: 13px; font-weight: 700; color: var(--text-secondary); }
+  .hist-all { font-size: 12px; font-weight: 700; color: var(--locket-deep); }
+  .hist-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .hist-cell { aspect-ratio: 1/1; border-radius: 14px; position: relative; overflow: hidden; }
+  .hist-cell.h1 { background: linear-gradient(140deg,#FFC98A,#F08A1D); }
+  .hist-cell.h2 { background: linear-gradient(140deg,#9ED4FF,#5A8CFF); }
+  .hist-cell.h3 { background: linear-gradient(140deg,#A8E8C4,#38C172); }
+  .hist-cell.h4 { background: linear-gradient(140deg,#FFB3A0,#FF7A59); }
+  .hist-cell i { position: absolute; bottom: 4px; left: 4px; width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid #FFF; background: rgba(44,32,20,0.4); }
+
+  /* Tab bar */
+  .tab-bar { height: 64px; display: flex; align-items: center; padding: 6px 18px 18px; justify-content: space-between; }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 700; gap: 3px; }
+  .tab.active { color: var(--locket-deep); }
+  .tab svg { width: 24px; height: 24px; stroke: currentColor; stroke-width: 2.2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections (dark catalog chrome) */
+  .section { background: var(--pg-surface); border: 1px solid var(--pg-divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: var(--pg-text-2); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 700; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--pg-divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 800; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #3A2400; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--pg-divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--pg-text-2); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: #F4E8D2; }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: #FFFFFF; }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; color: #FFFFFF; }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 600; }
+  .t-15 { font-size: 15px; font-weight: 500; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--pg-text-2); }
+  .t-12 { font-size: 12px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; color: var(--locket-gold); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0.2px; }
+  .btn-primary { background: var(--locket-gold); color: #3A2400; font-size: 16px; padding: 14px 28px; border-radius: 999px; }
+  .btn-primary:active { background: var(--locket-deep); transform: scale(0.97); }
+  .btn-soft { background: #FFFFFF; color: var(--locket-deep); font-size: 15px; font-weight: 700; padding: 13px 24px; border-radius: 999px; box-shadow: 0 6px 16px rgba(180,120,30,0.18); }
+  .btn-outline { background: transparent; color: var(--locket-deep); border: 2px solid var(--locket-gold); font-size: 15px; font-weight: 700; padding: 12px 22px; border-radius: 999px; }
+  .btn-ghost { background: #3A2E18; color: #F4E8D2; border: 1px solid var(--pg-divider); font-size: 15px; font-weight: 600; padding: 13px 22px; border-radius: 999px; }
+  .btn-text { background: transparent; color: var(--locket-gold); font-size: 15px; font-weight: 700; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Signature: capture button */
+  .cap-demo { display: flex; gap: 20px; align-items: center; background: linear-gradient(160deg,#FFE9CC,#FFD9A8); border-radius: 20px; padding: 22px; justify-content: center; }
+  .cap-demo .cap-btn { box-shadow: 0 10px 26px rgba(180,120,30,0.35); }
+
+  /* Signature: friends history grid */
+  .fg-demo { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; background: var(--pg-surface); border-radius: 16px; padding: 16px; }
+  .fg { aspect-ratio: 1/1; border-radius: 14px; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--locket-gold); color: #3A2400; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 800; }
+  .r-0 { border-radius: 0; }
+  .r-8 { border-radius: 8px; }
+  .r-14 { border-radius: 14px; }
+  .r-20 { border-radius: 20px; }
+  .r-28 { border-radius: 28px; }
+  .r-40 { border-radius: 40px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Widget mock */
+  .widget-demo { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  .widget { width: 116px; height: 116px; border-radius: 24px; overflow: hidden; background: linear-gradient(150deg,#F5B96B,#C56A22); position: relative; box-shadow: 0 12px 26px rgba(160,100,20,0.4); }
+  .widget i { position: absolute; bottom: 8px; left: 8px; font-size: 10px; font-weight: 700; color: #FFF; background: rgba(44,32,20,0.4); padding: 2px 8px; border-radius: 999px; }
+  .widget-cap { color: var(--pg-text-2); font-size: 13px; max-width: 260px; line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span style="font-size:27px;font-weight:800;color:var(--locket-gold);">Locket</span>
+    <div class="page-title">Locket iOS — Design Tokens</div>
+    <div class="page-chip">Warm Gold</div>
+  </div>
+  <p class="page-subtitle">A warm cream-and-gold world (#FFF7EC / #FFB02E) built around one idea: a live photo from your closest friends, straight on your home screen. The signature is the square full-bleed friend photo, the big circular capture button, and the friends photo-history grid. Widget-first, intimate, warm — light-UI by design.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="topbar">
+            <div class="topbar-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></div>
+            <div class="friends-pill">
+              <div class="friends-av"><i></i><i></i><i></i></div>
+              <span>5 friends</span>
+            </div>
+            <div class="topbar-ic"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          </div>
+
+          <div class="vf-wrap">
+            <div class="viewfinder">
+              <div class="vf-sender"><i></i><span>from Ava</span></div>
+              <div class="vf-cap"><span>golden hour on the roof ✨</span></div>
+            </div>
+          </div>
+
+          <div class="cap-row">
+            <div class="cap-side"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="12" cy="12" r="3.5"/><path d="M16 5l-1.5-2h-5L8 5"/></svg></div>
+            <div class="cap-btn"><div class="ring"></div></div>
+            <div class="cap-side"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7M21 4v5h-5"/></svg></div>
+          </div>
+
+          <div class="hist">
+            <div class="hist-head">
+              <span class="hist-title">From your friends</span>
+              <span class="hist-all">See all ›</span>
+            </div>
+            <div class="hist-grid">
+              <div class="hist-cell h1"><i></i></div>
+              <div class="hist-cell h2"><i></i></div>
+              <div class="hist-cell h3"><i></i></div>
+              <div class="hist-cell h4"><i></i></div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="12" cy="12" r="3.5"/></svg><span>Camera</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg><span>History</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/></svg><span>You</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch light" style="background:#FFB02E;"><div class="name">Locket Gold</div>#FFB02E</div>
+          <div class="swatch light" style="background:#FF9E2C;"><div class="name">Locket Amber</div>#FF9E2C</div>
+          <div class="swatch" style="background:#F08A1D;"><div class="name">Locket Deep</div>#F08A1D</div>
+          <div class="swatch light" style="background:#FF7A59;"><div class="name">Warm Coral</div>#FF7A59</div>
+          <div class="swatch light" style="background:#FFF7EC; color:#2C2014;"><div class="name">Cream Canvas</div>#FFF7EC</div>
+          <div class="swatch light" style="background:#FFE9CC; color:#2C2014;"><div class="name">App BG Top</div>#FFE9CC</div>
+          <div class="swatch light" style="background:#FFD9A8; color:#2C2014;"><div class="name">App BG Bottom</div>#FFD9A8</div>
+          <div class="swatch" style="background:#FFFFFF; color:#2C2014;"><div class="name">Card White</div>#FFFFFF</div>
+          <div class="swatch" style="background:#F2E2C9; color:#2C2014;"><div class="name">Divider</div>#F2E2C9</div>
+          <div class="swatch" style="background:#2C2014;"><div class="name">Text Primary</div>#2C2014</div>
+          <div class="swatch" style="background:#8A7A63;"><div class="name">Text Secondary</div>#8A7A63</div>
+          <div class="swatch" style="background:#FF5A5A;"><div class="name">Error</div>#FF5A5A</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Poppins (warm geometric)</div>
+        <div class="type-row"><div class="type-meta">Display · 32pt · 800</div><div class="type-sample t-32">Locket</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 26pt · 700</div><div class="type-sample t-26">From your friends</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Add to Home Screen</div></div>
+        <div class="type-row"><div class="type-meta">Sender · 18pt · 700</div><div class="type-sample t-18">from Ava</div></div>
+        <div class="type-row"><div class="type-meta">Caption · 16pt · 600</div><div class="type-sample t-16">golden hour on the roof ✨</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 500</div><div class="type-sample t-15">A photo from your friends, right on your Home Screen.</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 400</div><div class="type-sample t-13">2 minutes ago · sent to 5 friends</div></div>
+        <div class="type-row"><div class="type-meta">Label · 12pt · 700</div><div class="type-sample t-12">From your friends</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Send to friends</button>
+          <button class="btn btn-soft">Add widget</button>
+          <button class="btn btn-outline">Invite a friend</button>
+          <button class="btn btn-ghost">Skip</button>
+          <button class="btn-text">See all photos</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Signature — Capture Button</div>
+        <div class="cap-demo">
+          <div class="cap-btn"><div class="ring"></div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Signature — Friends Photo-History Grid</div>
+        <div class="fg-demo">
+          <div class="fg" style="background:linear-gradient(140deg,#FFC98A,#F08A1D);"></div>
+          <div class="fg" style="background:linear-gradient(140deg,#9ED4FF,#5A8CFF);"></div>
+          <div class="fg" style="background:linear-gradient(140deg,#A8E8C4,#38C172);"></div>
+          <div class="fg" style="background:linear-gradient(140deg,#FFB3A0,#FF7A59);"></div>
+          <div class="fg" style="background:linear-gradient(140deg,#FFD9A8,#FF9E2C);"></div>
+          <div class="fg" style="background:linear-gradient(140deg,#D8C0FF,#9A6CFF);"></div>
+          <div class="fg" style="background:linear-gradient(140deg,#FFE0B0,#F0A83C);"></div>
+          <div class="fg" style="background:linear-gradient(140deg,#B8E8E0,#3CC4B4);"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Signature — Home Screen Widget</div>
+        <div class="widget-demo">
+          <div class="widget"><i>from Ava</i></div>
+          <p class="widget-cap">The widget IS the product. A live square photo from a friend on the Home Screen — tap it to open the camera. Cream + gold, rounded 24px corners, warm shadow.</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-28">28</div>
+          <div class="radius-box r-40">40</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Light Mode Notes</div>
+        <p style="color: var(--pg-text-2); font-size: 14px; line-height: 1.55;">Locket is warm and light by design — there is no dark mode in spirit. The world is a soft cream→peach gradient (<code>#FFE9CC → #FFD9A8</code>) over cream canvas (<code>#FFF7EC</code>); Locket Gold (<code>#FFB02E</code>) is the single brand accent, with a deeper amber (<code>#F08A1D</code>) for text-on-cream and warm coral (<code>#FF7A59</code>) as a friendly secondary. The product is widget-first: the real surface is the Home Screen widget showing a friend's square photo. In-app, the signature trio is the square full-bleed friend photo (very round 40px corners), the big white circular capture button with a gold inner ring, and the 4-up friends photo-history grid. Type is Poppins — warm, rounded, geometric. Shadows are warm honey-tinted (<code>rgba(180,120,30,…)</code>), never gray. Everything is intimate, close-friends-only, and cozy.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

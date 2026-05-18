@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Pandora iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0B0F1C;
+    --surface-1: #141A2B;
+    --surface-2: #1E2538;
+    --divider: #28304A;
+    --text-primary: #EDF0F7;
+    --text-secondary: #9AA3BD;
+    --text-tertiary: #646E8C;
+    --ink: #FFFFFF;
+    --pandora-blue: #224099;
+    --pandora-bright: #3668FF;
+    --pandora-bright-pressed: #2A55D8;
+    --thumb-up: #3668FF;
+    --thumb-down: #9AA3BD;
+    --success: #2BC48A;
+    --error: #F0526B;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--pandora-bright); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .np-bg { position: absolute; inset: 0; background: linear-gradient(180deg, #2B3A6E 0%, #1A2240 45%, #0B0F1C 100%); }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); position: relative; z-index: 5; }
+  .np-top { position: relative; z-index: 5; display: flex; align-items: center; justify-content: space-between; padding: 4px 20px 0; }
+  .np-top svg { width: 22px; height: 22px; stroke: var(--text-primary); stroke-width: 2; fill: none; }
+  .np-eyebrow { text-align: center; }
+  .np-eyebrow .lbl { font-size: 10px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1.2px; }
+  .np-eyebrow .stn { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-top: 2px; }
+
+  /* Album art */
+  .art-wrap { position: relative; z-index: 5; padding: 26px 32px 0; }
+  .art { width: 100%; aspect-ratio: 1/1; border-radius: 10px; background: linear-gradient(135deg, #4356A8 0%, #6A4FC2 50%, #2A2150 100%); box-shadow: 0 24px 50px -16px rgba(0,0,0,0.7); position: relative; overflow: hidden; }
+  .art::before { content: ''; position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 46%; height: 46%; border-radius: 50%; background: radial-gradient(circle, #0C0A14 0 28%, #C9CCE0 29% 31%, #2A2150 32%); }
+  .art::after { content: ''; position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 9%; height: 9%; border-radius: 50%; background: #0B0F1C; }
+
+  /* Track meta */
+  .track { position: relative; z-index: 5; padding: 22px 32px 0; }
+  .track-title { font-size: 21px; font-weight: 800; color: var(--ink); letter-spacing: -0.3px; }
+  .track-artist { font-size: 15px; font-weight: 500; color: var(--text-secondary); margin-top: 4px; }
+  .track-album { font-size: 13px; font-weight: 500; color: var(--text-tertiary); margin-top: 2px; }
+
+  /* Scrubber */
+  .scrub { position: relative; z-index: 5; padding: 20px 32px 0; }
+  .scrub-bar { height: 4px; background: var(--surface-2); border-radius: 2px; position: relative; }
+  .scrub-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 42%; background: var(--pandora-bright); border-radius: 2px; }
+  .scrub-knob { position: absolute; left: 42%; top: 50%; transform: translate(-50%,-50%); width: 12px; height: 12px; border-radius: 6px; background: #FFF; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+  .scrub-time { display: flex; justify-content: space-between; margin-top: 8px; font-size: 11px; color: var(--text-tertiary); font-variant-numeric: tabular-nums; }
+
+  /* Thumb + transport */
+  .controls { position: relative; z-index: 5; display: flex; align-items: center; justify-content: space-between; padding: 22px 36px 0; }
+  .thumb { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; }
+  .thumb svg { width: 26px; height: 26px; stroke-width: 1.8; }
+  .thumb.up svg { fill: var(--thumb-up); stroke: var(--thumb-up); }
+  .thumb.down svg { fill: none; stroke: var(--thumb-down); }
+  .ctl { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+  .ctl svg { width: 26px; height: 26px; fill: var(--text-primary); }
+  .play { width: 66px; height: 66px; border-radius: 33px; background: var(--pandora-bright); display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 26px -8px rgba(54,104,255,0.7); }
+  .play svg { width: 26px; height: 26px; fill: #FFF; margin-left: 3px; }
+
+  /* Tab bar */
+  .tab-bar { position: relative; z-index: 5; margin-top: auto; height: 66px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: rgba(11,15,28,0.92); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 4px; }
+  .tab.active { color: var(--text-primary); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #0B0F1C; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); }
+  .t-21 { font-size: 21px; font-weight: 800; letter-spacing: -0.2px; }
+  .t-17 { font-size: 17px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12u { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+  .t-11 { font-size: 11px; font-weight: 500; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0.1px; }
+  .btn-primary { background: var(--pandora-bright); color: #FFF; font-size: 16px; padding: 14px 28px; border-radius: 500px; }
+  .btn-primary:active { background: var(--pandora-bright-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1.5px solid var(--text-secondary); font-size: 14px; font-weight: 600; padding: 12px 22px; border-radius: 500px; }
+  .btn-text { background: transparent; color: var(--pandora-bright); font-size: 14px; font-weight: 700; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Thumb states */
+  .thumbs-demo { display: flex; gap: 28px; align-items: center; }
+  .thumb-cell { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .thumb-cell .ic { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; }
+  .thumb-cell .ic svg { width: 28px; height: 28px; stroke-width: 1.8; }
+  .tc-up svg { fill: var(--thumb-up); stroke: var(--thumb-up); }
+  .tc-down svg { fill: none; stroke: var(--thumb-down); }
+  .tc-idle svg { fill: none; stroke: var(--text-tertiary); }
+  .thumb-cell .cap { font-size: 11px; color: var(--text-secondary); font-weight: 600; }
+
+  /* Station list */
+  .stn-list { display: flex; flex-direction: column; gap: 4px; }
+  .stn-row { display: flex; align-items: center; gap: 14px; padding: 10px; border-radius: 12px; }
+  .stn-row.on { background: var(--surface-2); }
+  .stn-art { width: 52px; height: 52px; border-radius: 8px; flex-shrink: 0; }
+  .sa1 { background: linear-gradient(135deg, #4356A8, #2A2150); }
+  .sa2 { background: linear-gradient(135deg, #C2487A, #5A1E3C); }
+  .sa3 { background: linear-gradient(135deg, #2BAA8A, #154A3C); }
+  .stn-meta { flex: 1; }
+  .stn-name { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+  .stn-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .stn-eq { display: flex; align-items: flex-end; gap: 2px; height: 16px; }
+  .stn-eq span { width: 3px; background: var(--pandora-bright); border-radius: 1px; }
+  .stn-eq span:nth-child(1){ height: 60%; } .stn-eq span:nth-child(2){ height: 100%; } .stn-eq span:nth-child(3){ height: 40%; } .stn-eq span:nth-child(4){ height: 80%; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--pandora-bright); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-10 { border-radius: 10px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; width: 42px; height: 42px; align-items: center; justify-content: center; }
+  .logo svg { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <rect width="64" height="64" rx="15" fill="#3668FF"/>
+        <path d="M22 14h13c8 0 13 5 13 12s-5 12-13 12h-5v12h-8z" fill="#FFFFFF"/>
+        <path d="M30 22h4c3.4 0 5.6 1.8 5.6 4.6S37.4 31 34 31h-4z" fill="#3668FF"/>
+      </svg>
+    </span>
+    <div class="page-title">Pandora iOS — Design Tokens</div>
+    <div class="page-chip">Thumb-Driven</div>
+  </div>
+  <p class="page-subtitle">The radio app built on the thumb up/down — its defining interaction since the Music Genome Project. Pandora Blue (#224099) deepens to a near-navy canvas (#0B0F1C); bright blue (#3668FF) is the active thumb, the play button, and every primary action. Now Playing is an album-art hero gradient; the station list is the home.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="np-bg"></div>
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="np-top">
+            <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+            <div class="np-eyebrow">
+              <div class="lbl">Station</div>
+              <div class="stn">Indie Chill Radio</div>
+            </div>
+            <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/></svg>
+          </div>
+
+          <div class="art-wrap"><div class="art"></div></div>
+
+          <div class="track">
+            <div class="track-title">Midnight Avenue</div>
+            <div class="track-artist">The Glass Hours</div>
+            <div class="track-album">Neon Reverie · 2023</div>
+          </div>
+
+          <div class="scrub">
+            <div class="scrub-bar">
+              <div class="scrub-fill"></div>
+              <div class="scrub-knob"></div>
+            </div>
+            <div class="scrub-time"><span>1:42</span><span>-2:18</span></div>
+          </div>
+
+          <div class="controls">
+            <div class="thumb down"><svg viewBox="0 0 24 24"><path d="M10 15v4a2 2 0 0 0 2 2l3-7V3H6.5a2 2 0 0 0-2 1.7l-1.4 9A2 2 0 0 0 5 16h5z"/><path d="M19 3h1.5a1.5 1.5 0 0 1 1.5 1.5v7a1.5 1.5 0 0 1-1.5 1.5H19z"/></svg></div>
+            <div class="ctl"><svg viewBox="0 0 24 24"><path d="M19 20L9 12l10-8zM5 4v16"/></svg></div>
+            <div class="play"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></div>
+            <div class="ctl"><svg viewBox="0 0 24 24"><path d="M5 4l10 8-10 8zM19 4v16"/></svg></div>
+            <div class="thumb up"><svg viewBox="0 0 24 24"><path d="M14 9V5a2 2 0 0 0-2-2L9 10v11h8.5a2 2 0 0 0 2-1.7l1.4-9A2 2 0 0 0 19 8h-5z"/><path d="M5 21H3.5A1.5 1.5 0 0 1 2 19.5v-7A1.5 1.5 0 0 1 3.5 11H5z"/></svg></div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span>For You</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Browse</span></div>
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span>My Collection</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Recents</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette (Dark)</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#224099;"><div class="name">Pandora Blue</div>#224099</div>
+          <div class="swatch" style="background:#3668FF;"><div class="name">Bright Blue</div>#3668FF</div>
+          <div class="swatch" style="background:#2A55D8;"><div class="name">Bright Pressed</div>#2A55D8</div>
+          <div class="swatch" style="background:#0B0F1C;"><div class="name">Navy Canvas</div>#0B0F1C</div>
+          <div class="swatch" style="background:#141A2B;"><div class="name">Surface 1</div>#141A2B</div>
+          <div class="swatch" style="background:#1E2538;"><div class="name">Surface 2</div>#1E2538</div>
+          <div class="swatch" style="background:#28304A;"><div class="name">Divider</div>#28304A</div>
+          <div class="swatch light" style="background:#EDF0F7;"><div class="name">Text Primary</div>#EDF0F7</div>
+          <div class="swatch" style="background:#9AA3BD; color:#0B0F1C;"><div class="name">Text Secondary</div>#9AA3BD</div>
+          <div class="swatch" style="background:#3668FF;"><div class="name">Thumb Up</div>#3668FF</div>
+          <div class="swatch" style="background:#2BC48A;"><div class="name">Success</div>#2BC48A</div>
+          <div class="swatch" style="background:#F0526B;"><div class="name">Error</div>#F0526B</div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-title">Typography — Pandora (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Display · 32pt · 800</div><div class="type-sample t-32">My Collection</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 26pt · 800</div><div class="type-sample t-26">Browse stations</div></div>
+        <div class="type-row"><div class="type-meta">Track Title · 21pt · 800</div><div class="type-sample t-21">Midnight Avenue</div></div>
+        <div class="type-row"><div class="type-meta">Section · 17pt · 700</div><div class="type-sample t-17">Recommended for you</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Stations are built from the Music Genome Project.</div></div>
+        <div class="type-row"><div class="type-meta">Station Name · 15pt · 600</div><div class="type-sample t-15m">Indie Chill Radio</div></div>
+        <div class="type-row"><div class="type-meta">Artist / Meta · 14pt · 400</div><div class="type-sample t-14">The Glass Hours</div></div>
+        <div class="type-row"><div class="type-meta">Eyebrow · 12pt · 700 caps</div><div class="type-sample t-12u">Station</div></div>
+        <div class="type-row"><div class="type-meta">Time / Caption · 11pt · 500</div><div class="type-sample t-11">1:42 · -2:18</div></div>
+      </div>
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Create station</button>
+          <button class="btn btn-outline">Shuffle</button>
+          <button class="btn-text">Upgrade to Premium</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Thumb Up / Down — Pandora's Signature</div>
+        <div class="thumbs-demo">
+          <div class="thumb-cell">
+            <div class="ic tc-up"><svg viewBox="0 0 24 24"><path d="M14 9V5a2 2 0 0 0-2-2L9 10v11h8.5a2 2 0 0 0 2-1.7l1.4-9A2 2 0 0 0 19 8h-5z"/><path d="M5 21H3.5A1.5 1.5 0 0 1 2 19.5v-7A1.5 1.5 0 0 1 3.5 11H5z"/></svg></div>
+            <div class="cap">Thumb Up · active</div>
+          </div>
+          <div class="thumb-cell">
+            <div class="ic tc-idle"><svg viewBox="0 0 24 24"><path d="M14 9V5a2 2 0 0 0-2-2L9 10v11h8.5a2 2 0 0 0 2-1.7l1.4-9A2 2 0 0 0 19 8h-5z"/><path d="M5 21H3.5A1.5 1.5 0 0 1 2 19.5v-7A1.5 1.5 0 0 1 3.5 11H5z"/></svg></div>
+            <div class="cap">Idle</div>
+          </div>
+          <div class="thumb-cell">
+            <div class="ic tc-down"><svg viewBox="0 0 24 24"><path d="M10 15v4a2 2 0 0 0 2 2l3-7V3H6.5a2 2 0 0 0-2 1.7l-1.4 9A2 2 0 0 0 5 16h5z"/><path d="M19 3h1.5a1.5 1.5 0 0 1 1.5 1.5v7a1.5 1.5 0 0 1-1.5 1.5H19z"/></svg></div>
+            <div class="cap">Thumb Down · active</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Station List</div>
+        <div class="stn-list">
+          <div class="stn-row on">
+            <div class="stn-art sa1"></div>
+            <div class="stn-meta">
+              <div class="stn-name">Indie Chill Radio</div>
+              <div class="stn-sub">Now playing · The Glass Hours</div>
+            </div>
+            <div class="stn-eq"><span></span><span></span><span></span><span></span></div>
+          </div>
+          <div class="stn-row">
+            <div class="stn-art sa2"></div>
+            <div class="stn-meta">
+              <div class="stn-name">90s R&B Radio</div>
+              <div class="stn-sub">Station · 312 thumbs up</div>
+            </div>
+          </div>
+          <div class="stn-row">
+            <div class="stn-art sa3"></div>
+            <div class="stn-meta">
+              <div class="stn-name">Deep Focus</div>
+              <div class="stn-sub">Station · Curated</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Pandora's app is dark-first. The canvas is a deep blue-navy <code>#0B0F1C</code> derived from Pandora Blue <code>#224099</code>, never a neutral gray. Now Playing is a top-down gradient pulled from the album art into the navy floor — chrome floats over it with no card frame. Bright Blue <code>#3668FF</code> is the constant: the active thumb-up, the play button, the scrubber fill, and every primary action. The thumb-up fills bright blue when active; thumb-down stays a hollow secondary outline — the asymmetry signals that a thumb-up shapes the station while a thumb-down skips and tunes away. Album artwork is never tinted; only the surrounding UI shifts.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

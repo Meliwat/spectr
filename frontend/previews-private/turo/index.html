@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Turo iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0F0F12;
+    --surface-1: #1A1A1F;
+    --surface-2: #25252C;
+    --divider: #2D2D35;
+    --text-primary: #F2F1F6;
+    --text-secondary: #A4A2B3;
+    --text-tertiary: #6F6D7E;
+    --ink: #FFFFFF;
+    --turo-purple: #593BFB;
+    --turo-purple-bright: #7C5CFF;
+    --turo-purple-pressed: #4A2FD6;
+    --turo-teal: #5CE0B8;
+    --turo-teal-deep: #1FB890;
+    --star: #FFB400;
+    --success: #1FB890;
+    --error: #F5536B;
+    --font: 'Manrope', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--turo-purple); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: #FFF; position: absolute; top: 0; left: 0; right: 0; z-index: 6; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+  .scroll-body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; scrollbar-width: none; }
+  .scroll-body::-webkit-scrollbar { display: none; }
+
+  /* Photo hero */
+  .car-hero { position: relative; width: 100%; height: 260px; background: linear-gradient(155deg, #6E5BD0 0%, #4B3AA8 35%, #2A2150 100%); overflow: hidden; }
+  .car-hero::before { content: ''; position: absolute; left: 8%; right: 8%; top: 44%; height: 30%; background: linear-gradient(180deg, #14121F 0%, #0C0A14 100%); border-radius: 14px 30px 8px 8px; box-shadow: 0 12px 24px rgba(0,0,0,0.45); }
+  .car-hero::after { content: ''; position: absolute; left: 16%; bottom: 22%; width: 22%; height: 13%; background: #08070D; border-radius: 50%; box-shadow: 46% 0 0 #08070D; }
+  .hero-glass { position: absolute; left: 20%; right: 18%; top: 40%; height: 13%; background: linear-gradient(120deg, rgba(160,150,210,0.45), rgba(90,80,150,0.25)); border-radius: 8px 14px 2px 2px; }
+  .hero-top { position: absolute; top: 56px; left: 16px; right: 16px; display: flex; justify-content: space-between; z-index: 5; }
+  .hero-btn { width: 38px; height: 38px; border-radius: 19px; background: rgba(15,15,18,0.55); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; }
+  .hero-btn svg { width: 18px; height: 18px; stroke: #FFF; stroke-width: 2.2; fill: none; }
+  .hero-dots { position: absolute; bottom: 14px; left: 0; right: 0; display: flex; justify-content: center; gap: 5px; z-index: 5; }
+  .hero-dots span { width: 6px; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.45); }
+  .hero-dots span.on { background: #FFF; width: 18px; }
+
+  /* Listing detail */
+  .detail { padding: 18px 20px 0; }
+  .car-name { font-size: 23px; font-weight: 800; color: var(--ink); letter-spacing: -0.4px; }
+  .car-rating { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 13px; }
+  .car-rating svg { width: 14px; height: 14px; fill: var(--star); }
+  .car-rating .num { font-weight: 700; color: var(--text-primary); }
+  .car-rating .cnt { color: var(--text-secondary); }
+  .car-rating .dot { color: var(--text-tertiary); }
+  .car-rating .trips { color: var(--text-secondary); }
+
+  .specs { display: flex; gap: 10px; margin-top: 18px; }
+  .spec { flex: 1; background: var(--surface-1); border: 1px solid var(--divider); border-radius: 12px; padding: 12px 8px; text-align: center; }
+  .spec svg { width: 18px; height: 18px; stroke: var(--turo-teal); stroke-width: 2; fill: none; margin-bottom: 6px; }
+  .spec-val { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+  .spec-lbl { font-size: 10px; color: var(--text-secondary); margin-top: 2px; }
+
+  /* Host card */
+  .host { display: flex; align-items: center; gap: 12px; margin-top: 20px; padding: 14px; background: var(--surface-1); border: 1px solid var(--divider); border-radius: 14px; }
+  .host-av { width: 46px; height: 46px; border-radius: 23px; background: linear-gradient(135deg, #7C5CFF, #5CE0B8); flex-shrink: 0; position: relative; }
+  .host-av span { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #FFF; font-size: 17px; }
+  .host-meta { flex: 1; }
+  .host-name { font-size: 15px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 6px; }
+  .host-badge { display: inline-flex; align-items: center; gap: 4px; background: rgba(92,224,184,0.16); color: var(--turo-teal); font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 999px; }
+  .host-sub { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+  .host-chev { color: var(--text-tertiary); font-size: 18px; }
+
+  /* Sticky book bar */
+  .book-bar { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px 18px; background: rgba(15,15,18,0.96); backdrop-filter: blur(20px); border-top: 0.5px solid var(--divider); }
+  .book-price .amt { font-size: 20px; font-weight: 800; color: var(--text-primary); }
+  .book-price .per { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
+  .book-price .total { font-size: 11px; color: var(--turo-teal); font-weight: 600; margin-top: 2px; text-decoration: underline; }
+  .book-btn { background: var(--turo-purple); color: #FFF; font-size: 15px; font-weight: 800; padding: 14px 30px; border-radius: 10px; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #15131F; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); }
+  .t-23 { font-size: 23px; font-weight: 800; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-13u { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .t-12 { font-size: 12px; font-weight: 500; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 800; cursor: pointer; border: none; letter-spacing: 0.1px; }
+  .btn-primary { background: var(--turo-purple); color: #FFF; font-size: 16px; padding: 14px 28px; border-radius: 10px; }
+  .btn-primary:active { background: var(--turo-purple-pressed); transform: scale(0.98); }
+  .btn-teal { background: var(--turo-teal); color: #06231B; font-size: 16px; padding: 14px 28px; border-radius: 10px; }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1.5px solid var(--turo-purple-bright); font-size: 14px; font-weight: 700; padding: 12px 20px; border-radius: 10px; }
+  .btn-text { background: transparent; color: var(--turo-purple-bright); font-size: 14px; font-weight: 700; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Car card */
+  .cards-row { display: flex; gap: 14px; flex-wrap: wrap; }
+  .card { width: 200px; border-radius: 14px; overflow: hidden; background: var(--surface-2); border: 1px solid var(--divider); }
+  .card-photo { height: 110px; background: linear-gradient(150deg, #6E5BD0, #2A2150); position: relative; }
+  .card-photo .fav { position: absolute; top: 8px; right: 8px; width: 26px; height: 26px; border-radius: 13px; background: rgba(15,15,18,0.5); display: flex; align-items: center; justify-content: center; }
+  .card-photo .fav svg { width: 14px; height: 14px; }
+  .card-body { padding: 10px 12px 12px; }
+  .card-ttl { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+  .card-rt { font-size: 11px; color: var(--text-secondary); margin-top: 3px; display: flex; align-items: center; gap: 4px; }
+  .card-rt svg { width: 11px; height: 11px; fill: var(--star); }
+  .card-pr { font-size: 14px; font-weight: 800; color: var(--text-primary); margin-top: 8px; }
+  .card-pr span { font-size: 11px; font-weight: 500; color: var(--text-secondary); }
+
+  /* Map pins */
+  .map-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .pin { font-family: var(--font); font-weight: 800; font-size: 13px; padding: 7px 12px; border-radius: 500px; box-shadow: 0 3px 8px rgba(0,0,0,0.5); }
+  .pin-default { background: var(--turo-purple); color: #FFF; }
+  .pin-visited { background: var(--surface-2); color: var(--text-secondary); border: 1px solid var(--divider); }
+  .pin-selected { background: #FFF; color: var(--turo-purple); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--turo-purple); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-10 { border-radius: 10px; }
+  .r-14 { border-radius: 14px; }
+  .r-20 { border-radius: 20px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; width: 42px; height: 42px; align-items: center; justify-content: center; }
+  .logo svg { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <rect width="64" height="64" rx="15" fill="#593BFB"/>
+        <path d="M16 22h32v6H38v20h-7V28H16z" fill="#FFFFFF"/>
+        <circle cx="46" cy="44" r="6" fill="#5CE0B8"/>
+      </svg>
+    </span>
+    <div class="page-title">Turo iOS — Design Tokens</div>
+    <div class="page-chip">Photo-First</div>
+  </div>
+  <p class="page-subtitle">Airbnb-for-cars: the vehicle photo is the product. Turo Purple (#593BFB) drives every booking action; Turo Teal (#5CE0B8) signals trust, value and All-Star hosts. Dark canvas (#0F0F12) lets full-bleed car photography and the purple Book bar carry the screen.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="scroll-body">
+            <div class="car-hero">
+              <div class="hero-glass"></div>
+              <div class="hero-top">
+                <div class="hero-btn"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+                <div style="display:flex; gap:10px;">
+                  <div class="hero-btn"><svg viewBox="0 0 24 24"><path d="M4 12v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v14"/></svg></div>
+                  <div class="hero-btn"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21.2l8.8-8.8a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+                </div>
+              </div>
+              <div class="hero-dots"><span class="on"></span><span></span><span></span><span></span><span></span></div>
+            </div>
+
+            <div class="detail">
+              <div class="car-name">Tesla Model 3 · 2023</div>
+              <div class="car-rating">
+                <svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg>
+                <span class="num">4.97</span><span class="cnt">(128)</span>
+                <span class="dot">·</span><span class="trips">214 trips</span>
+              </div>
+
+              <div class="specs">
+                <div class="spec">
+                  <svg viewBox="0 0 24 24"><path d="M5 17h14M6 17V9l2-4h8l2 4v8"/><circle cx="8" cy="17" r="2"/><circle cx="16" cy="17" r="2"/></svg>
+                  <div class="spec-val">Electric</div><div class="spec-lbl">Fuel</div>
+                </div>
+                <div class="spec">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                  <div class="spec-val">5 seats</div><div class="spec-lbl">Capacity</div>
+                </div>
+                <div class="spec">
+                  <svg viewBox="0 0 24 24"><path d="M3 12h18M12 3v18"/><circle cx="12" cy="12" r="9"/></svg>
+                  <div class="spec-val">Auto</div><div class="spec-lbl">Transmission</div>
+                </div>
+              </div>
+
+              <div class="host">
+                <div class="host-av"><span>MJ</span></div>
+                <div class="host-meta">
+                  <div class="host-name">Marcus J. <span class="host-badge">★ All-Star Host</span></div>
+                  <div class="host-sub">214 trips · Joined 2019 · Responds in ~10 min</div>
+                </div>
+                <div class="host-chev">›</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="book-bar">
+            <div class="book-price">
+              <div><span class="amt">$83</span> <span class="per">/ day</span></div>
+              <div class="total">$249 est. total · 3 days</div>
+            </div>
+            <div class="book-btn">Continue</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette (Dark)</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#593BFB;"><div class="name">Turo Purple</div>#593BFB</div>
+          <div class="swatch" style="background:#7C5CFF;"><div class="name">Purple Bright</div>#7C5CFF</div>
+          <div class="swatch" style="background:#4A2FD6;"><div class="name">Purple Pressed</div>#4A2FD6</div>
+          <div class="swatch light" style="background:#5CE0B8;"><div class="name">Turo Teal</div>#5CE0B8</div>
+          <div class="swatch" style="background:#1FB890;"><div class="name">Teal Deep</div>#1FB890</div>
+          <div class="swatch" style="background:#0F0F12;"><div class="name">Canvas</div>#0F0F12</div>
+          <div class="swatch" style="background:#1A1A1F;"><div class="name">Surface 1</div>#1A1A1F</div>
+          <div class="swatch" style="background:#25252C;"><div class="name">Surface 2</div>#25252C</div>
+          <div class="swatch" style="background:#2D2D35;"><div class="name">Divider</div>#2D2D35</div>
+          <div class="swatch light" style="background:#F2F1F6;"><div class="name">Text Primary</div>#F2F1F6</div>
+          <div class="swatch" style="background:#FFB400; color:#2A1E00;"><div class="name">Star</div>#FFB400</div>
+          <div class="swatch" style="background:#F5536B;"><div class="name">Error</div>#F5536B</div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-title">Typography — Turo (Manrope fallback)</div>
+        <div class="type-row"><div class="type-meta">Display · 32pt · 800</div><div class="type-sample t-32">Find your drive</div></div>
+        <div class="type-row"><div class="type-meta">Price Hero · 26pt · 800</div><div class="type-sample t-26">$83 / day</div></div>
+        <div class="type-row"><div class="type-meta">Car Title · 23pt · 800</div><div class="type-sample t-23">Tesla Model 3 · 2023</div></div>
+        <div class="type-row"><div class="type-meta">Section · 18pt · 700</div><div class="type-sample t-18">Meet your host</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Free cancellation up to 24 hours before your trip starts.</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 15pt · 600</div><div class="type-sample t-15m">Marcus J. · All-Star Host</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">214 trips · Joined 2019</div></div>
+        <div class="type-row"><div class="type-meta">Eyebrow · 13pt · 700 caps</div><div class="type-sample t-13u">All-Star Host</div></div>
+        <div class="type-row"><div class="type-meta">Caption · 12pt · 500</div><div class="type-sample t-12">$249 est. total · 3 days</div></div>
+      </div>
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Continue</button>
+          <button class="btn btn-teal">Book instantly</button>
+          <button class="btn btn-outline">Message host</button>
+          <button class="btn-text">See all 32 photos</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Car Listing Cards</div>
+        <div class="cards-row">
+          <div class="card">
+            <div class="card-photo"><div class="fav"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21.2l8.8-8.8a5.5 5.5 0 0 0 0-7.8z" fill="#5CE0B8" stroke="#5CE0B8"/></svg></div></div>
+            <div class="card-body">
+              <div class="card-ttl">Porsche 911 · 2022</div>
+              <div class="card-rt"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg>4.99 (87) · 156 trips</div>
+              <div class="card-pr">$214 <span>/ day</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-photo"><div class="fav"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21.2l8.8-8.8a5.5 5.5 0 0 0 0-7.8z" fill="rgba(0,0,0,0.4)" stroke="#FFF" stroke-width="1.8"/></svg></div></div>
+            <div class="card-body">
+              <div class="card-ttl">Jeep Wrangler · 2021</div>
+              <div class="card-rt"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg>4.92 (203) · 410 trips</div>
+              <div class="card-pr">$96 <span>/ day</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-title">Map Price Pins</div>
+        <div class="map-row">
+          <div class="pin pin-default">$83</div>
+          <div class="pin pin-visited">$96</div>
+          <div class="pin pin-selected">$214</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Turo's dark theme is near-black <code>#0F0F12</code> so full-bleed car photography pops without competing chrome. Turo Purple <code>#593BFB</code> stays the booking action color on both themes; on dark it can brighten to <code>#7C5CFF</code> for inline links to clear WCAG AA. Turo Teal <code>#5CE0B8</code> is the trust/value accent — All-Star Host badges, savings, instant-book — and reads beautifully against the dark surfaces. Photos are never dimmed; only UI chrome darkens. The sticky price + Book bar floats on a blurred near-black panel so it never fights the imagery above it.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

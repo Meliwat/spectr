@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Citymapper iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0C0E14;
+    --surface-1: #15171F;
+    --surface-2: #1E212B;
+    --divider: #282C38;
+    --text-primary: #ECEEF3;
+    --text-secondary: #98A0AE;
+    --text-tertiary: #646C7A;
+    --ink: #F6F8FC;
+    --cm-blue: #2B5BFF;
+    --cm-blue-bright: #4D7BFF;
+    --cm-blue-pressed: #1E45CC;
+    --go-green: #00C281;
+    --mode-walk: #00B894;
+    --mode-bus: #E8453C;
+    --mode-tube: #2B5BFF;
+    --mode-rail: #8E44D8;
+    --mode-bike: #00A8C5;
+    --mode-cab: #FFB400;
+    --warn: #FF8A00;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--cm-blue); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* From → To header */
+  .od { padding: 4px 16px 12px; }
+  .od-card { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 14px; padding: 12px 14px; }
+  .od-row { display: flex; align-items: center; gap: 12px; height: 34px; }
+  .od-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .od-dot.from { background: var(--text-secondary); }
+  .od-dot.to { background: var(--cm-blue); }
+  .od-text { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .od-line { width: 10px; display: flex; justify-content: center; }
+  .od-line span { width: 2px; height: 14px; background: var(--divider); }
+  .od-div { height: 1px; background: var(--divider); margin: 2px 0; }
+
+  .route-title { padding: 0 18px 10px; font-size: 13px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* Route option list */
+  .routes { flex: 1; padding: 0 16px; overflow-y: auto; scrollbar-width: none; }
+  .routes::-webkit-scrollbar { display: none; }
+  .route { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; }
+  .route.best { border-color: var(--go-green); }
+  .route-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .route-eta { font-size: 22px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.3px; }
+  .route-eta span { font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-left: 4px; }
+  .route-tag { font-size: 10px; font-weight: 800; padding: 4px 9px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.4px; }
+  .route-tag.fast { background: rgba(0,194,129,0.18); color: var(--go-green); }
+  .route-tag.cheap { background: rgba(43,91,255,0.18); color: var(--cm-blue-bright); }
+  .leg-strip { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .leg { display: flex; align-items: center; gap: 5px; padding: 5px 9px; border-radius: 8px; font-size: 12px; font-weight: 800; color: #FFF; }
+  .leg svg { width: 13px; height: 13px; fill: currentColor; }
+  .leg.walk { background: var(--mode-walk); }
+  .leg.bus { background: var(--mode-bus); }
+  .leg.tube { background: var(--mode-tube); }
+  .leg.rail { background: var(--mode-rail); }
+  .leg.bike { background: var(--mode-bike); }
+  .leg-arrow { color: var(--text-tertiary); font-size: 11px; font-weight: 700; }
+
+  /* GO button */
+  .go-wrap { padding: 12px 16px 8px; }
+  .go-btn { height: 54px; border-radius: 27px; background: var(--go-green); color: #052; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 18px; font-weight: 900; letter-spacing: 0.4px; box-shadow: 0 10px 22px -10px rgba(0,194,129,0.7); }
+  .go-btn svg { width: 20px; height: 20px; fill: #052; }
+
+  /* Tab bar */
+  .tab-bar { height: 64px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: rgba(12,14,20,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 4px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--cm-blue-bright); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 900; letter-spacing: -0.5px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 800; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 800; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 800; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-go { background: var(--go-green); color: #052; font-size: 17px; padding: 15px 32px; border-radius: 28px; font-weight: 900; }
+  .btn-go:active { transform: scale(0.98); filter: brightness(0.95); }
+  .btn-primary { background: var(--cm-blue); color: #FFF; font-size: 15px; padding: 13px 24px; border-radius: 12px; }
+  .btn-primary:active { background: var(--cm-blue-pressed); }
+  .btn-outline { background: transparent; color: var(--cm-blue-bright); border: 1.5px solid var(--cm-blue-bright); font-size: 14px; font-weight: 700; padding: 11px 18px; border-radius: 12px; }
+  .btn-text { background: transparent; color: var(--cm-blue-bright); font-size: 14px; font-weight: 700; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Mode color chips */
+  .mode-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .mode-chip { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 10px; font-size: 13px; font-weight: 800; color: #FFF; }
+
+  /* Departures board */
+  .dep { background: var(--surface-2); border: 1px solid var(--divider); border-radius: 14px; overflow: hidden; }
+  .dep-row { display: flex; align-items: center; gap: 12px; padding: 13px 16px; border-bottom: 1px solid var(--divider); }
+  .dep-row:last-child { border-bottom: none; }
+  .dep-badge { width: 34px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; color: #FFF; flex-shrink: 0; }
+  .dep-dest { flex: 1; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .dep-min { font-size: 16px; font-weight: 800; color: var(--go-green); }
+  .dep-min.soon { color: var(--warn); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--cm-blue); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-24 { border-radius: 24px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; width: 42px; height: 42px; border-radius: 11px; background: var(--cm-blue); align-items: center; justify-content: center; }
+  .logo svg { width: 24px; height: 24px; fill: #FFF; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>
+    </span>
+    <div class="page-title">Citymapper iOS — Design Tokens</div>
+    <div class="page-chip">Transit Dark</div>
+  </div>
+  <p class="page-subtitle">Near-black canvas (#0C0E14) under Citymapper's electric blue (#2B5BFF). Each transit mode keeps its own line color — walk #00B894, bus #E8453C, tube #2B5BFF, rail #8E44D8, bike #00A8C5 — so a route reads at a glance. The GO button is a fat green (#00C281) pill that never changes, on any screen, any theme.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="scroll-body">
+            <div class="od">
+              <div class="od-card">
+                <div class="od-row">
+                  <div class="od-dot from"></div>
+                  <div class="od-text">King's Cross</div>
+                </div>
+                <div class="od-line"><span></span></div>
+                <div class="od-div"></div>
+                <div class="od-row">
+                  <div class="od-dot to"></div>
+                  <div class="od-text">Tate Modern</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="route-title">Best routes · now</div>
+
+            <div class="routes">
+              <div class="route best">
+                <div class="route-head">
+                  <div class="route-eta">24<span>min</span></div>
+                  <div class="route-tag fast">Fastest</div>
+                </div>
+                <div class="leg-strip">
+                  <div class="leg walk"><svg viewBox="0 0 24 24"><path d="M13 4a2 2 0 1 0 0-.001zM10 22l2-6 2 2v4h2v-5l-2-2 1-4a6 6 0 0 0 4 3v-2a4 4 0 0 1-3-2l-1-2c-.4-.6-1-1-2-1s-2 .6-2.3 1.5L8 12l2 1-2 9z"/></svg>4</div>
+                  <span class="leg-arrow">›</span>
+                  <div class="leg tube"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="14" rx="3"/><circle cx="9" cy="19" r="1.6"/><circle cx="15" cy="19" r="1.6"/></svg>Victoria</div>
+                  <span class="leg-arrow">›</span>
+                  <div class="leg walk"><svg viewBox="0 0 24 24"><path d="M13 4a2 2 0 1 0 0-.001zM10 22l2-6 2 2v4h2v-5l-2-2 1-4a6 6 0 0 0 4 3v-2a4 4 0 0 1-3-2l-1-2c-.4-.6-1-1-2-1s-2 .6-2.3 1.5L8 12l2 1-2 9z"/></svg>6</div>
+                </div>
+              </div>
+
+              <div class="route">
+                <div class="route-head">
+                  <div class="route-eta">29<span>min</span></div>
+                  <div class="route-tag cheap">Cheapest</div>
+                </div>
+                <div class="leg-strip">
+                  <div class="leg walk"><svg viewBox="0 0 24 24"><path d="M13 4a2 2 0 1 0 0-.001zM10 22l2-6 2 2v4h2v-5l-2-2 1-4a6 6 0 0 0 4 3v-2a4 4 0 0 1-3-2l-1-2c-.4-.6-1-1-2-1s-2 .6-2.3 1.5L8 12l2 1-2 9z"/></svg>3</div>
+                  <span class="leg-arrow">›</span>
+                  <div class="leg bus"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="13" rx="2"/><circle cx="8" cy="19" r="1.6"/><circle cx="16" cy="19" r="1.6"/></svg>63</div>
+                  <span class="leg-arrow">›</span>
+                  <div class="leg walk"><svg viewBox="0 0 24 24"><path d="M13 4a2 2 0 1 0 0-.001zM10 22l2-6 2 2v4h2v-5l-2-2 1-4a6 6 0 0 0 4 3v-2a4 4 0 0 1-3-2l-1-2c-.4-.6-1-1-2-1s-2 .6-2.3 1.5L8 12l2 1-2 9z"/></svg>5</div>
+                </div>
+              </div>
+
+              <div class="route">
+                <div class="route-head">
+                  <div class="route-eta">21<span>min</span></div>
+                  <div class="route-tag fast" style="background:rgba(0,168,197,0.18);color:var(--mode-bike);">Bike</div>
+                </div>
+                <div class="leg-strip">
+                  <div class="leg bike"><svg viewBox="0 0 24 24"><circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M6 17l4-8h5l3 8M9 6h3"/></svg>Santander</div>
+                  <span class="leg-arrow">›</span>
+                  <div class="leg walk"><svg viewBox="0 0 24 24"><path d="M13 4a2 2 0 1 0 0-.001zM10 22l2-6 2 2v4h2v-5l-2-2 1-4a6 6 0 0 0 4 3v-2a4 4 0 0 1-3-2l-1-2c-.4-.6-1-1-2-1s-2 .6-2.3 1.5L8 12l2 1-2 9z"/></svg>2</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="go-wrap">
+              <div class="go-btn">
+                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                GO
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Get me</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg><span>Nearby</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span>Saved</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M6 19c1-3 3.5-4 6-4s5 1 6 4"/></svg><span>You</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Dark Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0C0E14;"><div class="name">Dark Canvas</div>#0C0E14</div>
+          <div class="swatch" style="background:#15171F;"><div class="name">Surface 1</div>#15171F</div>
+          <div class="swatch" style="background:#1E212B;"><div class="name">Surface 2</div>#1E212B</div>
+          <div class="swatch" style="background:#282C38;"><div class="name">Divider</div>#282C38</div>
+          <div class="swatch" style="background:#ECEEF3; color:#0C0E14;"><div class="name">Text Primary</div>#ECEEF3</div>
+          <div class="swatch" style="background:#98A0AE; color:#0C0E14;"><div class="name">Text Secondary</div>#98A0AE</div>
+          <div class="swatch" style="background:#2B5BFF;"><div class="name">Citymapper Blue</div>#2B5BFF</div>
+          <div class="swatch" style="background:#00C281; color:#052;"><div class="name">GO Green</div>#00C281</div>
+          <div class="swatch" style="background:#00B894; color:#042;"><div class="name">Mode · Walk</div>#00B894</div>
+          <div class="swatch" style="background:#E8453C;"><div class="name">Mode · Bus</div>#E8453C</div>
+          <div class="swatch" style="background:#8E44D8;"><div class="name">Mode · Rail</div>#8E44D8</div>
+          <div class="swatch" style="background:#00A8C5;"><div class="name">Mode · Bike</div>#00A8C5</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter (Citymapper grotesque)</div>
+        <div class="type-row"><div class="type-meta">Display · 32pt · 900</div><div class="type-sample t-32">Get me somewhere</div></div>
+        <div class="type-row"><div class="type-meta">ETA Hero · 26pt · 800</div><div class="type-sample t-26">24 min</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 800</div><div class="type-sample t-22">Best routes</div></div>
+        <div class="type-row"><div class="type-meta">Row Title · 18pt · 700</div><div class="type-sample t-18">Victoria line</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Leave now to arrive by 10:42 at Tate Modern.</div></div>
+        <div class="type-row"><div class="type-meta">Place · 15pt · 600</div><div class="type-sample t-15m">King's Cross St. Pancras</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Updated 12 seconds ago · live</div></div>
+        <div class="type-row"><div class="type-meta">Mode Badge · 12pt · 800</div><div class="type-sample t-12">VICTORIA · 63 · GO</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-go">▶ GO</button>
+          <button class="btn btn-primary">Get directions</button>
+          <button class="btn btn-outline">Save place</button>
+          <button class="btn-text">More routes</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Transit Mode Colors</div>
+        <div class="mode-row">
+          <div class="mode-chip" style="background:#00B894;color:#042;">Walk</div>
+          <div class="mode-chip" style="background:#E8453C;">Bus</div>
+          <div class="mode-chip" style="background:#2B5BFF;">Tube</div>
+          <div class="mode-chip" style="background:#8E44D8;">Rail</div>
+          <div class="mode-chip" style="background:#00A8C5;">Bike</div>
+          <div class="mode-chip" style="background:#FFB400;color:#3a2a00;">Cab</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Departures Board</div>
+        <div class="dep">
+          <div class="dep-row">
+            <div class="dep-badge" style="background:#2B5BFF;">VIC</div>
+            <div class="dep-dest">Brixton</div>
+            <div class="dep-min soon">2 min</div>
+          </div>
+          <div class="dep-row">
+            <div class="dep-badge" style="background:#E8453C;">63</div>
+            <div class="dep-dest">Honor Oak</div>
+            <div class="dep-min">6 min</div>
+          </div>
+          <div class="dep-row">
+            <div class="dep-badge" style="background:#8E44D8;">NR</div>
+            <div class="dep-dest">London Bridge</div>
+            <div class="dep-min">9 min</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-24">24</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Citymapper's dark canvas is a deep blue-black <code>#0C0E14</code> so the map and electric blue <code>#2B5BFF</code> pop. The transit-mode palette is the soul of the app and is theme-invariant: walk <code>#00B894</code>, bus <code>#E8453C</code>, tube <code>#2B5BFF</code>, rail <code>#8E44D8</code>, bike <code>#00A8C5</code>, cab <code>#FFB400</code> stay identical light and dark — a bus is always red. The GO button is a fat <code>#00C281</code> green pill, the single most recognizable control, unchanged across every screen and theme. Cards lift via <code>#15171F</code> → <code>#1E212B</code> rather than shadows.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

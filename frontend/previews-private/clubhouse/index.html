@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Clubhouse iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #1A1A1A;
+    --surface-1: #242220;
+    --surface-2: #2E2B27;
+    --divider: #3A372F;
+    --text-primary: #F2EFE4;
+    --text-secondary: #B8B2A0;
+    --text-tertiary: #837D6D;
+    --ink: #F2EFE4;
+    --cream: #F2EFE4;
+    --cream-card: #FBF9F1;
+    --ch-ink: #1A1A1A;
+    --emerald: #38B569;
+    --emerald-deep: #2E9A58;
+    --emerald-soft: rgba(56,181,105,0.18);
+    --gold: #E9C46A;
+    --error: #E5575C;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+    --serif: 'DM Serif Display', Georgia, 'Times New Roman', serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--emerald); color: #07210F; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Room top bar */
+  .room-top { display: flex; align-items: center; justify-content: space-between; padding: 8px 18px 12px; }
+  .room-top .leave { background: var(--surface-2); color: var(--error); font-size: 13px; font-weight: 700; padding: 8px 16px; border-radius: 500px; border: none; }
+  .room-top .chev { color: var(--text-secondary); }
+  .room-top .chev svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2.4; fill: none; }
+  .room-top .right { display: flex; gap: 16px; align-items: center; color: var(--text-secondary); }
+  .room-top .right svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Room header */
+  .room-head { padding: 4px 22px 14px; }
+  .room-club { font-size: 12px; font-weight: 600; color: var(--text-secondary); letter-spacing: 0.2px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+  .room-club .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--emerald); }
+  .room-title { font-family: var(--serif); font-size: 23px; line-height: 1.22; color: var(--text-primary); }
+
+  /* Speaker grid */
+  .stage { flex: 1; overflow-y: auto; padding: 8px 16px; scrollbar-width: none; }
+  .stage::-webkit-scrollbar { display: none; }
+  .grp-label { font-size: 11px; font-weight: 700; color: var(--text-tertiary); letter-spacing: 0.8px; text-transform: uppercase; margin: 10px 6px 14px; }
+  .spk-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 6px; }
+  .spk { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+  .ava-wrap { position: relative; width: 60px; height: 60px; }
+  .ava { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #2A2620; }
+  .ava.a { background: linear-gradient(150deg,#F4C77B,#E0A24B); }
+  .ava.b { background: linear-gradient(150deg,#9FD8B4,#5FB484); }
+  .ava.c { background: linear-gradient(150deg,#C9B6E8,#9C7FD0); }
+  .ava.d { background: linear-gradient(150deg,#F2A9A0,#D9776B); }
+  .ava.e { background: linear-gradient(150deg,#A9C7E8,#6E9CD0); }
+  .speaking { box-shadow: 0 0 0 3px var(--emerald); }
+  .mute-badge { position: absolute; bottom: -1px; right: -1px; width: 22px; height: 22px; border-radius: 50%; background: var(--surface-2); display: flex; align-items: center; justify-content: center; border: 2px solid var(--canvas); }
+  .mute-badge svg { width: 11px; height: 11px; stroke: var(--text-secondary); stroke-width: 2.4; fill: none; }
+  .host-pin { position: absolute; top: -2px; right: -2px; width: 20px; height: 20px; border-radius: 50%; background: var(--surface-2); display: flex; align-items: center; justify-content: center; border: 2px solid var(--canvas); font-size: 10px; }
+  .spk-name { font-size: 12px; font-weight: 600; color: var(--text-primary); text-align: center; line-height: 1.15; }
+  .spk-name .role { display: block; font-size: 10px; font-weight: 500; color: var(--text-tertiary); margin-top: 1px; }
+
+  /* Room footer / hand bar */
+  .room-foot { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px 18px; border-top: 0.5px solid var(--divider); background: var(--canvas); }
+  .hand-btn { display: flex; align-items: center; gap: 8px; background: var(--surface-2); color: var(--text-primary); border: none; font-size: 14px; font-weight: 700; padding: 12px 20px; border-radius: 500px; }
+  .hand-btn .emoji { font-size: 18px; }
+  .foot-right { display: flex; gap: 22px; align-items: center; color: var(--text-secondary); }
+  .foot-right svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .pulse { width: 14px; height: 14px; border-radius: 50%; background: var(--emerald); box-shadow: 0 0 0 5px var(--emerald-soft); }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: var(--ch-ink); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-serif-32 { font-family: var(--serif); font-size: 32px; line-height: 1.15; color: var(--ink); }
+  .t-serif-24 { font-family: var(--serif); font-size: 24px; line-height: 1.2; color: var(--ink); }
+  .t-serif-20i { font-family: var(--serif); font-style: italic; font-size: 20px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 600; }
+  .t-11u { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-tertiary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--emerald); color: #07210F; font-size: 16px; padding: 14px 28px; border-radius: 500px; }
+  .btn-primary:active { background: var(--emerald-deep); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1.5px solid var(--text-primary); font-size: 15px; font-weight: 700; padding: 12px 24px; border-radius: 500px; }
+  .btn-soft { background: var(--surface-2); color: var(--text-primary); font-size: 14px; font-weight: 700; padding: 12px 20px; border-radius: 500px; }
+  .btn-leave { background: var(--surface-2); color: var(--error); font-size: 14px; font-weight: 700; padding: 12px 20px; border-radius: 500px; border: none; cursor: pointer; }
+
+  /* Avatar + speaking ring demo */
+  .ava-row { display: flex; gap: 22px; align-items: flex-end; flex-wrap: wrap; }
+  .ava-demo { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .ad { width: 64px; height: 64px; border-radius: 50%; display:flex;align-items:center;justify-content:center;font-weight:700;color:#2A2620; }
+  .ad.spk { box-shadow: 0 0 0 3px var(--emerald); }
+  .ad.spk2 { box-shadow: 0 0 0 3px var(--emerald), 0 0 0 8px var(--emerald-soft); }
+  .ava-cap { font-size: 11px; color: var(--text-secondary); }
+
+  /* Pill / chip */
+  .pill-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .ch-pill { display:inline-flex; align-items:center; gap:6px; background: var(--surface-2); color: var(--text-primary); font-size: 13px; font-weight: 600; padding: 8px 14px; border-radius: 500px; }
+  .ch-pill .gd { width: 7px; height: 7px; border-radius: 50%; background: var(--emerald); }
+  .ch-pill.open { background: var(--emerald-soft); color: var(--emerald); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--emerald); color: #07210F; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-24 { border-radius: 24px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .ch-logo { display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; background: var(--cream); border-radius: 12px; }
+  .ch-logo svg { width: 30px; height: 30px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="ch-logo">
+      <svg viewBox="0 0 24 24"><path d="M5 15a7 7 0 1 1 14 0v3a2 2 0 0 1-2 2h-1a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h2M7 15H5a1 1 0 0 0-1 1v3a2 2 0 0 0 2 2h1a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1z" fill="none" stroke="#1A1A1A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </span>
+    <div class="page-title">Clubhouse iOS — Design Tokens</div>
+    <div class="page-chip">Cream Dark</div>
+  </div>
+  <p class="page-subtitle">Clubhouse trades the cream "hallway" (#F2EFE4) for a warm dark room (#1A1A1A) while keeping its identity: a DM-Serif room title, a grid of circular speaker avatars, an emerald (#38B569) speaking-pulse ring, and a fully pill-shaped control language. The whole product is audio — the UI is a stage of faces, not a feed.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="room-top">
+            <span class="chev"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></span>
+            <div class="right">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="12" r="2"/></svg>
+            </div>
+          </div>
+
+          <div class="room-head">
+            <div class="room-club"><span class="dot"></span> Design Mornings · Open</div>
+            <div class="room-title">Building a calm product in a noisy market ☕️</div>
+          </div>
+
+          <div class="stage">
+            <div class="grp-label">Speakers</div>
+            <div class="spk-grid">
+              <div class="spk">
+                <div class="ava-wrap"><div class="ava a speaking">JL</div><div class="host-pin">🎙️</div></div>
+                <div class="spk-name">Jia L<span class="role">Host</span></div>
+              </div>
+              <div class="spk">
+                <div class="ava-wrap"><div class="ava b">MR</div></div>
+                <div class="spk-name">Marcus<span class="role">Speaker</span></div>
+              </div>
+              <div class="spk">
+                <div class="ava-wrap"><div class="ava c speaking">SD</div></div>
+                <div class="spk-name">Sana D<span class="role">Speaker</span></div>
+              </div>
+              <div class="spk">
+                <div class="ava-wrap"><div class="ava d">TK</div><div class="mute-badge"><svg viewBox="0 0 24 24"><path d="M1 1l22 22M9 9v3a3 3 0 0 0 5 2"/><path d="M12 2a3 3 0 0 1 3 3v6"/></svg></div></div>
+                <div class="spk-name">Theo K<span class="role">Speaker</span></div>
+              </div>
+            </div>
+
+            <div class="grp-label">Followed by speakers</div>
+            <div class="spk-grid">
+              <div class="spk"><div class="ava-wrap"><div class="ava e">AO</div></div><div class="spk-name">Ada O</div></div>
+              <div class="spk"><div class="ava-wrap"><div class="ava a">RP</div></div><div class="spk-name">Ravi P</div></div>
+              <div class="spk"><div class="ava-wrap"><div class="ava c">NB</div></div><div class="spk-name">Nora B</div></div>
+              <div class="spk"><div class="ava-wrap"><div class="ava b">LM</div></div><div class="spk-name">Liam M</div></div>
+            </div>
+
+            <div class="grp-label">Others in the room · 218</div>
+            <div class="spk-grid">
+              <div class="spk"><div class="ava-wrap"><div class="ava d">KW</div></div><div class="spk-name">Kira W</div></div>
+              <div class="spk"><div class="ava-wrap"><div class="ava e">JS</div></div><div class="spk-name">Jon S</div></div>
+              <div class="spk"><div class="ava-wrap"><div class="ava a">PV</div></div><div class="spk-name">Priya V</div></div>
+              <div class="spk"><div class="ava-wrap"><div class="ava b">Ez</div></div><div class="spk-name">Ezra</div></div>
+            </div>
+          </div>
+
+          <div class="room-foot">
+            <button class="hand-btn"><span class="emoji">✋</span> Raise hand</button>
+            <div class="foot-right">
+              <div class="pulse"></div>
+              <svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v3"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch light" style="background:#F2EFE4;"><div class="name">Cream Hallway</div>#F2EFE4</div>
+          <div class="swatch light" style="background:#FBF9F1;"><div class="name">Cream Card</div>#FBF9F1</div>
+          <div class="swatch" style="background:#1A1A1A;"><div class="name">Dark Room</div>#1A1A1A</div>
+          <div class="swatch" style="background:#242220;"><div class="name">Dark Surface 1</div>#242220</div>
+          <div class="swatch" style="background:#2E2B27;"><div class="name">Dark Surface 2</div>#2E2B27</div>
+          <div class="swatch" style="background:#3A372F;"><div class="name">Dark Divider</div>#3A372F</div>
+          <div class="swatch" style="background:#38B569;"><div class="name">Speaking Emerald</div>#38B569</div>
+          <div class="swatch" style="background:#2E9A58;"><div class="name">Emerald Deep</div>#2E9A58</div>
+          <div class="swatch light" style="background:#E9C46A;"><div class="name">Moderator Gold</div>#E9C46A</div>
+          <div class="swatch" style="background:#1A1A1A; color:#F2EFE4;"><div class="name">Ink (on cream)</div>#1A1A1A</div>
+          <div class="swatch" style="background:#B8B2A0; color:#1A1A1A;"><div class="name">Text Secondary</div>#B8B2A0</div>
+          <div class="swatch" style="background:#E5575C;"><div class="name">Leave / Error</div>#E5575C</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — DM Serif Display (titles) + Inter (UI)</div>
+        <div class="type-row"><div class="type-meta">Room Title · Serif · 32pt</div><div class="type-sample t-serif-32">The future of voice-first social</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · Serif · 24pt</div><div class="type-sample t-serif-24">Good morning, Jia</div></div>
+        <div class="type-row"><div class="type-meta">Quote · Serif Italic · 20pt</div><div class="type-sample t-serif-20i">"Talk to anyone, anywhere"</div></div>
+        <div class="type-row"><div class="type-meta">Section · Inter · 18pt · 700</div><div class="type-sample t-18">Upcoming for you</div></div>
+        <div class="type-row"><div class="type-meta">Body · Inter · 16pt · 400</div><div class="type-sample t-16">A room is a live audio conversation you can join or just listen to.</div></div>
+        <div class="type-row"><div class="type-meta">Speaker Name · Inter · 15pt · 600</div><div class="type-sample t-15m">Marcus Reyes</div></div>
+        <div class="type-row"><div class="type-meta">Meta · Inter · 14pt · 400</div><div class="type-sample t-14">218 in the room · 24 speakers</div></div>
+        <div class="type-row"><div class="type-meta">Role Tag · Inter · 12pt · 600</div><div class="type-sample t-12">Host · Moderator</div></div>
+        <div class="type-row"><div class="type-meta">Overline · Inter · 11pt · 700</div><div class="type-sample t-11u">Followed by speakers</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons (all pill-shaped)</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">+ Start a room</button>
+          <button class="btn btn-outline">Follow</button>
+          <button class="btn btn-soft">Raise hand ✋</button>
+          <button class="btn-leave">✌️ Leave quietly</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Speaker Avatar + Speaking Pulse Ring</div>
+        <div class="ava-row">
+          <div class="ava-demo"><div class="ad" style="background:linear-gradient(150deg,#F4C77B,#E0A24B);">JL</div><div class="ava-cap">Idle</div></div>
+          <div class="ava-demo"><div class="ad spk" style="background:linear-gradient(150deg,#9FD8B4,#5FB484);">SD</div><div class="ava-cap">Speaking (3px ring)</div></div>
+          <div class="ava-demo"><div class="ad spk2" style="background:linear-gradient(150deg,#C9B6E8,#9C7FD0);">MR</div><div class="ava-cap">Speaking (pulse halo)</div></div>
+          <div class="ava-demo"><div class="ad" style="background:linear-gradient(150deg,#F2A9A0,#D9776B);opacity:.55;">TK</div><div class="ava-cap">Muted (dimmed)</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Room / Status Pills</div>
+        <div class="pill-row">
+          <span class="ch-pill open">● Open room</span>
+          <span class="ch-pill"><span class="gd"></span> Social</span>
+          <span class="ch-pill">🎙️ 24 speakers</span>
+          <span class="ch-pill">🔔 Set a reminder</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-24">24</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Clubhouse's light identity is the warm cream "hallway" (<code>#F2EFE4</code>) with ink text (<code>#1A1A1A</code>). In dark, the cream inverts to a warm near-black room (<code>#1A1A1A</code>) — never a cold gray — and cards lift to <code>#242220</code>. The Speaking Emerald (<code>#38B569</code>) stays identical across themes: it is the single source of "who is talking", rendered as a 3px ring plus a soft <code>rgba(56,181,105,0.18)</code> pulse halo. Avatar gradients keep their full warmth; muted speakers drop to 55% opacity. Every control is a pill — there are almost no rectangles in Clubhouse.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
