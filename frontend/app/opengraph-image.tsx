@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og'
 
 export const runtime = 'edge'
-export const alt = 'Spectr — See an app. Ship an app.'
+export const alt = 'Spectr — Connect Spectr to Claude in one command'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -75,13 +75,13 @@ export default function OpengraphImage() {
           <div
             style={{
               display: 'flex',
-              fontSize: 52,
+              fontSize: 40,
               fontWeight: 400,
               color: '#e8e4ff',
               marginTop: -10,
             }}
           >
-            See an app. Ship an app.
+            Connect Spectr to Claude in one command.
           </div>
         </div>
 
