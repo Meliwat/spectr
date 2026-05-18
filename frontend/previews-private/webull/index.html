@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Webull iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0B0E11;
+    --surface-1: #14181D;
+    --surface-2: #1C2127;
+    --divider: #232931;
+    --text-primary: #EAEEF2;
+    --text-secondary: #8B95A1;
+    --text-tertiary: #5A636E;
+    --ink: #F5F8FA;
+    --webull-blue: #1B9EFB;
+    --webull-cyan: #20D5C4;
+    --webull-blue-pressed: #1684D6;
+    --up: #00C076;
+    --down: #FA5252;
+    --amber: #F7A600;
+    --grid-line: #1A1F26;
+    --link: #1B9EFB;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: linear-gradient(90deg, #1B9EFB, #20D5C4); color: #04121C; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow-y: auto; scrollbar-width: none; display: flex; flex-direction: column; }
+  .scroll-body::-webkit-scrollbar { display: none; }
+
+  /* Quote header */
+  .q-head { padding: 4px 18px 10px; }
+  .q-top { display: flex; align-items: center; justify-content: space-between; }
+  .q-sym { font-size: 20px; font-weight: 800; color: var(--ink); letter-spacing: -0.3px; }
+  .q-name { font-size: 12px; color: var(--text-secondary); margin-top: 1px; }
+  .q-paper { font-size: 10px; font-weight: 800; color: #04121C; background: var(--webull-cyan); padding: 3px 8px; border-radius: 4px; letter-spacing: 0.4px; }
+  .q-px { font-size: 32px; font-weight: 800; color: var(--up); letter-spacing: -0.6px; margin-top: 12px; font-variant-numeric: tabular-nums; }
+  .q-delta { font-size: 14px; font-weight: 700; color: var(--up); margin-top: 4px; font-variant-numeric: tabular-nums; }
+
+  /* Candle chart */
+  .chart-wrap { padding: 6px 0 0; }
+  .chart { height: 158px; position: relative; }
+  .chart svg { width: 100%; height: 100%; display: block; }
+  .tf-bar { display: flex; gap: 4px; padding: 10px 14px 0; border-top: 0.5px solid var(--divider); margin-top: 6px; }
+  .tf { font-size: 11px; font-weight: 700; color: var(--text-secondary); padding: 5px 10px; border-radius: 4px; }
+  .tf.on { background: rgba(27,158,251,0.16); color: var(--webull-blue); }
+
+  /* Order book / ladder */
+  .ladder { padding: 12px 18px 4px; }
+  .ladder-row { display: flex; align-items: center; justify-content: space-between; padding: 5px 0; font-size: 12px; font-variant-numeric: tabular-nums; position: relative; }
+  .lr-px { font-weight: 700; width: 64px; }
+  .lr-px.bid { color: var(--up); }
+  .lr-px.ask { color: var(--down); }
+  .lr-sz { color: var(--text-secondary); z-index: 2; }
+  .lr-bar { position: absolute; right: 0; top: 3px; bottom: 3px; border-radius: 2px; z-index: 1; }
+  .lr-bar.bid { background: rgba(0,192,118,0.14); }
+  .lr-bar.ask { background: rgba(250,82,82,0.14); }
+  .ladder-mid { text-align: center; font-size: 13px; font-weight: 800; color: var(--text-primary); padding: 6px 0; font-variant-numeric: tabular-nums; border-top: 0.5px solid var(--divider); border-bottom: 0.5px solid var(--divider); margin: 4px 0; }
+
+  /* Trade buttons */
+  .trade-row { display: flex; gap: 10px; padding: 14px 18px 6px; }
+  .tbtn { flex: 1; font-size: 15px; font-weight: 800; border: none; padding: 14px 0; border-radius: 6px; letter-spacing: 0.3px; }
+  .tbtn.buy { background: var(--up); color: #03150D; }
+  .tbtn.sell { background: var(--down); color: #1B0606; }
+
+  /* Tab bar */
+  .tab-bar { height: 72px; display: flex; align-items: flex-start; padding: 8px 4px 18px; justify-content: space-around; background: rgba(11,14,17,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 4px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--webull-blue); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .t-24 { font-size: 24px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); }
+  .t-20 { font-size: 20px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-17 { font-size: 17px; font-weight: 700; }
+  .t-15 { font-size: 15px; font-weight: 400; }
+  .t-14m { font-size: 14px; font-weight: 600; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-12n { font-size: 12px; font-weight: 700; font-family: 'SF Mono', Menlo, monospace; color: var(--up); }
+  .t-11 { font-size: 11px; font-weight: 600; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 800; cursor: pointer; border: none; letter-spacing: 0.3px; }
+  .btn-buy { background: var(--up); color: #03150D; font-size: 15px; padding: 13px 26px; border-radius: 6px; }
+  .btn-sell { background: var(--down); color: #1B0606; font-size: 15px; padding: 13px 26px; border-radius: 6px; }
+  .btn-primary { background: var(--webull-blue); color: #04121C; font-size: 15px; padding: 13px 26px; border-radius: 6px; }
+  .btn-primary:active { background: var(--webull-blue-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--webull-blue); border: 1px solid var(--webull-blue); font-size: 14px; font-weight: 700; padding: 11px 20px; border-radius: 6px; }
+  .btn-ghost { background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--divider); font-size: 13px; font-weight: 600; padding: 10px 16px; border-radius: 6px; }
+
+  /* Watchlist component */
+  .wl-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 0.5px solid var(--divider); }
+  .wl-row:last-child { border-bottom: none; }
+  .wl-l { flex: 1; min-width: 0; }
+  .wl-sym { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+  .wl-nm { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+  .wl-spark { width: 56px; height: 28px; }
+  .wl-r { text-align: right; min-width: 78px; }
+  .wl-px { font-size: 15px; font-weight: 700; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+  .wl-chip { font-size: 11px; font-weight: 800; padding: 3px 7px; border-radius: 4px; margin-top: 4px; display: inline-block; font-variant-numeric: tabular-nums; }
+  .wl-chip.up { background: var(--up); color: #03150D; }
+  .wl-chip.down { background: var(--down); color: #1B0606; }
+
+  /* Options chain */
+  .oc-head { display: grid; grid-template-columns: 1fr 1fr 1fr; font-size: 10px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.4px; padding-bottom: 8px; border-bottom: 0.5px solid var(--divider); }
+  .oc-row { display: grid; grid-template-columns: 1fr 1fr 1fr; padding: 10px 0; font-size: 13px; font-variant-numeric: tabular-nums; border-bottom: 0.5px solid var(--divider); align-items: center; }
+  .oc-call { color: var(--up); font-weight: 700; }
+  .oc-strike { text-align: center; font-weight: 800; color: var(--text-primary); }
+  .oc-put { text-align: right; color: var(--down); font-weight: 700; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--webull-blue); color: #04121C; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-2 { border-radius: 2px; }
+  .r-4 { border-radius: 4px; }
+  .r-6 { border-radius: 6px; }
+  .r-10 { border-radius: 10px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; align-items: center; justify-content: center; width: 46px; height: 46px; border-radius: 12px; background: linear-gradient(135deg, #1B9EFB, #20D5C4); }
+  .logo svg { width: 26px; height: 26px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 32 32" fill="none"><path d="M4 9h4.4l3.1 11.4L14.8 9h2.6l3.3 11.4L23.6 9H28l-5 16h-3.4l-3.3-11L13 25H9.6L4 9z" fill="#04121C"/></svg>
+    </span>
+    <div class="page-title">Webull iOS — Design Tokens</div>
+    <div class="page-chip">Trader Dark</div>
+  </div>
+  <p class="page-subtitle">A dark-native trading terminal: near-black canvas (#0B0E11) with a Webull blue→cyan brand gradient (#1B9EFB → #20D5C4). Up is #00C076, down is #FA5252 — saturated and everywhere, because this is a chart-first product. Tabular numerals, candlestick charts, an order ladder, and a split Buy/Sell action pair define the surface.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="scroll-body">
+            <div class="q-head">
+              <div class="q-top">
+                <div><div class="q-sym">TSLA</div><div class="q-name">Tesla, Inc. · NASDAQ</div></div>
+                <div class="q-paper">PAPER</div>
+              </div>
+              <div class="q-px">248.50</div>
+              <div class="q-delta">+7.32 (+3.04%) ▲</div>
+            </div>
+
+            <div class="chart-wrap">
+              <div class="chart">
+                <svg viewBox="0 0 320 158" preserveAspectRatio="none">
+                  <line x1="0" y1="32" x2="320" y2="32" stroke="#1A1F26" stroke-width="1"/>
+                  <line x1="0" y1="74" x2="320" y2="74" stroke="#1A1F26" stroke-width="1"/>
+                  <line x1="0" y1="116" x2="320" y2="116" stroke="#1A1F26" stroke-width="1"/>
+                  <g stroke-width="7">
+                    <line x1="20" y1="70" x2="20" y2="120" stroke="#00C076"/><rect x="15" y="86" width="10" height="22" fill="#00C076"/>
+                    <line x1="42" y1="60" x2="42" y2="110" stroke="#00C076"/><rect x="37" y="70" width="10" height="26" fill="#00C076"/>
+                    <line x1="64" y1="64" x2="64" y2="104" stroke="#FA5252"/><rect x="59" y="74" width="10" height="22" fill="#FA5252"/>
+                    <line x1="86" y1="52" x2="86" y2="96" stroke="#00C076"/><rect x="81" y="60" width="10" height="26" fill="#00C076"/>
+                    <line x1="108" y1="46" x2="108" y2="88" stroke="#00C076"/><rect x="103" y="52" width="10" height="24" fill="#00C076"/>
+                    <line x1="130" y1="56" x2="130" y2="98" stroke="#FA5252"/><rect x="125" y="64" width="10" height="26" fill="#FA5252"/>
+                    <line x1="152" y1="44" x2="152" y2="84" stroke="#00C076"/><rect x="147" y="50" width="10" height="24" fill="#00C076"/>
+                    <line x1="174" y1="36" x2="174" y2="74" stroke="#00C076"/><rect x="169" y="42" width="10" height="22" fill="#00C076"/>
+                    <line x1="196" y1="48" x2="196" y2="86" stroke="#FA5252"/><rect x="191" y="54" width="10" height="24" fill="#FA5252"/>
+                    <line x1="218" y1="34" x2="218" y2="72" stroke="#00C076"/><rect x="213" y="40" width="10" height="24" fill="#00C076"/>
+                    <line x1="240" y1="26" x2="240" y2="64" stroke="#00C076"/><rect x="235" y="30" width="10" height="24" fill="#00C076"/>
+                    <line x1="262" y1="32" x2="262" y2="70" stroke="#FA5252"/><rect x="257" y="40" width="10" height="22" fill="#FA5252"/>
+                    <line x1="284" y1="20" x2="284" y2="58" stroke="#00C076"/><rect x="279" y="24" width="10" height="26" fill="#00C076"/>
+                    <line x1="306" y1="16" x2="306" y2="52" stroke="#00C076"/><rect x="301" y="20" width="10" height="22" fill="#00C076"/>
+                  </g>
+                  <line x1="0" y1="22" x2="320" y2="22" stroke="#1B9EFB" stroke-width="1" stroke-dasharray="3 3"/>
+                </svg>
+              </div>
+              <div class="tf-bar">
+                <span class="tf">1m</span>
+                <span class="tf">5m</span>
+                <span class="tf on">1D</span>
+                <span class="tf">5D</span>
+                <span class="tf">1M</span>
+                <span class="tf">1Y</span>
+              </div>
+            </div>
+
+            <div class="ladder">
+              <div class="ladder-row"><span class="lr-px ask">248.92</span><span class="lr-sz">1,204</span><span class="lr-bar ask" style="width:58%;"></span></div>
+              <div class="ladder-row"><span class="lr-px ask">248.78</span><span class="lr-sz">842</span><span class="lr-bar ask" style="width:40%;"></span></div>
+              <div class="ladder-row"><span class="lr-px ask">248.64</span><span class="lr-sz">516</span><span class="lr-bar ask" style="width:26%;"></span></div>
+              <div class="ladder-mid">248.50 &nbsp;·&nbsp; Spread 0.08</div>
+              <div class="ladder-row"><span class="lr-px bid">248.42</span><span class="lr-sz">688</span><span class="lr-bar bid" style="width:34%;"></span></div>
+              <div class="ladder-row"><span class="lr-px bid">248.30</span><span class="lr-sz">1,032</span><span class="lr-bar bid" style="width:52%;"></span></div>
+              <div class="ladder-row"><span class="lr-px bid">248.18</span><span class="lr-sz">1,460</span><span class="lr-bar bid" style="width:72%;"></span></div>
+            </div>
+
+            <div class="trade-row">
+              <button class="tbtn buy">Buy</button>
+              <button class="tbtn sell">Sell</button>
+            </div>
+            <div style="height:12px;"></div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Markets</span></div>
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l3-4 3 3 4-6"/></svg><span>Quotes</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M8.5 9.5h5a1.8 1.8 0 0 1 0 3.6h-3a1.8 1.8 0 0 0 0 3.6h5"/></svg><span>Trade</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><rect x="6" y="11" width="3" height="7"/><rect x="11" y="7" width="3" height="11"/><rect x="16" y="4" width="3" height="14"/></svg><span>Portfolio</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 20c1.5-4 12-4 14 0"/></svg><span>Menu</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#1B9EFB; color:#04121C;"><div class="name">Webull Blue</div>#1B9EFB</div>
+          <div class="swatch" style="background:#20D5C4; color:#04121C;"><div class="name">Webull Cyan</div>#20D5C4</div>
+          <div class="swatch" style="background:linear-gradient(135deg,#1B9EFB,#20D5C4); color:#04121C;"><div class="name">Brand Gradient</div>Blue→Cyan</div>
+          <div class="swatch" style="background:#0B0E11;"><div class="name">Dark Canvas</div>#0B0E11</div>
+          <div class="swatch" style="background:#14181D;"><div class="name">Surface 1</div>#14181D</div>
+          <div class="swatch" style="background:#1C2127;"><div class="name">Surface 2</div>#1C2127</div>
+          <div class="swatch" style="background:#EAEEF2; color:#0B0E11;"><div class="name">Text Primary</div>#EAEEF2</div>
+          <div class="swatch" style="background:#8B95A1; color:#0B0E11;"><div class="name">Text Secondary</div>#8B95A1</div>
+          <div class="swatch" style="background:#00C076;"><div class="name">Up Green</div>#00C076</div>
+          <div class="swatch" style="background:#FA5252;"><div class="name">Down Red</div>#FA5252</div>
+          <div class="swatch" style="background:#F7A600; color:#1A1303;"><div class="name">Alert Amber</div>#F7A600</div>
+          <div class="swatch" style="background:#232931;"><div class="name">Divider</div>#232931</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — DIN-style numerics (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Last Price · 32pt · 800</div><div class="type-sample t-32">248.50</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 24pt · 800</div><div class="type-sample t-24">Quotes</div></div>
+        <div class="type-row"><div class="type-meta">Section · 20pt · 700</div><div class="type-sample t-20">Order book</div></div>
+        <div class="type-row"><div class="type-meta">Symbol · 17pt · 700</div><div class="type-sample t-17">TSLA · NASDAQ</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 400</div><div class="type-sample t-15">Place a paper-trading order to test your strategy.</div></div>
+        <div class="type-row"><div class="type-meta">Row Symbol · 14pt · 600</div><div class="type-sample t-14m">NVDA</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 400</div><div class="type-sample t-13">Vol 84.2M · Mkt Cap 791B</div></div>
+        <div class="type-row"><div class="type-meta">Numeric Mono · 12pt · 700</div><div class="type-sample t-12n">+7.32 (+3.04%)</div></div>
+        <div class="type-row"><div class="type-meta">Label · 11pt · 600</div><div class="type-sample t-11">BID / ASK · LEVEL 2</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-buy">Buy</button>
+          <button class="btn btn-sell">Sell</button>
+          <button class="btn btn-primary">Trade</button>
+          <button class="btn btn-outline">Add to list</button>
+          <button class="btn btn-ghost">Indicators</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Watchlist Rows</div>
+        <div class="wl-row">
+          <div class="wl-l"><div class="wl-sym">AAPL</div><div class="wl-nm">Apple Inc.</div></div>
+          <svg class="wl-spark" viewBox="0 0 56 28" preserveAspectRatio="none"><path d="M0 20 L10 16 L20 18 L30 10 L40 12 L56 4" fill="none" stroke="#00C076" stroke-width="2"/></svg>
+          <div class="wl-r"><div class="wl-px">229.87</div><div class="wl-chip up">+1.42%</div></div>
+        </div>
+        <div class="wl-row">
+          <div class="wl-l"><div class="wl-sym">NVDA</div><div class="wl-nm">NVIDIA Corp.</div></div>
+          <svg class="wl-spark" viewBox="0 0 56 28" preserveAspectRatio="none"><path d="M0 6 L10 10 L20 8 L30 16 L40 18 L56 24" fill="none" stroke="#FA5252" stroke-width="2"/></svg>
+          <div class="wl-r"><div class="wl-px">134.12</div><div class="wl-chip down">−2.10%</div></div>
+        </div>
+        <div class="wl-row">
+          <div class="wl-l"><div class="wl-sym">TSLA</div><div class="wl-nm">Tesla, Inc.</div></div>
+          <svg class="wl-spark" viewBox="0 0 56 28" preserveAspectRatio="none"><path d="M0 22 L10 18 L20 20 L30 12 L40 8 L56 4" fill="none" stroke="#00C076" stroke-width="2"/></svg>
+          <div class="wl-r"><div class="wl-px">248.50</div><div class="wl-chip up">+3.04%</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Options Chain</div>
+        <div class="oc-head"><div>Call</div><div style="text-align:center;">Strike</div><div style="text-align:right;">Put</div></div>
+        <div class="oc-row"><div class="oc-call">12.40</div><div class="oc-strike">245</div><div class="oc-put">3.85</div></div>
+        <div class="oc-row"><div class="oc-call">8.75</div><div class="oc-strike">250</div><div class="oc-put">5.20</div></div>
+        <div class="oc-row"><div class="oc-call">5.90</div><div class="oc-strike">255</div><div class="oc-put">7.65</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-2">2</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Webull is dark-native — there is no meaningful light mode for a trading terminal. The canvas is a near-black <code>#0B0E11</code> so candlesticks, depth bars, and the blue→cyan brand gradient pop with maximum contrast. Surfaces lift only slightly to <code>#14181D</code> and <code>#1C2127</code>; chart grid lines are an almost-invisible <code>#1A1F26</code>. Unlike a calm brokerage, performance color is loud and pervasive: up is <code>#00C076</code>, down is <code>#FA5252</code>, applied to candles, sparklines, % chips, the order ladder, and the split Buy (green) / Sell (red) action pair. The brand gradient <code>#1B9EFB → #20D5C4</code> is reserved for identity, the primary Trade action, selected timeframes, and the paper-trading badge. All numerals are tabular so price ladders and option chains align to the decimal.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Character.AI iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0F0F10;
+    --surface-1: #161618;
+    --surface-2: #1E1E21;
+    --surface-3: #26262A;
+    --divider: #2A2A2E;
+    --bubble-ai: #1C1C1F;
+    --bubble-user: #26262A;
+    --text-primary: #ECECEE;
+    --text-secondary: #9A9AA2;
+    --text-tertiary: #66666E;
+    --ink: #FFFFFF;
+    --accent: #3A7BFD;
+    --accent-press: #2E63D6;
+    --accent-soft: #1B2A4A;
+    --lilac: #9D7BFF;
+    --success: #4ED99A;
+    --error: #FF6B6B;
+    --font: 'Sora', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font-body); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 700; letter-spacing: -0.6px; color: var(--ink); font-family: var(--font); }
+  .page-chip { background: var(--accent); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+
+  /* Chat header */
+  .chat-head { display: flex; align-items: center; gap: 12px; padding: 4px 16px 12px; border-bottom: 0.5px solid var(--divider); }
+  .ch-back { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; }
+  .ch-back svg { width: 18px; height: 18px; stroke: var(--text-primary); stroke-width: 2.4; fill: none; }
+  .ch-av { width: 40px; height: 40px; border-radius: 50%; background: radial-gradient(circle at 36% 30%, #6FA0FF, #3A7BFD 55%, #274FB0); flex-shrink: 0; }
+  .ch-meta { flex: 1; min-width: 0; }
+  .ch-name { font-family: var(--font); font-size: 16px; font-weight: 600; color: var(--text-primary); }
+  .ch-sub { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
+  .ch-ico { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; }
+  .ch-ico svg { width: 18px; height: 18px; stroke: var(--text-secondary); stroke-width: 2; fill: none; }
+
+  /* Chat body */
+  .chat-body { flex: 1; overflow-y: auto; scrollbar-width: none; padding: 16px 14px 6px; display: flex; flex-direction: column; gap: 12px; }
+  .chat-body::-webkit-scrollbar { display: none; }
+
+  .greeting { text-align: center; padding: 6px 20px 4px; }
+  .greeting-av { width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 8px; background: radial-gradient(circle at 36% 30%, #6FA0FF, #3A7BFD 55%, #274FB0); }
+  .greeting-name { font-family: var(--font); font-size: 17px; font-weight: 600; color: var(--text-primary); }
+  .greeting-by { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
+
+  .msg { display: flex; gap: 9px; max-width: 86%; }
+  .msg-av { width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0; background: radial-gradient(circle at 36% 30%, #6FA0FF, #3A7BFD 55%, #274FB0); margin-top: 2px; }
+  .bubble { padding: 11px 14px; font-size: 14px; line-height: 1.5; }
+  .bubble-ai { background: var(--bubble-ai); border: 1px solid var(--divider); color: var(--text-primary); border-radius: 4px 18px 18px 18px; }
+  .bubble-ai em { color: var(--text-secondary); font-style: italic; }
+  .msg.user { align-self: flex-end; }
+  .bubble-user { background: var(--bubble-user); color: var(--text-primary); border-radius: 18px 4px 18px 18px; }
+
+  .typing { display: flex; gap: 9px; }
+  .typing-bubble { background: var(--bubble-ai); border: 1px solid var(--divider); border-radius: 4px 18px 18px 18px; padding: 14px 16px; display: flex; gap: 5px; align-items: center; }
+  .typing-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-tertiary); }
+  .typing-dot:nth-child(2) { opacity: 0.7; }
+  .typing-dot:nth-child(3) { opacity: 0.45; }
+
+  /* Composer */
+  .composer { padding: 10px 14px 16px; border-top: 0.5px solid var(--divider); display: flex; align-items: center; gap: 10px; }
+  .composer-field { flex: 1; height: 44px; border-radius: 22px; background: var(--surface-2); border: 1px solid var(--divider); display: flex; align-items: center; padding: 0 16px; color: var(--text-tertiary); font-size: 14px; }
+  .composer-send { width: 40px; height: 40px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .composer-send svg { width: 18px; height: 18px; stroke: #FFF; stroke-width: 2.4; fill: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font-body); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-family: var(--font); font-size: 32px; font-weight: 700; letter-spacing: -0.5px; }
+  .t-24 { font-family: var(--font); font-size: 24px; font-weight: 600; letter-spacing: -0.3px; }
+  .t-20 { font-family: var(--font); font-size: 20px; font-weight: 600; letter-spacing: -0.2px; }
+  .t-17 { font-family: var(--font); font-size: 17px; font-weight: 600; }
+  .t-15 { font-size: 15px; font-weight: 400; }
+  .t-14 { font-size: 14px; font-weight: 400; line-height: 1.5; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 500; color: var(--text-tertiary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 600; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--accent); color: #FFF; font-size: 15px; padding: 13px 26px; border-radius: 999px; }
+  .btn-primary:active { background: var(--accent-press); transform: scale(0.98); }
+  .btn-soft { background: var(--accent-soft); color: #9FC0FF; font-size: 15px; padding: 13px 26px; border-radius: 999px; }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1px solid var(--divider); font-size: 14px; font-weight: 500; padding: 12px 22px; border-radius: 999px; }
+  .btn-text { background: transparent; color: var(--accent); font-size: 14px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Character cards */
+  .cc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .cc { background: var(--surface-2); border: 1px solid var(--divider); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+  .cc-av { width: 48px; height: 48px; border-radius: 50%; }
+  .cc-a { background: radial-gradient(circle at 36% 30%, #6FA0FF, #3A7BFD 55%, #274FB0); }
+  .cc-b { background: radial-gradient(circle at 36% 30%, #C7A8FF, #9D7BFF 55%, #6A47C9); }
+  .cc-name { font-family: var(--font); font-size: 15px; font-weight: 600; color: var(--text-primary); }
+  .cc-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.45; }
+  .cc-foot { font-size: 11px; color: var(--text-tertiary); display: flex; align-items: center; gap: 5px; }
+  .cc-foot svg { width: 11px; height: 11px; stroke: var(--text-tertiary); stroke-width: 2; fill: none; }
+
+  /* Chat bubbles demo */
+  .demo-stack { display: flex; flex-direction: column; gap: 10px; }
+  .demo-ai { align-self: flex-start; max-width: 80%; background: var(--bubble-ai); border: 1px solid var(--divider); color: var(--text-primary); border-radius: 4px 16px 16px 16px; padding: 11px 14px; font-size: 13px; }
+  .demo-user { align-self: flex-end; max-width: 80%; background: var(--bubble-user); color: var(--text-primary); border-radius: 16px 4px 16px 16px; padding: 11px 14px; font-size: 13px; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--accent); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-18 { border-radius: 18px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; width: 42px; height: 42px; border-radius: 12px; background: var(--accent); align-items: center; justify-content: center; }
+  .logo svg { width: 23px; height: 23px; stroke: #FFF; stroke-width: 2.2; fill: none; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><circle cx="9" cy="10" r="1.2" fill="#FFF" stroke="none"/><circle cx="15" cy="10" r="1.2" fill="#FFF" stroke="none"/></svg>
+    </span>
+    <div class="page-title">Character.AI iOS — Design Tokens</div>
+    <div class="page-chip">Persona Dark</div>
+  </div>
+  <p class="page-subtitle">Character.AI is a near-black canvas (#0F0F10) built for one thing: chatting with a persona. The signature screen is the conversation — a circular character avatar, a centered greeting, asymmetric AI/user bubbles with a tucked top corner, italic *roleplay actions*, and a typing indicator. The single accent is a calm blue #3A7BFD; type is the geometric Sora over Inter for message legibility.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="chat-head">
+            <div class="ch-back"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+            <div class="ch-av"></div>
+            <div class="ch-meta">
+              <div class="ch-name">Aria</div>
+              <div class="ch-sub">by @lumen · 2.4M chats</div>
+            </div>
+            <div class="ch-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg></div>
+          </div>
+
+          <div class="chat-body">
+            <div class="greeting">
+              <div class="greeting-av"></div>
+              <div class="greeting-name">Aria</div>
+              <div class="greeting-by">A curious starship navigator · by @lumen</div>
+            </div>
+
+            <div class="msg ai">
+              <div class="msg-av"></div>
+              <div class="bubble bubble-ai"><em>*looks up from the star charts, eyes catching the light*</em> You're finally awake. We drifted off course while you slept — but I think I found something better out there. Want to see?</div>
+            </div>
+
+            <div class="msg user">
+              <div class="bubble bubble-user">Show me. What did you find?</div>
+            </div>
+
+            <div class="typing">
+              <div class="msg-av"></div>
+              <div class="typing-bubble">
+                <span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="composer">
+            <div class="composer-field">Message Aria…</div>
+            <div class="composer-send"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0F0F10;"><div class="name">Canvas</div>#0F0F10</div>
+          <div class="swatch" style="background:#161618;"><div class="name">Surface 1</div>#161618</div>
+          <div class="swatch" style="background:#1C1C1F;"><div class="name">AI Bubble</div>#1C1C1F</div>
+          <div class="swatch" style="background:#26262A;"><div class="name">User Bubble</div>#26262A</div>
+          <div class="swatch" style="background:#2A2A2E;"><div class="name">Divider</div>#2A2A2E</div>
+          <div class="swatch" style="background:#3A7BFD;"><div class="name">Accent Blue</div>#3A7BFD</div>
+          <div class="swatch" style="background:#2E63D6;"><div class="name">Accent Pressed</div>#2E63D6</div>
+          <div class="swatch" style="background:#1B2A4A;"><div class="name">Accent Soft</div>#1B2A4A</div>
+          <div class="swatch" style="background:#9D7BFF;"><div class="name">Lilac (alt avatar)</div>#9D7BFF</div>
+          <div class="swatch" style="background:#ECECEE; color:#0F0F10;"><div class="name">Text Primary</div>#ECECEE</div>
+          <div class="swatch" style="background:#9A9AA2; color:#0F0F10;"><div class="name">Text Secondary</div>#9A9AA2</div>
+          <div class="swatch" style="background:#FF6B6B;"><div class="name">Error</div>#FF6B6B</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Sora + Inter</div>
+        <div class="type-row"><div class="type-meta">Display · 32pt · 700 · Sora</div><div class="type-sample t-32">Meet a character</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 24pt · 600</div><div class="type-sample t-24">Discover</div></div>
+        <div class="type-row"><div class="type-meta">Greeting Name · 20pt · 600</div><div class="type-sample t-20">Aria</div></div>
+        <div class="type-row"><div class="type-meta">Header Name · 17pt · 600</div><div class="type-sample t-17">Starship navigator</div></div>
+        <div class="type-row"><div class="type-meta">Message · 15pt · 400 · Inter</div><div class="type-sample t-15">You're finally awake. We drifted off course.</div></div>
+        <div class="type-row"><div class="type-meta">Bubble · 14pt · 400 · Inter</div><div class="type-sample t-14">Show me. What did you find out there?</div></div>
+        <div class="type-row"><div class="type-meta">Card Desc · 13pt · 400 · Inter</div><div class="type-sample t-13">A curious navigator who maps the unknown.</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 11pt · 500 · Inter</div><div class="type-sample t-11">by @lumen · 2.4M chats</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Start chat</button>
+          <button class="btn btn-soft">Create a Character</button>
+          <button class="btn btn-outline">Edit persona</button>
+          <button class="btn-text">New chat</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Character Cards</div>
+        <div class="cc-grid">
+          <div class="cc">
+            <div class="cc-av cc-a"></div>
+            <div class="cc-name">Aria</div>
+            <div class="cc-desc">A curious starship navigator charting the unknown with you.</div>
+            <div class="cc-foot"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> 2.4M chats</div>
+          </div>
+          <div class="cc">
+            <div class="cc-av cc-b"></div>
+            <div class="cc-name">Sage</div>
+            <div class="cc-desc">A patient mentor for late-night questions and quiet doubts.</div>
+            <div class="cc-foot"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> 880K chats</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Chat Bubbles (asymmetric tuck)</div>
+        <div class="demo-stack">
+          <div class="demo-ai"><em style="color:var(--text-secondary); font-style:italic;">*tilts head*</em> What should we explore first?</div>
+          <div class="demo-user">Tell me about the nebula.</div>
+          <div class="demo-ai">It's a nursery for new stars — vast, quiet, and impossibly bright up close.</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-18">18</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Character.AI is dark-first — the canvas is a near-black neutral <code>#0F0F10</code> so the conversation, not chrome, holds attention. AI and user bubbles are deliberately low-contrast greys (<code>#1C1C1F</code> vs <code>#26262A</code>) differentiated by the asymmetric tucked corner (4px on the speaker side, 18px elsewhere) rather than by color — the accent blue <code>#3A7BFD</code> is reserved for the send button, primary CTAs, and links, never the bubbles. Italic <code>*roleplay actions*</code> render in muted secondary text. The character avatar (radial blue or lilac gradient) is the one warm focal point on every screen.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

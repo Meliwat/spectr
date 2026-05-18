@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Swiggy iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #121212;
+    --surface-1: #1C1C1E;
+    --surface-2: #2A2A2A;
+    --divider: #2C2C2E;
+    --text-primary: #F2F2F2;
+    --text-secondary: #A0A0A0;
+    --text-tertiary: #6A6A6A;
+    --ink: #FFFFFF;
+    --swiggy-orange: #FC8019;
+    --swiggy-orange-pressed: #E06D0C;
+    --instamart-purple: #982C61;
+    --dineout-red: #D7385E;
+    --rating-green: #48C479;
+    --rating-amber: #DB7C38;
+    --offer-blue: #1A73E8;
+    --error: #E84A4A;
+    --font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--swiggy-orange); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow-y: auto; scrollbar-width: none; display: flex; flex-direction: column; }
+  .scroll-body::-webkit-scrollbar { display: none; }
+
+  /* Location + search */
+  .loc-bar { padding: 4px 16px 10px; }
+  .loc-row { display: flex; align-items: center; gap: 6px; }
+  .loc-pin { color: var(--swiggy-orange); }
+  .loc-pin svg { width: 18px; height: 18px; fill: currentColor; }
+  .loc-label { font-size: 17px; font-weight: 800; color: var(--text-primary); }
+  .loc-chev svg { width: 14px; height: 14px; stroke: var(--text-primary); stroke-width: 3; fill: none; }
+  .loc-sub { font-size: 12px; color: var(--text-secondary); margin: 2px 0 0 24px; }
+  .loc-avatar { margin-left: auto; width: 34px; height: 34px; border-radius: 17px; background: linear-gradient(135deg, var(--swiggy-orange), var(--dineout-red)); }
+
+  .search-pill { display: flex; align-items: center; height: 46px; border-radius: 14px; background: var(--surface-1); border: 0.5px solid var(--divider); padding: 0 14px; gap: 10px; margin: 0 16px 14px; }
+  .search-pill svg { width: 18px; height: 18px; stroke: var(--swiggy-orange); stroke-width: 2.5; fill: none; }
+  .search-ph { flex: 1; font-size: 14px; color: var(--text-secondary); font-weight: 500; }
+  .search-mic svg { stroke: var(--swiggy-orange); }
+
+  /* Filter chips */
+  .chip-row { display: flex; gap: 8px; padding: 0 16px 14px; overflow-x: auto; scrollbar-width: none; }
+  .chip-row::-webkit-scrollbar { display: none; }
+  .fchip { flex-shrink: 0; height: 32px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--divider); background: var(--surface-1); display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: var(--text-primary); }
+  .fchip.active { background: var(--surface-2); border-color: var(--text-secondary); }
+  .fchip svg { width: 12px; height: 12px; stroke: var(--text-secondary); stroke-width: 2.5; fill: none; }
+
+  /* Section heading */
+  .sec-head { padding: 4px 16px 10px; font-size: 18px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.3px; }
+  .sec-head .count { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+
+  /* Restaurant cards */
+  .rest-list { padding: 0 16px 16px; }
+  .rest { margin-bottom: 22px; }
+  .rest-photo { width: 100%; aspect-ratio: 16/10; border-radius: 16px; position: relative; overflow: hidden; }
+  .photo-biryani { background: linear-gradient(150deg, #C9622A 0%, #9C3D17 45%, #5E2410 100%); }
+  .photo-biryani::before { content: ''; position: absolute; bottom: 18%; left: 22%; right: 22%; height: 44%; background: radial-gradient(circle at 50% 40%, #E8C27A 0%, #C68A3C 55%, #8A5A24 100%); border-radius: 50%; }
+  .photo-biryani::after { content: ''; position: absolute; bottom: 30%; left: 38%; width: 24%; height: 16%; background: #6B2F12; border-radius: 50%; }
+  .photo-pizza { background: linear-gradient(150deg, #D98A3D 0%, #B45A22 45%, #6E3514 100%); }
+  .photo-pizza::before { content: ''; position: absolute; bottom: 14%; left: 16%; right: 16%; height: 52%; background: radial-gradient(circle at 50% 45%, #F0CD7E 0%, #D88A36 60%, #A85E22 100%); border-radius: 50%; }
+  .photo-pizza::after { content: ''; position: absolute; bottom: 34%; left: 30%; width: 10%; height: 10%; background: #C0392B; border-radius: 50%; box-shadow: 60% 30% 0 #C0392B, 130% -10% 0 #C0392B, 30% 90% 0 #2E7D32; }
+  .scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(0,0,0,0.78) 100%); }
+  .offer-tag { position: absolute; bottom: 10px; left: 12px; color: #FFF; font-size: 16px; font-weight: 800; letter-spacing: -0.3px; text-shadow: 0 1px 3px rgba(0,0,0,0.6); }
+  .offer-tag span { display: block; font-size: 11px; font-weight: 600; opacity: 0.92; }
+  .heart { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 16px; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; }
+  .heart svg { width: 18px; height: 18px; fill: none; stroke: #FFF; stroke-width: 2; }
+  .ad-flag { position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.4); color: #FFF; font-size: 10px; font-weight: 700; padding: 3px 7px; border-radius: 5px; letter-spacing: 0.4px; }
+
+  .rest-name { font-size: 17px; font-weight: 800; color: var(--text-primary); margin-top: 10px; letter-spacing: -0.3px; }
+  .rest-meta { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+  .rating-badge { display: flex; align-items: center; gap: 3px; background: var(--rating-green); color: #FFF; font-size: 12px; font-weight: 700; padding: 2px 6px; border-radius: 6px; }
+  .rating-badge svg { width: 10px; height: 10px; fill: #FFF; }
+  .meta-dot { color: var(--text-tertiary); }
+  .meta-txt { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+  .rest-cuisine { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+  .rest-loc { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+  .rest-foot { display: flex; align-items: center; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--divider); font-size: 12px; font-weight: 700; color: var(--swiggy-orange); }
+  .rest-foot svg { width: 13px; height: 13px; stroke: var(--swiggy-orange); stroke-width: 2.5; fill: none; }
+
+  /* Tab bar */
+  .tab-bar { height: 70px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(18,18,18,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: #888; font-size: 10px; font-weight: 600; gap: 4px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--swiggy-orange); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 800; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 700; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0.2px; }
+  .btn-primary { background: var(--swiggy-orange); color: #FFF; font-size: 15px; padding: 14px 28px; border-radius: 12px; text-transform: uppercase; }
+  .btn-primary:active { background: var(--swiggy-orange-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--swiggy-orange); border: 1.5px solid var(--swiggy-orange); font-size: 13px; font-weight: 700; padding: 11px 20px; border-radius: 10px; text-transform: uppercase; }
+  .btn-add { background: var(--surface-2); color: var(--rating-green); border: 1px solid var(--rating-green); font-size: 13px; font-weight: 800; padding: 9px 26px; border-radius: 10px; text-transform: uppercase; }
+  .btn-text { background: transparent; color: var(--swiggy-orange); font-size: 13px; font-weight: 700; padding: 12px 0; border: none; cursor: pointer; text-transform: uppercase; }
+
+  /* Dish add-card */
+  .dish { display: flex; gap: 14px; padding: 16px 0; border-bottom: 1px dashed var(--divider); }
+  .dish:last-child { border-bottom: none; }
+  .dish-info { flex: 1; }
+  .veg-mark { width: 16px; height: 16px; border: 1.5px solid var(--rating-green); border-radius: 3px; display: flex; align-items: center; justify-content: center; }
+  .veg-mark::after { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--rating-green); }
+  .dish-name { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-top: 6px; }
+  .dish-price { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-top: 4px; }
+  .dish-rating { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 700; color: var(--rating-green); margin-top: 6px; }
+  .dish-rating svg { width: 11px; height: 11px; fill: var(--rating-green); }
+  .dish-desc { font-size: 12px; color: var(--text-secondary); margin-top: 6px; line-height: 1.45; }
+  .dish-img { width: 110px; height: 110px; border-radius: 14px; background: linear-gradient(150deg, #D98A3D, #8A5A24); position: relative; flex-shrink: 0; }
+  .dish-add { position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); background: var(--surface-2); color: var(--rating-green); border: 1px solid var(--rating-green); font-size: 13px; font-weight: 800; padding: 7px 22px; border-radius: 10px; text-transform: uppercase; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--swiggy-orange); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-20 { border-radius: 20px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Wordmark */
+  .wordmark { display: inline-flex; align-items: center; height: 44px; padding: 0 14px; background: var(--swiggy-orange); border-radius: 12px; font-size: 22px; font-weight: 800; color: #FFF; letter-spacing: -0.5px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="wordmark">Swiggy</span>
+    <div class="page-title">Swiggy iOS — Design Tokens</div>
+    <div class="page-chip">Orange Dark</div>
+  </div>
+  <p class="page-subtitle">Swiggy's signature is Swiggy Orange (#FC8019) — warm, energetic, appetite-driving — over a near-black dark canvas (#121212). Photo-forward restaurant cards carry a bottom scrim with offer text, a green rating chip (#48C479), and dashed-divider delivery footers. Energetic, fast, food-first.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="scroll-body">
+            <div class="loc-bar">
+              <div class="loc-row">
+                <span class="loc-pin"><svg viewBox="0 0 24 24"><path d="M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg></span>
+                <span class="loc-label">Home</span>
+                <span class="loc-chev"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+                <span class="loc-avatar"></span>
+              </div>
+              <div class="loc-sub">42, Koramangala 4th Block, Bengaluru</div>
+            </div>
+
+            <div class="search-pill">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+              <span class="search-ph">Search "biryani"</span>
+              <span class="search-mic"><svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v4"/></svg></span>
+            </div>
+
+            <div class="chip-row">
+              <div class="fchip active"><svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="10" y2="18"/></svg>Filter</div>
+              <div class="fchip">Under 30 mins</div>
+              <div class="fchip">Rating 4.0+</div>
+              <div class="fchip">Pure Veg</div>
+              <div class="fchip">Offers</div>
+            </div>
+
+            <div class="sec-head">Top restaurant chains <span class="count">· 248 nearby</span></div>
+
+            <div class="rest-list">
+              <div class="rest">
+                <div class="rest-photo photo-biryani">
+                  <div class="scrim"></div>
+                  <div class="ad-flag">AD</div>
+                  <div class="heart"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+                  <div class="offer-tag">60% OFF<span>UPTO ₹120</span></div>
+                </div>
+                <div class="rest-name">Meghana Foods</div>
+                <div class="rest-meta">
+                  <span class="rating-badge"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg>4.4</span>
+                  <span class="meta-dot">·</span>
+                  <span class="meta-txt">30–35 mins</span>
+                </div>
+                <div class="rest-cuisine">Biryani, Andhra, South Indian</div>
+                <div class="rest-loc">Koramangala · 1.2 km</div>
+                <div class="rest-foot"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg>Free delivery on orders above ₹199</div>
+              </div>
+
+              <div class="rest">
+                <div class="rest-photo photo-pizza">
+                  <div class="scrim"></div>
+                  <div class="heart"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+                  <div class="offer-tag">50% OFF<span>UPTO ₹100</span></div>
+                </div>
+                <div class="rest-name">La Pino'z Pizza</div>
+                <div class="rest-meta">
+                  <span class="rating-badge"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg>4.2</span>
+                  <span class="meta-dot">·</span>
+                  <span class="meta-txt">25–30 mins</span>
+                </div>
+                <div class="rest-cuisine">Pizzas, Italian, Fast Food</div>
+                <div class="rest-loc">HSR Layout · 2.4 km</div>
+                <div class="rest-foot"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg>Buy 1 Get 1 on medium pizzas</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 10l9-8 9 8v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Swiggy</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Instamart</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg><span>Dineout</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1.6"/><circle cx="18" cy="21" r="1.6"/><path d="M2 3h3l3 12h11l3-8H7"/></svg><span>Cart</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#FC8019;"><div class="name">Swiggy Orange</div>#FC8019</div>
+          <div class="swatch" style="background:#E06D0C;"><div class="name">Orange Pressed</div>#E06D0C</div>
+          <div class="swatch" style="background:#48C479;"><div class="name">Rating Green</div>#48C479</div>
+          <div class="swatch" style="background:#DB7C38;"><div class="name">Rating Amber</div>#DB7C38</div>
+          <div class="swatch" style="background:#982C61;"><div class="name">Instamart Purple</div>#982C61</div>
+          <div class="swatch" style="background:#D7385E;"><div class="name">Dineout Red</div>#D7385E</div>
+          <div class="swatch" style="background:#121212;"><div class="name">Dark Canvas</div>#121212</div>
+          <div class="swatch" style="background:#1C1C1E;"><div class="name">Dark Surface 1</div>#1C1C1E</div>
+          <div class="swatch" style="background:#2A2A2A;"><div class="name">Dark Surface 2</div>#2A2A2A</div>
+          <div class="swatch" style="background:#F2F2F2; color:#121212;"><div class="name">Text Primary</div>#F2F2F2</div>
+          <div class="swatch" style="background:#A0A0A0; color:#121212;"><div class="name">Text Secondary</div>#A0A0A0</div>
+          <div class="swatch" style="background:#E84A4A;"><div class="name">Error</div>#E84A4A</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — ProximaNova / Basis Grotesque (Plus Jakarta Sans fallback)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 800</div><div class="type-sample t-32">Restaurants</div></div>
+        <div class="type-row"><div class="type-meta">Hero · 26pt · 800</div><div class="type-sample t-26">What's on your mind?</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Top restaurant chains</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 18pt · 800</div><div class="type-sample t-18">Meghana Foods</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Hyderabadi-style biryani with boneless chicken, served with raita.</div></div>
+        <div class="type-row"><div class="type-meta">Dish Title · 15pt · 600</div><div class="type-sample t-15m">Chicken Boneless Biryani</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Biryani, Andhra · 1.2 km · 30–35 mins</div></div>
+        <div class="type-row"><div class="type-meta">Badge · 12pt · 700</div><div class="type-sample t-12">60% OFF UPTO ₹120</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Continue</button>
+          <button class="btn btn-outline">Repeat Last</button>
+          <button class="btn btn-add">Add</button>
+          <button class="btn-text">View Full Menu</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dish Card (Menu Item)</div>
+        <div class="dish">
+          <div class="dish-info">
+            <div class="veg-mark"></div>
+            <div class="dish-name">Chicken Boneless Biryani</div>
+            <div class="dish-price">₹289</div>
+            <div class="dish-rating"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg>4.5 (1.2K)</div>
+            <div class="dish-desc">Long-grain basmati, tender boneless chicken, signature Meghana masala.</div>
+          </div>
+          <div class="dish-img"><button class="dish-add">Add</button></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Rating &amp; Offer Badges</div>
+        <div class="btn-row">
+          <span class="rating-badge" style="font-size:13px;"><svg viewBox="0 0 24 24" style="width:11px;height:11px;fill:#FFF;"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg>4.4</span>
+          <span style="background:var(--rating-amber);color:#FFF;font-size:13px;font-weight:700;padding:3px 8px;border-radius:6px;">3.8</span>
+          <span style="background:linear-gradient(135deg,#FC8019,#D7385E);color:#FFF;font-size:12px;font-weight:800;padding:5px 10px;border-radius:8px;letter-spacing:0.3px;">60% OFF</span>
+          <span style="background:var(--surface-2);color:var(--swiggy-orange);border:1px solid var(--swiggy-orange);font-size:11px;font-weight:800;padding:5px 10px;border-radius:8px;">SWIGGY ONE</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Swiggy's dark mode keeps a near-black canvas (<code>#121212</code>) with cards lifting to <code>#1C1C1E</code>. Swiggy Orange <code>#FC8019</code> is unchanged across themes — the warm orange stays appetizing on dark and drives every primary CTA, footer accent, and active tab. The rating green <code>#48C479</code> and dashed dividers stay constant. Food photography remains full-color, full-saturation — the dark UI chrome recedes so the dish imagery and the orange CTA carry the screen.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

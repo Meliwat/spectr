@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Match iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #141414;
+    --surface-1: #1E1E1E;
+    --surface-2: #2A2424;
+    --divider: #322C2C;
+    --text-primary: #F2EDED;
+    --text-secondary: #A89E9E;
+    --text-tertiary: #6E6666;
+    --ink: #FBF7F7;
+    --match-red: #E92434;
+    --match-red-bright: #F0203E;
+    --match-red-pressed: #C81B2C;
+    --match-ink: #1A1A1A;
+    --gold: #D6A75B;
+    --like-green: #2ECC71;
+    --superlike-blue: #1FB6FF;
+    --error: #F2545B;
+    --font: 'Poppins', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--match-red); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Discover top bar */
+  .disc-bar { display: flex; align-items: center; justify-content: space-between; padding: 4px 20px 14px; }
+  .disc-logo { font-size: 22px; font-weight: 800; color: var(--match-red); letter-spacing: -0.4px; }
+  .disc-tabs { display: flex; gap: 18px; font-size: 14px; font-weight: 600; color: var(--text-tertiary); }
+  .disc-tabs .on { color: var(--text-primary); }
+  .disc-ic { width: 24px; height: 24px; stroke: var(--text-primary); stroke-width: 2; fill: none; }
+
+  /* Profile card */
+  .card-wrap { flex: 1; padding: 4px 16px 12px; }
+  .pcard { position: relative; width: 100%; height: 100%; border-radius: 20px; overflow: hidden; box-shadow: 0 12px 28px rgba(0,0,0,0.55); }
+  .pphoto { position: absolute; inset: 0; background: linear-gradient(165deg, #E8867A 0%, #C95E5A 38%, #7A2E3A 100%); }
+  .pphoto::before { content: ''; position: absolute; top: 22%; left: 28%; width: 44%; height: 30%; background: #C66F66; border-radius: 50%; }
+  .pphoto::after { content: ''; position: absolute; bottom: 30%; left: 18%; right: 18%; height: 26%; background: linear-gradient(180deg,#B5524F,#83373F); border-radius: 40% 40% 8px 8px; }
+  .ptopbars { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; gap: 4px; }
+  .ptopbar { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.35); }
+  .ptopbar.on { background: #FFF; }
+  .pscrim { position: absolute; bottom: 0; left: 0; right: 0; height: 55%; background: linear-gradient(180deg, rgba(20,20,20,0) 0%, rgba(20,20,20,0.85) 70%, rgba(20,20,20,0.95) 100%); }
+  .pmeta { position: absolute; left: 18px; right: 18px; bottom: 92px; }
+  .pname { font-size: 26px; font-weight: 700; color: #FFF; letter-spacing: -0.3px; display: flex; align-items: baseline; gap: 8px; }
+  .pname .age { font-size: 22px; font-weight: 500; }
+  .pverif { width: 17px; height: 17px; align-self: center; }
+  .pjob { font-size: 14px; color: rgba(255,255,255,0.9); margin-top: 4px; }
+  .pdist { font-size: 13px; color: rgba(255,255,255,0.75); margin-top: 6px; display: flex; align-items: center; gap: 5px; }
+  .pdot { width: 7px; height: 7px; border-radius: 50%; background: var(--like-green); }
+  .pchips { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .pchip { font-size: 11px; font-weight: 600; color: #FFF; background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.28); padding: 5px 11px; border-radius: 999px; backdrop-filter: blur(4px); }
+
+  /* Action dock */
+  .dock { position: absolute; bottom: 16px; left: 0; right: 0; display: flex; justify-content: center; align-items: center; gap: 16px; }
+  .act { border-radius: 50%; background: var(--surface-1); border: 1px solid var(--divider); display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 16px rgba(0,0,0,0.5); }
+  .act svg { fill: none; stroke-width: 2.4; }
+  .act-rewind { width: 44px; height: 44px; } .act-rewind svg { width: 19px; height: 19px; stroke: var(--gold); }
+  .act-pass { width: 56px; height: 56px; } .act-pass svg { width: 24px; height: 24px; stroke: var(--text-secondary); }
+  .act-super { width: 48px; height: 48px; } .act-super svg { width: 21px; height: 21px; stroke: var(--superlike-blue); }
+  .act-like { width: 56px; height: 56px; background: var(--match-red); border-color: var(--match-red); } .act-like svg { width: 25px; height: 25px; stroke: #FFF; fill: #FFF; }
+  .act-boost { width: 44px; height: 44px; } .act-boost svg { width: 19px; height: 19px; stroke: #B36BD8; }
+
+  /* Tab bar */
+  .tab-bar { height: 64px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: rgba(20,20,20,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 3px; }
+  .tab.active { color: var(--match-red); }
+  .tab svg { width: 23px; height: 23px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 600; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 600; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0.2px; }
+  .btn-primary { background: var(--match-red); color: #FFF; font-size: 16px; padding: 15px 30px; border-radius: 999px; }
+  .btn-primary:active { background: var(--match-red-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1.5px solid var(--text-secondary); font-size: 15px; font-weight: 600; padding: 13px 24px; border-radius: 999px; }
+  .btn-grad { background: linear-gradient(135deg, var(--match-red-bright), #B81DB0); color: #FFF; font-size: 15px; font-weight: 700; padding: 13px 24px; border-radius: 999px; }
+  .btn-text { background: transparent; color: var(--match-red); font-size: 14px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Likes-you tile */
+  .likes-row { display: flex; gap: 12px; }
+  .like-tile { width: 96px; height: 128px; border-radius: 14px; position: relative; overflow: hidden; border: 1px solid var(--divider); }
+  .like-tile .blur { position: absolute; inset: 0; background: linear-gradient(160deg,#C95E5A,#7A2E3A); filter: blur(7px); transform: scale(1.2); }
+  .like-tile .lock { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 10px; }
+  .like-tile .lock span { font-size: 11px; font-weight: 700; color: #FFF; background: rgba(0,0,0,0.5); padding: 4px 8px; border-radius: 999px; }
+  .like-clear { width: 96px; height: 128px; border-radius: 14px; position: relative; overflow: hidden; }
+  .like-clear .ph { position: absolute; inset: 0; background: linear-gradient(160deg,#E8867A,#9A3D45); }
+  .like-clear .badge { position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; border-radius: 50%; background: var(--match-red); display: flex; align-items: center; justify-content: center; }
+  .like-clear .badge svg { width: 12px; height: 12px; fill: #FFF; }
+
+  /* Match modal mini */
+  .mm { border-radius: 16px; padding: 24px; text-align: center; background: linear-gradient(170deg,#2A1418,#1A1A1A); border: 1px solid var(--divider); }
+  .mm-title { font-size: 26px; font-weight: 800; color: var(--match-red); letter-spacing: 0.5px; }
+  .mm-sub { font-size: 13px; color: var(--text-secondary); margin-top: 6px; }
+  .mm-avatars { display: flex; justify-content: center; gap: -10px; margin: 16px 0; }
+  .mm-av { width: 56px; height: 56px; border-radius: 50%; border: 3px solid #1A1A1A; }
+  .mm-av:first-child { background: linear-gradient(160deg,#E8867A,#9A3D45); }
+  .mm-av:last-child { background: linear-gradient(160deg,#7AA8E8,#3D5A9A); margin-left: -14px; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--match-red); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; } .r-8 { border-radius: 8px; } .r-12 { border-radius: 12px; } .r-16 { border-radius: 16px; } .r-20 { border-radius: 20px; } .r-28 { border-radius: 28px; } .r-pill { border-radius: 500px; } .r-circle { border-radius: 50%; }
+
+  .heart-logo { display: inline-flex; width: 40px; height: 40px; align-items: center; justify-content: center; }
+  .heart-logo svg { width: 100%; height: 100%; fill: var(--match-red); }
+  code { font-family: 'SF Mono', Menlo, monospace; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="heart-logo">
+      <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+    </span>
+    <div class="page-title">Match iOS — Design Tokens</div>
+    <div class="page-chip">Romantic Dark</div>
+  </div>
+  <p class="page-subtitle">Match's signature is the full-bleed profile card on a warm-dark canvas (#141414). Match Red (#E92434) brightens to #F0203E for the Like CTA and active tab so it punches on dark photography. Cards lift to #1E1E1E; deep shadows (0.5-0.55 opacity) register the swipe deck over the canvas while photos stay full-color.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="disc-bar">
+            <div class="disc-logo">match</div>
+            <div class="disc-tabs"><span class="on">Discover</span><span>Standouts</span></div>
+            <svg class="disc-ic" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+          </div>
+
+          <div class="card-wrap">
+            <div class="pcard">
+              <div class="pphoto"></div>
+              <div class="ptopbars"><span class="ptopbar on"></span><span class="ptopbar"></span><span class="ptopbar"></span><span class="ptopbar"></span></div>
+              <div class="pscrim"></div>
+              <div class="pmeta">
+                <div class="pname">Sofia <span class="age">28</span>
+                  <svg class="pverif" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#1FB6FF"/><path d="M7 12.5l3.2 3.2L17 9" stroke="#FFF" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>
+                </div>
+                <div class="pjob">Product Designer · Brooklyn</div>
+                <div class="pdist"><span class="pdot"></span>Active now · 3 miles away</div>
+                <div class="pchips"><span class="pchip">Travel</span><span class="pchip">Coffee</span><span class="pchip">Hiking</span><span class="pchip">Dogs</span></div>
+              </div>
+              <div class="dock">
+                <div class="act act-rewind"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 1 3 6.7" stroke-linecap="round"/><path d="M3 19v-6h6" stroke-linecap="round"/></svg></div>
+                <div class="act act-pass"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg></div>
+                <div class="act act-super"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9.5 17,14.5 18.5,22 12,18 5.5,22 7,14.5 2,9.5 9,9"/></svg></div>
+                <div class="act act-like"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></div>
+                <div class="act act-boost"><svg viewBox="0 0 24 24"><polygon points="13,2 4,14 11,14 11,22 20,10 13,10" stroke-linejoin="round"/></svg></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M9 21v-5h6v5"/></svg><span>Discover</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54z"/></svg><span>Likes</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Messages</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/></svg><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Dark Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#141414;"><div class="name">Dark Canvas</div>#141414</div>
+          <div class="swatch" style="background:#1E1E1E;"><div class="name">Dark Surface 1</div>#1E1E1E</div>
+          <div class="swatch" style="background:#2A2424;"><div class="name">Dark Surface 2</div>#2A2424</div>
+          <div class="swatch" style="background:#322C2C;"><div class="name">Dark Divider</div>#322C2C</div>
+          <div class="swatch" style="background:#F2EDED; color:#141414;"><div class="name">Text Primary</div>#F2EDED</div>
+          <div class="swatch" style="background:#A89E9E; color:#141414;"><div class="name">Text Secondary</div>#A89E9E</div>
+          <div class="swatch" style="background:#E92434;"><div class="name">Match Red</div>#E92434</div>
+          <div class="swatch" style="background:#F0203E;"><div class="name">Match Red Bright</div>#F0203E</div>
+          <div class="swatch" style="background:#1A1A1A;"><div class="name">Match Ink</div>#1A1A1A</div>
+          <div class="swatch" style="background:#D6A75B; color:#1A1A1A;"><div class="name">Boost Gold</div>#D6A75B</div>
+          <div class="swatch" style="background:#1FB6FF;"><div class="name">Super Like</div>#1FB6FF</div>
+          <div class="swatch" style="background:#2ECC71;"><div class="name">Active Now</div>#2ECC71</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Match (Poppins fallback)</div>
+        <div class="type-row"><div class="type-meta">App Wordmark · 32pt · 800</div><div class="type-sample t-32">match</div></div>
+        <div class="type-row"><div class="type-meta">Profile Name · 26pt · 700</div><div class="type-sample t-26">Sofia, 28</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 22pt · 700</div><div class="type-sample t-22">Likes You</div></div>
+        <div class="type-row"><div class="type-meta">Subsection · 18pt · 600</div><div class="type-sample t-18">About me</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Designer who loves trail runs, espresso, and weekend road trips.</div></div>
+        <div class="type-row"><div class="type-meta">List Title · 15pt · 600</div><div class="type-sample t-15m">It's a Match!</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Active now · 3 miles away</div></div>
+        <div class="type-row"><div class="type-meta">Interest Chip · 12pt · 600</div><div class="type-sample t-12">Travel</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Send Like</button>
+          <button class="btn btn-outline">Skip</button>
+          <button class="btn btn-grad">Get Match Premium</button>
+          <button class="btn-text">See who likes you</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Likes You Grid (blurred vs. unlocked)</div>
+        <div class="likes-row">
+          <div class="like-tile"><div class="blur"></div><div class="lock"><span>Liked you</span></div></div>
+          <div class="like-tile"><div class="blur"></div><div class="lock"><span>Liked you</span></div></div>
+          <div class="like-clear"><div class="ph"></div><div class="badge"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">It's a Match Moment</div>
+        <div class="mm">
+          <div class="mm-title">It's a Match!</div>
+          <div class="mm-sub">You and Sofia liked each other</div>
+          <div class="mm-avatars"><div class="mm-av"></div><div class="mm-av"></div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-28">28</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Match's dark mode is a warm near-black, not pure black. Canvas sits at <code>#141414</code> with a faint red undertone; the profile card itself is full-bleed photography so it never dims. Match Red shifts from <code>#E92434</code> to the brighter <code>#F0203E</code> on the circular Like button and active tab so it stays vivid against dark imagery. The action dock circles use <code>#1E1E1E</code> with hairline <code>#322C2C</code> borders instead of heavy fills. The "It's a Match!" celebration keeps a deep maroon-to-ink gradient so the red wordmark glows.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

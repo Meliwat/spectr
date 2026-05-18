@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Southwest iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0E1726;
+    --surface-1: #16223A;
+    --surface-2: #1F2E4A;
+    --divider: #2A3A57;
+    --text-primary: #EAF0FA;
+    --text-secondary: #9DAAC4;
+    --text-tertiary: #67748F;
+    --ink: #FFFFFF;
+    --sw-blue: #304CB2;
+    --sw-blue-bright: #2567E8;
+    --sw-red: #E51D23;
+    --sw-red-pressed: #C0161B;
+    --sw-yellow: #F9B612;
+    --sw-yellow-pressed: #E0A300;
+    --success: #1FAE5E;
+    --error: #E51D23;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--sw-yellow); color: #1A1A1A; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; scrollbar-width: none; }
+  .scroll-body::-webkit-scrollbar { display: none; }
+
+  /* App bar */
+  .appbar { display: flex; align-items: center; justify-content: space-between; padding: 4px 20px 14px; }
+  .appbar-title { font-size: 22px; font-weight: 800; color: var(--ink); letter-spacing: -0.3px; }
+  .appbar-icon { width: 34px; height: 34px; border-radius: 17px; background: var(--surface-2); display: flex; align-items: center; justify-content: center; }
+  .appbar-icon svg { width: 18px; height: 18px; stroke: var(--text-primary); stroke-width: 2; fill: none; }
+
+  /* Flight strip */
+  .flight-strip { margin: 0 20px 18px; background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 16px 18px; }
+  .flight-route { display: flex; align-items: center; justify-content: space-between; }
+  .flight-air { font-size: 26px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.4px; }
+  .flight-mid { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .flight-mid svg { width: 60px; height: 14px; stroke: var(--sw-yellow); stroke-width: 1.6; fill: none; }
+  .flight-mid-label { font-size: 10px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.6px; }
+  .flight-meta { display: flex; justify-content: space-between; margin-top: 10px; font-size: 12px; color: var(--text-secondary); font-weight: 500; }
+
+  /* Boarding position hero */
+  .board-card { margin: 0 20px 18px; background: linear-gradient(160deg, #304CB2 0%, #243C8E 100%); border-radius: 20px; padding: 24px 22px 22px; text-align: center; position: relative; overflow: hidden; box-shadow: 0 14px 30px -16px rgba(48,76,178,0.8); }
+  .board-card::after { content: ''; position: absolute; top: -40px; right: -40px; width: 140px; height: 140px; background: radial-gradient(circle, rgba(249,182,18,0.22) 0%, transparent 70%); }
+  .board-eyebrow { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.78); text-transform: uppercase; letter-spacing: 1.2px; }
+  .board-pos { display: flex; align-items: baseline; justify-content: center; gap: 4px; margin: 10px 0 4px; }
+  .board-group { font-size: 88px; font-weight: 900; color: var(--sw-yellow); line-height: 0.9; letter-spacing: -2px; }
+  .board-num { font-size: 52px; font-weight: 800; color: #FFFFFF; line-height: 1; letter-spacing: -1px; }
+  .board-sub { font-size: 13px; color: rgba(255,255,255,0.85); font-weight: 500; }
+  .board-divider { height: 1px; background: rgba(255,255,255,0.18); margin: 18px 0 14px; }
+  .board-foot { display: flex; align-items: center; justify-content: space-between; }
+  .board-foot-label { font-size: 11px; color: rgba(255,255,255,0.7); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; text-align: left; }
+  .board-foot-val { font-size: 16px; color: #FFFFFF; font-weight: 700; margin-top: 2px; text-align: left; }
+
+  /* Check-in countdown */
+  .checkin { margin: 0 20px 20px; background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 14px; }
+  .checkin-ring { width: 54px; height: 54px; flex-shrink: 0; position: relative; }
+  .checkin-ring svg { width: 54px; height: 54px; transform: rotate(-90deg); }
+  .checkin-ring .track { stroke: var(--divider); stroke-width: 5; fill: none; }
+  .checkin-ring .prog { stroke: var(--sw-yellow); stroke-width: 5; fill: none; stroke-linecap: round; stroke-dasharray: 151; stroke-dashoffset: 46; }
+  .checkin-ring .clock { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: var(--sw-yellow); }
+  .checkin-texts { flex: 1; }
+  .checkin-top { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+  .checkin-sub { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+  .checkin-cta { background: var(--sw-yellow); color: #1A1A1A; font-size: 13px; font-weight: 800; padding: 10px 16px; border-radius: 8px; }
+
+  /* Tab bar */
+  .tab-bar { height: 68px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(14,23,38,0.96); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 4px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--sw-yellow); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #1A1A1A; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 900; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 800; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-13u { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; }
+  .t-12 { font-size: 12px; font-weight: 500; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 800; cursor: pointer; border: none; letter-spacing: 0.1px; }
+  .btn-primary { background: var(--sw-yellow); color: #1A1A1A; font-size: 16px; padding: 14px 28px; border-radius: 8px; }
+  .btn-primary:active { background: var(--sw-yellow-pressed); transform: scale(0.98); }
+  .btn-blue { background: var(--sw-blue); color: #FFFFFF; font-size: 16px; padding: 14px 28px; border-radius: 8px; }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1.5px solid var(--sw-blue-bright); font-size: 14px; font-weight: 700; padding: 12px 20px; border-radius: 8px; }
+  .btn-text { background: transparent; color: var(--sw-blue-bright); font-size: 14px; font-weight: 700; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Fare ladder */
+  .fare-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .fare { flex: 1; min-width: 96px; border-radius: 12px; padding: 14px 12px; text-align: center; border: 1px solid var(--divider); background: var(--surface-2); }
+  .fare.sel { border: 2px solid var(--sw-yellow); background: rgba(249,182,18,0.10); }
+  .fare-name { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-secondary); }
+  .fare-price { font-size: 19px; font-weight: 800; color: var(--text-primary); margin-top: 8px; }
+  .fare-price .pts { font-size: 11px; font-weight: 600; color: var(--text-secondary); display: block; margin-top: 2px; }
+
+  /* Rapid Rewards points pill */
+  .pts-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .pts-pill { display: flex; align-items: center; gap: 8px; background: var(--sw-blue); color: #FFFFFF; font-weight: 800; font-size: 14px; padding: 10px 16px; border-radius: 500px; }
+  .pts-pill svg { width: 14px; height: 14px; fill: var(--sw-yellow); }
+  .pts-pill.yellow { background: var(--sw-yellow); color: #1A1A1A; }
+  .pts-pill.yellow svg { fill: var(--sw-blue); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--sw-blue); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-20 { border-radius: 20px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Heart logomark */
+  .heart-mark { display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; }
+  .heart-mark svg { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="heart-mark">
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <path d="M32 50.5C25.4 44 17.6 38.2 13 32.8 10.4 29.7 8.5 26.2 8.5 22 8.5 14.3 14.6 8.5 22 8.5c4.3 0 8.2 2 10 5.3z" fill="#304CB2"/>
+        <path d="M32 50.5C38.6 44 46.4 38.2 51 32.8 53.6 29.7 55.5 26.2 55.5 22 55.5 14.3 49.4 8.5 42 8.5c-4.3 0-8.2 2-10 5.3z" fill="#E51D23"/>
+        <path d="M32 50.5c-2.6-2.6-5.6-4.3-9.6-9.6-3.6-4.8 0-9.4 0-9.4.5 4.6 9.6 4.6 9.6 9.6 0-5 9.1-5 9.6-9.6 0 0 3.6 4.6 0 9.4-4 5.3-7 7-9.6 9.6z" fill="#F9B612"/>
+      </svg>
+    </span>
+    <div class="page-title">Southwest iOS — Design Tokens</div>
+    <div class="page-chip">Heart Tri-Color</div>
+  </div>
+  <p class="page-subtitle">The only airline app with no seat map — the hero is the A/B/C boarding position in Warm Yellow (#F9B612) over a deep navy canvas (#0E1726). The heart tri-color (Southwest Blue #304CB2, Bold Red #E51D23, Warm Yellow #F9B612) drives every role; Yellow is the primary action, Blue is structural, Red is alerts only.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="scroll-body">
+            <div class="appbar">
+              <div class="appbar-title">Your trip</div>
+              <div class="appbar-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+            </div>
+
+            <div class="flight-strip">
+              <div class="flight-route">
+                <div class="flight-air">DAL</div>
+                <div class="flight-mid">
+                  <svg viewBox="0 0 60 14"><path d="M2 7h46"/><path d="M44 3l8 4-8 4"/></svg>
+                  <div class="flight-mid-label">Nonstop · 2h 35m</div>
+                </div>
+                <div class="flight-air">MDW</div>
+              </div>
+              <div class="flight-meta"><span>WN 2418 · Mon, Jun 9</span><span>Gate B14 · 4:55 PM</span></div>
+            </div>
+
+            <div class="board-card">
+              <div class="board-eyebrow">Boarding position</div>
+              <div class="board-pos">
+                <span class="board-group">A</span><span class="board-num">23</span>
+              </div>
+              <div class="board-sub">Board in group A, position 23</div>
+              <div class="board-divider"></div>
+              <div class="board-foot">
+                <div>
+                  <div class="board-foot-label">Boarding starts</div>
+                  <div class="board-foot-val">4:25 PM</div>
+                </div>
+                <div>
+                  <div class="board-foot-label">Confirmation</div>
+                  <div class="board-foot-val">K9F2Q2</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="checkin">
+              <div class="checkin-ring">
+                <svg viewBox="0 0 54 54"><circle class="track" cx="27" cy="27" r="24"/><circle class="prog" cx="27" cy="27" r="24"/></svg>
+                <div class="clock">23:41</div>
+              </div>
+              <div class="checkin-texts">
+                <div class="checkin-top">Check-in opens soon</div>
+                <div class="checkin-sub">Opens 24 hrs before departure to lock your spot</div>
+              </div>
+              <div class="checkin-cta">Notify</div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M2 12l9-3 11-5-4 11-3 9-3-6z"/></svg><span>Book</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 9h16M9 4v16"/></svg><span>Trips</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M12 2l2.5 6.5L21 9l-5 4.5L17.5 21 12 17l-5.5 4L8 13.5 3 9l6.5-.5z"/></svg><span>Rewards</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 21c1-4 4-6 7-6s6 2 7 6"/></svg><span>Account</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette — Heart Tri-Color (Dark)</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#304CB2;"><div class="name">Southwest Blue</div>#304CB2</div>
+          <div class="swatch" style="background:#2567E8;"><div class="name">Bright Blue (link)</div>#2567E8</div>
+          <div class="swatch" style="background:#E51D23;"><div class="name">Bold Red (alert)</div>#E51D23</div>
+          <div class="swatch light" style="background:#F9B612;"><div class="name">Warm Yellow (CTA)</div>#F9B612</div>
+          <div class="swatch" style="background:#0E1726;"><div class="name">Navy Canvas</div>#0E1726</div>
+          <div class="swatch" style="background:#16223A;"><div class="name">Surface 1</div>#16223A</div>
+          <div class="swatch" style="background:#1F2E4A;"><div class="name">Surface 2</div>#1F2E4A</div>
+          <div class="swatch" style="background:#2A3A57;"><div class="name">Divider</div>#2A3A57</div>
+          <div class="swatch light" style="background:#EAF0FA;"><div class="name">Text Primary</div>#EAF0FA</div>
+          <div class="swatch" style="background:#9DAAC4; color:#0E1726;"><div class="name">Text Secondary</div>#9DAAC4</div>
+          <div class="swatch" style="background:#1FAE5E;"><div class="name">Success</div>#1FAE5E</div>
+          <div class="swatch" style="background:#C0161B;"><div class="name">Red Pressed</div>#C0161B</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Southwest Sans (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Boarding Group · 88pt · 900</div><div class="type-sample t-32">A23</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 900</div><div class="type-sample t-32">Your trip</div></div>
+        <div class="type-row"><div class="type-meta">Airport Code · 26pt · 800</div><div class="type-sample t-26">DAL → MDW</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 800</div><div class="type-sample t-22">Wanna Get Away</div></div>
+        <div class="type-row"><div class="type-meta">Subsection · 18pt · 700</div><div class="type-sample t-18">Rapid Rewards</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Bags fly free — first and second checked bag included.</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 15pt · 600</div><div class="type-sample t-15m">Board in group A, position 23</div></div>
+        <div class="type-row"><div class="type-meta">Eyebrow · 13pt · 700 caps</div><div class="type-sample t-13u">Boarding Position</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 12pt · 500</div><div class="type-sample t-12">WN 2418 · Mon, Jun 9</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Check in</button>
+          <button class="btn btn-blue">Select flight</button>
+          <button class="btn btn-outline">Add a bag</button>
+          <button class="btn-text">View boarding pass</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Wanna Get Away Fare Ladder</div>
+        <div class="fare-row">
+          <div class="fare"><div class="fare-name">Wanna Get Away</div><div class="fare-price">$98<span class="pts">5,940 pts</span></div></div>
+          <div class="fare sel"><div class="fare-name">WGA Plus</div><div class="fare-price">$134<span class="pts">8,120 pts</span></div></div>
+          <div class="fare"><div class="fare-name">Anytime</div><div class="fare-price">$229<span class="pts">13,880 pts</span></div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Rapid Rewards Points Pills</div>
+        <div class="pts-row">
+          <div class="pts-pill"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg>54,820 pts</div>
+          <div class="pts-pill yellow"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg>A-List</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Southwest's dark theme keeps the heart tri-color exactly. Canvas drops to deep navy <code>#0E1726</code> (a darkened Southwest Blue), cards lift to <code>#16223A</code>. Warm Yellow <code>#F9B612</code> stays identical — it is the primary CTA and the boarding-position color on both themes. Bold Red <code>#E51D23</code> is reserved strictly for alerts and cancellations, never decoration. Blue shifts brighter to <code>#2567E8</code> for links so it clears WCAG AA on the navy canvas. The boarding-position readout is always the loudest element on screen.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

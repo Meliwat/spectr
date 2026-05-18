@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Grubhub iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #121212;
+    --surface-1: #1C1C1E;
+    --surface-2: #262626;
+    --divider: #2C2C2E;
+    --text-primary: #F2F2F2;
+    --text-secondary: #A0A0A0;
+    --text-tertiary: #6A6A6A;
+    --ink: #FFFFFF;
+    --gh-red: #F63440;
+    --gh-red-pressed: #D2202B;
+    --gh-orange: #FF8000;
+    --gh-orange-pressed: #E06E00;
+    --perks: #FFB81C;
+    --success: #18A957;
+    --track: #00A0DF;
+    --error: #F0454F;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--gh-red); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+  .addr-bar { padding: 4px 18px 10px; display: flex; align-items: center; gap: 8px; }
+  .addr-label { font-size: 11px; color: var(--text-secondary); font-weight: 600; }
+  .addr-value { font-size: 15px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 6px; }
+  .addr-value svg { width: 12px; height: 12px; stroke: var(--text-primary); stroke-width: 3; fill: none; }
+  .bag { margin-left: auto; width: 34px; height: 34px; border-radius: 17px; background: var(--surface-2); display: flex; align-items: center; justify-content: center; position: relative; }
+  .bag svg { width: 16px; height: 16px; stroke: var(--text-primary); stroke-width: 2; fill: none; }
+  .bag-badge { position: absolute; top: -3px; right: -3px; min-width: 16px; height: 16px; border-radius: 8px; background: var(--gh-red); color: #FFF; font-size: 9px; font-weight: 800; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+  .search-wrap { padding: 0 16px 12px; }
+  .search-pill { display: flex; align-items: center; height: 44px; border-radius: 12px; background: var(--surface-1); border: 0.5px solid var(--divider); padding: 0 16px; gap: 10px; }
+  .search-pill svg { width: 16px; height: 16px; stroke: var(--text-secondary); stroke-width: 2.5; fill: none; }
+  .search-pill span { font-size: 14px; color: var(--text-secondary); }
+  /* Order tracking banner */
+  .track-card { margin: 0 16px 14px; background: linear-gradient(120deg, #11363F 0%, #0E2A33 100%); border: 0.5px solid #15414C; border-radius: 16px; padding: 14px 16px; }
+  .track-top { display: flex; align-items: center; gap: 8px; }
+  .track-dot { width: 8px; height: 8px; border-radius: 4px; background: var(--track); box-shadow: 0 0 0 4px rgba(0,160,223,0.18); }
+  .track-eta { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+  .track-rest { font-size: 12px; color: var(--text-secondary); margin-left: auto; }
+  .track-bar { height: 4px; border-radius: 2px; background: rgba(255,255,255,0.12); margin-top: 12px; position: relative; overflow: hidden; }
+  .track-bar::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 62%; background: var(--track); border-radius: 2px; }
+  .track-status { font-size: 12px; color: var(--track); font-weight: 600; margin-top: 8px; }
+  .cat-bar { display: flex; gap: 10px; padding: 0 16px 14px; overflow-x: auto; scrollbar-width: none; }
+  .cat-bar::-webkit-scrollbar { display: none; }
+  .chip { flex-shrink: 0; height: 34px; padding: 0 14px; border-radius: 999px; background: var(--surface-2); border: 0.5px solid var(--divider); font-size: 13px; font-weight: 600; color: var(--text-secondary); display: flex; align-items: center; }
+  .chip.active { background: var(--gh-red); color: #FFF; border-color: var(--gh-red); }
+  /* Restaurant cards */
+  .rest-list { flex: 1; padding: 0 16px; overflow-y: auto; scrollbar-width: none; }
+  .rest-list::-webkit-scrollbar { display: none; }
+  .rest { margin-bottom: 22px; }
+  .rest-photo { width: 100%; aspect-ratio: 16/9; border-radius: 14px; position: relative; overflow: hidden; }
+  .photo-burger { background: linear-gradient(150deg, #C2410C 0%, #9A3412 45%, #7C2D12 100%); }
+  .photo-burger::before { content: ''; position: absolute; top: 40%; left: 26%; right: 26%; height: 30%; background: #E8B97A; border-radius: 40px 40px 8px 8px; box-shadow: 0 6px 0 -2px #4D2A12, 0 -7px 0 -2px #C77B3A; }
+  .photo-sushi { background: linear-gradient(150deg, #2F5D50 0%, #1F4A3E 45%, #14352C 100%); }
+  .photo-sushi::before { content: ''; position: absolute; top: 30%; left: 18%; width: 18%; height: 40%; background: #F2EAD8; border-radius: 4px; box-shadow: 22% 0 0 #F2EAD8, 44% 0 0 #F2EAD8, 66% 0 0 #F2EAD8; }
+  .photo-sushi::after { content: ''; position: absolute; top: 30%; left: 18%; width: 18%; height: 13%; background: #E2553B; border-radius: 4px 4px 0 0; box-shadow: 22% 0 0 #E2553B, 44% 0 0 #2E7D5B, 66% 0 0 #E2553B; }
+  .perks-badge { position: absolute; top: 10px; left: 10px; background: var(--perks); color: #1A1206; font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; letter-spacing: 0.2px; }
+  .heart { position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; border-radius: 15px; background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center; }
+  .heart svg { width: 16px; height: 16px; stroke: #FFF; stroke-width: 2; fill: none; }
+  .heart.saved svg { fill: var(--gh-red); stroke: var(--gh-red); }
+  .rest-row1 { display: flex; align-items: center; margin-top: 10px; }
+  .rest-name { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+  .rest-rating { margin-left: auto; display: flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; color: var(--text-primary); }
+  .rest-rating svg { width: 12px; height: 12px; fill: var(--success); }
+  .rest-meta { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+  .rest-deal { font-size: 13px; color: var(--gh-orange); font-weight: 700; margin-top: 5px; }
+  /* Tab bar */
+  .tab-bar { height: 68px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(18,18,18,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: #888; font-size: 10px; font-weight: 600; gap: 4px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--gh-red); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 900; letter-spacing: -0.5px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 700; }
+  .t-15 { font-size: 15px; font-weight: 500; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-13 { font-size: 13px; font-weight: 600; color: var(--gh-orange); }
+  .t-12 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--gh-red); color: #FFF; font-size: 16px; padding: 14px 28px; border-radius: 999px; }
+  .btn-primary:active { background: var(--gh-red-pressed); transform: scale(0.98); }
+  .btn-orange { background: var(--gh-orange); color: #1A1206; font-size: 15px; padding: 13px 24px; border-radius: 999px; }
+  .btn-orange:active { background: var(--gh-orange-pressed); }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1.5px solid var(--divider); font-size: 14px; font-weight: 600; padding: 11px 20px; border-radius: 999px; }
+  .btn-text { background: transparent; color: var(--gh-red); font-size: 14px; font-weight: 700; padding: 12px 0; border: none; cursor: pointer; }
+  /* Stepper + Perks */
+  .comp-row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  .stepper { display: flex; align-items: center; gap: 14px; background: var(--surface-2); border: 0.5px solid var(--divider); border-radius: 999px; padding: 6px 8px; }
+  .step-btn { width: 30px; height: 30px; border-radius: 15px; background: var(--gh-red); color: #FFF; font-size: 18px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .step-n { font-size: 15px; font-weight: 700; min-width: 18px; text-align: center; }
+  .perks-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,184,28,0.14); border: 1px solid var(--perks); color: var(--perks); font-size: 12px; font-weight: 800; padding: 8px 14px; border-radius: 999px; letter-spacing: 0.2px; }
+  /* Order status timeline */
+  .timeline { display: flex; flex-direction: column; gap: 0; }
+  .tl-step { display: flex; align-items: flex-start; gap: 12px; }
+  .tl-rail { display: flex; flex-direction: column; align-items: center; }
+  .tl-node { width: 16px; height: 16px; border-radius: 8px; border: 3px solid var(--divider); background: var(--surface-1); }
+  .tl-step.done .tl-node { background: var(--track); border-color: var(--track); }
+  .tl-step.active .tl-node { background: var(--gh-red); border-color: var(--gh-red); box-shadow: 0 0 0 4px rgba(246,52,64,0.22); }
+  .tl-line { width: 3px; flex: 1; min-height: 26px; background: var(--divider); }
+  .tl-step.done .tl-line { background: var(--track); }
+  .tl-text { padding-bottom: 22px; }
+  .tl-title { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+  .tl-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--gh-red); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-14 { border-radius: 14px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 999px; }
+  .r-circle { border-radius: 50%; }
+  /* Grubhub house logomark */
+  .ghlogo { display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; background: var(--gh-red); border-radius: 12px; }
+  .ghlogo svg { width: 26px; height: 26px; fill: #FFF; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="ghlogo">
+      <svg viewBox="0 0 32 32"><path d="M16 3 4 12.5V28a1.5 1.5 0 0 0 1.5 1.5H12V20h8v9.5h6.5A1.5 1.5 0 0 0 28 28V12.5L16 3Zm0 4.2 8 6.3V26.5h-1.5V18a1.5 1.5 0 0 0-1.5-1.5h-10A1.5 1.5 0 0 0 9.5 18v8.5H8V13.5l8-6.3Z"/></svg>
+    </span>
+    <div class="page-title">Grubhub iOS — Design Tokens</div>
+    <div class="page-chip">Hungry Dark</div>
+  </div>
+  <p class="page-subtitle">Warm-dark canvas (#121212) with text inverted to #F2F2F2. Grubhub Red (#F63440) stays the primary action color and Orange (#FF8000) carries deals — both pop on dark. Restaurant photography remains full-color; only the chrome dims.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="addr-bar">
+            <div>
+              <div class="addr-label">Deliver to</div>
+              <div class="addr-value">350 5th Ave <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+            </div>
+            <div class="bag"><svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg><span class="bag-badge">2</span></div>
+          </div>
+
+          <div class="search-wrap">
+            <div class="search-pill"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search Grubhub</span></div>
+          </div>
+
+          <div class="track-card">
+            <div class="track-top">
+              <span class="track-dot"></span>
+              <span class="track-eta">Arriving 7:45 – 7:55 PM</span>
+              <span class="track-rest">Shake Shack</span>
+            </div>
+            <div class="track-bar"></div>
+            <div class="track-status">Your driver Marcus is picking up your order</div>
+          </div>
+
+          <div class="cat-bar">
+            <div class="chip active">All</div>
+            <div class="chip">Burgers</div>
+            <div class="chip">Pizza</div>
+            <div class="chip">Sushi</div>
+            <div class="chip">Tacos</div>
+          </div>
+
+          <div class="rest-list">
+            <div class="rest">
+              <div class="rest-photo photo-burger">
+                <span class="perks-badge">GRUBHUB+ PERKS</span>
+                <div class="heart saved"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+              </div>
+              <div class="rest-row1">
+                <span class="rest-name">Shake Shack</span>
+                <span class="rest-rating"><svg viewBox="0 0 24 24"><polygon points="12,2 15.1,8.4 22,9.3 17,14.1 18.2,21 12,17.8 5.8,21 7,14.1 2,9.3 8.9,8.4"/></svg>4.8</span>
+              </div>
+              <div class="rest-meta">American · 20–30 min · $0 delivery fee</div>
+              <div class="rest-deal">Free delivery with Grubhub+</div>
+            </div>
+
+            <div class="rest">
+              <div class="rest-photo photo-sushi">
+                <span class="perks-badge">20% OFF, UP TO $5</span>
+                <div class="heart"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+              </div>
+              <div class="rest-row1">
+                <span class="rest-name">Sushi Nakazawa</span>
+                <span class="rest-rating"><svg viewBox="0 0 24 24"><polygon points="12,2 15.1,8.4 22,9.3 17,14.1 18.2,21 12,17.8 5.8,21 7,14.1 2,9.3 8.9,8.4"/></svg>4.9</span>
+              </div>
+              <div class="rest-meta">Japanese · 30–40 min · $2.49 delivery fee</div>
+              <div class="rest-deal">20% off your order</div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Delivery</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg><span>Orders</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span>Saved</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="3.5"/><path d="M5.5 20c1-3.5 4-5 6.5-5s5.5 1.5 6.5 5"/></svg><span>Account</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette (Dark)</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#F63440;"><div class="name">Grubhub Red</div>#F63440</div>
+          <div class="swatch" style="background:#D2202B;"><div class="name">Red Pressed</div>#D2202B</div>
+          <div class="swatch" style="background:#FF8000;"><div class="name">Grubhub Orange</div>#FF8000</div>
+          <div class="swatch" style="background:#FFB81C; color:#1A1206;"><div class="name">Perks Gold</div>#FFB81C</div>
+          <div class="swatch" style="background:#00A0DF;"><div class="name">Track Blue</div>#00A0DF</div>
+          <div class="swatch" style="background:#18A957;"><div class="name">Rating Green</div>#18A957</div>
+          <div class="swatch" style="background:#121212;"><div class="name">Dark Canvas</div>#121212</div>
+          <div class="swatch" style="background:#1C1C1E;"><div class="name">Dark Surface 1</div>#1C1C1E</div>
+          <div class="swatch" style="background:#262626;"><div class="name">Dark Surface 2</div>#262626</div>
+          <div class="swatch" style="background:#F2F2F2; color:#121212;"><div class="name">Text Primary</div>#F2F2F2</div>
+          <div class="swatch" style="background:#A0A0A0; color:#121212;"><div class="name">Text Secondary</div>#A0A0A0</div>
+          <div class="swatch" style="background:#F0454F;"><div class="name">Error</div>#F0454F</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter (Graphik / Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 900</div><div class="type-sample t-32">Delivery</div></div>
+        <div class="type-row"><div class="type-meta">Restaurant Hero · 26pt · 800</div><div class="type-sample t-26">Shake Shack</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Order again</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 18pt · 700</div><div class="type-sample t-18">Most popular</div></div>
+        <div class="type-row"><div class="type-meta">Restaurant Name · 16pt · 700</div><div class="type-sample t-16">Sushi Nakazawa</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 500</div><div class="type-sample t-15">Crispy chicken sandwich with pickles and house sauce.</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Japanese · 30–40 min · $2.49 delivery fee</div></div>
+        <div class="type-row"><div class="type-meta">Deal · 13pt · 600</div><div class="type-sample t-13">Free delivery with Grubhub+</div></div>
+        <div class="type-row"><div class="type-meta">Overline · 12pt · 700</div><div class="type-sample t-12">Grubhub+ Perks</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Add to bag</button>
+          <button class="btn btn-orange">Get Grubhub+</button>
+          <button class="btn btn-outline">Schedule</button>
+          <button class="btn-text">View full menu</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Quantity Stepper & Grubhub+ Perks</div>
+        <div class="comp-row">
+          <div class="stepper">
+            <span class="step-btn">−</span>
+            <span class="step-n">2</span>
+            <span class="step-btn">+</span>
+          </div>
+          <span class="perks-pill">★ GRUBHUB+ · $0 delivery</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Live Order Tracking Timeline</div>
+        <div class="timeline">
+          <div class="tl-step done">
+            <div class="tl-rail"><span class="tl-node"></span><span class="tl-line"></span></div>
+            <div class="tl-text"><div class="tl-title">Order confirmed</div><div class="tl-sub">Shake Shack accepted your order</div></div>
+          </div>
+          <div class="tl-step active">
+            <div class="tl-rail"><span class="tl-node"></span><span class="tl-line"></span></div>
+            <div class="tl-text"><div class="tl-title">Driver picking up</div><div class="tl-sub">Marcus is at the restaurant</div></div>
+          </div>
+          <div class="tl-step">
+            <div class="tl-rail"><span class="tl-node"></span></div>
+            <div class="tl-text"><div class="tl-title">On the way</div><div class="tl-sub">Arriving 7:45 – 7:55 PM</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Grubhub's dark mode keeps a warm near-black canvas at <code>#121212</code>; cards lift to <code>#1C1C1E</code>. Grubhub Red <code>#F63440</code> stays the primary action color across themes — it stays vivid on dark. Deal text shifts to Orange <code>#FF8000</code> and the live-tracking accent is Track Blue <code>#00A0DF</code>. Food photography is never dimmed — only chrome, dividers and surfaces darken so the dishes stay appetizing.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

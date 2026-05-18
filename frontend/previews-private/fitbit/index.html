@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Fitbit iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #001017;
+    --surface-1: #002A3A;
+    --surface-2: #00384D;
+    --surface-3: #0A475E;
+    --divider: #143E50;
+    --text-primary: #EAF6F9;
+    --text-secondary: #8AAEB8;
+    --text-tertiary: #5C808B;
+    --ink: #FFFFFF;
+    --teal: #00B0B9;
+    --teal-bright: #21D9CE;
+    --teal-pressed: #008A91;
+    --steps: #00B0B9;
+    --hr: #FF6B81;
+    --sleep: #7C5CFF;
+    --readiness: #B8E986;
+    --zone: #FF8A3D;
+    --calories: #FFC233;
+    --link: #21D9CE;
+    --font: 'DM Sans', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 700; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--teal); color: #001017; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow-y: auto; scrollbar-width: none; }
+  .scroll-body::-webkit-scrollbar { display: none; }
+
+  /* Greeting */
+  .greet { display: flex; align-items: center; justify-content: space-between; padding: 4px 20px 14px; }
+  .greet-t { }
+  .greet-hi { font-size: 22px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.3px; }
+  .greet-date { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+  .greet-av { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--teal), var(--sleep)); }
+
+  /* Steps ring hero */
+  .ring-card { margin: 0 20px 16px; background: var(--surface-1); border-radius: 24px; padding: 22px; display: flex; align-items: center; gap: 18px; }
+  .ring { width: 116px; height: 116px; flex-shrink: 0; position: relative; }
+  .ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring-track { fill: none; stroke: var(--surface-3); stroke-width: 11; }
+  .ring-prog { fill: none; stroke: var(--steps); stroke-width: 11; stroke-linecap: round; stroke-dasharray: 314; stroke-dashoffset: 78; }
+  .ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .ring-num { font-size: 26px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.5px; }
+  .ring-lbl { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
+  .ring-side { flex: 1; }
+  .ring-side-h { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+  .ring-side-s { font-size: 13px; color: var(--text-secondary); margin-top: 3px; line-height: 1.4; }
+  .ring-chip { display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; background: rgba(0,176,185,0.15); color: var(--teal-bright); font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 999px; }
+
+  /* Metric tiles */
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 20px 16px; }
+  .tile { background: var(--surface-1); border-radius: 20px; padding: 16px; }
+  .tile-top { display: flex; align-items: center; gap: 7px; }
+  .tile-ico { width: 24px; height: 24px; border-radius: 7px; display: flex; align-items: center; justify-content: center; }
+  .tile-ico svg { width: 14px; height: 14px; stroke: #001017; stroke-width: 2.4; fill: none; }
+  .ti-hr { background: var(--hr); } .ti-sleep { background: var(--sleep); } .ti-zone { background: var(--zone); } .ti-cal { background: var(--calories); }
+  .tile-lbl { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+  .tile-val { font-size: 26px; font-weight: 700; color: var(--text-primary); margin-top: 10px; letter-spacing: -0.5px; }
+  .tile-val .u { font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-left: 3px; }
+  .tile-sub { font-size: 12px; color: var(--text-tertiary); margin-top: 3px; }
+
+  /* Readiness card */
+  .ready { margin: 0 20px 16px; background: linear-gradient(135deg, #0E3A2E 0%, #14564A 100%); border-radius: 20px; padding: 18px; display: flex; align-items: center; gap: 16px; }
+  .ready-score { width: 60px; height: 60px; border-radius: 50%; border: 4px solid var(--readiness); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; color: var(--readiness); flex-shrink: 0; }
+  .ready-t { flex: 1; }
+  .ready-h { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+  .ready-s { font-size: 12px; color: #A9D9C8; margin-top: 3px; line-height: 1.4; }
+
+  /* Tab bar */
+  .tab-bar { height: 64px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: rgba(0,16,23,0.96); border-top: 1px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 4px; }
+  .tab.active { color: var(--teal-bright); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 700; letter-spacing: -0.5px; color: var(--ink); }
+  .t-44 { font-size: 44px; font-weight: 700; letter-spacing: -1px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--teal); color: #001017; font-size: 15px; padding: 13px 28px; border-radius: 999px; }
+  .btn-primary:active { background: var(--teal-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--teal-bright); border: 1.5px solid var(--teal-bright); font-size: 14px; font-weight: 700; padding: 11px 22px; border-radius: 999px; }
+  .btn-ghost { background: var(--surface-3); color: var(--text-primary); font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 999px; }
+  .btn-text { background: transparent; color: var(--teal-bright); font-size: 14px; font-weight: 700; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Metric color legend */
+  .legend { display: flex; flex-direction: column; gap: 12px; }
+  .leg { display: flex; align-items: center; gap: 12px; }
+  .leg-dot { width: 28px; height: 28px; border-radius: 9px; flex-shrink: 0; }
+  .leg-nm { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+  .leg-hex { font-family: 'SF Mono', Menlo, monospace; font-size: 12px; color: var(--text-secondary); margin-left: auto; }
+
+  /* Progress ring demo */
+  .ring-demo { display: flex; gap: 18px; flex-wrap: wrap; }
+  .rd { width: 86px; height: 86px; position: relative; }
+  .rd svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .rd-t { fill: none; stroke: var(--surface-3); stroke-width: 9; }
+  .rd-p { fill: none; stroke-width: 9; stroke-linecap: round; stroke-dasharray: 226; }
+  .rd-c { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--text-primary); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--teal); color: #001017; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-20 { border-radius: 20px; }
+  .r-24 { border-radius: 24px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  code { font-family: 'SF Mono', Menlo, monospace; background: var(--surface-3); padding: 1px 5px; border-radius: 3px; font-size: 12px; color: var(--teal-bright); }
+
+  /* Fitbit logomark (dot) */
+  .logo { display: inline-block; width: 40px; height: 40px; }
+  .logo svg { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 48 48"><g fill="#00B0B9"><circle cx="24" cy="8" r="4"/><circle cx="24" cy="24" r="5.5"/><circle cx="24" cy="40" r="4"/><circle cx="38" cy="16" r="4"/><circle cx="38" cy="32" r="4"/><circle cx="10" cy="16" r="4"/><circle cx="10" cy="32" r="4"/></g></svg>
+    </span>
+    <div class="page-title">Fitbit iOS — Design Tokens</div>
+    <div class="page-chip">Health Dark</div>
+  </div>
+  <p class="page-subtitle">Fitbit's Today dashboard on a deep teal-black canvas (#001017 → #002A3A). Fitbit Teal (#00B0B9) is the brand and steps color; each health metric owns a fixed hue — heart-rate coral, sleep purple, readiness lime — rendered as rounded tiles and progress rings in friendly DM Sans.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="scroll-body">
+            <div class="greet">
+              <div class="greet-t">
+                <div class="greet-hi">Good morning, Maya</div>
+                <div class="greet-date">Saturday, May 17</div>
+              </div>
+              <div class="greet-av"></div>
+            </div>
+
+            <div class="ring-card">
+              <div class="ring">
+                <svg viewBox="0 0 120 120">
+                  <circle class="ring-track" cx="60" cy="60" r="50"></circle>
+                  <circle class="ring-prog" cx="60" cy="60" r="50"></circle>
+                </svg>
+                <div class="ring-center">
+                  <div class="ring-num">7,842</div>
+                  <div class="ring-lbl">of 10,000 steps</div>
+                </div>
+              </div>
+              <div class="ring-side">
+                <div class="ring-side-h">You're close!</div>
+                <div class="ring-side-s">2,158 steps to hit your daily goal.</div>
+                <div class="ring-chip">▲ 12% vs last week</div>
+              </div>
+            </div>
+
+            <div class="tiles">
+              <div class="tile">
+                <div class="tile-top"><div class="tile-ico ti-hr"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><div class="tile-lbl">Heart Rate</div></div>
+                <div class="tile-val">68<span class="u">bpm</span></div>
+                <div class="tile-sub">Resting · 52–148 today</div>
+              </div>
+              <div class="tile">
+                <div class="tile-top"><div class="tile-ico ti-sleep"><svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></div><div class="tile-lbl">Sleep</div></div>
+                <div class="tile-val">7<span class="u">h</span> 24<span class="u">m</span></div>
+                <div class="tile-sub">Score 84 · Good</div>
+              </div>
+              <div class="tile">
+                <div class="tile-top"><div class="tile-ico ti-zone"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg></div><div class="tile-lbl">Active Zone</div></div>
+                <div class="tile-val">42<span class="u">min</span></div>
+                <div class="tile-sub">of 22 weekly goal</div>
+              </div>
+              <div class="tile">
+                <div class="tile-top"><div class="tile-ico ti-cal"><svg viewBox="0 0 24 24"><path d="M12 2s4 4 4 8a4 4 0 0 1-8 0c0-2 1-3 1-3s-1 5 3 5"/></svg></div><div class="tile-lbl">Calories</div></div>
+                <div class="tile-val">2,138</div>
+                <div class="tile-sub">Burned today</div>
+              </div>
+            </div>
+
+            <div class="ready">
+              <div class="ready-score">78</div>
+              <div class="ready-t">
+                <div class="ready-h">Daily Readiness</div>
+                <div class="ready-s">Good to go. Your body is ready for a moderate workout today.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Today</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 12c4-2 8-2 12 0s8 2 8 2"/><circle cx="12" cy="9" r="2"/></svg><span>Coach</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>Community</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 9h18"/></svg><span>You</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#001017;"><div class="name">Canvas</div>#001017</div>
+          <div class="swatch" style="background:#002A3A;"><div class="name">Surface 1</div>#002A3A</div>
+          <div class="swatch" style="background:#00384D;"><div class="name">Surface 2</div>#00384D</div>
+          <div class="swatch" style="background:#0A475E;"><div class="name">Surface 3</div>#0A475E</div>
+          <div class="swatch" style="background:#00B0B9; color:#001017;"><div class="name">Fitbit Teal</div>#00B0B9</div>
+          <div class="swatch" style="background:#21D9CE; color:#001017;"><div class="name">Teal Bright</div>#21D9CE</div>
+          <div class="swatch" style="background:#FF6B81;"><div class="name">Heart Rate</div>#FF6B81</div>
+          <div class="swatch" style="background:#7C5CFF;"><div class="name">Sleep</div>#7C5CFF</div>
+          <div class="swatch" style="background:#B8E986; color:#001017;"><div class="name">Readiness</div>#B8E986</div>
+          <div class="swatch" style="background:#FF8A3D;"><div class="name">Active Zone</div>#FF8A3D</div>
+          <div class="swatch" style="background:#FFC233; color:#001017;"><div class="name">Calories</div>#FFC233</div>
+          <div class="swatch" style="background:#EAF6F9; color:#001017;"><div class="name">Text Primary</div>#EAF6F9</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — DM Sans</div>
+        <div class="type-row"><div class="type-meta">Metric Hero · 44pt · 700</div><div class="type-sample t-44">7,842</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 700</div><div class="type-sample t-32">Today</div></div>
+        <div class="type-row"><div class="type-meta">Greeting · 22pt · 700</div><div class="type-sample t-22">Good morning, Maya</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 18pt · 700</div><div class="type-sample t-18">Daily Readiness</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Your body is ready for a moderate workout today.</div></div>
+        <div class="type-row"><div class="type-meta">Tile Value · 15pt · 600</div><div class="type-sample t-15m">68 bpm · Resting</div></div>
+        <div class="type-row"><div class="type-meta">Label · 14pt · 400</div><div class="type-sample t-14">of 10,000 steps</div></div>
+        <div class="type-row"><div class="type-meta">Caption · 12pt · 600</div><div class="type-sample t-12">Score 84 · Good</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Log Activity</button>
+          <button class="btn btn-outline">View Trends</button>
+          <button class="btn btn-ghost">Skip</button>
+          <button class="btn-text">See all insights</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Metric Color System (each metric owns a hue)</div>
+        <div class="legend">
+          <div class="leg"><div class="leg-dot" style="background:#00B0B9;"></div><div class="leg-nm">Steps / Activity</div><div class="leg-hex">#00B0B9</div></div>
+          <div class="leg"><div class="leg-dot" style="background:#FF6B81;"></div><div class="leg-nm">Heart Rate</div><div class="leg-hex">#FF6B81</div></div>
+          <div class="leg"><div class="leg-dot" style="background:#7C5CFF;"></div><div class="leg-nm">Sleep</div><div class="leg-hex">#7C5CFF</div></div>
+          <div class="leg"><div class="leg-dot" style="background:#B8E986;"></div><div class="leg-nm">Daily Readiness</div><div class="leg-hex">#B8E986</div></div>
+          <div class="leg"><div class="leg-dot" style="background:#FF8A3D;"></div><div class="leg-nm">Active Zone Minutes</div><div class="leg-hex">#FF8A3D</div></div>
+          <div class="leg"><div class="leg-dot" style="background:#FFC233;"></div><div class="leg-nm">Calories</div><div class="leg-hex">#FFC233</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Progress Rings</div>
+        <div class="ring-demo">
+          <div class="rd"><svg viewBox="0 0 86 86"><circle class="rd-t" cx="43" cy="43" r="36"></circle><circle class="rd-p" cx="43" cy="43" r="36" style="stroke:#00B0B9;stroke-dashoffset:56;"></circle></svg><div class="rd-c">78%</div></div>
+          <div class="rd"><svg viewBox="0 0 86 86"><circle class="rd-t" cx="43" cy="43" r="36"></circle><circle class="rd-p" cx="43" cy="43" r="36" style="stroke:#7C5CFF;stroke-dashoffset:28;"></circle></svg><div class="rd-c">88%</div></div>
+          <div class="rd"><svg viewBox="0 0 86 86"><circle class="rd-t" cx="43" cy="43" r="36"></circle><circle class="rd-p" cx="43" cy="43" r="36" style="stroke:#FF8A3D;stroke-dashoffset:0;"></circle></svg><div class="rd-c">100%</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-24">24</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Ring</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Fitbit's dark mode is a deep teal-black, not neutral — the canvas <code>#001017</code> and surface tiles <code>#002A3A</code> carry the brand's cyan undertone. Fitbit Teal <code>#00B0B9</code> shifts to a brighter <code>#21D9CE</code> for text/links on dark so it stays legible. Each health metric keeps its dedicated hue across themes — heart-rate coral <code>#FF6B81</code>, sleep purple <code>#7C5CFF</code>, readiness lime <code>#B8E986</code>, zone orange <code>#FF8A3D</code>, calories gold <code>#FFC233</code> — so a glance reads the same data anywhere. Progress rings keep their metric color on a muted <code>#0A475E</code> track. The light theme swaps canvas to <code>#FFFFFF</code> and text to <code>#0B2A33</code> while every metric hue stays identical.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

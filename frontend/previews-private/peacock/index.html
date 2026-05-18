@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Peacock iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0A0A14;
+    --canvas-2: #140E26;
+    --surface-1: #1A1530;
+    --surface-2: #241C3D;
+    --divider: #2C2545;
+    --text-primary: #FFFFFF;
+    --text-secondary: #B5B2C2;
+    --text-tertiary: #7A7689;
+    --ink: #FFFFFF;
+    --feather-yellow: #FACC15;
+    --feather-orange: #F97316;
+    --feather-pink: #EC4899;
+    --feather-purple: #8B5CF6;
+    --feather-blue: #2563EB;
+    --cta: #FFFFFF;
+    --live: #E5142B;
+    --success: #1DB954;
+    --error: #FF453A;
+    --font: 'Poppins', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: linear-gradient(90deg, var(--feather-yellow), var(--feather-orange) 30%, var(--feather-pink) 55%, var(--feather-purple) 78%, var(--feather-blue)); color: #0A0A14; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); z-index: 6; }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Top bar */
+  .top-bar { display: flex; align-items: center; justify-content: space-between; padding: 4px 18px 12px; }
+  .pc-logo { display: flex; align-items: center; gap: 8px; }
+  .pc-logo svg { width: 30px; height: 30px; }
+  .pc-logo .wm { font-size: 19px; font-weight: 800; letter-spacing: -0.4px; color: #fff; }
+  .top-actions { display: flex; gap: 16px; align-items: center; color: var(--text-primary); }
+  .top-actions svg { width: 21px; height: 21px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Hero billboard */
+  .hero { position: relative; height: 360px; margin-bottom: 6px; }
+  .hero-art { position: absolute; inset: 0; background: radial-gradient(120% 90% at 70% 25%, #3A2A66 0%, #241043 45%, #0A0A14 100%); }
+  .hero-art::before { content: ''; position: absolute; right: 8%; top: 16%; width: 46%; height: 52%; background: linear-gradient(150deg, #6D4DB8 0%, #3C2470 70%); border-radius: 14px; box-shadow: -10px 14px 36px rgba(0,0,0,0.55); }
+  .hero-art::after { content: ''; position: absolute; left: 12%; bottom: 30%; width: 30%; height: 30%; background: linear-gradient(160deg, #B45CC7 0%, #6B2E8E 80%); border-radius: 50%; filter: blur(2px); opacity: 0.85; }
+  .hero-fade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,10,20,0) 38%, rgba(10,10,20,0.7) 70%, var(--canvas) 100%); }
+  .hero-content { position: absolute; left: 0; right: 0; bottom: 14px; padding: 0 20px; text-align: center; }
+  .hero-tag { font-size: 11px; font-weight: 700; letter-spacing: 1.6px; color: var(--feather-yellow); text-transform: uppercase; margin-bottom: 8px; }
+  .hero-title { font-size: 30px; font-weight: 800; letter-spacing: -0.6px; line-height: 1.05; color: #fff; }
+  .hero-meta { font-size: 12px; color: var(--text-secondary); margin-top: 8px; font-weight: 500; }
+  .hero-meta .dot { color: var(--text-tertiary); margin: 0 6px; }
+  .hero-btns { display: flex; gap: 10px; justify-content: center; margin-top: 14px; }
+  .hero-play { background: #fff; color: #0A0A14; font-weight: 700; font-size: 14px; padding: 11px 26px; border-radius: 6px; display: flex; align-items: center; gap: 7px; border: none; }
+  .hero-play svg { width: 14px; height: 14px; fill: #0A0A14; }
+  .hero-info { background: rgba(255,255,255,0.14); color: #fff; font-weight: 600; font-size: 14px; padding: 11px 18px; border-radius: 6px; border: none; backdrop-filter: blur(6px); }
+
+  /* Channels rail */
+  .rail { padding: 6px 0 4px; }
+  .rail-head { display: flex; align-items: center; justify-content: space-between; padding: 0 18px 10px; }
+  .rail-title { font-size: 16px; font-weight: 700; color: #fff; }
+  .rail-see { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+  .chan-row { display: flex; gap: 10px; padding: 0 18px 14px; overflow-x: auto; scrollbar-width: none; }
+  .chan-row::-webkit-scrollbar { display: none; }
+  .chan { width: 60px; height: 60px; border-radius: 14px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #fff; letter-spacing: 0.2px; }
+  .c1 { background: linear-gradient(135deg, #1E3A8A, #0F1E4D); }
+  .c2 { background: linear-gradient(135deg, #6D28D9, #3B1576); }
+  .c3 { background: linear-gradient(135deg, #B91C1C, #6B0F0F); }
+  .c4 { background: linear-gradient(135deg, #0E7490, #073B47); }
+  .c5 { background: linear-gradient(135deg, #C2410C, #6E2206); }
+
+  /* Content rows */
+  .row { padding: 4px 0 8px; }
+  .poster-row { display: flex; gap: 10px; padding: 0 18px 4px; overflow-x: auto; scrollbar-width: none; }
+  .poster-row::-webkit-scrollbar { display: none; }
+  .poster { width: 112px; flex-shrink: 0; }
+  .poster-art { width: 112px; height: 158px; border-radius: 8px; position: relative; overflow: hidden; }
+  .pa1 { background: linear-gradient(160deg, #5B2E8C 0%, #2A1248 100%); }
+  .pa2 { background: linear-gradient(160deg, #1E4D8A 0%, #0F2447 100%); }
+  .pa3 { background: linear-gradient(160deg, #B23A6E 0%, #5A1638 100%); }
+  .pa4 { background: linear-gradient(160deg, #0E6E5E 0%, #06352D 100%); }
+  .rank { position: absolute; left: 6px; bottom: 6px; font-size: 13px; font-weight: 800; color: #fff; background: rgba(0,0,0,0.45); padding: 2px 7px; border-radius: 6px; }
+  .badge-top { position: absolute; top: 6px; left: 6px; font-size: 8px; font-weight: 800; letter-spacing: 0.4px; background: linear-gradient(90deg, var(--feather-orange), var(--feather-pink)); color: #fff; padding: 3px 6px; border-radius: 4px; }
+  .poster-cap { font-size: 11px; font-weight: 500; color: var(--text-secondary); margin-top: 6px; line-height: 1.25; }
+
+  /* Tab bar */
+  .tab-bar { height: 64px; display: flex; align-items: flex-start; padding: 8px 6px 14px; justify-content: space-around; background: rgba(10,10,20,0.96); backdrop-filter: saturate(160%) blur(18px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 3px; letter-spacing: 0.1px; }
+  .tab.active { color: #fff; }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 600; }
+  .t-15m { font-size: 15px; font-weight: 500; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 600; }
+  .t-11u { font-size: 11px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--feather-yellow); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: #fff; color: #0A0A14; font-size: 15px; padding: 13px 28px; border-radius: 6px; }
+  .btn-primary:active { background: #E6E6EA; transform: scale(0.98); }
+  .btn-glass { background: rgba(255,255,255,0.14); color: #fff; font-size: 14px; font-weight: 600; padding: 12px 22px; border-radius: 6px; backdrop-filter: blur(6px); }
+  .btn-feather { background: linear-gradient(90deg, var(--feather-orange), var(--feather-pink)); color: #fff; font-size: 14px; font-weight: 700; padding: 12px 22px; border-radius: 6px; }
+  .btn-text { background: transparent; color: var(--text-secondary); font-size: 14px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Live badge / progress */
+  .comp-row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  .live-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--live); color: #fff; font-size: 11px; font-weight: 800; letter-spacing: 0.6px; padding: 5px 10px; border-radius: 4px; text-transform: uppercase; }
+  .live-badge .pulse { width: 7px; height: 7px; border-radius: 50%; background: #fff; }
+  .progress { width: 180px; }
+  .progress-track { height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 62%; background: linear-gradient(90deg, var(--feather-orange), var(--feather-pink)); border-radius: 2px; }
+  .progress-label { font-size: 11px; color: var(--text-secondary); margin-top: 6px; font-weight: 500; }
+
+  /* Channel chip preview */
+  .chip-prev { display: flex; gap: 10px; }
+  .chip-prev .chan { width: 64px; height: 64px; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: linear-gradient(135deg, var(--feather-purple), var(--feather-pink)); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-14 { border-radius: 14px; }
+  .r-20 { border-radius: 20px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Feather logomark */
+  .feather { display: inline-block; width: 38px; height: 38px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="feather">
+      <svg viewBox="0 0 64 64">
+        <g stroke-linecap="round">
+          <path d="M32 60 C32 44 32 30 32 8" stroke="#FACC15" stroke-width="6" fill="none"/>
+          <path d="M32 8 C42 16 47 28 46 42" stroke="#F97316" stroke-width="6" fill="none"/>
+          <path d="M32 8 C24 18 21 30 22 44" stroke="#EC4899" stroke-width="6" fill="none"/>
+          <path d="M32 14 C40 26 41 36 40 48" stroke="#8B5CF6" stroke-width="6" fill="none"/>
+          <path d="M32 14 C26 26 25 38 27 50" stroke="#2563EB" stroke-width="6" fill="none"/>
+        </g>
+      </svg>
+    </span>
+    <div class="page-title">Peacock iOS — Design Tokens</div>
+    <div class="page-chip">Feather Dark</div>
+  </div>
+  <p class="page-subtitle">Deep indigo-black canvas (#0A0A14) warming to a purple-violet (#140E26) under hero art. The multicolor "feather swoosh" — yellow #FACC15 → orange #F97316 → pink #EC4899 → purple #8B5CF6 → blue #2563EB — is the only chromatic accent; the primary CTA stays pure white. NBC live red #E5142B marks sports &amp; live channels.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="scroll-body">
+            <div class="top-bar">
+              <div class="pc-logo">
+                <svg viewBox="0 0 64 64">
+                  <g stroke-linecap="round">
+                    <path d="M32 60 C32 44 32 30 32 8" stroke="#FACC15" stroke-width="6" fill="none"/>
+                    <path d="M32 8 C42 16 47 28 46 42" stroke="#F97316" stroke-width="6" fill="none"/>
+                    <path d="M32 8 C24 18 21 30 22 44" stroke="#EC4899" stroke-width="6" fill="none"/>
+                    <path d="M32 14 C40 26 41 36 40 48" stroke="#8B5CF6" stroke-width="6" fill="none"/>
+                    <path d="M32 14 C26 26 25 38 27 50" stroke="#2563EB" stroke-width="6" fill="none"/>
+                  </g>
+                </svg>
+                <span class="wm">peacock</span>
+              </div>
+              <div class="top-actions">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
+              </div>
+            </div>
+
+            <div class="hero">
+              <div class="hero-art"></div>
+              <div class="hero-fade"></div>
+              <div class="hero-content">
+                <div class="hero-tag">New Original Series</div>
+                <div class="hero-title">The Continental</div>
+                <div class="hero-meta">2023<span class="dot">·</span>Action<span class="dot">·</span>3 Episodes<span class="dot">·</span>TV-MA</div>
+                <div class="hero-btns">
+                  <button class="hero-play"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg>Play</button>
+                  <button class="hero-info">+ My Stuff</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="rail">
+              <div class="rail-head"><div class="rail-title">Channels</div><div class="rail-see">See All</div></div>
+              <div class="chan-row">
+                <div class="chan c1">NBC</div>
+                <div class="chan c2">Bravo</div>
+                <div class="chan c3">SNL</div>
+                <div class="chan c4">USA</div>
+                <div class="chan c5">E!</div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="rail-head"><div class="rail-title">Trending</div><div class="rail-see">See All</div></div>
+              <div class="poster-row">
+                <div class="poster"><div class="poster-art pa1"><div class="badge-top">TOP 10</div><div class="rank">1</div></div><div class="poster-cap">Poker Face</div></div>
+                <div class="poster"><div class="poster-art pa2"><div class="rank">2</div></div><div class="poster-cap">Twisters</div></div>
+                <div class="poster"><div class="poster-art pa3"><div class="rank">3</div></div><div class="poster-cap">Bel-Air</div></div>
+                <div class="poster"><div class="poster-art pa4"><div class="rank">4</div></div><div class="poster-cap">Days of Our Lives</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 10l9-8 9 8v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="13" rx="2"/><path d="M8 21h8"/></svg><span>Channels</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M5 3h14a2 2 0 0 1 2 2v16l-9-5-9 5V5a2 2 0 0 1 2-2z"/></svg><span>My Stuff</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0A0A14;"><div class="name">Canvas</div>#0A0A14</div>
+          <div class="swatch" style="background:#140E26;"><div class="name">Canvas Warm</div>#140E26</div>
+          <div class="swatch" style="background:#1A1530;"><div class="name">Surface 1</div>#1A1530</div>
+          <div class="swatch" style="background:#241C3D;"><div class="name">Surface 2</div>#241C3D</div>
+          <div class="swatch" style="background:#FACC15; color:#0A0A14;"><div class="name">Feather Yellow</div>#FACC15</div>
+          <div class="swatch" style="background:#F97316;"><div class="name">Feather Orange</div>#F97316</div>
+          <div class="swatch" style="background:#EC4899;"><div class="name">Feather Pink</div>#EC4899</div>
+          <div class="swatch" style="background:#8B5CF6;"><div class="name">Feather Purple</div>#8B5CF6</div>
+          <div class="swatch" style="background:#2563EB;"><div class="name">Feather Blue</div>#2563EB</div>
+          <div class="swatch" style="background:#FFFFFF; color:#0A0A14;"><div class="name">CTA White</div>#FFFFFF</div>
+          <div class="swatch" style="background:#E5142B;"><div class="name">Live Red</div>#E5142B</div>
+          <div class="swatch" style="background:#B5B2C2; color:#0A0A14;"><div class="name">Text Secondary</div>#B5B2C2</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Poppins (Peacock Sans fallback)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 800</div><div class="type-sample t-32">Home</div></div>
+        <div class="type-row"><div class="type-meta">Hero Title · 26pt · 800</div><div class="type-sample t-26">The Continental</div></div>
+        <div class="type-row"><div class="type-meta">Row Header · 22pt · 700</div><div class="type-sample t-22">Trending Now</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 18pt · 700</div><div class="type-sample t-18">Poker Face</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 600</div><div class="type-sample t-16">A washed-up casino magician investigates.</div></div>
+        <div class="type-row"><div class="type-meta">Caption · 15pt · 500</div><div class="type-sample t-15m">S1 · E4 · 48 min</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 400</div><div class="type-sample t-13">2023 · Drama · TV-MA</div></div>
+        <div class="type-row"><div class="type-meta">Tab Label · 12pt · 600</div><div class="type-sample t-12">My Stuff</div></div>
+        <div class="type-row"><div class="type-meta">Eyebrow · 11pt · 700 · +1.4</div><div class="type-sample t-11u">New Original Series</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">▶ Play</button>
+          <button class="btn btn-glass">+ My Stuff</button>
+          <button class="btn btn-feather">Get Premium</button>
+          <button class="btn-text">More Info</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Channel Tiles &amp; Live Badge</div>
+        <div class="comp-row">
+          <div class="chip-prev">
+            <div class="chan c1">NBC</div>
+            <div class="chan c3">SNL</div>
+            <div class="chan c2">Bravo</div>
+          </div>
+          <span class="live-badge"><span class="pulse"></span>Live</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Continue Watching Progress</div>
+        <div class="progress">
+          <div class="progress-track"><div class="progress-fill"></div></div>
+          <div class="progress-label">S2 E6 · 24 min left</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Peacock is dark-only — there is no light theme. The canvas is a deep indigo-black <code>#0A0A14</code> that warms toward violet <code>#140E26</code> beneath hero artwork, so the billboard glows rather than sits on flat black. The five-color feather gradient (yellow → orange → pink → purple → blue) is reserved for the logomark, premium upsell, and selection accents — never as a fill behind text. The primary "Play" CTA is always solid white <code>#FFFFFF</code> with a near-black label for maximum contrast over any poster. Live and sports surfaces use NBC red <code>#E5142B</code> with a pulsing dot. Poster art is full-color and full-bleed; the surrounding chrome stays muted so the catalog is the hero.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

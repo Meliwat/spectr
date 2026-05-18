@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Binance iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0B0E11;
+    --surface-1: #181A20;
+    --surface-2: #1E2026;
+    --surface-3: #2B3139;
+    --divider: #2B3139;
+    --text-primary: #EAECEF;
+    --text-secondary: #848E9C;
+    --text-tertiary: #5E6673;
+    --ink: #FFFFFF;
+    --yellow: #F0B90B;
+    --yellow-pressed: #C99400;
+    --up: #0ECB81;
+    --down: #F6465D;
+    --buy: #0ECB81;
+    --sell: #F6465D;
+    --link: #F0B90B;
+    --font: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+    --mono: 'IBM Plex Mono', 'SF Mono', Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 700; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--yellow); color: #0B0E11; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 4px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Search row */
+  .top-row { display: flex; align-items: center; gap: 10px; padding: 4px 16px 12px; }
+  .search-pill { flex: 1; display: flex; align-items: center; height: 36px; border-radius: 8px; background: var(--surface-2); padding: 0 12px; gap: 8px; }
+  .search-pill svg { width: 14px; height: 14px; stroke: var(--text-secondary); stroke-width: 2; fill: none; }
+  .search-pill span { font-size: 13px; color: var(--text-secondary); }
+  .icon-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: var(--text-primary); }
+  .icon-btn svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Balance header */
+  .bal-wrap { padding: 4px 16px 14px; }
+  .bal-label { font-size: 12px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
+  .bal-label svg { width: 12px; height: 12px; stroke: var(--text-secondary); stroke-width: 2; fill: none; }
+  .bal-value { font-family: var(--mono); font-size: 28px; font-weight: 600; color: var(--text-primary); margin-top: 4px; letter-spacing: -0.5px; }
+  .bal-value .ccy { font-size: 14px; color: var(--text-secondary); font-weight: 500; margin-left: 4px; }
+  .bal-pnl { font-family: var(--mono); font-size: 12px; color: var(--up); margin-top: 4px; }
+
+  /* Quick actions */
+  .quick { display: flex; gap: 8px; padding: 0 16px 14px; }
+  .quick-btn { flex: 1; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; }
+  .qb-primary { background: var(--yellow); color: #0B0E11; }
+  .qb-ghost { background: var(--surface-2); color: var(--text-primary); }
+
+  /* Tabs */
+  .market-tabs { display: flex; gap: 18px; padding: 4px 16px 0; border-bottom: 1px solid var(--divider); }
+  .mt { font-size: 14px; font-weight: 600; color: var(--text-secondary); padding-bottom: 10px; position: relative; }
+  .mt.active { color: var(--text-primary); }
+  .mt.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: var(--yellow); border-radius: 2px; }
+
+  /* Markets list */
+  .mkt-list { flex: 1; overflow-y: auto; scrollbar-width: none; }
+  .mkt-list::-webkit-scrollbar { display: none; }
+  .mkt-row { display: flex; align-items: center; padding: 12px 16px; gap: 10px; }
+  .coin-ico { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #0B0E11; flex-shrink: 0; }
+  .ico-btc { background: #F7931A; }
+  .ico-eth { background: #627EEA; color: #fff; }
+  .ico-bnb { background: #F0B90B; }
+  .ico-sol { background: #14F195; }
+  .mkt-name { flex: 1; }
+  .mkt-pair { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .mkt-pair .quote { font-size: 11px; color: var(--text-tertiary); font-weight: 500; }
+  .mkt-vol { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+  .mkt-price { text-align: right; }
+  .mkt-px { font-family: var(--mono); font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .mkt-usd { font-family: var(--mono); font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+  .mkt-chg { min-width: 64px; text-align: center; font-family: var(--mono); font-size: 13px; font-weight: 600; color: #fff; padding: 6px 0; border-radius: 4px; margin-left: 8px; }
+  .chg-up { background: var(--up); }
+  .chg-down { background: var(--down); }
+
+  /* Tab bar */
+  .tab-bar { height: 64px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: rgba(11,14,17,0.96); border-top: 1px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 500; gap: 4px; }
+  .tab.active { color: var(--yellow); }
+  .tab svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: var(--mono); border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: var(--mono); font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 700; letter-spacing: -0.4px; color: var(--ink); }
+  .t-28 { font-size: 28px; font-weight: 600; letter-spacing: -0.3px; color: var(--ink); font-family: var(--mono); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 600; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-14m { font-size: 14px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+  .t-mono { font-family: var(--mono); font-size: 15px; font-weight: 600; color: var(--up); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 600; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--yellow); color: #0B0E11; font-size: 15px; padding: 12px 28px; border-radius: 8px; }
+  .btn-primary:active { background: var(--yellow-pressed); transform: scale(0.98); }
+  .btn-buy { background: var(--buy); color: #FFF; font-size: 15px; padding: 12px 28px; border-radius: 8px; }
+  .btn-sell { background: var(--sell); color: #FFF; font-size: 15px; padding: 12px 28px; border-radius: 8px; }
+  .btn-ghost { background: var(--surface-3); color: var(--text-primary); font-size: 14px; padding: 11px 20px; border-radius: 8px; }
+  .btn-text { background: transparent; color: var(--yellow); font-size: 14px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Order book rows */
+  .ob { display: flex; flex-direction: column; gap: 2px; }
+  .ob-row { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 12px; padding: 4px 8px; border-radius: 2px; position: relative; overflow: hidden; }
+  .ob-row span { position: relative; z-index: 1; }
+  .ob-ask { color: var(--down); } .ob-ask::before { content:''; position:absolute; right:0; top:0; bottom:0; background: rgba(246,70,93,0.14); }
+  .ob-bid { color: var(--up); } .ob-bid::before { content:''; position:absolute; right:0; top:0; bottom:0; background: rgba(14,203,129,0.14); }
+  .ob-a1::before { width: 70%; } .ob-a2::before { width: 45%; } .ob-b1::before { width: 60%; } .ob-b2::before { width: 38%; }
+  .ob-mid { font-family: var(--mono); font-size: 16px; font-weight: 600; color: var(--up); padding: 6px 8px; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--yellow); color: #0B0E11; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-2 { border-radius: 2px; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  code { font-family: var(--mono); background: var(--surface-3); padding: 1px 5px; border-radius: 3px; font-size: 12px; color: var(--yellow); }
+
+  /* Binance logomark */
+  .logo { display: inline-block; width: 40px; height: 40px; }
+  .logo svg { width: 100%; height: 100%; fill: var(--yellow); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 48 48"><path d="M24 4l6.1 6.1-12.2 12.2L24 28.5l6.1-6.1 6.1 6.1L24 40.7 11.8 28.5 5.7 22.4 11.8 16.3 17.9 22.4zM5.7 24L0 18.3 5.7 12.6 11.4 18.3zm36.6 0L36.6 18.3 42.3 12.6 48 18.3zM24 18.3l-5.7 5.7L24 29.7l5.7-5.7z"/></svg>
+    </span>
+    <div class="page-title">Binance iOS — Design Tokens</div>
+    <div class="page-chip">Trading Dark</div>
+  </div>
+  <p class="page-subtitle">Binance is dark-native: a near-black canvas (#0B0E11) with Binance Yellow (#F0B90B) as the only brand accent. Semantic green (#0ECB81 up) and red (#F6465D down) carry every market signal. Monospace tabular figures keep prices and order books perfectly aligned.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="top-row">
+            <div class="search-pill">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+              <span>Search BTC, ETH, BNB…</span>
+            </div>
+            <div class="icon-btn"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7v4l-2 3h18l-2-3V9a7 7 0 0 0-7-7z"/><path d="M9 19a3 3 0 0 0 6 0"/></svg></div>
+          </div>
+
+          <div class="bal-wrap">
+            <div class="bal-label">Est. Total Value <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/></svg></div>
+            <div class="bal-value">12,840.57<span class="ccy">USDT</span></div>
+            <div class="bal-pnl">+$214.86 (+1.70%) Today</div>
+          </div>
+
+          <div class="quick">
+            <div class="quick-btn qb-primary">Deposit</div>
+            <div class="quick-btn qb-ghost">Withdraw</div>
+            <div class="quick-btn qb-ghost">Convert</div>
+          </div>
+
+          <div class="market-tabs">
+            <div class="mt active">Favorites</div>
+            <div class="mt">Spot</div>
+            <div class="mt">Futures</div>
+            <div class="mt">Hot</div>
+          </div>
+
+          <div class="mkt-list">
+            <div class="mkt-row">
+              <div class="coin-ico ico-btc">B</div>
+              <div class="mkt-name">
+                <div class="mkt-pair">BTC<span class="quote">/USDT</span></div>
+                <div class="mkt-vol">Vol 1.42B</div>
+              </div>
+              <div class="mkt-price">
+                <div class="mkt-px">67,284.10</div>
+                <div class="mkt-usd">$67,284.10</div>
+              </div>
+              <div class="mkt-chg chg-up">+2.34%</div>
+            </div>
+
+            <div class="mkt-row">
+              <div class="coin-ico ico-eth">E</div>
+              <div class="mkt-name">
+                <div class="mkt-pair">ETH<span class="quote">/USDT</span></div>
+                <div class="mkt-vol">Vol 884M</div>
+              </div>
+              <div class="mkt-price">
+                <div class="mkt-px">3,512.66</div>
+                <div class="mkt-usd">$3,512.66</div>
+              </div>
+              <div class="mkt-chg chg-down">-0.92%</div>
+            </div>
+
+            <div class="mkt-row">
+              <div class="coin-ico ico-bnb">B</div>
+              <div class="mkt-name">
+                <div class="mkt-pair">BNB<span class="quote">/USDT</span></div>
+                <div class="mkt-vol">Vol 312M</div>
+              </div>
+              <div class="mkt-price">
+                <div class="mkt-px">604.20</div>
+                <div class="mkt-usd">$604.20</div>
+              </div>
+              <div class="mkt-chg chg-up">+1.08%</div>
+            </div>
+
+            <div class="mkt-row">
+              <div class="coin-ico ico-sol">S</div>
+              <div class="mkt-name">
+                <div class="mkt-pair">SOL<span class="quote">/USDT</span></div>
+                <div class="mkt-vol">Vol 198M</div>
+              </div>
+              <div class="mkt-price">
+                <div class="mkt-px">172.43</div>
+                <div class="mkt-usd">$172.43</div>
+              </div>
+              <div class="mkt-chg chg-up">+4.61%</div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 18V8M9 18V4M14 18v-7M19 18v-10"/></svg><span>Markets</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 12h6l2-7 4 14 2-7h4"/></svg><span>Trade</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 7h18v12H3z"/><path d="M3 7l4-4h10l4 4"/></svg><span>Futures</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M16 12h.01"/></svg><span>Wallets</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0B0E11;"><div class="name">Canvas</div>#0B0E11</div>
+          <div class="swatch" style="background:#181A20;"><div class="name">Surface 1</div>#181A20</div>
+          <div class="swatch" style="background:#1E2026;"><div class="name">Surface 2</div>#1E2026</div>
+          <div class="swatch" style="background:#2B3139;"><div class="name">Surface 3 / Divider</div>#2B3139</div>
+          <div class="swatch" style="background:#F0B90B; color:#0B0E11;"><div class="name">Binance Yellow</div>#F0B90B</div>
+          <div class="swatch" style="background:#C99400; color:#0B0E11;"><div class="name">Yellow Pressed</div>#C99400</div>
+          <div class="swatch" style="background:#0ECB81;"><div class="name">Buy / Up</div>#0ECB81</div>
+          <div class="swatch" style="background:#F6465D;"><div class="name">Sell / Down</div>#F6465D</div>
+          <div class="swatch" style="background:#EAECEF; color:#0B0E11;"><div class="name">Text Primary</div>#EAECEF</div>
+          <div class="swatch" style="background:#848E9C; color:#0B0E11;"><div class="name">Text Secondary</div>#848E9C</div>
+          <div class="swatch" style="background:#5E6673;"><div class="name">Text Tertiary</div>#5E6673</div>
+          <div class="swatch" style="background:#1E2026; color:#F0B90B;"><div class="name">Link (Yellow)</div>#F0B90B</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — IBM Plex Sans + IBM Plex Mono (Binance PingFang fallback)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 700</div><div class="type-sample t-32">Markets</div></div>
+        <div class="type-row"><div class="type-meta">Balance · 28pt · 600 · mono</div><div class="type-sample t-28">12,840.57</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Spot Wallet</div></div>
+        <div class="type-row"><div class="type-meta">Row Title · 18pt · 600</div><div class="type-sample t-18">BTC/USDT</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Trade 350+ cryptocurrencies with low fees.</div></div>
+        <div class="type-row"><div class="type-meta">Price · 15pt · 600 · mono</div><div class="type-sample t-mono">67,284.10 +2.34%</div></div>
+        <div class="type-row"><div class="type-meta">List Label · 14pt · 600</div><div class="type-sample t-14m">Order Book</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">24h Vol 1.42B · High 67,910</div></div>
+        <div class="type-row"><div class="type-meta">Caption · 12pt · 500</div><div class="type-sample t-12">Last updated 2s ago</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Convert</button>
+          <button class="btn btn-buy">Buy</button>
+          <button class="btn btn-sell">Sell</button>
+          <button class="btn btn-ghost">Deposit</button>
+          <button class="btn-text">View all markets</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Order Book (depth-shaded rows)</div>
+        <div class="ob">
+          <div class="ob-row ob-ask ob-a1"><span>67,290.4</span><span>0.482</span></div>
+          <div class="ob-row ob-ask ob-a2"><span>67,288.1</span><span>1.204</span></div>
+          <div class="ob-mid">67,284.10 ↑</div>
+          <div class="ob-row ob-bid ob-b1"><span>67,281.9</span><span>0.866</span></div>
+          <div class="ob-row ob-bid ob-b2"><span>67,279.5</span><span>2.013</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-2">2</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Binance is dark-first — the trading UI was designed for the deep canvas <code>#0B0E11</code>; cards lift to <code>#181A20</code> and <code>#1E2026</code>. Binance Yellow <code>#F0B90B</code> is the single brand accent and stays identical across the (rarely used) light theme. Up/down semantics never invert: green <code>#0ECB81</code> and red <code>#F6465D</code> are absolute. All numeric data — prices, balances, order book, P&L — is set in IBM Plex Mono with tabular figures so columns align to the pixel. The light theme simply swaps canvas to <code>#FFFFFF</code> and text to <code>#1E2329</code>; accents and semantics are unchanged.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

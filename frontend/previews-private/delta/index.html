@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Delta iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0B1320;
+    --surface-1: #131C2B;
+    --surface-2: #1C2738;
+    --divider: #25314A;
+    --text-primary: #E8ECF3;
+    --text-secondary: #9AA6BC;
+    --text-tertiary: #5F6E88;
+    --ink: #F5F7FB;
+    --delta-blue: #003268;
+    --delta-blue-bright: #0F4C9A;
+    --delta-red: #C8102E;
+    --delta-red-pressed: #A30D26;
+    --delta-widget: #862633;
+    --skymiles-gold: #C99700;
+    --success: #1E8E5A;
+    --warning: #C99700;
+    --error: #E0414E;
+    --on-time: #1E8E5A;
+    --font: 'Open Sans', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--delta-red); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow-y: auto; scrollbar-width: none; display: flex; flex-direction: column; }
+  .scroll-body::-webkit-scrollbar { display: none; }
+
+  /* Trip header */
+  .trip-hd { padding: 8px 18px 16px; background: linear-gradient(160deg, #003268 0%, #06203F 100%); }
+  .trip-hd-top { display: flex; align-items: center; justify-content: space-between; }
+  .trip-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #8FB4DD; }
+  .trip-status-pill { background: rgba(30,142,90,0.22); color: #4FD18C; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
+  .trip-route { display: flex; align-items: flex-end; gap: 14px; margin-top: 12px; color: #FFF; }
+  .trip-iata { font-size: 34px; font-weight: 800; letter-spacing: -0.5px; }
+  .trip-plane { flex: 1; display: flex; align-items: center; gap: 6px; padding-bottom: 8px; }
+  .trip-line { flex: 1; height: 2px; background: rgba(255,255,255,0.35); border-radius: 2px; }
+  .trip-plane svg { width: 18px; height: 18px; fill: #FFF; }
+  .trip-sub { display: flex; justify-content: space-between; margin-top: 4px; font-size: 12px; color: #9FC0E2; }
+
+  /* Boarding pass */
+  .pass { margin: 16px; background: var(--surface-1); border: 1px solid var(--divider); border-radius: 18px; overflow: hidden; }
+  .pass-strip { height: 6px; background: linear-gradient(90deg, var(--delta-blue) 0%, var(--delta-red) 100%); }
+  .pass-body { padding: 18px; }
+  .pass-name { font-size: 12px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-secondary); }
+  .pass-pax { font-size: 18px; font-weight: 700; color: var(--text-primary); margin-top: 2px; }
+  .pass-grid { display: flex; gap: 18px; margin-top: 16px; }
+  .pass-cell { flex: 1; }
+  .pass-cell .lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-tertiary); }
+  .pass-cell .val { font-size: 22px; font-weight: 800; color: var(--text-primary); margin-top: 3px; }
+  .pass-cell .val.gold { color: var(--skymiles-gold); }
+  .pass-zone { margin-top: 16px; background: var(--surface-2); border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; }
+  .pass-zone .z-lbl { font-size: 11px; font-weight: 600; color: var(--text-secondary); }
+  .pass-zone .z-val { font-size: 14px; font-weight: 800; color: var(--text-primary); }
+  .pass-barcode { margin-top: 16px; height: 56px; border-radius: 8px; background: repeating-linear-gradient(90deg, var(--text-primary) 0 2px, transparent 2px 4px, var(--text-primary) 4px 5px, transparent 5px 9px); }
+
+  /* Flight status timeline */
+  .timeline { margin: 0 16px 16px; background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 18px; }
+  .tl-title { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 16px; }
+  .tl-row { display: flex; gap: 14px; }
+  .tl-rail { display: flex; flex-direction: column; align-items: center; }
+  .tl-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--on-time); border: 2px solid var(--surface-1); box-shadow: 0 0 0 2px var(--on-time); }
+  .tl-dot.dim { background: var(--text-tertiary); box-shadow: 0 0 0 2px var(--text-tertiary); }
+  .tl-bar { width: 2px; flex: 1; background: var(--divider); margin: 2px 0; }
+  .tl-step { padding-bottom: 18px; }
+  .tl-step:last-child { padding-bottom: 0; }
+  .tl-step .s-lbl { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+  .tl-step .s-meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+  /* Tab bar */
+  .tab-bar { height: 68px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(11,19,32,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 4px; letter-spacing: 0.1px; }
+  .tab.active { color: #5BA0E0; }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0.2px; }
+  .btn-primary { background: var(--delta-red); color: #FFF; font-size: 16px; padding: 14px 28px; border-radius: 6px; }
+  .btn-primary:active { background: var(--delta-red-pressed); transform: scale(0.98); }
+  .btn-secondary { background: var(--delta-blue-bright); color: #FFF; font-size: 15px; padding: 13px 24px; border-radius: 6px; }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1.5px solid var(--text-secondary); font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 6px; }
+  .btn-text { background: transparent; color: #5BA0E0; font-size: 14px; font-weight: 700; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Flight status chips */
+  .status-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .st-chip { font-size: 12px; font-weight: 700; padding: 7px 14px; border-radius: 999px; }
+  .st-ontime { background: rgba(30,142,90,0.18); color: #4FD18C; }
+  .st-delayed { background: rgba(201,151,0,0.18); color: #E0B743; }
+  .st-canceled { background: rgba(224,65,78,0.18); color: #F0808A; }
+  .st-boarding { background: rgba(15,76,154,0.22); color: #6FB0EA; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--delta-blue-bright); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-6 { border-radius: 6px; }
+  .r-10 { border-radius: 10px; }
+  .r-16 { border-radius: 16px; }
+  .r-18 { border-radius: 18px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  code { font-family: 'SF Mono', Menlo, monospace; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+
+  /* Delta widget logomark */
+  .widget { display: inline-block; width: 46px; height: 40px; }
+  .widget svg { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="widget">
+      <svg viewBox="0 0 64 56"><polygon points="32,4 60,52 32,38 4,52" fill="#C8102E"/><polygon points="32,4 32,38 4,52" fill="#003268"/></svg>
+    </span>
+    <div class="page-title">Delta iOS — Design Tokens</div>
+    <div class="page-chip">Widget Dark</div>
+  </div>
+  <p class="page-subtitle">Delta's signature is the digital boarding pass and a flight-status timeline. Navy "Delta Blue" (#003268) anchors the brand; the red "widget" logomark (#C8102E) is the single high-energy accent. On dark, the canvas is a deep navy-charcoal (#0B1320) so the blue gradient pass headers still read as Delta.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="scroll-body">
+            <div class="trip-hd">
+              <div class="trip-hd-top">
+                <span class="trip-eyebrow">Today · DL 1248</span>
+                <span class="trip-status-pill">On Time</span>
+              </div>
+              <div class="trip-route">
+                <span class="trip-iata">ATL</span>
+                <span class="trip-plane"><span class="trip-line"></span><svg viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L11 19v-5.5z"/></svg><span class="trip-line"></span></span>
+                <span class="trip-iata">JFK</span>
+              </div>
+              <div class="trip-sub"><span>Gate B16 · 10:42 AM</span><span>Seat 14C · 1:02 PM</span></div>
+            </div>
+
+            <div class="pass">
+              <div class="pass-strip"></div>
+              <div class="pass-body">
+                <div class="pass-name">Passenger</div>
+                <div class="pass-pax">ELLISON, MARGARET</div>
+                <div class="pass-grid">
+                  <div class="pass-cell"><div class="lbl">Gate</div><div class="val">B16</div></div>
+                  <div class="pass-cell"><div class="lbl">Seat</div><div class="val">14C</div></div>
+                  <div class="pass-cell"><div class="lbl">Group</div><div class="val gold">SKY</div></div>
+                </div>
+                <div class="pass-zone">
+                  <span class="z-lbl">Boards 10:12 AM · Zone</span>
+                  <span class="z-val">SKY PRIORITY</span>
+                </div>
+                <div class="pass-barcode"></div>
+              </div>
+            </div>
+
+            <div class="timeline">
+              <div class="tl-title">Flight Status</div>
+              <div class="tl-row">
+                <div class="tl-rail">
+                  <div class="tl-dot"></div><div class="tl-bar"></div>
+                  <div class="tl-dot"></div><div class="tl-bar"></div>
+                  <div class="tl-dot dim"></div>
+                </div>
+                <div style="flex:1;">
+                  <div class="tl-step"><div class="s-lbl">Departed ATL — On Time</div><div class="s-meta">Gate B16 · 10:42 AM EDT</div></div>
+                  <div class="tl-step"><div class="s-lbl">In Air · Cruising</div><div class="s-meta">Est. arrival 1:02 PM EDT</div></div>
+                  <div class="tl-step"><div class="s-lbl">Arrive JFK — Terminal 4</div><div class="s-meta">Baggage Carousel 7</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a2 2 0 0 1-2 2h-4v-6H9v6H5a2 2 0 0 1-2-2z"/></svg><span>Today</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L11 19v-5.5z"/></svg><span>Book</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg><span>Trips</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>SkyMiles</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.6-2-3.4-2.4 1a7 7 0 0 0-1.7-1l-.4-2.5h-4l-.4 2.5a7 7 0 0 0-1.7 1l-2.4-1-2 3.4 2 1.6a7 7 0 0 0 0 2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 1.7 1l.4 2.5h4l.4-2.5a7 7 0 0 0 1.7-1l2.4 1 2-3.4-2-1.6a7 7 0 0 0 .1-1z"/></svg><span>More</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#003268;"><div class="name">Delta Blue</div>#003268</div>
+          <div class="swatch" style="background:#0F4C9A;"><div class="name">Delta Blue Bright</div>#0F4C9A</div>
+          <div class="swatch" style="background:#C8102E;"><div class="name">Delta Red</div>#C8102E</div>
+          <div class="swatch" style="background:#862633;"><div class="name">Widget Maroon</div>#862633</div>
+          <div class="swatch" style="background:#C99700; color:#1A1A1A;"><div class="name">SkyMiles Gold</div>#C99700</div>
+          <div class="swatch" style="background:#0B1320;"><div class="name">Dark Canvas</div>#0B1320</div>
+          <div class="swatch" style="background:#131C2B;"><div class="name">Dark Surface 1</div>#131C2B</div>
+          <div class="swatch" style="background:#1C2738;"><div class="name">Dark Surface 2</div>#1C2738</div>
+          <div class="swatch" style="background:#E8ECF3; color:#0B1320;"><div class="name">Text Primary</div>#E8ECF3</div>
+          <div class="swatch" style="background:#9AA6BC; color:#0B1320;"><div class="name">Text Secondary</div>#9AA6BC</div>
+          <div class="swatch" style="background:#1E8E5A;"><div class="name">On-Time Green</div>#1E8E5A</div>
+          <div class="swatch" style="background:#E0414E;"><div class="name">Error / Canceled</div>#E0414E</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Open Sans (Delta uses a Whitney-class humanist sans)</div>
+        <div class="type-row"><div class="type-meta">Route IATA · 34pt · 800</div><div class="type-sample t-32">ATL → JFK</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 26pt · 800</div><div class="type-sample t-26">Your trip today</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Flight status</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 18pt · 700</div><div class="type-sample t-18">ELLISON, MARGARET</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Boarding begins at 10:12 AM from Gate B16, Concourse B.</div></div>
+        <div class="type-row"><div class="type-meta">Data Value · 15pt · 600</div><div class="type-sample t-15m">Seat 14C · SKY PRIORITY</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Est. arrival 1:02 PM EDT · Carousel 7</div></div>
+        <div class="type-row"><div class="type-meta">Eyebrow · 12pt · 700 · caps</div><div class="type-sample t-12">Today · DL 1248</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Check In</button>
+          <button class="btn btn-secondary">View Boarding Pass</button>
+          <button class="btn btn-outline">Change Seat</button>
+          <button class="btn-text">Flight details</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Flight Status Chips</div>
+        <div class="status-row">
+          <span class="st-chip st-ontime">On Time</span>
+          <span class="st-chip st-boarding">Now Boarding</span>
+          <span class="st-chip st-delayed">Delayed 0:35</span>
+          <span class="st-chip st-canceled">Canceled</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Boarding Pass Anatomy</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6;">The digital boarding pass is Delta's hero surface: a navy→red top strip, passenger name in caps, a three-cell <code>Gate / Seat / Group</code> grid, a SKY PRIORITY zone band, and a scannable barcode block at the foot. It appears in Apple Wallet and in-app; the in-app version adds a live <code>Flight Status</code> timeline above it.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-18">18</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Delta's dark mode keeps the brand navy alive: the canvas is a deep navy-charcoal <code>#0B1320</code> (not neutral black) so the boarding-pass gradient header (Delta Blue <code>#003268</code> → red <code>#C8102E</code>) still reads as Delta. The red widget accent <code>#C8102E</code> is reserved for the primary CTA only. SkyMiles gold <code>#C99700</code> marks Medallion status. Status colors are functional and constant: on-time green <code>#1E8E5A</code>, delayed gold <code>#C99700</code>, canceled red <code>#E0414E</code>. The scannable barcode inverts to a light bar pattern so a gate scanner still reads it on a dimmed screen.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

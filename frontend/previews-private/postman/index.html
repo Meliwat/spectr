@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Postman iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #1A1A1A;
+    --surface-1: #212121;
+    --surface-2: #2A2A2A;
+    --surface-3: #333333;
+    --divider: #3A3A3A;
+    --border: #444444;
+    --text-primary: #E8E8E8;
+    --text-secondary: #A6A6A6;
+    --text-tertiary: #6E6E6E;
+    --ink: #FFFFFF;
+    --postman-orange: #FF6C37;
+    --postman-orange-pressed: #E55A2B;
+    --postman-orange-dim: #3D2417;
+    --get: #6BDD9A;
+    --post: #FFE47A;
+    --put: #74AEF6;
+    --patch: #C0A8E1;
+    --delete: #F79090;
+    --success: #6BDD9A;
+    --error: #F79090;
+    --warning: #FFE47A;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+    --mono: 'JetBrains Mono', 'SF Mono', ui-monospace, Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--postman-orange); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* App top bar */
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 6px 18px 12px; }
+  .topbar-left { display: flex; align-items: center; gap: 10px; }
+  .pm-logo { width: 26px; height: 26px; border-radius: 50%; background: var(--postman-orange); display: flex; align-items: center; justify-content: center; }
+  .pm-logo svg { width: 15px; height: 15px; fill: #FFF; }
+  .topbar-title { font-size: 16px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.2px; }
+  .topbar-save { font-size: 13px; font-weight: 600; color: var(--postman-orange); }
+
+  /* URL request bar */
+  .url-bar { margin: 0 14px 12px; display: flex; align-items: stretch; background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .method-pill { display: flex; align-items: center; padding: 0 12px; font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--get); border-right: 1px solid var(--border); }
+  .url-text { flex: 1; padding: 12px 12px; font-family: var(--mono); font-size: 12px; color: var(--text-primary); display: flex; align-items: center; overflow: hidden; white-space: nowrap; }
+  .send-btn { background: var(--postman-orange); color: #FFF; font-weight: 700; font-size: 13px; padding: 0 16px; display: flex; align-items: center; }
+
+  /* Tabs row */
+  .req-tabs { display: flex; gap: 20px; padding: 0 18px 8px; border-bottom: 1px solid var(--divider); }
+  .req-tab { font-size: 13px; font-weight: 500; color: var(--text-secondary); padding-bottom: 8px; position: relative; }
+  .req-tab.active { color: var(--text-primary); font-weight: 600; }
+  .req-tab.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: var(--postman-orange); border-radius: 2px; }
+
+  /* Params/key-value rows */
+  .kv-area { padding: 12px 14px 8px; }
+  .kv-label { font-size: 11px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .kv-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  .kv-cell { flex: 1; background: var(--surface-1); border: 1px solid var(--divider); border-radius: 6px; padding: 9px 10px; font-family: var(--mono); font-size: 12px; color: var(--text-primary); }
+  .kv-cell.key { flex: 0 0 38%; color: var(--patch); }
+
+  /* Response section */
+  .resp-head { display: flex; align-items: center; gap: 10px; padding: 10px 18px 8px; border-top: 1px solid var(--divider); }
+  .resp-status { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--get); }
+  .resp-meta { font-family: var(--mono); font-size: 11px; color: var(--text-secondary); }
+  .resp-body { flex: 1; margin: 4px 14px 14px; background: #161616; border: 1px solid var(--divider); border-radius: 8px; padding: 12px; font-family: var(--mono); font-size: 11.5px; line-height: 1.6; overflow: hidden; }
+  .json-key { color: var(--put); }
+  .json-str { color: var(--get); }
+  .json-num { color: var(--patch); }
+  .json-punc { color: var(--text-tertiary); }
+
+  /* Tab bar */
+  .tab-bar { height: 68px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(26,26,26,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 500; gap: 4px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--postman-orange); }
+  .tab svg { width: 21px; height: 21px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: var(--mono); border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #1A1A1A; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: var(--mono); font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 600; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 500; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-13mono { font-size: 13px; font-weight: 600; font-family: var(--mono); color: var(--text-primary); }
+  .t-12 { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--postman-orange); color: #FFF; font-size: 14px; padding: 12px 22px; border-radius: 8px; }
+  .btn-primary:active { background: var(--postman-orange-pressed); transform: scale(0.98); }
+  .btn-secondary { background: transparent; color: var(--text-primary); border: 1px solid var(--border); font-size: 14px; font-weight: 500; padding: 11px 20px; border-radius: 8px; }
+  .btn-outline-orange { background: transparent; color: var(--postman-orange); border: 1px solid var(--postman-orange); font-size: 14px; font-weight: 600; padding: 11px 20px; border-radius: 8px; }
+  .btn-text { background: transparent; color: var(--postman-orange); font-size: 14px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* HTTP method chips */
+  .method-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .method { font-family: var(--mono); font-weight: 700; font-size: 13px; padding: 6px 12px; border-radius: 6px; }
+  .m-get { color: var(--get); background: rgba(107,221,154,0.12); }
+  .m-post { color: var(--post); background: rgba(255,228,122,0.12); }
+  .m-put { color: var(--put); background: rgba(116,174,246,0.12); }
+  .m-patch { color: var(--patch); background: rgba(192,168,225,0.12); }
+  .m-delete { color: var(--delete); background: rgba(247,144,144,0.12); }
+
+  /* Status code chips */
+  .code-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .code { font-family: var(--mono); font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 999px; border: 1px solid; }
+  .c-200 { color: var(--success); border-color: rgba(107,221,154,0.4); background: rgba(107,221,154,0.08); }
+  .c-300 { color: var(--put); border-color: rgba(116,174,246,0.4); background: rgba(116,174,246,0.08); }
+  .c-400 { color: var(--warning); border-color: rgba(255,228,122,0.4); background: rgba(255,228,122,0.08); }
+  .c-500 { color: var(--error); border-color: rgba(247,144,144,0.4); background: rgba(247,144,144,0.08); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--postman-orange); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-10 { border-radius: 10px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logo header */
+  .logo { display: inline-flex; width: 40px; height: 40px; border-radius: 50%; background: var(--postman-orange); align-items: center; justify-content: center; }
+  .logo svg { width: 22px; height: 22px; fill: #FFF; }
+  code { font-family: var(--mono); font-size: 12px; background: var(--surface-3); padding: 1px 5px; border-radius: 4px; color: var(--text-primary); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#FFF" opacity="0.0"/><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm3.6 6.3l-5.1 5.1-1.6-1.6 5.1-5.1a1.1 1.1 0 0 1 1.6 1.6z"/></svg>
+    </span>
+    <div class="page-title">Postman iOS — Design Tokens</div>
+    <div class="page-chip">Orange Dark</div>
+  </div>
+  <p class="page-subtitle">Neutral dark canvas (#1A1A1A) with a single brand orange (#FF6C37) reserved for the Send button, active tab, and primary actions. The system's real color logic lives in the HTTP-method palette — GET green (#6BDD9A), POST yellow (#FFE47A), PUT blue (#74AEF6), DELETE red (#F79090) — and status-code chips, all set in JetBrains Mono.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="topbar">
+            <div class="topbar-left">
+              <span class="pm-logo"><svg viewBox="0 0 24 24"><path d="M16.2 7.4a1.4 1.4 0 0 0-2 0l-6.6 6.6 2 2 6.6-6.6a1.4 1.4 0 0 0 0-2z"/></svg></span>
+              <span class="topbar-title">Get User</span>
+            </div>
+            <span class="topbar-save">Save</span>
+          </div>
+
+          <div class="url-bar">
+            <div class="method-pill">GET</div>
+            <div class="url-text">api.acme.dev/v1/users/42</div>
+            <div class="send-btn">Send</div>
+          </div>
+
+          <div class="req-tabs">
+            <div class="req-tab active">Params</div>
+            <div class="req-tab">Headers</div>
+            <div class="req-tab">Body</div>
+            <div class="req-tab">Auth</div>
+          </div>
+
+          <div class="kv-area">
+            <div class="kv-label">Query Params</div>
+            <div class="kv-row">
+              <div class="kv-cell key">include</div>
+              <div class="kv-cell">profile,roles</div>
+            </div>
+            <div class="kv-row">
+              <div class="kv-cell key">fields</div>
+              <div class="kv-cell">id,name,email</div>
+            </div>
+          </div>
+
+          <div class="resp-head">
+            <span class="resp-status">200 OK</span>
+            <span class="resp-meta">182 ms</span>
+            <span class="resp-meta">1.2 KB</span>
+          </div>
+          <div class="resp-body">
+<span class="json-punc">{</span><br>
+&nbsp;&nbsp;<span class="json-key">"id"</span><span class="json-punc">:</span> <span class="json-num">42</span><span class="json-punc">,</span><br>
+&nbsp;&nbsp;<span class="json-key">"name"</span><span class="json-punc">:</span> <span class="json-str">"Ada Lovelace"</span><span class="json-punc">,</span><br>
+&nbsp;&nbsp;<span class="json-key">"email"</span><span class="json-punc">:</span> <span class="json-str">"ada@acme.dev"</span><span class="json-punc">,</span><br>
+&nbsp;&nbsp;<span class="json-key">"active"</span><span class="json-punc">:</span> <span class="json-num">true</span><br>
+<span class="json-punc">}</span>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h7"/><circle cx="18" cy="15" r="3"/></svg><span>Request</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M4 9h16"/><circle cx="6.5" cy="7" r="0.8" fill="currentColor"/></svg><span>Collections</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>History</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="8" cy="7" r="1.6" fill="currentColor"/><circle cx="15" cy="17" r="1.6" fill="currentColor"/></svg><span>Environments</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#1A1A1A;"><div class="name">Dark Canvas</div>#1A1A1A</div>
+          <div class="swatch" style="background:#212121;"><div class="name">Surface 1</div>#212121</div>
+          <div class="swatch" style="background:#2A2A2A;"><div class="name">Surface 2</div>#2A2A2A</div>
+          <div class="swatch" style="background:#3A3A3A;"><div class="name">Divider</div>#3A3A3A</div>
+          <div class="swatch light" style="background:#E8E8E8;"><div class="name">Text Primary</div>#E8E8E8</div>
+          <div class="swatch" style="background:#A6A6A6; color:#1A1A1A;"><div class="name">Text Secondary</div>#A6A6A6</div>
+          <div class="swatch" style="background:#FF6C37;"><div class="name">Postman Orange</div>#FF6C37</div>
+          <div class="swatch" style="background:#6BDD9A; color:#1A1A1A;"><div class="name">GET Green</div>#6BDD9A</div>
+          <div class="swatch" style="background:#FFE47A; color:#1A1A1A;"><div class="name">POST Yellow</div>#FFE47A</div>
+          <div class="swatch" style="background:#74AEF6; color:#1A1A1A;"><div class="name">PUT Blue</div>#74AEF6</div>
+          <div class="swatch" style="background:#C0A8E1; color:#1A1A1A;"><div class="name">PATCH Purple</div>#C0A8E1</div>
+          <div class="swatch" style="background:#F79090; color:#1A1A1A;"><div class="name">DELETE Red</div>#F79090</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter UI + JetBrains Mono (request data)</div>
+        <div class="type-row"><div class="type-meta">Display · 32pt · 800</div><div class="type-sample t-32">Collections</div></div>
+        <div class="type-row"><div class="type-meta">Title · 26pt · 700</div><div class="type-sample t-26">Acme API · v1</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Request Builder</div></div>
+        <div class="type-row"><div class="type-meta">Subsection · 18pt · 600</div><div class="type-sample t-18">Query Params</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Send a request and inspect the response below.</div></div>
+        <div class="type-row"><div class="type-meta">Label · 15pt · 500</div><div class="type-sample t-15m">Authorization Type</div></div>
+        <div class="type-row"><div class="type-meta">URL / JSON · 13pt · Mono</div><div class="type-sample t-13mono">GET api.acme.dev/v1/users/42</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Last run 2m ago · 182 ms</div></div>
+        <div class="type-row"><div class="type-meta">Caption · 12pt · 500</div><div class="type-sample t-12">QUERY PARAMS</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Send</button>
+          <button class="btn btn-secondary">Cancel</button>
+          <button class="btn btn-outline-orange">Save Request</button>
+          <button class="btn-text">Add to Collection</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">HTTP Method Chips</div>
+        <div class="method-row">
+          <span class="method m-get">GET</span>
+          <span class="method m-post">POST</span>
+          <span class="method m-put">PUT</span>
+          <span class="method m-patch">PATCH</span>
+          <span class="method m-delete">DELETE</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Response Status Codes</div>
+        <div class="code-row">
+          <span class="code c-200">200 OK</span>
+          <span class="code c-300">301 Moved</span>
+          <span class="code c-400">404 Not Found</span>
+          <span class="code c-500">500 Error</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Postman's dark mode is a neutral grey, canvas <code>#1A1A1A</code> with cards lifting to <code>#212121</code>. Postman Orange <code>#FF6C37</code> is identical across light and dark — it's reserved exclusively for the Send button, active tab underline, and primary CTAs, never for decoration. The real color system is the <strong>HTTP-method palette</strong>: GET <code>#6BDD9A</code>, POST <code>#FFE47A</code>, PUT <code>#74AEF6</code>, PATCH <code>#C0A8E1</code>, DELETE <code>#F79090</code> — these soften on dark vs the saturated light-mode versions but keep their hue identity. All request/response data is JetBrains Mono with JSON syntax coloring.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

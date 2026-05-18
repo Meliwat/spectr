@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Craft iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #1A1A1E;
+    --surface-1: #232328;
+    --surface-2: #2C2C32;
+    --divider: #34343C;
+    --text-primary: #ECECEF;
+    --text-secondary: #9B9BA6;
+    --text-tertiary: #67677A;
+    --ink: #FFFFFF;
+    --craft-blue: #2F5BEA;
+    --craft-blue-pressed: #2347C9;
+    --craft-purple: #6E56CF;
+    --craft-purple-soft: #8B73E8;
+    --accent-red: #E5484D;
+    --accent-amber: #F0A92B;
+    --accent-green: #30A46C;
+    --card-1: #F26D5B;
+    --card-2: #4DA8DA;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: linear-gradient(120deg, var(--craft-blue), var(--craft-purple)); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Doc top bar */
+  .doc-top { display: flex; align-items: center; justify-content: space-between; padding: 6px 18px 10px; }
+  .doc-top .left { display: flex; align-items: center; gap: 12px; color: var(--text-secondary); }
+  .doc-top svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .doc-top .right { display: flex; align-items: center; gap: 16px; color: var(--text-secondary); }
+
+  /* Doc hero */
+  .doc-body { flex: 1; padding: 6px 22px 0; overflow-y: auto; scrollbar-width: none; }
+  .doc-body::-webkit-scrollbar { display: none; }
+  .doc-cover { height: 96px; border-radius: 14px; background: linear-gradient(135deg, var(--craft-blue) 0%, var(--craft-purple) 100%); margin-bottom: 14px; }
+  .doc-emoji { font-size: 40px; line-height: 1; margin-top: -38px; margin-left: 4px; margin-bottom: 8px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); }
+  .doc-title { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; color: var(--ink); margin-bottom: 4px; }
+  .doc-sub { font-size: 13px; color: var(--text-secondary); margin-bottom: 18px; }
+
+  /* Blocks */
+  .blk { margin-bottom: 14px; }
+  .blk-h { font-size: 19px; font-weight: 700; letter-spacing: -0.2px; color: var(--text-primary); margin-bottom: 6px; }
+  .blk-p { font-size: 15px; font-weight: 400; line-height: 1.55; color: var(--text-secondary); }
+  .blk-card { display: flex; align-items: center; gap: 12px; background: var(--surface-1); border: 1px solid var(--divider); border-radius: 12px; padding: 14px; box-shadow: 0 6px 18px -10px rgba(0,0,0,0.6); }
+  .blk-card .ic { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+  .ic-blue { background: rgba(47,91,234,0.18); }
+  .ic-purple { background: rgba(110,86,207,0.20); }
+  .blk-card .tx .t1 { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .blk-card .tx .t2 { font-size: 12px; color: var(--text-secondary); margin-top: 1px; }
+  .blk-card .chev { margin-left: auto; color: var(--text-tertiary); }
+  .blk-card .chev svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2.5; fill: none; }
+  .blk-todo { display: flex; align-items: flex-start; gap: 10px; font-size: 15px; color: var(--text-primary); padding: 3px 0; }
+  .ck { width: 18px; height: 18px; border-radius: 6px; border: 1.8px solid var(--text-tertiary); flex-shrink: 0; margin-top: 1px; }
+  .ck.on { background: var(--craft-blue); border-color: var(--craft-blue); position: relative; }
+  .ck.on::after { content: ''; position: absolute; left: 5px; top: 2px; width: 5px; height: 9px; border: solid #FFF; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+  .blk-todo.done { color: var(--text-tertiary); text-decoration: line-through; }
+  .blk-quote { border-left: 3px solid var(--craft-purple); padding: 2px 0 2px 14px; font-size: 15px; color: var(--text-secondary); font-style: italic; }
+
+  /* Bottom bar */
+  .tab-bar { height: 64px; display: flex; align-items: center; padding: 0 14px 14px; justify-content: space-between; background: rgba(26,26,30,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab-bar .grp { display: flex; gap: 26px; align-items: center; color: var(--text-secondary); }
+  .tab-bar svg { width: 21px; height: 21px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab-bar .grp .active { color: var(--craft-blue); }
+  .fab { width: 46px; height: 46px; border-radius: 14px; background: linear-gradient(135deg, var(--craft-blue), var(--craft-purple)); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px -6px rgba(47,91,234,0.6); }
+  .fab svg { width: 22px; height: 22px; stroke: #FFF; stroke-width: 2.5; fill: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 500; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 500; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 600; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: linear-gradient(120deg, var(--craft-blue), var(--craft-purple)); color: #FFF; font-size: 15px; padding: 13px 26px; border-radius: 12px; }
+  .btn-primary:active { filter: brightness(0.92); transform: scale(0.98); }
+  .btn-solid { background: var(--craft-blue); color: #FFF; font-size: 15px; padding: 13px 26px; border-radius: 12px; }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1px solid var(--divider); font-size: 14px; font-weight: 500; padding: 12px 20px; border-radius: 10px; }
+  .btn-ghost { background: transparent; color: var(--craft-blue); font-size: 14px; font-weight: 600; padding: 12px 8px; border: none; cursor: pointer; }
+
+  /* Block cards demo */
+  .demo-stack { display: flex; flex-direction: column; gap: 10px; }
+  .demo-card { display: flex; align-items: center; gap: 12px; background: var(--surface-2); border: 1px solid var(--divider); border-radius: 12px; padding: 14px 16px; }
+  .demo-card .ic { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .demo-card .t1 { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .demo-card .t2 { font-size: 12px; color: var(--text-secondary); margin-top: 1px; }
+
+  /* Slash menu */
+  .slash { background: var(--surface-2); border: 1px solid var(--divider); border-radius: 12px; box-shadow: 0 12px 32px -12px rgba(0,0,0,0.7); overflow: hidden; max-width: 300px; }
+  .slash-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; }
+  .slash-row.sel { background: rgba(47,91,234,0.16); }
+  .slash-row .si { width: 28px; height: 28px; border-radius: 7px; background: var(--surface-1); display: flex; align-items: center; justify-content: center; font-size: 14px; }
+  .slash-row .st { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+  .slash-row .ss { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: linear-gradient(135deg, var(--craft-blue), var(--craft-purple)); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-6 { border-radius: 6px; }
+  .r-10 { border-radius: 10px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-20 { border-radius: 20px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  .craftmark { display: inline-flex; width: 40px; height: 40px; border-radius: 11px; background: linear-gradient(135deg, var(--craft-blue), var(--craft-purple)); align-items: center; justify-content: center; }
+  .craftmark svg { width: 22px; height: 22px; fill: #FFF; }
+  code { font-family: 'SF Mono', Menlo, monospace; font-size: 12px; background: var(--surface-2); padding: 2px 6px; border-radius: 4px; color: var(--text-primary); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="craftmark">
+      <svg viewBox="0 0 24 24"><path d="M5 4h9a5 5 0 0 1 0 10H9v6H5z"/><circle cx="16.5" cy="17.5" r="2.5"/></svg>
+    </span>
+    <div class="page-title">Craft iOS — Design Tokens</div>
+    <div class="page-chip">Editorial Dark</div>
+  </div>
+  <p class="page-subtitle">Craft's signature blue→purple gradient (#2F5BEA → #6E56CF) carries every primary action. Dark canvas sits at a soft #1A1A1E with cards lifting to #232328 and generous corner radii (12–20pt). The document editor is the product — block cards, Daily Note, and a beautiful hero cover.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="doc-top">
+            <div class="left"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg><span style="font-size:13px;font-weight:600;">Home</span></div>
+            <div class="right">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M4 12h16M12 4v16"/></svg>
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+            </div>
+          </div>
+
+          <div class="doc-body">
+            <div class="doc-cover"></div>
+            <div class="doc-emoji">📓</div>
+            <div class="doc-title">Product Strategy 2026</div>
+            <div class="doc-sub">Edited 2m ago · Shared with 4</div>
+
+            <div class="blk"><div class="blk-h">North Star</div>
+              <div class="blk-p">Make the writing surface invisible so the document becomes the interface. Every block is a card you can drag, fold, and link.</div>
+            </div>
+
+            <div class="blk blk-card">
+              <div class="ic ic-blue">🎯</div>
+              <div class="tx"><div class="t1">Q2 Objectives</div><div class="t2">Sub-page · 6 blocks</div></div>
+              <div class="chev"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+            </div>
+
+            <div class="blk">
+              <div class="blk-todo done"><span class="ck on"></span><span>Define block-based editor spec</span></div>
+              <div class="blk-todo"><span class="ck"></span><span>Ship Daily Note widget</span></div>
+              <div class="blk-todo"><span class="ck"></span><span>Link references across spaces</span></div>
+            </div>
+
+            <div class="blk blk-card">
+              <div class="ic ic-purple">📅</div>
+              <div class="tx"><div class="t1">Daily Note — May 18</div><div class="t2">Auto-created · 3 blocks</div></div>
+              <div class="chev"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+            </div>
+
+            <div class="blk blk-quote">"The best tool disappears into the work." — Craft principle</div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="grp">
+              <svg class="active" viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 21v-7h6v7"/></svg>
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+            </div>
+            <div class="fab"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+            <div class="grp">
+              <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h6M9 13h6M9 17h3"/></svg>
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="3.2"/><path d="M5.5 20c.8-3.2 3.5-4.5 6.5-4.5s5.7 1.3 6.5 4.5"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Dark Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#1A1A1E;"><div class="name">Dark Canvas</div>#1A1A1E</div>
+          <div class="swatch" style="background:#232328;"><div class="name">Dark Card</div>#232328</div>
+          <div class="swatch" style="background:#2C2C32;"><div class="name">Dark Surface 2</div>#2C2C32</div>
+          <div class="swatch" style="background:#34343C;"><div class="name">Dark Divider</div>#34343C</div>
+          <div class="swatch" style="background:#ECECEF; color:#1A1A1E;"><div class="name">Text Primary</div>#ECECEF</div>
+          <div class="swatch" style="background:#9B9BA6; color:#1A1A1E;"><div class="name">Text Secondary</div>#9B9BA6</div>
+          <div class="swatch" style="background:#2F5BEA;"><div class="name">Craft Blue</div>#2F5BEA</div>
+          <div class="swatch" style="background:#6E56CF;"><div class="name">Craft Purple</div>#6E56CF</div>
+          <div class="swatch" style="background:#8B73E8;"><div class="name">Purple Soft</div>#8B73E8</div>
+          <div class="swatch" style="background:#30A46C;"><div class="name">Success</div>#30A46C</div>
+          <div class="swatch" style="background:#F0A92B; color:#222;"><div class="name">Highlight</div>#F0A92B</div>
+          <div class="swatch" style="background:#E5484D;"><div class="name">Error</div>#E5484D</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter (SF Pro fallback)</div>
+        <div class="type-row"><div class="type-meta">Doc Title · 28pt · 800</div><div class="type-sample t-26">Product Strategy 2026</div></div>
+        <div class="type-row"><div class="type-meta">Heading 1 · 24pt · 700</div><div class="type-sample t-22">North Star</div></div>
+        <div class="type-row"><div class="type-meta">Heading 2 · 20pt · 700</div><div class="type-sample t-18">Q2 Objectives</div></div>
+        <div class="type-row"><div class="type-meta">Heading 3 · 17pt · 600</div><div class="type-sample" style="font-size:17px;font-weight:600;">Weekly review</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Every block is a card you can drag, fold, and cross-link between spaces.</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 15pt · 600</div><div class="type-sample t-15m">Daily Note — May 18</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 400</div><div class="type-sample t-14">Edited 2m ago · Shared with 4</div></div>
+        <div class="type-row"><div class="type-meta">Caption · 12pt · 500</div><div class="type-sample t-12">Auto-created</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">New Document</button>
+          <button class="btn btn-solid">Share</button>
+          <button class="btn btn-outline">Move to space</button>
+          <button class="btn btn-ghost">Add block</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Block Cards</div>
+        <div class="demo-stack">
+          <div class="demo-card"><div class="ic ic-blue">📄</div><div><div class="t1">Page block</div><div class="t2">Nested document · tap to open</div></div></div>
+          <div class="demo-card"><div class="ic ic-purple">🔗</div><div><div class="t1">Link card</div><div class="t2">Rich preview with favicon</div></div></div>
+          <div class="demo-card"><div class="ic" style="background:rgba(48,164,108,0.18);">✅</div><div><div class="t1">Task block</div><div class="t2">Tap circle to complete</div></div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Slash (/) Block Inserter</div>
+        <div class="slash">
+          <div class="slash-row sel"><div class="si">📝</div><div><div class="st">Text</div><div class="ss">Plain paragraph block</div></div></div>
+          <div class="slash-row"><div class="si">📄</div><div><div class="st">Page</div><div class="ss">Nested sub-document</div></div></div>
+          <div class="slash-row"><div class="si">✅</div><div><div class="st">To-do</div><div class="ss">Checkable task line</div></div></div>
+          <div class="slash-row"><div class="si">🖼️</div><div><div class="st">Image</div><div class="ss">Upload or embed</div></div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Craft's dark mode is a soft, near-charcoal <code>#1A1A1E</code> — never pure black — with block cards lifting to <code>#232328</code>. The blue→purple gradient (<code>#2F5BEA</code> → <code>#6E56CF</code>) is identical across themes; it's the one constant brand signature on the New Document button, FAB, and active tab. Text inverts to a soft white <code>#ECECEF</code>, preserving the editorial, paper-like reading rhythm. Block cards keep their generous 12pt radius and soft shadows; covers and emoji stay full-color while chrome recedes.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

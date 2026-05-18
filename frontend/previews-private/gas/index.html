@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Gas iOS — Playful</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --app-bg-top: #6C5CE7;
+    --app-bg-bot: #A06CFF;
+    --surface-1: #F4F2FF;
+    --surface-2: #FFFFFF;
+    --divider: #ECE9FB;
+    --text-primary: #1A1530;
+    --text-secondary: #6B6588;
+    --text-tertiary: #A29DB8;
+    --ink: #FFFFFF;
+    --gas-indigo: #6C5CE7;
+    --gas-purple: #A06CFF;
+    --gas-violet: #7B4DFF;
+    --gas-pink: #FF6CC8;
+    --gas-yellow: #FFC93C;
+    --flame: #FF7A45;
+    --success: #2BC48A;
+    --error: #FF5470;
+    /* page shell (shared dark catalog chrome) */
+    --pg-bg: #15131F;
+    --pg-surface: #1E1B2E;
+    --pg-divider: #2C2840;
+    --pg-text-2: #A9A3C2;
+    --font: 'Nunito', -apple-system, BlinkMacSystemFont, 'SF Pro Rounded', 'SF Pro Display', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #0C0B14; color: #EDEAF6; font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 900; letter-spacing: -0.6px; color: #FFFFFF; }
+  .page-chip { background: linear-gradient(135deg, var(--gas-indigo), var(--gas-purple)); color: #FFF; font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--pg-text-2); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: linear-gradient(180deg, var(--app-bg-top) 0%, var(--app-bg-bot) 100%); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 800; color: #FFFFFF; }
+
+  /* Top bar */
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 2px 20px 10px; }
+  .topbar-school { color: #FFFFFF; }
+  .topbar-school .lbl { font-size: 11px; font-weight: 700; opacity: 0.8; }
+  .topbar-school .nm { font-size: 17px; font-weight: 900; margin-top: 1px; }
+  .flame-pill { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.22); border-radius: 999px; padding: 7px 14px; color: #FFF; font-weight: 900; font-size: 15px; }
+  .flame-pill .ico { font-size: 16px; }
+
+  /* Poll card */
+  .poll-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px 18px 8px; }
+  .poll-card { width: 100%; background: #FFFFFF; border-radius: 28px; padding: 26px 20px 24px; box-shadow: 0 24px 50px -20px rgba(40,20,90,0.55); }
+  .poll-emoji { font-size: 50px; text-align: center; line-height: 1; }
+  .poll-q { font-size: 23px; font-weight: 900; color: var(--text-primary); text-align: center; margin-top: 14px; letter-spacing: -0.3px; line-height: 1.25; }
+  .poll-tag { display: block; text-align: center; font-size: 12px; font-weight: 800; color: var(--gas-violet); margin-top: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .poll-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 22px; }
+  .choice { border: none; border-radius: 20px; padding: 16px 10px; font-family: var(--font); font-size: 16px; font-weight: 800; color: #FFFFFF; cursor: pointer; text-align: center; }
+  .choice.c1 { background: linear-gradient(135deg, #6C5CE7, #8B6CFF); }
+  .choice.c2 { background: linear-gradient(135deg, #FF6CC8, #FF9CDB); }
+  .choice.c3 { background: linear-gradient(135deg, #FFC93C, #FFB13C); color: #4A3300; }
+  .choice.c4 { background: linear-gradient(135deg, #2BC48A, #4FD9A6); }
+  .poll-foot { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 20px; color: var(--text-tertiary); font-size: 13px; font-weight: 700; }
+  .poll-skip { margin-top: 16px; text-align: center; }
+  .poll-skip span { color: #FFFFFF; font-weight: 800; font-size: 14px; opacity: 0.85; }
+
+  /* progress dots */
+  .pdots { display: flex; gap: 6px; justify-content: center; margin-top: 18px; }
+  .pdots i { width: 22px; height: 5px; border-radius: 3px; background: rgba(255,255,255,0.35); }
+  .pdots i.on { background: #FFFFFF; width: 30px; }
+
+  /* Tab bar */
+  .tab-bar { height: 70px; display: flex; align-items: center; padding: 6px 10px 18px; justify-content: space-around; background: rgba(255,255,255,0.16); backdrop-filter: blur(16px); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: rgba(255,255,255,0.6); font-size: 10px; font-weight: 800; gap: 3px; }
+  .tab.active { color: #FFFFFF; }
+  .tab svg { width: 23px; height: 23px; stroke: currentColor; stroke-width: 2.2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+  .tab-mid { width: 50px; height: 50px; border-radius: 50%; background: #FFFFFF; display: flex; align-items: center; justify-content: center; margin-top: -16px; box-shadow: 0 8px 20px rgba(40,20,90,0.5); }
+  .tab-mid svg { width: 26px; height: 26px; stroke: var(--gas-indigo); stroke-width: 2.6; fill: none; }
+
+  /* Token sections (dark catalog chrome) */
+  .section { background: var(--pg-surface); border: 1px solid var(--pg-divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: var(--pg-text-2); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 700; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--pg-divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 800; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.grad { background: linear-gradient(135deg, var(--gas-indigo), var(--gas-purple)); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--pg-divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--pg-text-2); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: #EDEAF6; }
+  .t-32 { font-size: 32px; font-weight: 900; letter-spacing: -0.4px; color: #FFFFFF; }
+  .t-26 { font-size: 26px; font-weight: 900; letter-spacing: -0.3px; color: #FFFFFF; }
+  .t-23 { font-size: 23px; font-weight: 900; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 800; }
+  .t-16 { font-size: 16px; font-weight: 800; }
+  .t-15 { font-size: 15px; font-weight: 700; }
+  .t-13 { font-size: 13px; font-weight: 700; color: var(--pg-text-2); }
+  .t-12 { font-size: 12px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; color: var(--gas-purple); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 900; cursor: pointer; border: none; letter-spacing: 0.2px; }
+  .btn-primary { background: linear-gradient(135deg, var(--gas-indigo), var(--gas-purple)); color: #FFF; font-size: 16px; padding: 15px 30px; border-radius: 999px; }
+  .btn-primary:active { transform: scale(0.97); filter: brightness(0.96); }
+  .btn-choice { background: linear-gradient(135deg, #6C5CE7, #8B6CFF); color: #FFF; font-size: 15px; font-weight: 800; padding: 14px 22px; border-radius: 20px; }
+  .btn-flame { background: var(--flame); color: #FFF; font-size: 15px; font-weight: 900; padding: 13px 24px; border-radius: 999px; }
+  .btn-ghost { background: #2C2840; color: #EDEAF6; border: 1px solid var(--pg-divider); font-size: 15px; font-weight: 800; padding: 13px 22px; border-radius: 999px; }
+  .btn-text { background: transparent; color: var(--gas-purple); font-size: 15px; font-weight: 800; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Signature: poll choice cards */
+  .pc-demo { background: #FFFFFF; border-radius: 24px; padding: 20px; }
+  .pc-q { font-size: 18px; font-weight: 900; color: var(--text-primary); text-align: center; }
+  .pc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+  .pc { border-radius: 18px; padding: 14px 8px; font-weight: 800; color: #FFF; text-align: center; font-size: 15px; }
+
+  /* Signature: flame currency */
+  .flame-demo { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .flame-chip { display: flex; align-items: center; gap: 7px; background: var(--pg-surface); border: 1px solid var(--pg-divider); border-radius: 999px; padding: 10px 18px; color: #EDEAF6; font-weight: 900; font-size: 15px; }
+  .flame-chip .f { font-size: 17px; }
+  .flame-chip.lit { background: rgba(255,122,69,0.15); border-color: var(--flame); color: var(--flame); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: linear-gradient(135deg, var(--gas-indigo), var(--gas-purple)); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 800; }
+  .r-0 { border-radius: 0; }
+  .r-8 { border-radius: 8px; }
+  .r-14 { border-radius: 14px; }
+  .r-20 { border-radius: 20px; }
+  .r-28 { border-radius: 28px; }
+  .r-36 { border-radius: 36px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span style="font-size:28px;font-weight:900;background:linear-gradient(135deg,#6C5CE7,#A06CFF);-webkit-background-clip:text;background-clip:text;color:transparent;">Gas</span>
+    <div class="page-title">Gas iOS — Design Tokens</div>
+    <div class="page-chip">Playful Light</div>
+  </div>
+  <p class="page-subtitle">A bright, joyful purple world — a full-bleed indigo→purple gradient (#6C5CE7 → #A06CFF) behind big white poll cards. The signature is the anonymous compliment poll ("who has the best smile?") with four bold name choices, the flame 🔥 currency, and rounded, friendly Nunito type. Gas is a light-UI app by design.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="topbar">
+            <div class="topbar-school">
+              <div class="lbl">Lincoln High</div>
+              <div class="nm">Polls</div>
+            </div>
+            <div class="flame-pill"><span class="ico">🔥</span> 24</div>
+          </div>
+
+          <div class="poll-wrap">
+            <div class="poll-card">
+              <div class="poll-emoji">😄</div>
+              <div class="poll-q">Has the best smile in the room</div>
+              <span class="poll-tag">Anonymous · be nice</span>
+              <div class="poll-choices">
+                <button class="choice c1">Maya R.</button>
+                <button class="choice c2">Jordan K.</button>
+                <button class="choice c3">Priya S.</button>
+                <button class="choice c4">Devon L.</button>
+              </div>
+              <div class="poll-foot">🔄 Shuffle names</div>
+            </div>
+            <div class="pdots"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="poll-skip"><span>Skip ›</span></div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span>Polls</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M22 11.5a8.5 8.5 0 1 1-3.5-6.9L22 4"/><path d="M9 11l3 3L22 4"/></svg><span>Inbox</span></div>
+            <div class="tab"><div class="tab-mid"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span>School</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/></svg><span>You</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch grad"><div class="name">Brand Gradient</div>indigo → purple</div>
+          <div class="swatch" style="background:#6C5CE7;"><div class="name">Gas Indigo</div>#6C5CE7</div>
+          <div class="swatch" style="background:#A06CFF;"><div class="name">Gas Purple</div>#A06CFF</div>
+          <div class="swatch" style="background:#7B4DFF;"><div class="name">Gas Violet</div>#7B4DFF</div>
+          <div class="swatch" style="background:#FF6CC8;"><div class="name">Choice Pink</div>#FF6CC8</div>
+          <div class="swatch" style="background:#FFC93C; color:#4A3300;"><div class="name">Choice Yellow</div>#FFC93C</div>
+          <div class="swatch" style="background:#FF7A45;"><div class="name">Flame</div>#FF7A45</div>
+          <div class="swatch" style="background:#2BC48A;"><div class="name">Choice Green</div>#2BC48A</div>
+          <div class="swatch" style="background:#FFFFFF; color:#1A1530;"><div class="name">Card White</div>#FFFFFF</div>
+          <div class="swatch" style="background:#F4F2FF; color:#1A1530;"><div class="name">Tint Surface</div>#F4F2FF</div>
+          <div class="swatch" style="background:#1A1530;"><div class="name">Card Text</div>#1A1530</div>
+          <div class="swatch" style="background:#FF5470;"><div class="name">Error</div>#FF5470</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Nunito (rounded, friendly)</div>
+        <div class="type-row"><div class="type-meta">Display · 32pt · 900</div><div class="type-sample t-32">Polls</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 26pt · 900</div><div class="type-sample t-26">Your flames</div></div>
+        <div class="type-row"><div class="type-meta">Poll Question · 23pt · 900</div><div class="type-sample t-23">Has the best smile in the room</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 18pt · 800</div><div class="type-sample t-18">Someone is thinking about you</div></div>
+        <div class="type-row"><div class="type-meta">Choice · 16pt · 800</div><div class="type-sample t-16">Maya R.</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 700</div><div class="type-sample t-15">Open this poll to see who picked you.</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 700</div><div class="type-sample t-13">5 people voted · 2m ago</div></div>
+        <div class="type-row"><div class="type-meta">Tag · 12pt · 800</div><div class="type-sample t-12">Anonymous · be nice</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Get my flames</button>
+          <button class="btn btn-choice">Maya R.</button>
+          <button class="btn btn-flame">🔥 Unlock hint</button>
+          <button class="btn btn-ghost">Skip</button>
+          <button class="btn-text">Shuffle names</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Signature — Compliment Poll Card</div>
+        <div class="pc-demo">
+          <div class="pc-q">Who has the best smile? 😄</div>
+          <div class="pc-grid">
+            <div class="pc" style="background:linear-gradient(135deg,#6C5CE7,#8B6CFF);">Maya R.</div>
+            <div class="pc" style="background:linear-gradient(135deg,#FF6CC8,#FF9CDB);">Jordan K.</div>
+            <div class="pc" style="background:linear-gradient(135deg,#FFC93C,#FFB13C);color:#4A3300;">Priya S.</div>
+            <div class="pc" style="background:linear-gradient(135deg,#2BC48A,#4FD9A6);">Devon L.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Signature — Flame Currency</div>
+        <div class="flame-demo">
+          <div class="flame-chip lit"><span class="f">🔥</span> 24 flames</div>
+          <div class="flame-chip"><span class="f">🔥</span> +3 earned</div>
+          <div class="flame-chip"><span class="f">🔥</span> Unlock for 5</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-28">28</div>
+          <div class="radius-box r-36">36</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Light Mode Notes</div>
+        <p style="color: var(--pg-text-2); font-size: 14px; line-height: 1.55;">Gas is intentionally a <strong>light, joyful</strong> app — there is no dark mode in spirit. The screen is a full-bleed indigo→purple gradient (<code>#6C5CE7 → #A06CFF</code>) with a big, friendly white poll card (<code>#FFFFFF</code>, 28px radius, soft purple-tinted shadow) floating at the center. The four name choices are bold gradient pills in a fixed rotating palette (indigo, pink, yellow, green) so every poll feels bright and game-like. The flame 🔥 (<code>#FF7A45</code>) is the app's currency and dopamine loop — earned by voting, spent to unlock "who picked you" hints. Type is Nunito at heavy weights (800–900) for a rounded, middle-school-friendly, anti-corporate feel. Everything is positive-only, anonymous, and playful.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

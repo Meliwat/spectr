@@ -15,7 +15,7 @@ const SITE_URL = (process.env.SITE_URL || 'https://www.spectr.to').replace(/\/$/
 export const metadata: Metadata = {
   title: 'Spectr Gallery — Live iOS design blueprints by category',
   description:
-    'Browse live iOS design blueprints by category — Social, Messaging, Travel, Music, Video, Food, and more. 30 apps including Airbnb, Instagram, Spotify, TikTok, Uber, ChatGPT, Notion, Netflix.',
+    'Browse live iOS design blueprints by category — Social, Messaging, Travel, Music, Video, Food, and more. 200 apps including Airbnb, Instagram, Spotify, TikTok, Uber, ChatGPT, Notion, Netflix.',
   alternates: { canonical: '/gallery' },
   openGraph: {
     url: `${SITE_URL}/gallery`,
@@ -235,7 +235,7 @@ export default async function HomePage() {
             <span className="cat-eyebrow">Gallery</span>
             <h1 className="cat-title">Browse by category</h1>
             <p className="cat-sub">
-              30 design blueprints Spectr produced from real iOS apps —
+              200 design blueprints Spectr produced from real iOS apps —
               grouped by category. Tap a stack to open.
             </p>
           </div>

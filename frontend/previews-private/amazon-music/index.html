@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Amazon Music iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0C1B22;
+    --surface-1: #122A33;
+    --surface-2: #1A3742;
+    --divider: #234653;
+    --text-primary: #FFFFFF;
+    --text-secondary: #9FB6BF;
+    --text-tertiary: #6B8693;
+    --ink: #FFFFFF;
+    --am-cyan: #00A8E1;
+    --am-cyan-bright: #25D1DA;
+    --am-cyan-press: #0086B3;
+    --gradient-top: #16404C;
+    --success: #2EC4B6;
+    --error: #FF6B6B;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--am-cyan); color: #042730; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #030B0E; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); z-index: 5; }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Player + X-Ray lyrics — signature screen */
+  .player {
+    flex: 1; display: flex; flex-direction: column;
+    background: linear-gradient(180deg, #1C4A57 0%, #163A45 30%, #0F2730 60%, #0C1B22 100%);
+    overflow: hidden;
+  }
+  .pl-top { display: flex; align-items: center; justify-content: space-between; padding: 6px 20px 0; }
+  .pl-top svg { width: 22px; height: 22px; stroke: var(--text-primary); stroke-width: 2; fill: none; }
+  .pl-source { font-size: 10px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.7px; text-transform: uppercase; }
+
+  .pl-art {
+    width: 196px; height: 196px; border-radius: 6px; margin: 18px auto 0;
+    background: linear-gradient(135deg, #00A8E1 0%, #0E5C72 55%, #07303C 100%);
+    box-shadow: 0 18px 44px -16px rgba(0,0,0,0.65); position: relative; overflow: hidden;
+  }
+  .pl-art::before { content: ''; position: absolute; inset: 22% 20% 26% 20%; border: 3px solid rgba(255,255,255,0.18); border-radius: 50%; }
+  .pl-art::after { content: ''; position: absolute; left: 50%; top: 50%; width: 22px; height: 22px; background: #0C1B22; border-radius: 50%; transform: translate(-50%,-50%); }
+
+  .pl-meta { padding: 16px 22px 0; display: flex; align-items: flex-end; justify-content: space-between; }
+  .pl-meta-txt { line-height: 1.25; }
+  .pl-track { font-size: 19px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.2px; }
+  .pl-artist { font-size: 13px; font-weight: 500; color: var(--text-secondary); margin-top: 3px; }
+  .pl-add { width: 26px; height: 26px; stroke: var(--am-cyan-bright); stroke-width: 2; fill: none; }
+
+  /* X-Ray lyrics panel */
+  .xray { margin: 16px 18px 0; background: rgba(0,168,225,0.07); border: 1px solid rgba(37,209,218,0.22); border-radius: 10px; padding: 14px 16px; }
+  .xray-head { display: flex; align-items: center; gap: 7px; margin-bottom: 10px; }
+  .xray-badge { font-size: 9px; font-weight: 800; color: #042730; background: var(--am-cyan-bright); padding: 3px 7px; border-radius: 4px; letter-spacing: 0.5px; }
+  .xray-label { font-size: 10px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.6px; text-transform: uppercase; }
+  .xray-line { font-size: 15px; font-weight: 600; line-height: 1.55; color: var(--text-tertiary); }
+  .xray-line.cur { color: var(--am-cyan-bright); }
+  .xray-line.next { color: var(--text-secondary); }
+
+  .pl-scrub { padding: 16px 22px 0; }
+  .pl-bar { height: 4px; background: rgba(255,255,255,0.16); border-radius: 2px; position: relative; }
+  .pl-bar::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 38%; background: var(--am-cyan); border-radius: 2px; }
+  .pl-bar::after { content: ''; position: absolute; left: 38%; top: 50%; width: 13px; height: 13px; background: var(--am-cyan); border-radius: 50%; transform: translate(-50%,-50%); box-shadow: 0 0 0 4px rgba(0,168,225,0.2); }
+  .pl-time { display: flex; justify-content: space-between; margin-top: 7px; font-size: 11px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+
+  .pl-ctrls { display: flex; align-items: center; justify-content: space-between; padding: 12px 30px 0; }
+  .pl-ctrls svg { stroke: var(--text-primary); fill: var(--text-primary); }
+  .pl-ic { width: 24px; height: 24px; }
+  .pl-ic-sec { width: 22px; height: 22px; stroke: var(--text-secondary); fill: none; stroke-width: 2; }
+  .pl-play { width: 60px; height: 60px; border-radius: 50%; background: var(--am-cyan); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 22px -6px rgba(0,168,225,0.55); }
+  .pl-play svg { width: 24px; height: 24px; fill: #FFFFFF; stroke: none; }
+
+  .pl-foot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; padding: 14px 26px 16px; border-top: 0.5px solid rgba(255,255,255,0.1); }
+  .pl-foot svg { width: 20px; height: 20px; stroke: var(--text-secondary); stroke-width: 2; fill: none; }
+
+  /* Tab bar */
+  .tab-bar { height: 60px; display: flex; align-items: flex-start; padding: 8px 4px 12px; justify-content: space-around; background: #081218; border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 500; gap: 3px; }
+  .tab.active { color: var(--am-cyan-bright); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 500; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 600; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--am-cyan); color: #FFFFFF; font-size: 15px; padding: 13px 28px; border-radius: 999px; }
+  .btn-primary:active { background: var(--am-cyan-press); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--am-cyan-bright); border: 1px solid var(--am-cyan-bright); font-size: 14px; font-weight: 600; padding: 11px 22px; border-radius: 999px; }
+  .btn-ghost { background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--divider); font-size: 14px; font-weight: 600; padding: 11px 20px; border-radius: 999px; }
+  .btn-text { background: transparent; color: var(--am-cyan-bright); font-size: 14px; font-weight: 700; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* X-Ray lyrics demo */
+  .xr-demo { background: rgba(0,168,225,0.07); border: 1px solid rgba(37,209,218,0.22); border-radius: 10px; padding: 16px 18px; }
+  .xr-demo .xray-line { padding: 3px 0; }
+
+  /* Player mini bar */
+  .mini { display: flex; align-items: center; gap: 12px; background: var(--surface-2); border-radius: 8px; padding: 8px 12px; }
+  .mini-art { width: 40px; height: 40px; border-radius: 4px; background: linear-gradient(135deg, #00A8E1, #0E5C72); flex-shrink: 0; }
+  .mini-txt { flex: 1; line-height: 1.2; }
+  .mini-track { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+  .mini-artist { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+  .mini-ic { width: 22px; height: 22px; fill: var(--am-cyan); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--am-cyan); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-2 { border-radius: 2px; }
+  .r-4 { border-radius: 4px; }
+  .r-6 { border-radius: 6px; }
+  .r-10 { border-radius: 10px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .amz { display: inline-flex; width: 42px; height: 42px; align-items: center; justify-content: center; }
+  .amz svg { width: 42px; height: 42px; }
+  code { font-family: 'SF Mono', Menlo, monospace; font-size: 0.92em; color: var(--text-primary); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="amz">
+      <svg viewBox="0 0 48 48"><rect x="2" y="2" width="44" height="44" rx="11" fill="#00A8E1"/><path d="M16 14v15a2 2 0 0 0 3 1.7l12-7.3a2 2 0 0 0 0-3.4l-12-7.3A2 2 0 0 0 16 14z" fill="#FFFFFF"/><path d="M12 35c7 4 17 4 24 0" stroke="#FFFFFF" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>
+    </span>
+    <div class="page-title">Amazon Music iOS — Design Tokens</div>
+    <div class="page-chip">Deep Teal Dark</div>
+  </div>
+  <p class="page-subtitle">Deep teal-navy canvas (#0C1B22) with a top-down gradient behind the player. Amazon Music Cyan (#00A8E1) and its brighter glow (#25D1DA) drive every primary action. The signature surface is the full-screen player with the X-Ray lyrics panel — synced, line-by-line, with the current line in bright cyan.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="player">
+            <div class="pl-top">
+              <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+              <div class="pl-source">PLAYING FROM PLAYLIST</div>
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+            </div>
+
+            <div class="pl-art"></div>
+
+            <div class="pl-meta">
+              <div class="pl-meta-txt">
+                <div class="pl-track">Redbone</div>
+                <div class="pl-artist">Childish Gambino · "Awaken, My Love!"</div>
+              </div>
+              <svg class="pl-add" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            </div>
+
+            <div class="xray">
+              <div class="xray-head">
+                <span class="xray-badge">X-RAY</span>
+                <span class="xray-label">Lyrics</span>
+              </div>
+              <div class="xray-line">Daylight, I wake up feeling like</div>
+              <div class="xray-line cur">But stay woke</div>
+              <div class="xray-line next">Niggas creepin'</div>
+              <div class="xray-line">They gon' find you</div>
+            </div>
+
+            <div class="pl-scrub">
+              <div class="pl-bar"></div>
+              <div class="pl-time"><span>1:54</span><span>-3:33</span></div>
+            </div>
+
+            <div class="pl-ctrls">
+              <svg class="pl-ic-sec" viewBox="0 0 24 24"><path d="M4 4v6h6M4 10a8 8 0 1 1 2 6"/></svg>
+              <svg class="pl-ic" viewBox="0 0 24 24"><polygon points="19,5 9,12 19,19"/><rect x="5" y="5" width="2.5" height="14"/></svg>
+              <div class="pl-play"><svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg></div>
+              <svg class="pl-ic" viewBox="0 0 24 24"><polygon points="5,5 15,12 5,19"/><rect x="16.5" y="5" width="2.5" height="14"/></svg>
+              <svg class="pl-ic-sec" viewBox="0 0 24 24"><path d="M20 4v6h-6M20 10a8 8 0 1 0-2 6"/></svg>
+            </div>
+
+            <div class="pl-foot">
+              <svg viewBox="0 0 24 24"><path d="M9 18V6l10-2v12"/><circle cx="6" cy="18" r="2.5"/><circle cx="16" cy="16" r="2.5"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M4 14a8 8 0 0 1 16 0"/><circle cx="12" cy="18" r="1.5"/></svg>
+              <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v9a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Find</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M12 3a4 4 0 0 0-4 4v6a4 4 0 0 0 8 0V7a4 4 0 0 0-4-4z"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><span>Podcasts</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 19V5l7 4 7-4v14"/><circle cx="9" cy="17" r="2.5"/></svg><span>Library</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0C1B22;"><div class="name">Canvas</div>#0C1B22</div>
+          <div class="swatch" style="background:#122A33;"><div class="name">Surface 1</div>#122A33</div>
+          <div class="swatch" style="background:#1A3742;"><div class="name">Surface 2</div>#1A3742</div>
+          <div class="swatch" style="background:#234653;"><div class="name">Divider</div>#234653</div>
+          <div class="swatch" style="background:#00A8E1;"><div class="name">Amazon Cyan</div>#00A8E1</div>
+          <div class="swatch" style="background:#25D1DA; color:#042730;"><div class="name">Cyan Bright</div>#25D1DA</div>
+          <div class="swatch" style="background:#0086B3;"><div class="name">Cyan Pressed</div>#0086B3</div>
+          <div class="swatch" style="background:#16404C;"><div class="name">Gradient Top</div>#16404C</div>
+          <div class="swatch" style="background:#FFFFFF; color:#0C1B22;"><div class="name">Text Primary</div>#FFFFFF</div>
+          <div class="swatch" style="background:#9FB6BF; color:#0C1B22;"><div class="name">Text Secondary</div>#9FB6BF</div>
+          <div class="swatch" style="background:#2EC4B6;"><div class="name">Success</div>#2EC4B6</div>
+          <div class="swatch" style="background:#FF6B6B;"><div class="name">Error</div>#FF6B6B</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Amazon Ember (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 800</div><div class="type-sample t-32">Good evening</div></div>
+        <div class="type-row"><div class="type-meta">Player Title · 26pt · 700</div><div class="type-sample t-26">Redbone</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Recently played</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 18pt · 700</div><div class="type-sample t-18">Your Soundtrack</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Stream tens of millions of songs in HD, ad-free.</div></div>
+        <div class="type-row"><div class="type-meta">Row Title · 15pt · 500</div><div class="type-sample t-15m">Childish Gambino</div></div>
+        <div class="type-row"><div class="type-meta">Subtitle · 14pt · 400</div><div class="type-sample t-14">Song · "Awaken, My Love!"</div></div>
+        <div class="type-row"><div class="type-meta">X-Ray Line · 15pt · 600</div><div class="type-sample t-12" style="font-size:15px;">But stay woke</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Play</button>
+          <button class="btn btn-outline">Shuffle</button>
+          <button class="btn btn-ghost">Add to library</button>
+          <button class="btn-text">See all</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">X-Ray Lyrics — Synced Panel</div>
+        <div class="xr-demo">
+          <div class="xray-head">
+            <span class="xray-badge">X-RAY</span>
+            <span class="xray-label">Lyrics</span>
+          </div>
+          <div class="xray-line">Daylight, I wake up feeling like</div>
+          <div class="xray-line cur">But stay woke</div>
+          <div class="xray-line next">Niggas creepin'</div>
+          <div class="xray-line">They gon' find you</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Player Mini Bar</div>
+        <div class="mini">
+          <div class="mini-art"></div>
+          <div class="mini-txt">
+            <div class="mini-track">Redbone</div>
+            <div class="mini-artist">Childish Gambino</div>
+          </div>
+          <svg class="mini-ic" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>
+          <svg class="mini-ic" viewBox="0 0 24 24"><polygon points="5,5 15,12 5,19"/><rect x="16.5" y="5" width="2.5" height="14"/></svg>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-2">2</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Amazon Music is dark-first. The canvas is a deep teal-navy <code>#0C1B22</code> — not neutral grey — which gives the app its distinct, oceanic identity versus Spotify or YT Music. The full-screen player sits on a top-down gradient that lifts toward <code>#16404C</code> behind the art. Amazon Cyan <code>#00A8E1</code> is the structural accent for play/scrubber; the brighter <code>#25D1DA</code> is used for the active X-Ray lyric line and the active tab. Album art and the X-Ray panel are the visual center; chrome stays low-contrast.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

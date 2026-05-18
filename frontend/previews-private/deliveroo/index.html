@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Deliveroo iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #121212;
+    --surface-1: #1C1C1E;
+    --surface-2: #262629;
+    --divider: #2C2C2E;
+    --text-primary: #F4F4F2;
+    --text-secondary: #9E9E9E;
+    --text-tertiary: #6A6A6A;
+    --ink: #FFFFFF;
+    --teal: #00CCBC;
+    --teal-pressed: #00A99C;
+    --teal-deep: #2E3333;
+    --plus: #C4F4EF;
+    --gold: #FFC100;
+    --error: #E2483D;
+    --success: #00CCBC;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--teal); color: #003733; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+  /* Address + search */
+  .addr-bar { padding: 4px 18px 10px; display: flex; align-items: center; gap: 8px; }
+  .addr-label { font-size: 11px; color: var(--text-secondary); font-weight: 700; }
+  .addr-value { font-size: 15px; font-weight: 800; color: var(--text-primary); display: flex; align-items: center; gap: 6px; }
+  .addr-value svg { width: 12px; height: 12px; stroke: var(--teal); stroke-width: 3.5; fill: none; }
+  .bag { margin-left: auto; width: 36px; height: 36px; border-radius: 18px; background: var(--teal); display: flex; align-items: center; justify-content: center; }
+  .bag svg { width: 16px; height: 16px; stroke: #003733; stroke-width: 2.5; fill: none; }
+  .search-wrap { padding: 0 16px 12px; }
+  .search-pill { display: flex; align-items: center; height: 46px; border-radius: 999px; background: var(--surface-1); border: 0.5px solid var(--divider); padding: 0 18px; gap: 10px; }
+  .search-pill svg { width: 16px; height: 16px; stroke: var(--text-secondary); stroke-width: 2.5; fill: none; }
+  .search-pill span { font-size: 14px; color: var(--text-secondary); font-weight: 500; }
+  /* Plus banner */
+  .plus-card { margin: 0 16px 14px; background: linear-gradient(120deg, #003E3A 0%, #00524B 100%); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
+  .plus-logo { font-size: 13px; font-weight: 900; color: var(--teal); letter-spacing: -0.2px; }
+  .plus-text { font-size: 13px; font-weight: 600; color: var(--plus); flex: 1; }
+  .plus-cta { font-size: 12px; font-weight: 800; color: #003733; background: var(--teal); padding: 7px 12px; border-radius: 999px; }
+  /* Category icons */
+  .cat-bar { display: flex; gap: 18px; padding: 0 16px 16px; overflow-x: auto; scrollbar-width: none; }
+  .cat-bar::-webkit-scrollbar { display: none; }
+  .cat { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 7px; }
+  .cat-ic { width: 54px; height: 54px; border-radius: 16px; background: var(--surface-2); display: flex; align-items: center; justify-content: center; }
+  .cat-ic svg { width: 24px; height: 24px; stroke: var(--teal); stroke-width: 2; fill: none; }
+  .cat-lbl { font-size: 11px; font-weight: 600; color: var(--text-secondary); }
+  .cat.active .cat-ic { background: var(--teal); }
+  .cat.active .cat-ic svg { stroke: #003733; }
+  .cat.active .cat-lbl { color: var(--text-primary); }
+  /* Restaurant feed */
+  .feed { flex: 1; padding: 0 16px; overflow-y: auto; scrollbar-width: none; }
+  .feed::-webkit-scrollbar { display: none; }
+  .sec-h { font-size: 20px; font-weight: 800; color: var(--text-primary); margin: 4px 0 14px; letter-spacing: -0.3px; }
+  .rest { margin-bottom: 22px; }
+  .rest-photo { width: 100%; aspect-ratio: 5/3; border-radius: 14px; position: relative; overflow: hidden; }
+  .photo-pizza { background: linear-gradient(150deg, #B8431C 0%, #8F3216 45%, #6B2410 100%); }
+  .photo-pizza::before { content: ''; position: absolute; top: 22%; left: 22%; right: 22%; bottom: 22%; border-radius: 50%; background: radial-gradient(circle, #E8B86A 0%, #D99A45 55%, #C2410C 100%); }
+  .photo-pizza::after { content: ''; position: absolute; top: 38%; left: 38%; width: 9%; height: 9%; background: #B91C1C; border-radius: 50%; box-shadow: 70% 50% 0 #B91C1C, 30% 110% 0 #B91C1C, 120% 90% 0 #B91C1C; }
+  .photo-noodle { background: linear-gradient(150deg, #2C5248 0%, #1F3E37 45%, #142A25 100%); }
+  .photo-noodle::before { content: ''; position: absolute; top: 26%; left: 24%; right: 24%; bottom: 24%; border-radius: 50%; background: radial-gradient(circle, #E9DCC0 0%, #C9B58A 60%, #8A7A52 100%); }
+  .photo-noodle::after { content: ''; position: absolute; top: 40%; left: 36%; width: 28%; height: 8%; background: #E2553B; border-radius: 4px; box-shadow: 0 9px 0 -2px #C9622E; }
+  .plus-badge { position: absolute; top: 10px; left: 10px; background: var(--teal); color: #003733; font-size: 11px; font-weight: 900; padding: 4px 9px; border-radius: 6px; letter-spacing: -0.1px; }
+  .heart { position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; border-radius: 16px; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; }
+  .heart svg { width: 16px; height: 16px; stroke: #FFF; stroke-width: 2; fill: none; }
+  .heart.saved svg { fill: var(--teal); stroke: var(--teal); }
+  .rest-row1 { display: flex; align-items: center; margin-top: 10px; }
+  .rest-name { font-size: 16px; font-weight: 800; color: var(--text-primary); }
+  .rest-rating { margin-left: auto; display: flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 700; color: var(--text-primary); }
+  .rest-rating svg { width: 13px; height: 13px; fill: var(--teal); }
+  .rest-meta { font-size: 13px; color: var(--text-secondary); margin-top: 4px; font-weight: 500; }
+  .rest-fee { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-primary); font-weight: 700; margin-top: 8px; background: var(--surface-2); padding: 5px 10px; border-radius: 999px; }
+  .rest-fee svg { width: 12px; height: 12px; stroke: var(--teal); stroke-width: 2.5; fill: none; }
+  /* Tab bar */
+  .tab-bar { height: 68px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(18,18,18,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: #888; font-size: 10px; font-weight: 700; gap: 4px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--teal); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 900; letter-spacing: -0.6px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 800; letter-spacing: -0.3px; }
+  .t-20 { font-size: 20px; font-weight: 800; letter-spacing: -0.2px; }
+  .t-16 { font-size: 16px; font-weight: 800; }
+  .t-15 { font-size: 15px; font-weight: 500; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-13 { font-size: 13px; font-weight: 700; }
+  .t-12 { font-size: 12px; font-weight: 800; }
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 800; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--teal); color: #003733; font-size: 16px; padding: 14px 28px; border-radius: 999px; }
+  .btn-primary:active { background: var(--teal-pressed); transform: scale(0.98); }
+  .btn-dark { background: var(--text-primary); color: var(--canvas); font-size: 15px; padding: 13px 24px; border-radius: 999px; }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1.5px solid var(--divider); font-size: 14px; font-weight: 700; padding: 11px 20px; border-radius: 999px; }
+  .btn-text { background: transparent; color: var(--teal); font-size: 14px; font-weight: 800; padding: 12px 0; border: none; cursor: pointer; }
+  /* Stepper + Plus pill */
+  .comp-row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  .stepper { display: flex; align-items: center; gap: 14px; }
+  .step-btn { width: 32px; height: 32px; border-radius: 16px; background: var(--teal); color: #003733; font-size: 18px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+  .step-n { font-size: 16px; font-weight: 800; min-width: 18px; text-align: center; }
+  .plus-pill { display: inline-flex; align-items: center; gap: 6px; background: var(--teal); color: #003733; font-size: 12px; font-weight: 900; padding: 8px 14px; border-radius: 999px; letter-spacing: -0.1px; }
+  /* Menu item row */
+  .menu-row { display: flex; gap: 14px; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .menu-info { flex: 1; }
+  .menu-name { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+  .menu-desc { font-size: 13px; color: var(--text-secondary); margin-top: 4px; line-height: 1.45; }
+  .menu-price { font-size: 14px; font-weight: 800; color: var(--text-primary); margin-top: 8px; }
+  .menu-thumb { width: 84px; height: 84px; border-radius: 12px; flex-shrink: 0; background: linear-gradient(150deg, #B8431C, #6B2410); position: relative; }
+  .menu-thumb::after { content: '+'; position: absolute; bottom: -10px; right: -8px; width: 28px; height: 28px; border-radius: 14px; background: var(--teal); color: #003733; font-size: 18px; font-weight: 800; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.5); }
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--teal); color: #003733; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-14 { border-radius: 14px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 999px; }
+  .r-circle { border-radius: 50%; }
+  /* Deliveroo kangaroo / rider logomark */
+  .roologo { display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; background: var(--teal); border-radius: 12px; }
+  .roologo svg { width: 26px; height: 26px; fill: #003733; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="roologo">
+      <svg viewBox="0 0 32 32"><path d="M20.5 4c-1 0-1.9.5-2.5 1.3-.7-.4-1.6-.6-2.5-.6-2.9 0-5.3 2.3-5.3 5.2 0 .5.1 1 .2 1.4L7 13.6c-1 .7-1.3 2-.7 3l3.5 5.6c.4.7 1.1 1.1 1.9 1.1h2.1l-1.3 4.2c-.2.7.2 1.5 1 1.7.7.2 1.5-.2 1.7-1l1.6-4.9h2.4l1.6 4.9c.2.8 1 1.2 1.7 1 .8-.2 1.2-1 1-1.7l-1.3-4.2h.6c1.2 0 2.2-1 2.2-2.2V9c0-2.8-2.2-5-5-5zm-7 7.4a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/></svg>
+    </span>
+    <div class="page-title">Deliveroo iOS — Design Tokens</div>
+    <div class="page-chip">Teal Dark</div>
+  </div>
+  <p class="page-subtitle">Warm-dark canvas (#121212) with text inverted to #F4F4F2. Deliveroo Teal (#00CCBC) stays the single brand color across actions, the kangaroo mark, ratings and Plus — it glows on dark. Restaurant photography stays full-color; only the chrome dims.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="addr-bar">
+            <div>
+              <div class="addr-label">Deliver to</div>
+              <div class="addr-value">12 Hatton Garden <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+            </div>
+            <div class="bag"><svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+          </div>
+
+          <div class="search-wrap">
+            <div class="search-pill"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Restaurants, groceries, dishes</span></div>
+          </div>
+
+          <div class="plus-card">
+            <div class="plus-logo">deliveroo plus</div>
+            <div class="plus-text">Free delivery on this order</div>
+            <div class="plus-cta">Join</div>
+          </div>
+
+          <div class="cat-bar">
+            <div class="cat active"><div class="cat-ic"><svg viewBox="0 0 24 24"><path d="M4 13h16l-1.5 7a2 2 0 0 1-2 1.7H7.5a2 2 0 0 1-2-1.7L4 13z"/><path d="M4 13a8 8 0 0 1 16 0"/></svg></div><div class="cat-lbl">Restaurants</div></div>
+            <div class="cat"><div class="cat-ic"><svg viewBox="0 0 24 24"><path d="M6 2 4 6v13a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6l-2-4z"/><path d="M9 10a3 3 0 0 0 6 0"/></svg></div><div class="cat-lbl">Grocery</div></div>
+            <div class="cat"><div class="cat-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div><div class="cat-lbl">Fast</div></div>
+            <div class="cat"><div class="cat-ic"><svg viewBox="0 0 24 24"><path d="M5 11h14M7 11V7a5 5 0 0 1 10 0v4M6 11l1 9h10l1-9"/></svg></div><div class="cat-lbl">Treats</div></div>
+            <div class="cat"><div class="cat-ic"><svg viewBox="0 0 24 24"><path d="M3 12h18M12 3v18"/></svg></div><div class="cat-lbl">Offers</div></div>
+          </div>
+
+          <div class="feed">
+            <div class="sec-h">Popular near you</div>
+            <div class="rest">
+              <div class="rest-photo photo-pizza">
+                <span class="plus-badge">PLUS · Free delivery</span>
+                <div class="heart saved"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+              </div>
+              <div class="rest-row1">
+                <span class="rest-name">Franco Manca</span>
+                <span class="rest-rating"><svg viewBox="0 0 24 24"><polygon points="12,2 15.1,8.4 22,9.3 17,14.1 18.2,21 12,17.8 5.8,21 7,14.1 2,9.3 8.9,8.4"/></svg>4.7</span>
+              </div>
+              <div class="rest-meta">Pizza · Sourdough · 25–35 min</div>
+              <span class="rest-fee"><svg viewBox="0 0 24 24"><path d="M5 18h14M7 18V9a5 5 0 0 1 10 0v9"/><circle cx="7" cy="20" r="1.6"/><circle cx="17" cy="20" r="1.6"/></svg>£1.49 delivery · Min £12</span>
+            </div>
+
+            <div class="rest">
+              <div class="rest-photo photo-noodle">
+                <span class="plus-badge">20% off, up to £10</span>
+                <div class="heart"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+              </div>
+              <div class="rest-row1">
+                <span class="rest-name">Wagamama</span>
+                <span class="rest-rating"><svg viewBox="0 0 24 24"><polygon points="12,2 15.1,8.4 22,9.3 17,14.1 18.2,21 12,17.8 5.8,21 7,14.1 2,9.3 8.9,8.4"/></svg>4.6</span>
+              </div>
+              <div class="rest-meta">Asian · Ramen · 30–40 min</div>
+              <span class="rest-fee"><svg viewBox="0 0 24 24"><path d="M5 18h14M7 18V9a5 5 0 0 1 10 0v9"/><circle cx="7" cy="20" r="1.6"/><circle cx="17" cy="20" r="1.6"/></svg>£2.49 delivery · Min £15</span>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg><span>Orders</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span>Favourites</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="3.5"/><path d="M5.5 20c1-3.5 4-5 6.5-5s5.5 1.5 6.5 5"/></svg><span>Account</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette (Dark)</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#00CCBC; color:#003733;"><div class="name">Deliveroo Teal</div>#00CCBC</div>
+          <div class="swatch" style="background:#00A99C; color:#003733;"><div class="name">Teal Pressed</div>#00A99C</div>
+          <div class="swatch" style="background:#003733;"><div class="name">Teal Ink</div>#003733</div>
+          <div class="swatch" style="background:#C4F4EF; color:#003733;"><div class="name">Plus Mint</div>#C4F4EF</div>
+          <div class="swatch" style="background:#FFC100; color:#1A1206;"><div class="name">Promo Gold</div>#FFC100</div>
+          <div class="swatch" style="background:#E2483D;"><div class="name">Error</div>#E2483D</div>
+          <div class="swatch" style="background:#121212;"><div class="name">Dark Canvas</div>#121212</div>
+          <div class="swatch" style="background:#1C1C1E;"><div class="name">Dark Surface 1</div>#1C1C1E</div>
+          <div class="swatch" style="background:#262629;"><div class="name">Dark Surface 2</div>#262629</div>
+          <div class="swatch" style="background:#F4F4F2; color:#121212;"><div class="name">Text Primary</div>#F4F4F2</div>
+          <div class="swatch" style="background:#9E9E9E; color:#121212;"><div class="name">Text Secondary</div>#9E9E9E</div>
+          <div class="swatch" style="background:#2C2C2E;"><div class="name">Divider</div>#2C2C2E</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter (Deliveroo brand grotesque fallback)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 900</div><div class="type-sample t-32">Home</div></div>
+        <div class="type-row"><div class="type-meta">Restaurant Hero · 26pt · 800</div><div class="type-sample t-26">Franco Manca</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 800</div><div class="type-sample t-22">Popular near you</div></div>
+        <div class="type-row"><div class="type-meta">Sub-section · 20pt · 800</div><div class="type-sample t-20">Most ordered</div></div>
+        <div class="type-row"><div class="type-meta">Restaurant Name · 16pt · 800</div><div class="type-sample t-16">Wagamama</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 500</div><div class="type-sample t-15">Slow-proved sourdough pizza, fired in 90 seconds.</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Asian · Ramen · 30–40 min</div></div>
+        <div class="type-row"><div class="type-meta">Fee Pill · 13pt · 700</div><div class="type-sample t-13">£1.49 delivery · Min £12</div></div>
+        <div class="type-row"><div class="type-meta">Badge · 12pt · 800</div><div class="type-sample t-12">PLUS · Free delivery</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Add to basket</button>
+          <button class="btn btn-dark">Checkout · £24.50</button>
+          <button class="btn btn-outline">Group order</button>
+          <button class="btn-text">See full menu</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Quantity Stepper & Deliveroo Plus</div>
+        <div class="comp-row">
+          <div class="stepper">
+            <span class="step-btn">−</span>
+            <span class="step-n">2</span>
+            <span class="step-btn">+</span>
+          </div>
+          <span class="plus-pill">deliveroo plus · Free delivery</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Menu Item Row (Restaurant detail)</div>
+        <div class="menu-row">
+          <div class="menu-info">
+            <div class="menu-name">Margherita</div>
+            <div class="menu-desc">San Marzano tomato, fior di latte, fresh basil, extra-virgin olive oil.</div>
+            <div class="menu-price">£9.95</div>
+          </div>
+          <div class="menu-thumb"></div>
+        </div>
+        <div class="menu-row" style="border-bottom:none;">
+          <div class="menu-info">
+            <div class="menu-name">Nduja</div>
+            <div class="menu-desc">Spicy Calabrian sausage, mozzarella, tomato, wild garlic.</div>
+            <div class="menu-price">£12.50</div>
+          </div>
+          <div class="menu-thumb"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Deliveroo's dark mode keeps a warm near-black canvas at <code>#121212</code>; cards lift to <code>#1C1C1E</code>. Deliveroo Teal <code>#00CCBC</code> is the single brand color and stays identical across themes — it glows on dark, so its on-color flips to deep teal-ink <code>#003733</code> for legible button labels. The kangaroo mark, ratings, Plus and active tab all share this one teal. Food photography is never dimmed — only chrome and dividers darken.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

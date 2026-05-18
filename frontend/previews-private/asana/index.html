@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Asana iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #1E1F21;
+    --surface-1: #252628;
+    --surface-2: #2E2F31;
+    --divider: #35363A;
+    --text-primary: #F5F4F2;
+    --text-secondary: #A9A9AA;
+    --text-tertiary: #6F7073;
+    --ink: #FFFFFF;
+    --coral: #F06A6A;
+    --coral-pressed: #D85B5B;
+    --plum: #4573D2;
+    --aqua: #4ECBC4;
+    --green: #62D26F;
+    --yellow: #F8DF72;
+    --orange: #F1BD6C;
+    --magenta: #F26FD3;
+    --indigo: #5A3FFF;
+    --error: #E8384F;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--coral); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* App header */
+  .app-head { padding: 4px 18px 12px; }
+  .app-head-top { display: flex; align-items: center; justify-content: space-between; }
+  .app-head-title { font-size: 24px; font-weight: 700; color: var(--ink); letter-spacing: -0.4px; }
+  .avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--plum); color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+  .app-tabs { display: flex; gap: 22px; margin-top: 14px; border-bottom: 1px solid var(--divider); }
+  .app-tab { font-size: 14px; font-weight: 600; color: var(--text-secondary); padding-bottom: 10px; position: relative; }
+  .app-tab.active { color: var(--text-primary); }
+  .app-tab.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: var(--coral); border-radius: 2px; }
+
+  /* Task list */
+  .task-list { flex: 1; padding: 6px 0 16px; overflow-y: auto; scrollbar-width: none; }
+  .task-list::-webkit-scrollbar { display: none; }
+  .section-hd { display: flex; align-items: center; gap: 8px; padding: 14px 18px 8px; }
+  .section-caret { width: 0; height: 0; border-left: 5px solid var(--text-secondary); border-top: 4px solid transparent; border-bottom: 4px solid transparent; }
+  .section-name { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+  .section-count { font-size: 12px; color: var(--text-tertiary); }
+  .task { display: flex; align-items: flex-start; gap: 12px; padding: 11px 18px; border-bottom: 1px solid var(--divider); }
+  .check { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--text-tertiary); flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; }
+  .check.done { background: var(--green); border-color: var(--green); }
+  .check.done svg { width: 11px; height: 11px; stroke: #1E1F21; stroke-width: 3; fill: none; }
+  .task-body { flex: 1; min-width: 0; }
+  .task-name { font-size: 15px; font-weight: 500; color: var(--text-primary); }
+  .task-name.done { color: var(--text-tertiary); text-decoration: line-through; }
+  .task-meta { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+  .pill { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 999px; }
+  .pill-proj { background: rgba(78,203,196,0.16); color: var(--aqua); }
+  .pill-due { background: rgba(241,189,108,0.16); color: var(--orange); }
+  .pill-due.late { background: rgba(232,56,79,0.18); color: var(--error); }
+  .task-assignee { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #FFF; }
+
+  /* FAB */
+  .fab { position: absolute; right: 18px; bottom: 86px; width: 56px; height: 56px; border-radius: 50%; background: var(--coral); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(240,106,106,0.45); }
+  .fab svg { width: 24px; height: 24px; stroke: #FFF; stroke-width: 2.5; fill: none; }
+
+  /* Tab bar */
+  .tab-bar { height: 68px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(30,31,33,0.95); backdrop-filter: saturate(180%) blur(20px); border-top: 1px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 4px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--coral); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #1E1F21; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 600; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 500; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 600; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 600; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--coral); color: #FFF; font-size: 15px; padding: 13px 26px; border-radius: 8px; }
+  .btn-primary:active { background: var(--coral-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1px solid var(--divider); font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 8px; }
+  .btn-pill { background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--divider); font-size: 14px; font-weight: 600; padding: 10px 18px; border-radius: 999px; }
+  .btn-text { background: transparent; color: var(--plum); font-size: 14px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Status pills */
+  .status-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .sbadge { font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: 999px; }
+  .s-track { background: rgba(78,203,196,0.18); color: var(--aqua); }
+  .s-risk { background: rgba(248,223,114,0.18); color: var(--yellow); }
+  .s-off { background: rgba(232,56,79,0.18); color: var(--error); }
+  .s-done { background: rgba(98,210,111,0.18); color: var(--green); }
+
+  /* Board columns */
+  .board { display: flex; gap: 12px; }
+  .col { flex: 1; background: var(--surface-2); border-radius: 12px; padding: 12px; }
+  .col-hd { font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.4px; }
+  .card { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 10px; padding: 12px; margin-bottom: 8px; }
+  .card-title { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+  .card-tag { display: inline-block; margin-top: 8px; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: rgba(69,115,210,0.2); color: var(--plum); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--coral); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 999px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .mark { display: inline-flex; width: 40px; height: 40px; align-items: center; justify-content: center; }
+  .mark svg { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="mark">
+      <svg viewBox="0 0 40 40"><circle cx="20" cy="27" r="6.2" fill="#F06A6A"/><circle cx="12.8" cy="14.6" r="6.2" fill="#F06A6A"/><circle cx="27.2" cy="14.6" r="6.2" fill="#F06A6A"/></svg>
+    </span>
+    <div class="page-title">Asana iOS — Design Tokens</div>
+    <div class="page-chip">Focus Dark</div>
+  </div>
+  <p class="page-subtitle">Asana's dark canvas (#1E1F21) keeps the coral accent (#F06A6A) identical across themes — it stays warm and legible on dark. The multicolor project palette (plum, aqua, green, yellow) drives status pills and project tags. Surfaces lift in tight 7-point steps; checkmark circles and the coral FAB anchor the My Tasks flow.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="app-head">
+            <div class="app-head-top">
+              <div class="app-head-title">My Tasks</div>
+              <div class="avatar">MK</div>
+            </div>
+            <div class="app-tabs">
+              <div class="app-tab active">List</div>
+              <div class="app-tab">Board</div>
+              <div class="app-tab">Calendar</div>
+              <div class="app-tab">Files</div>
+            </div>
+          </div>
+
+          <div class="task-list">
+            <div class="section-hd"><span class="section-caret"></span><span class="section-name">Today</span><span class="section-count">3</span></div>
+
+            <div class="task">
+              <div class="check"></div>
+              <div class="task-body">
+                <div class="task-name">Finalize Q3 launch brief</div>
+                <div class="task-meta">
+                  <span class="pill pill-proj">Marketing</span>
+                  <span class="pill pill-due late">Today</span>
+                </div>
+              </div>
+              <div class="task-assignee" style="background:#4573D2;">SK</div>
+            </div>
+
+            <div class="task">
+              <div class="check"></div>
+              <div class="task-body">
+                <div class="task-name">Review onboarding copy with design</div>
+                <div class="task-meta">
+                  <span class="pill pill-proj">Product</span>
+                  <span class="pill pill-due">Tue</span>
+                </div>
+              </div>
+              <div class="task-assignee" style="background:#4ECBC4;">MK</div>
+            </div>
+
+            <div class="task">
+              <div class="check done"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="task-body">
+                <div class="task-name done">Send sprint recap to stakeholders</div>
+                <div class="task-meta">
+                  <span class="pill pill-proj">Ops</span>
+                </div>
+              </div>
+              <div class="task-assignee" style="background:#F1BD6C;">RP</div>
+            </div>
+
+            <div class="section-hd"><span class="section-caret"></span><span class="section-name">Upcoming</span><span class="section-count">2</span></div>
+
+            <div class="task">
+              <div class="check"></div>
+              <div class="task-body">
+                <div class="task-name">Draft pricing experiment plan</div>
+                <div class="task-meta">
+                  <span class="pill pill-proj">Growth</span>
+                  <span class="pill pill-due">Thu</span>
+                </div>
+              </div>
+              <div class="task-assignee" style="background:#F26FD3;">AL</div>
+            </div>
+
+            <div class="task">
+              <div class="check"></div>
+              <div class="task-body">
+                <div class="task-name">Sync with vendor on contract terms</div>
+                <div class="task-meta">
+                  <span class="pill pill-proj">Legal</span>
+                  <span class="pill pill-due">Fri</span>
+                </div>
+              </div>
+              <div class="task-assignee" style="background:#62D26F;">JT</div>
+            </div>
+          </div>
+
+          <div class="fab"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 0 0 1 1h3m10-11l2 2m-2-2v10a1 1 0 0 1-1 1h-3m-6 0a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1m-6 0h6"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9l2 2 4-4"/></svg><span>My Tasks</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 0 0-4-5.7V5a2 2 0 1 0-4 0v.3A6 6 0 0 0 6 11v3.2a2 2 0 0 1-.6 1.4L4 17h5m6 0v1a3 3 0 1 1-6 0v-1m6 0H9"/></svg><span>Inbox</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Dark Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#1E1F21;"><div class="name">Dark Canvas</div>#1E1F21</div>
+          <div class="swatch" style="background:#252628;"><div class="name">Surface 1</div>#252628</div>
+          <div class="swatch" style="background:#2E2F31;"><div class="name">Surface 2</div>#2E2F31</div>
+          <div class="swatch" style="background:#35363A;"><div class="name">Divider</div>#35363A</div>
+          <div class="swatch" style="background:#F5F4F2; color:#1E1F21;"><div class="name">Text Primary</div>#F5F4F2</div>
+          <div class="swatch" style="background:#A9A9AA; color:#1E1F21;"><div class="name">Text Secondary</div>#A9A9AA</div>
+          <div class="swatch" style="background:#F06A6A;"><div class="name">Asana Coral</div>#F06A6A</div>
+          <div class="swatch" style="background:#4573D2;"><div class="name">Plum Blue</div>#4573D2</div>
+          <div class="swatch" style="background:#4ECBC4; color:#1E1F21;"><div class="name">Aqua</div>#4ECBC4</div>
+          <div class="swatch" style="background:#62D26F; color:#1E1F21;"><div class="name">Green</div>#62D26F</div>
+          <div class="swatch" style="background:#F8DF72; color:#1E1F21;"><div class="name">Yellow</div>#F8DF72</div>
+          <div class="swatch" style="background:#E8384F;"><div class="name">Error / Off-track</div>#E8384F</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter (Asana web/iOS face)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 800</div><div class="type-sample t-32">My Tasks</div></div>
+        <div class="type-row"><div class="type-meta">Nav Title · 26pt · 700</div><div class="type-sample t-26">Marketing Launch</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Project status update</div></div>
+        <div class="type-row"><div class="type-meta">Subsection · 18pt · 600</div><div class="type-sample t-18">Assigned to you</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Review the onboarding copy and leave inline comments before Friday.</div></div>
+        <div class="type-row"><div class="type-meta">Task Row · 15pt · 500</div><div class="type-sample t-15m">Finalize Q3 launch brief</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Due today · Marketing</div></div>
+        <div class="type-row"><div class="type-meta">Pill · 12pt · 600</div><div class="type-sample t-12">On track</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Add task</button>
+          <button class="btn btn-outline">Assign</button>
+          <button class="btn btn-pill">Filter</button>
+          <button class="btn-text">Mark complete</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Project Status Pills</div>
+        <div class="status-row">
+          <span class="sbadge s-track">On track</span>
+          <span class="sbadge s-risk">At risk</span>
+          <span class="sbadge s-off">Off track</span>
+          <span class="sbadge s-done">Complete</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Board Columns (Board View)</div>
+        <div class="board">
+          <div class="col">
+            <div class="col-hd">To do</div>
+            <div class="card"><div class="card-title">Pricing experiment</div><span class="card-tag">Growth</span></div>
+            <div class="card"><div class="card-title">Vendor contract</div><span class="card-tag">Legal</span></div>
+          </div>
+          <div class="col">
+            <div class="col-hd">In progress</div>
+            <div class="card"><div class="card-title">Onboarding copy</div><span class="card-tag">Product</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Asana's dark mode uses a near-neutral charcoal canvas <code>#1E1F21</code> with surfaces lifting in tight 7-point steps (<code>#252628</code> → <code>#2E2F31</code>). The coral accent <code>#F06A6A</code> is identical across themes — it stays warm and legible against dark. The multicolor project palette (plum <code>#4573D2</code>, aqua <code>#4ECBC4</code>, green <code>#62D26F</code>, yellow <code>#F8DF72</code>) is rendered as low-opacity tint chips (16-18%) so status pills and project tags glow softly without overwhelming the list. Text inverts to a warm off-white <code>#F5F4F2</code>; checkmark fills stay full-saturation green.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

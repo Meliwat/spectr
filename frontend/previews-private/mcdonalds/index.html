@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by McDonald's iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #121212;
+    --surface-1: #1C1C1E;
+    --surface-2: #2A2A2A;
+    --divider: #2C2C2E;
+    --text-primary: #F2F2F2;
+    --text-secondary: #A0A0A0;
+    --text-tertiary: #6A6A6A;
+    --ink: #FFFFFF;
+    --mcd-yellow: #FFC72C;
+    --mcd-yellow-pressed: #E6B015;
+    --mcd-red: #DA291C;
+    --mcd-red-pressed: #B71F14;
+    --mcd-dark-red: #B0210E;
+    --rewards-gold: #FFC72C;
+    --success: #2B8A3E;
+    --error: #DA291C;
+    --info: #2E6DB4;
+    --font: 'Archivo', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 900; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--mcd-yellow); color: #1A1A1A; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow-y: auto; scrollbar-width: none; display: flex; flex-direction: column; }
+  .scroll-body::-webkit-scrollbar { display: none; }
+
+  /* Greeting + arches */
+  .greet { padding: 4px 18px 12px; display: flex; align-items: center; gap: 10px; }
+  .arches { width: 32px; height: 28px; }
+  .arches svg { width: 100%; height: 100%; }
+  .greet-txt { font-size: 22px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.4px; }
+  .greet-txt span { color: var(--mcd-yellow); }
+  .greet-bell { margin-left: auto; width: 36px; height: 36px; border-radius: 18px; background: var(--surface-1); display: flex; align-items: center; justify-content: center; }
+  .greet-bell svg { width: 18px; height: 18px; stroke: var(--text-primary); stroke-width: 2; fill: none; }
+
+  /* Rewards card */
+  .rewards { margin: 0 18px 16px; background: linear-gradient(135deg, #2A2A2A 0%, #1C1C1E 100%); border: 1px solid var(--divider); border-radius: 16px; padding: 16px; position: relative; overflow: hidden; }
+  .rewards::after { content: ''; position: absolute; right: -30px; top: -30px; width: 110px; height: 110px; background: radial-gradient(circle, rgba(255,199,44,0.18) 0%, transparent 70%); }
+  .rewards-top { display: flex; align-items: center; justify-content: space-between; }
+  .rewards-label { font-size: 12px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+  .rewards-pts { font-size: 28px; font-weight: 900; color: var(--mcd-yellow); letter-spacing: -0.5px; }
+  .rewards-pts span { font-size: 13px; font-weight: 700; color: var(--text-secondary); }
+  .rewards-bar { height: 8px; background: #3A3A3A; border-radius: 4px; margin: 12px 0 8px; overflow: hidden; }
+  .rewards-fill { width: 62%; height: 100%; background: linear-gradient(90deg, var(--mcd-yellow), #FFD75E); border-radius: 4px; }
+  .rewards-next { font-size: 12px; color: var(--text-secondary); }
+  .rewards-next b { color: var(--text-primary); }
+
+  /* Section header */
+  .sec-head { padding: 6px 18px 12px; font-size: 19px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.3px; display: flex; align-items: baseline; justify-content: space-between; }
+  .sec-head a { font-size: 13px; font-weight: 700; color: var(--mcd-red); }
+
+  /* Deal tiles */
+  .deals { padding: 0 18px 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .deal { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; overflow: hidden; }
+  .deal-img { height: 96px; position: relative; }
+  .deal-img.bigmac { background: linear-gradient(150deg, #C9622A 0%, #8A4018 100%); }
+  .deal-img.bigmac::before { content: ''; position: absolute; bottom: 16%; left: 26%; right: 26%; height: 56%; background: radial-gradient(circle at 50% 40%, #E8C27A 0%, #C68A3C 60%, #8A5A24 100%); border-radius: 50%; }
+  .deal-img.fries { background: linear-gradient(150deg, #DA291C 0%, #9A1C12 100%); }
+  .deal-img.fries::before { content: ''; position: absolute; bottom: 14%; left: 36%; width: 28%; height: 60%; background: linear-gradient(180deg, #FFC72C 0%, #E6A815 100%); border-radius: 3px 3px 0 0; box-shadow: -16px 4px 0 -2px #FFC72C, 16px 4px 0 -2px #FFC72C; }
+  .deal-flag { position: absolute; top: 8px; left: 8px; background: var(--mcd-red); color: #FFF; font-size: 10px; font-weight: 800; padding: 3px 7px; border-radius: 6px; letter-spacing: 0.3px; }
+  .deal-body { padding: 10px 12px 14px; }
+  .deal-name { font-size: 14px; font-weight: 800; color: var(--text-primary); }
+  .deal-sub { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+  .deal-pts { display: inline-flex; align-items: center; gap: 4px; margin-top: 8px; font-size: 11px; font-weight: 800; color: var(--mcd-yellow); }
+  .deal-pts svg { width: 11px; height: 11px; fill: var(--mcd-yellow); }
+
+  /* Order mode card */
+  .ordmode { margin: 12px 18px 16px; background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 14px; }
+  .ordmode-row { display: flex; gap: 8px; }
+  .omode { flex: 1; border: 1.5px solid var(--divider); border-radius: 12px; padding: 12px 8px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .omode.active { border-color: var(--mcd-yellow); background: rgba(255,199,44,0.08); }
+  .omode svg { width: 22px; height: 22px; stroke: var(--text-primary); stroke-width: 2; fill: none; }
+  .omode.active svg { stroke: var(--mcd-yellow); }
+  .omode-label { font-size: 11px; font-weight: 700; color: var(--text-primary); }
+  .omode.active .omode-label { color: var(--mcd-yellow); }
+
+  /* Tab bar */
+  .tab-bar { height: 70px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(18,18,18,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: #888; font-size: 10px; font-weight: 700; gap: 4px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--mcd-yellow); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+  .tab.order { margin-top: -6px; }
+  .tab.order .order-fab { width: 50px; height: 50px; border-radius: 25px; background: var(--mcd-yellow); display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 16px rgba(255,199,44,0.4); }
+  .tab.order .order-fab svg { width: 24px; height: 24px; stroke: #1A1A1A; stroke-width: 2.5; fill: none; }
+  .tab.order span { color: var(--mcd-yellow); margin-top: 2px; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 900; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 800; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 800; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 800; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 800; cursor: pointer; border: none; letter-spacing: 0.1px; }
+  .btn-primary { background: var(--mcd-yellow); color: #1A1A1A; font-size: 15px; padding: 14px 28px; border-radius: 999px; }
+  .btn-primary:active { background: var(--mcd-yellow-pressed); transform: scale(0.98); }
+  .btn-red { background: var(--mcd-red); color: #FFF; font-size: 15px; padding: 14px 28px; border-radius: 999px; }
+  .btn-red:active { background: var(--mcd-red-pressed); }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1.5px solid var(--text-primary); font-size: 14px; font-weight: 700; padding: 12px 22px; border-radius: 999px; }
+  .btn-text { background: transparent; color: var(--mcd-red); font-size: 14px; font-weight: 800; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Deal coupon */
+  .coupon { display: flex; background: var(--surface-2); border: 1px dashed var(--mcd-yellow); border-radius: 14px; overflow: hidden; }
+  .coupon-img { width: 84px; background: linear-gradient(150deg, #C9622A, #8A4018); flex-shrink: 0; }
+  .coupon-body { padding: 12px 14px; flex: 1; }
+  .coupon-name { font-size: 14px; font-weight: 800; color: var(--text-primary); }
+  .coupon-sub { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+  .coupon-cta { display: inline-block; margin-top: 8px; background: var(--mcd-yellow); color: #1A1A1A; font-size: 11px; font-weight: 800; padding: 5px 12px; border-radius: 999px; text-transform: uppercase; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--mcd-yellow); color: #1A1A1A; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-24 { border-radius: 24px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Arches logomark */
+  .logo-arch { display: inline-block; width: 46px; height: 40px; }
+  .logo-arch svg { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo-arch">
+      <svg viewBox="0 0 50 44"><path d="M10 44V14c0-6 3-10 7-10s7 4 7 11v12h2V15c0-7 3-11 7-11s7 4 7 10v30h6V13C53 5 47 0 40 0c-6 0-10 4-12 9C26 4 22 0 16 0 9 0 3 5 3 13v31h7z" fill="#FFC72C"/></svg>
+    </span>
+    <div class="page-title">McDonald's iOS — Design Tokens</div>
+    <div class="page-chip">Golden Dark</div>
+  </div>
+  <p class="page-subtitle">McDonald's iOS pairs the iconic Golden Arches Yellow (#FFC72C) with McDonald's Red (#DA291C) over a near-black canvas (#121212). The home screen is a MyMcDonald's Rewards points hub, a deals grid, and a mobile-order mode selector (Pickup / Curbside / Drive Thru / Delivery). Bold, friendly, deal-driven.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="scroll-body">
+            <div class="greet">
+              <span class="arches"><svg viewBox="0 0 50 44"><path d="M10 44V14c0-6 3-10 7-10s7 4 7 11v12h2V15c0-7 3-11 7-11s7 4 7 10v30h6V13C53 5 47 0 40 0c-6 0-10 4-12 9C26 4 22 0 16 0 9 0 3 5 3 13v31h7z" fill="#FFC72C"/></svg></span>
+              <div class="greet-txt">Hi, <span>Alex</span></div>
+              <div class="greet-bell"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
+            </div>
+
+            <div class="rewards">
+              <div class="rewards-top">
+                <div>
+                  <div class="rewards-label">MyMcDonald's Rewards</div>
+                  <div class="rewards-pts">2,150 <span>points</span></div>
+                </div>
+              </div>
+              <div class="rewards-bar"><div class="rewards-fill"></div></div>
+              <div class="rewards-next">Just <b>350 points</b> away from a free McNuggets</div>
+            </div>
+
+            <div class="sec-head">Deals &amp; Rewards <a>See all</a></div>
+            <div class="deals">
+              <div class="deal">
+                <div class="deal-img bigmac"><div class="deal-flag">DEAL</div></div>
+                <div class="deal-body">
+                  <div class="deal-name">Big Mac</div>
+                  <div class="deal-sub">Buy one, get one $1</div>
+                  <div class="deal-pts"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg>or 1,900 pts</div>
+                </div>
+              </div>
+              <div class="deal">
+                <div class="deal-img fries"><div class="deal-flag">FREE</div></div>
+                <div class="deal-body">
+                  <div class="deal-name">Medium Fries</div>
+                  <div class="deal-sub">Free with $1+ purchase</div>
+                  <div class="deal-pts"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg>or 1,500 pts</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="sec-head" style="padding-top:16px;">Start an order</div>
+            <div class="ordmode">
+              <div class="ordmode-row">
+                <div class="omode active">
+                  <svg viewBox="0 0 24 24"><path d="M3 9h18M3 9l2-5h14l2 5M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"/></svg>
+                  <span class="omode-label">Pickup</span>
+                </div>
+                <div class="omode">
+                  <svg viewBox="0 0 24 24"><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/><path d="M2 6h12l3 8H5L2 6zM14 8h5l3 4v4h-3"/></svg>
+                  <span class="omode-label">Curbside</span>
+                </div>
+                <div class="omode">
+                  <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="8" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  <span class="omode-label">Drive Thru</span>
+                </div>
+                <div class="omode">
+                  <svg viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.6"/><circle cx="18" cy="20" r="1.6"/><path d="M2 3h3l3 12h11l3-8H7"/></svg>
+                  <span class="omode-label">Delivery</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 10l9-8 9 8v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg><span>Rewards</span></div>
+            <div class="tab order"><div class="order-fab"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1.6"/><circle cx="18" cy="21" r="1.6"/><path d="M2 3h3l3 12h11l3-8H7"/></svg></div><span>Order</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg><span>Menu</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M6 19c1-3 3.5-4 6-4s5 1 6 4"/></svg><span>More</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#FFC72C; color:#1A1A1A;"><div class="name">Golden Arches</div>#FFC72C</div>
+          <div class="swatch" style="background:#E6B015; color:#1A1A1A;"><div class="name">Yellow Pressed</div>#E6B015</div>
+          <div class="swatch" style="background:#DA291C;"><div class="name">McDonald's Red</div>#DA291C</div>
+          <div class="swatch" style="background:#B71F14;"><div class="name">Red Pressed</div>#B71F14</div>
+          <div class="swatch" style="background:#B0210E;"><div class="name">Dark Red</div>#B0210E</div>
+          <div class="swatch" style="background:#2B8A3E;"><div class="name">Success Green</div>#2B8A3E</div>
+          <div class="swatch" style="background:#121212;"><div class="name">Dark Canvas</div>#121212</div>
+          <div class="swatch" style="background:#1C1C1E;"><div class="name">Dark Surface 1</div>#1C1C1E</div>
+          <div class="swatch" style="background:#2A2A2A;"><div class="name">Dark Surface 2</div>#2A2A2A</div>
+          <div class="swatch" style="background:#F2F2F2; color:#121212;"><div class="name">Text Primary</div>#F2F2F2</div>
+          <div class="swatch" style="background:#A0A0A0; color:#121212;"><div class="name">Text Secondary</div>#A0A0A0</div>
+          <div class="swatch" style="background:#2E6DB4;"><div class="name">Info Blue</div>#2E6DB4</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Speedee (Archivo fallback)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 900</div><div class="type-sample t-32">Rewards</div></div>
+        <div class="type-row"><div class="type-meta">Hero · 26pt · 800</div><div class="type-sample t-26">i'm lovin' it</div></div>
+        <div class="type-row"><div class="type-meta">Greeting · 22pt · 800</div><div class="type-sample t-22">Hi, Alex</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 18pt · 800</div><div class="type-sample t-18">MyMcDonald's Rewards</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Order ahead and pick it up your way — no waiting in line.</div></div>
+        <div class="type-row"><div class="type-meta">Deal Title · 15pt · 600</div><div class="type-sample t-15m">Buy one, get one $1</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Valid through Sun · McPick 2</div></div>
+        <div class="type-row"><div class="type-meta">Badge · 12pt · 800</div><div class="type-sample t-12">DEAL · FREE · NEW</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Order Now</button>
+          <button class="btn btn-red">Add to Mobile Order</button>
+          <button class="btn btn-outline">Change Location</button>
+          <button class="btn-text">View Deal Details</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Deal Coupon</div>
+        <div class="coupon">
+          <div class="coupon-img"></div>
+          <div class="coupon-body">
+            <div class="coupon-name">Free Big Mac</div>
+            <div class="coupon-sub">With any purchase · MyMcDonald's exclusive</div>
+            <span class="coupon-cta">Add to order</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Rewards &amp; Status Badges</div>
+        <div class="btn-row">
+          <span style="background:var(--mcd-yellow);color:#1A1A1A;font-size:12px;font-weight:800;padding:5px 12px;border-radius:999px;">2,150 PTS</span>
+          <span style="background:var(--mcd-red);color:#FFF;font-size:12px;font-weight:800;padding:5px 12px;border-radius:999px;">DEAL</span>
+          <span style="background:var(--success);color:#FFF;font-size:12px;font-weight:800;padding:5px 12px;border-radius:999px;">ORDER READY</span>
+          <span style="background:var(--surface-2);color:var(--mcd-yellow);border:1px solid var(--mcd-yellow);font-size:11px;font-weight:800;padding:5px 12px;border-radius:999px;">REWARDS</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-24">24</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">McDonald's dark mode keeps a near-black canvas (<code>#121212</code>) with cards lifting to <code>#1C1C1E</code>. Golden Arches Yellow <code>#FFC72C</code> is unchanged across themes and always pairs with near-black text (<code>#1A1A1A</code>) for the contrast the brand requires — never white text on yellow. McDonald's Red <code>#DA291C</code> stays vivid for deal flags and the secondary CTA. The rewards points number glows in yellow; food photography remains full-color while the dark chrome recedes.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

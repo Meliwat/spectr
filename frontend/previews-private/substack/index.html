@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Substack iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #121212;
+    --surface-1: #1B1B1B;
+    --surface-2: #262626;
+    --divider: #2E2E2E;
+    --text-primary: #EDEDED;
+    --text-secondary: #A6A6A6;
+    --text-tertiary: #6E6E6E;
+    --ink: #F7F7F7;
+    --substack-orange: #FF6719;
+    --orange-pressed: #E5560E;
+    --link: #4A6FE3;
+    --paper: #FFFFFF;
+    --paper-ink: #1A1A1A;
+    --success: #1A8917;
+    --error: #D93025;
+    --serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--sans); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 700; letter-spacing: -0.5px; color: var(--ink); }
+  .page-chip { background: var(--substack-orange); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 4px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--paper); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--paper-ink); }
+
+  /* Post reader (paper) */
+  .post { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .post-nav { display: flex; align-items: center; justify-content: space-between; padding: 4px 16px 12px; border-bottom: 0.5px solid #ECECEC; }
+  .post-nav svg { width: 19px; height: 19px; stroke: #1A1A1A; stroke-width: 2; fill: none; }
+  .post-nav .right { display: flex; gap: 18px; }
+  .post-body { flex: 1; overflow-y: auto; scrollbar-width: none; padding: 20px 24px 0; }
+  .post-body::-webkit-scrollbar { display: none; }
+  .pub-row { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+  .pub-logo { width: 34px; height: 34px; border-radius: 6px; background: linear-gradient(135deg, #FF6719, #E5560E); display: flex; align-items: center; justify-content: center; color: #FFF; font-weight: 800; font-size: 15px; }
+  .pub-name { font-family: var(--sans); font-size: 14px; font-weight: 700; color: #1A1A1A; }
+  .pub-sub { font-size: 12px; color: #8A8A8A; }
+  .post-title { font-family: var(--serif); font-size: 27px; font-weight: 700; color: #1A1A1A; line-height: 1.22; letter-spacing: -0.3px; margin-bottom: 8px; }
+  .post-sub { font-family: var(--serif); font-size: 17px; color: #57534E; line-height: 1.4; margin-bottom: 14px; font-style: italic; }
+  .byline { display: flex; align-items: center; gap: 8px; padding-bottom: 16px; border-bottom: 0.5px solid #ECECEC; margin-bottom: 18px; }
+  .byline .av { width: 26px; height: 26px; border-radius: 50%; background: #D8D2C8; }
+  .byline .meta { font-size: 12px; color: #8A8A8A; }
+  .byline .meta b { color: #1A1A1A; font-weight: 600; }
+  .post-p { font-family: var(--serif); font-size: 18px; font-weight: 400; color: #1F1F1F; line-height: 1.65; margin-bottom: 18px; }
+  .post-p a { color: var(--link); text-decoration: underline; }
+  .pull { font-family: var(--serif); font-size: 21px; font-weight: 600; font-style: italic; color: #1A1A1A; line-height: 1.4; border-left: 3px solid var(--substack-orange); padding: 2px 0 2px 18px; margin: 6px 0 20px; }
+
+  /* Subscribe CTA (sticky) */
+  .sub-cta { background: rgba(255,255,255,0.97); border-top: 0.5px solid #ECECEC; padding: 14px 18px 16px; }
+  .sub-card { background: #FFF7F2; border: 1px solid #FFD9C2; border-radius: 10px; padding: 14px; text-align: center; }
+  .sub-card .h { font-family: var(--serif); font-size: 15px; font-weight: 700; color: #1A1A1A; }
+  .sub-card .p { font-size: 12px; color: #8A8A8A; margin: 4px 0 12px; }
+  .sub-btn { width: 100%; height: 42px; border-radius: 6px; background: var(--substack-orange); color: #FFF; font-family: var(--sans); font-size: 15px; font-weight: 700; border: none; }
+  .sub-meta { font-size: 11px; color: #A0A0A0; margin-top: 8px; }
+
+  /* Action bar */
+  .act-bar { display: flex; align-items: center; justify-content: space-between; padding: 10px 22px; border-top: 0.5px solid #ECECEC; background: #FFF; }
+  .act { display: flex; align-items: center; gap: 6px; color: #57534E; font-size: 13px; font-weight: 600; }
+  .act svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .act.liked { color: var(--substack-orange); }
+  .act.liked svg { fill: var(--substack-orange); stroke: var(--substack-orange); }
+
+  /* Tab bar */
+  .tab-bar { height: 60px; display: flex; align-items: flex-start; padding: 8px 4px 12px; justify-content: space-around; background: rgba(255,255,255,0.98); backdrop-filter: saturate(160%) blur(16px); border-top: 0.5px solid #ECECEC; }
+  .tab { display: flex; flex-direction: column; align-items: center; color: #9A9A9A; font-size: 10px; font-weight: 600; gap: 3px; }
+  .tab.active { color: var(--substack-orange); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--sans); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 215px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-family: var(--serif); font-size: 30px; font-weight: 700; letter-spacing: -0.4px; color: var(--ink); }
+  .t-27 { font-family: var(--serif); font-size: 26px; font-weight: 700; color: var(--ink); letter-spacing: -0.3px; }
+  .t-21 { font-family: var(--serif); font-size: 21px; font-weight: 600; font-style: italic; }
+  .t-18 { font-family: var(--serif); font-size: 18px; font-weight: 400; line-height: 1.65; }
+  .t-17 { font-family: var(--serif); font-size: 17px; font-weight: 400; font-style: italic; color: var(--text-secondary); }
+  .t-15m { font-size: 15px; font-weight: 700; font-family: var(--sans); }
+  .t-14 { font-size: 14px; font-weight: 600; color: var(--text-primary); font-family: var(--sans); }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); font-family: var(--sans); }
+  .t-11 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-tertiary); font-family: var(--sans); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--sans); font-weight: 700; cursor: pointer; border: none; }
+  .btn-primary { background: var(--substack-orange); color: #FFF; font-size: 15px; padding: 12px 26px; border-radius: 6px; }
+  .btn-primary:active { background: var(--orange-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1px solid var(--text-secondary); font-size: 14px; font-weight: 600; padding: 11px 20px; border-radius: 6px; }
+  .btn-ghost { background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--divider); font-size: 13px; font-weight: 600; padding: 10px 18px; border-radius: 6px; }
+  .btn-text { background: transparent; color: var(--link); font-size: 14px; font-weight: 600; padding: 10px 0; border: none; cursor: pointer; }
+
+  /* Inbox row */
+  .inbox-list { display: flex; flex-direction: column; }
+  .inbox-row { display: flex; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .inbox-thumb { width: 56px; height: 56px; border-radius: 6px; flex-shrink: 0; }
+  .it-a { background: linear-gradient(135deg, #FF6719, #E5560E); }
+  .it-b { background: linear-gradient(135deg, #4A6FE3, #2E4FB8); }
+  .it-c { background: linear-gradient(135deg, #1A8917, #126B10); }
+  .inbox-c { flex: 1; min-width: 0; }
+  .inbox-pub { font-size: 12px; font-weight: 700; color: var(--substack-orange); text-transform: uppercase; letter-spacing: 0.4px; }
+  .inbox-title { font-family: var(--serif); font-size: 15px; font-weight: 700; color: var(--text-primary); line-height: 1.3; margin: 3px 0; }
+  .inbox-meta { font-size: 12px; color: var(--text-tertiary); }
+  .inbox-unread { width: 8px; height: 8px; border-radius: 50%; background: var(--substack-orange); flex-shrink: 0; margin-top: 6px; }
+
+  /* Subscribe tiers */
+  .tier-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .tier { flex: 1; min-width: 130px; border: 1px solid var(--divider); border-radius: 10px; padding: 14px; }
+  .tier.featured { border-color: var(--substack-orange); background: rgba(255,103,25,0.06); }
+  .tier .nm { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); }
+  .tier .pr { font-family: var(--serif); font-size: 22px; font-weight: 700; color: var(--text-primary); margin: 6px 0 2px; }
+  .tier .pp { font-size: 12px; color: var(--text-tertiary); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--substack-orange); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-10 { border-radius: 10px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  code { font-family: 'SF Mono', Menlo, monospace; background: var(--surface-2); padding: 1px 5px; border-radius: 3px; font-size: 12px; color: var(--text-primary); }
+
+  /* Logomark */
+  .logo { display: inline-flex; width: 42px; height: 42px; align-items: center; justify-content: center; background: var(--substack-orange); border-radius: 8px; }
+  .logo svg { width: 22px; height: 22px; fill: #FFF; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="2.6"/><rect x="4" y="9.4" width="16" height="2.6"/><path d="M4 14.8h16V21l-8-3.6L4 21z"/></svg>
+    </span>
+    <div class="page-title">Substack iOS — Design Tokens</div>
+    <div class="page-chip">Editorial Dark</div>
+  </div>
+  <p class="page-subtitle">Substack's identity is the writer's page: a clean white reading surface, a serif body set for long-form, Substack Orange (#FF6719) for the single subscribe CTA and brand chrome, and an inbox of publications. The post reader is the product; the orange Subscribe button is the one conversion.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="post">
+            <div class="post-nav">
+              <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+              <div class="right">
+                <svg viewBox="0 0 24 24"><path d="M4 12v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+              </div>
+            </div>
+
+            <div class="post-body">
+              <div class="pub-row">
+                <div class="pub-logo">TG</div>
+                <div>
+                  <div class="pub-name">The Generalist</div>
+                  <div class="pub-sub">Mario Gabriele · 312,400 subscribers</div>
+                </div>
+              </div>
+
+              <div class="post-title">The Quiet Compounding of Boring Companies</div>
+              <div class="post-sub">Why the most unglamorous businesses often build the deepest moats — and what founders keep getting wrong.</div>
+              <div class="byline">
+                <div class="av"></div>
+                <div class="meta"><b>Mario Gabriele</b> · May 14 · 18 min read</div>
+              </div>
+
+              <p class="post-p">Every few years a wave of attention crashes onto whatever looks new. The companies that survive the receding tide are rarely the loudest ones — they're the patient operators compounding quietly in <a href="#">unfashionable corners</a> of the market.</p>
+              <div class="pull">The boring business is a moat disguised as a yawn.</div>
+              <p class="post-p">Consider the unglamorous middle: distribution, billing, the slow accrual of trust. None of it trends. All of it lasts.</p>
+            </div>
+
+            <div class="sub-cta">
+              <div class="sub-card">
+                <div class="h">Keep reading with a subscription</div>
+                <div class="p">Get every post, the full archive, and the private community.</div>
+                <button class="sub-btn">Subscribe</button>
+                <div class="sub-meta">$8/month · $80/year · cancel anytime</div>
+              </div>
+            </div>
+
+            <div class="act-bar">
+              <div class="act liked"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 1 0-7.8 7.8L12 21.2l8.8-8.8a5.5 5.5 0 0 0 0-7.8z"/></svg>1.2k</div>
+              <div class="act"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg>184</div>
+              <div class="act"><svg viewBox="0 0 24 24"><path d="M4 12v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share</div>
+              <div class="act"><svg viewBox="0 0 24 24"><path d="M5 4h14v17l-7-4-7 4z"/></svg></div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 5h18v14H3z"/><path d="M3 9h18M8 5v14"/></svg><span>Inbox</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Discover</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 5h18M3 12h18M3 19h12"/></svg><span>Notes</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 18v-1a4 4 0 0 1 4-4h4M21 8l-9 9-3-3"/><circle cx="9" cy="7" r="3.5"/></svg><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#FF6719;"><div class="name">Substack Orange</div>#FF6719</div>
+          <div class="swatch" style="background:#E5560E;"><div class="name">Orange Pressed</div>#E5560E</div>
+          <div class="swatch" style="background:#FFFFFF; color:#1A1A1A;"><div class="name">Paper White</div>#FFFFFF</div>
+          <div class="swatch" style="background:#1F1F1F;"><div class="name">Reading Ink</div>#1F1F1F</div>
+          <div class="swatch" style="background:#57534E; color:#FFF;"><div class="name">Subhead Ink</div>#57534E</div>
+          <div class="swatch" style="background:#4A6FE3;"><div class="name">Link Blue</div>#4A6FE3</div>
+          <div class="swatch" style="background:#121212;"><div class="name">Dark Canvas</div>#121212</div>
+          <div class="swatch" style="background:#1B1B1B;"><div class="name">Dark Surface 1</div>#1B1B1B</div>
+          <div class="swatch" style="background:#262626;"><div class="name">Dark Surface 2</div>#262626</div>
+          <div class="swatch" style="background:#EDEDED; color:#121212;"><div class="name">Text Primary (D)</div>#EDEDED</div>
+          <div class="swatch" style="background:#A6A6A6; color:#121212;"><div class="name">Text Secondary</div>#A6A6A6</div>
+          <div class="swatch" style="background:#D93025;"><div class="name">Error</div>#D93025</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Source Serif 4 (reading) + Inter (UI)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · Serif · 30 · 700</div><div class="type-sample t-32">Inbox</div></div>
+        <div class="type-row"><div class="type-meta">Post Title · Serif · 26 · 700</div><div class="type-sample t-27">The Quiet Compounding of Boring Companies</div></div>
+        <div class="type-row"><div class="type-meta">Pull Quote · Serif · 21 · 600 italic</div><div class="type-sample t-21">A moat disguised as a yawn.</div></div>
+        <div class="type-row"><div class="type-meta">Reading Body · Serif · 18 · 400 · 1.65</div><div class="type-sample t-18">The companies that survive the receding tide are rarely the loudest.</div></div>
+        <div class="type-row"><div class="type-meta">Subtitle / Dek · Serif · 17 · 400 italic</div><div class="type-sample t-17">Why unglamorous businesses build the deepest moats.</div></div>
+        <div class="type-row"><div class="type-meta">Button · Inter · 15 · 700</div><div class="type-sample t-15m">Subscribe</div></div>
+        <div class="type-row"><div class="type-meta">Label / Pub · Inter · 14 · 600</div><div class="type-sample t-14">The Generalist</div></div>
+        <div class="type-row"><div class="type-meta">Meta · Inter · 13 · 400</div><div class="type-sample t-13">Mario Gabriele · 18 min read</div></div>
+        <div class="type-row"><div class="type-meta">Overline · Inter · 11 · 700 caps</div><div class="type-sample t-11">From The Generalist</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Subscribe</button>
+          <button class="btn btn-outline">Subscribed ✓</button>
+          <button class="btn btn-ghost">Share</button>
+          <button class="btn-text">Continue reading</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Inbox — Subscription Feed</div>
+        <div class="inbox-list">
+          <div class="inbox-row">
+            <div class="inbox-thumb it-a"></div>
+            <div class="inbox-c">
+              <div class="inbox-pub">The Generalist</div>
+              <div class="inbox-title">The Quiet Compounding of Boring Companies</div>
+              <div class="inbox-meta">Mario Gabriele · 18 min · May 14</div>
+            </div>
+            <div class="inbox-unread"></div>
+          </div>
+          <div class="inbox-row">
+            <div class="inbox-thumb it-b"></div>
+            <div class="inbox-c">
+              <div class="inbox-pub">Platformer</div>
+              <div class="inbox-title">What the new platform rules actually change</div>
+              <div class="inbox-meta">Casey Newton · 11 min · May 13</div>
+            </div>
+          </div>
+          <div class="inbox-row">
+            <div class="inbox-thumb it-c"></div>
+            <div class="inbox-c">
+              <div class="inbox-pub">Lenny's Newsletter</div>
+              <div class="inbox-title">The PM career ladder, rebuilt</div>
+              <div class="inbox-meta">Lenny Rachitsky · 14 min · May 12</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Subscription Tiers</div>
+        <div class="tier-row">
+          <div class="tier">
+            <div class="nm">Free</div>
+            <div class="pr">$0</div>
+            <div class="pp">Public posts</div>
+          </div>
+          <div class="tier featured">
+            <div class="nm">Monthly</div>
+            <div class="pr">$8<span style="font-size:13px;font-weight:400;">/mo</span></div>
+            <div class="pp">Everything · community</div>
+          </div>
+          <div class="tier">
+            <div class="nm">Annual</div>
+            <div class="pr">$80<span style="font-size:13px;font-weight:400;">/yr</span></div>
+            <div class="pp">2 months free</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Substack's reading surface is paper-white <code>#FFFFFF</code> with near-black serif ink <code>#1F1F1F</code> by default. Dark mode (Reader theme) inverts the page to a soft charcoal canvas <code>#121212</code> — never pure black — with body ink at <code>#EDEDED</code>; cards lift to <code>#1B1B1B</code>. Substack Orange <code>#FF6719</code> is held identical across themes — it is the single load-bearing signal for the Subscribe CTA, active tab, and unread dot. Publication header art and avatars stay full-color; only chrome and the page dim. The orange is used sparingly: one Subscribe button per post, never as decoration.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

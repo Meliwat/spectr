@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Apple Fitness iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #000000;
+    --surface-1: #1C1C1E;
+    --surface-2: #2C2C2E;
+    --surface-3: #3A3A3C;
+    --divider: #38383A;
+    --text-primary: #FFFFFF;
+    --text-secondary: #EBEBF599;
+    --text-tertiary: #EBEBF54D;
+    --ink: #FFFFFF;
+    --move: #FA114F;
+    --move-2: #FF375F;
+    --exercise: #92E82A;
+    --exercise-2: #66FF00;
+    --stand: #1EE4E1;
+    --stand-2: #00F0FF;
+    --fitness-plus: #C969E0;
+    --success: #30D158;
+    --error: #FF453A;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.8px; color: var(--ink); }
+  .page-chip { background: var(--move); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: rgba(235,235,245,0.6); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow-y: auto; scrollbar-width: none; }
+  .scroll-body::-webkit-scrollbar { display: none; }
+
+  /* Header */
+  .af-head { display: flex; align-items: flex-start; justify-content: space-between; padding: 4px 20px 4px; }
+  .af-h-l .af-day { font-size: 13px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--move-2); }
+  .af-h-l .af-date { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin-top: 1px; }
+  .af-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #5A5A5E, #38383A); border: 1px solid rgba(255,255,255,0.12); }
+
+  .af-summary-lbl { padding: 14px 20px 10px; font-size: 22px; font-weight: 800; letter-spacing: -0.4px; }
+
+  /* Activity rings */
+  .rings-card { margin: 0 16px 16px; background: var(--surface-1); border-radius: 18px; padding: 22px 18px; display: flex; align-items: center; gap: 20px; }
+  .rings { width: 130px; height: 130px; flex-shrink: 0; }
+  .ring-legend { flex: 1; }
+  .leg-row { margin-bottom: 14px; }
+  .leg-row:last-child { margin-bottom: 0; }
+  .leg-name { font-size: 12px; font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase; }
+  .leg-name.move { color: var(--move-2); }
+  .leg-name.exercise { color: var(--exercise); }
+  .leg-name.stand { color: var(--stand); }
+  .leg-val { font-size: 19px; font-weight: 800; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .leg-val .unit { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+
+  /* Stat tiles */
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px 16px; }
+  .tile { background: var(--surface-1); border-radius: 14px; padding: 14px; }
+  .tile-top { display: flex; align-items: center; gap: 6px; }
+  .tile-icn { width: 16px; height: 16px; }
+  .tile-icn svg { width: 16px; height: 16px; }
+  .tile-name { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+  .tile-val { font-size: 22px; font-weight: 800; margin-top: 8px; font-variant-numeric: tabular-nums; }
+  .tile-val .unit { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+  .tile-sub { font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
+
+  /* Fitness+ row */
+  .fp-head { display: flex; align-items: baseline; justify-content: space-between; padding: 4px 20px 12px; }
+  .fp-title { font-size: 22px; font-weight: 800; letter-spacing: -0.4px; }
+  .fp-see { font-size: 15px; font-weight: 600; color: var(--move-2); }
+  .fp-scroll { display: flex; gap: 12px; padding: 0 16px 22px; overflow-x: auto; scrollbar-width: none; }
+  .fp-scroll::-webkit-scrollbar { display: none; }
+  .fp-card { flex-shrink: 0; width: 168px; }
+  .fp-thumb { height: 200px; border-radius: 16px; position: relative; overflow: hidden; }
+  .fp-a { background: linear-gradient(160deg, #C969E0 0%, #7A2FA0 55%, #3A1452 100%); }
+  .fp-b { background: linear-gradient(160deg, #FA114F 0%, #A50B33 55%, #4A0518 100%); }
+  .fp-badge { position: absolute; top: 12px; left: 12px; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: #FFF; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); padding: 4px 8px; border-radius: 6px; }
+  .fp-play { position: absolute; bottom: 14px; left: 14px; width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.22); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; }
+  .fp-play::before { content: ''; width: 0; height: 0; border-left: 10px solid #FFF; border-top: 7px solid transparent; border-bottom: 7px solid transparent; margin-left: 3px; }
+  .fp-type { font-size: 12px; font-weight: 700; color: var(--move-2); margin-top: 10px; text-transform: uppercase; letter-spacing: 0.4px; }
+  .fp-name { font-size: 15px; font-weight: 700; letter-spacing: -0.2px; margin-top: 3px; }
+  .fp-meta { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+
+  /* Tab bar */
+  .tab-bar { height: 64px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: rgba(28,28,30,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: rgba(235,235,245,0.45); font-size: 10px; font-weight: 500; gap: 4px; }
+  .tab.active { color: var(--move-2); }
+  .tab svg { width: 24px; height: 24px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-40 { font-size: 40px; font-weight: 800; letter-spacing: -1px; color: var(--ink); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
+  .t-22 { font-size: 22px; font-weight: 800; letter-spacing: -0.4px; }
+  .t-17 { font-size: 17px; font-weight: 600; }
+  .t-15 { font-size: 15px; font-weight: 600; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; color: var(--move-2); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 600; cursor: pointer; border: none; letter-spacing: -0.1px; }
+  .btn-primary { background: var(--move); color: #FFF; font-size: 17px; font-weight: 600; padding: 15px 30px; border-radius: 14px; }
+  .btn-primary:active { background: var(--move-2); transform: scale(0.98); }
+  .btn-tinted { background: rgba(250,17,79,0.18); color: var(--move-2); font-size: 15px; font-weight: 600; padding: 12px 22px; border-radius: 12px; }
+  .btn-fill { background: rgba(118,118,128,0.24); color: #FFF; font-size: 15px; font-weight: 600; padding: 12px 22px; border-radius: 12px; }
+  .btn-plain { background: transparent; color: var(--move-2); font-size: 17px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Ring preview */
+  .ring-preview { display: flex; gap: 24px; flex-wrap: wrap; align-items: center; }
+  .mini-rings { width: 96px; height: 96px; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--move); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-14 { border-radius: 14px; }
+  .r-18 { border-radius: 18px; }
+  .r-22 { border-radius: 22px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; background: var(--surface-1); border-radius: 11px; }
+  .logo svg { width: 30px; height: 30px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 36 36">
+        <circle cx="18" cy="18" r="14" fill="none" stroke="#FA114F" stroke-width="5" stroke-linecap="round" stroke-dasharray="66 88" transform="rotate(-90 18 18)"/>
+        <circle cx="18" cy="18" r="9.5" fill="none" stroke="#92E82A" stroke-width="5" stroke-linecap="round" stroke-dasharray="48 60" transform="rotate(-90 18 18)"/>
+        <circle cx="18" cy="18" r="5" fill="none" stroke="#1EE4E1" stroke-width="5" stroke-linecap="round" stroke-dasharray="26 32" transform="rotate(-90 18 18)"/>
+      </svg>
+    </span>
+    <div class="page-title">Apple Fitness iOS — Design Tokens</div>
+    <div class="page-chip">Rings Dark</div>
+  </div>
+  <p class="page-subtitle">True-black canvas (#000000) with the three Activity ring colors — Move #FA114F, Exercise #92E82A, Stand #1EE4E1 — as the entire identity. SF Pro (Inter fallback), grouped rounded cards on #1C1C1E, and a Fitness+ shelf of cinematic workout cards.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="af-head">
+            <div class="af-h-l">
+              <div class="af-day">Thursday</div>
+              <div class="af-date">May 14</div>
+            </div>
+            <div class="af-avatar"></div>
+          </div>
+
+          <div class="af-summary-lbl">Summary</div>
+
+          <div class="rings-card">
+            <svg class="rings" viewBox="0 0 130 130">
+              <circle cx="65" cy="65" r="54" fill="none" stroke="rgba(250,17,79,0.22)" stroke-width="14"/>
+              <circle cx="65" cy="65" r="54" fill="none" stroke="#FA114F" stroke-width="14" stroke-linecap="round" stroke-dasharray="272 339" transform="rotate(-90 65 65)"/>
+              <circle cx="65" cy="65" r="37" fill="none" stroke="rgba(146,232,42,0.22)" stroke-width="14"/>
+              <circle cx="65" cy="65" r="37" fill="none" stroke="#92E82A" stroke-width="14" stroke-linecap="round" stroke-dasharray="186 232" transform="rotate(-90 65 65)"/>
+              <circle cx="65" cy="65" r="20" fill="none" stroke="rgba(30,228,225,0.22)" stroke-width="14"/>
+              <circle cx="65" cy="65" r="20" fill="none" stroke="#1EE4E1" stroke-width="14" stroke-linecap="round" stroke-dasharray="100 126" transform="rotate(-90 65 65)"/>
+            </svg>
+            <div class="ring-legend">
+              <div class="leg-row">
+                <div class="leg-name move">Move</div>
+                <div class="leg-val">486<span class="unit">/620 KCAL</span></div>
+              </div>
+              <div class="leg-row">
+                <div class="leg-name exercise">Exercise</div>
+                <div class="leg-val">38<span class="unit">/30 MIN</span></div>
+              </div>
+              <div class="leg-row">
+                <div class="leg-name stand">Stand</div>
+                <div class="leg-val">9<span class="unit">/12 HR</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tiles">
+            <div class="tile">
+              <div class="tile-top"><span class="tile-icn"><svg viewBox="0 0 24 24" fill="none" stroke="#FF375F" stroke-width="2.4"><path d="M6 20V10M12 20V4M18 20v-7"/></svg></span><span class="tile-name">Steps</span></div>
+              <div class="tile-val">8,214</div>
+              <div class="tile-sub">Avg 7,540</div>
+            </div>
+            <div class="tile">
+              <div class="tile-top"><span class="tile-icn"><svg viewBox="0 0 24 24" fill="none" stroke="#1EE4E1" stroke-width="2.4"><path d="M4 18L9 9l4 5 3-4 4 8z"/></svg></span><span class="tile-name">Distance</span></div>
+              <div class="tile-val">5.8<span class="unit"> km</span></div>
+              <div class="tile-sub">Walking + Running</div>
+            </div>
+            <div class="tile">
+              <div class="tile-top"><span class="tile-icn"><svg viewBox="0 0 24 24" fill="none" stroke="#FF375F" stroke-width="2.4"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/></svg></span><span class="tile-name">Heart Rate</span></div>
+              <div class="tile-val">64<span class="unit"> BPM</span></div>
+              <div class="tile-sub">Resting</div>
+            </div>
+            <div class="tile">
+              <div class="tile-top"><span class="tile-icn"><svg viewBox="0 0 24 24" fill="none" stroke="#92E82A" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span><span class="tile-name">Workouts</span></div>
+              <div class="tile-val">2</div>
+              <div class="tile-sub">This week</div>
+            </div>
+          </div>
+
+          <div class="fp-head">
+            <div class="fp-title">Fitness+</div>
+            <div class="fp-see">See All</div>
+          </div>
+          <div class="fp-scroll">
+            <div class="fp-card">
+              <div class="fp-thumb fp-a">
+                <div class="fp-badge">New</div>
+                <div class="fp-play"></div>
+              </div>
+              <div class="fp-type">HIIT</div>
+              <div class="fp-name">20 min HIIT</div>
+              <div class="fp-meta">Bakari · Pop Anthems</div>
+            </div>
+            <div class="fp-card">
+              <div class="fp-thumb fp-b">
+                <div class="fp-badge">Trending</div>
+                <div class="fp-play"></div>
+              </div>
+              <div class="fp-type">Yoga</div>
+              <div class="fp-name">30 min Yoga</div>
+              <div class="fp-meta">Jessica · Calm</div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/></svg>
+              <span>Summary</span>
+            </div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M10 9.5l5 2.5-5 2.5z" fill="currentColor"/></svg><span>Fitness+</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="3.4"/><circle cx="16" cy="13" r="3.4"/><path d="M3.5 19c.6-2.6 2.6-4 5.5-4M11 19c.6-2.6 2.6-4 5.5-4"/></svg><span>Sharing</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette — The Three Rings</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#000000;"><div class="name">True Black Canvas</div>#000000</div>
+          <div class="swatch" style="background:#1C1C1E;"><div class="name">Grouped Surface</div>#1C1C1E</div>
+          <div class="swatch" style="background:#2C2C2E;"><div class="name">Surface 2</div>#2C2C2E</div>
+          <div class="swatch" style="background:#38383A;"><div class="name">Separator</div>#38383A</div>
+          <div class="swatch" style="background:#FA114F;"><div class="name">Move (ring)</div>#FA114F</div>
+          <div class="swatch" style="background:#FF375F;"><div class="name">Move (label)</div>#FF375F</div>
+          <div class="swatch" style="background:#92E82A; color:#0A1A00;"><div class="name">Exercise (ring)</div>#92E82A</div>
+          <div class="swatch" style="background:#66FF00; color:#0A1A00;"><div class="name">Exercise (bright)</div>#66FF00</div>
+          <div class="swatch" style="background:#1EE4E1; color:#002120;"><div class="name">Stand (ring)</div>#1EE4E1</div>
+          <div class="swatch" style="background:#00F0FF; color:#002120;"><div class="name">Stand (bright)</div>#00F0FF</div>
+          <div class="swatch" style="background:#C969E0;"><div class="name">Fitness+</div>#C969E0</div>
+          <div class="swatch" style="background:#FFFFFF; color:#000;"><div class="name">Text Primary</div>#FFFFFF</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — SF Pro (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Large Title · 40pt · 800</div><div class="type-sample t-40">Summary</div></div>
+        <div class="type-row"><div class="type-meta">Date · 32pt · 800</div><div class="type-sample t-32">May 14</div></div>
+        <div class="type-row"><div class="type-meta">Header · 26pt · 800</div><div class="type-sample t-26">Move</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 800</div><div class="type-sample t-22">Fitness+</div></div>
+        <div class="type-row"><div class="type-meta">Body · 17pt · 600</div><div class="type-sample t-17">Close your rings every day this week.</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 15pt · 600</div><div class="type-sample t-15">20 min HIIT with Bakari</div></div>
+        <div class="type-row"><div class="type-meta">Footnote · 13pt · 400</div><div class="type-sample t-13">Bakari · Pop Anthems</div></div>
+        <div class="type-row"><div class="type-meta">Ring Label · 12pt · 700</div><div class="type-sample t-12">Move</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Start Workout</button>
+          <button class="btn btn-tinted">Add to Plan</button>
+          <button class="btn btn-fill">Edit Goal</button>
+          <button class="btn-plain">See All</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Activity Rings</div>
+        <div class="ring-preview">
+          <svg class="mini-rings" viewBox="0 0 96 96">
+            <circle cx="48" cy="48" r="40" fill="none" stroke="rgba(250,17,79,0.22)" stroke-width="10"/>
+            <circle cx="48" cy="48" r="40" fill="none" stroke="#FA114F" stroke-width="10" stroke-linecap="round" stroke-dasharray="201 251" transform="rotate(-90 48 48)"/>
+            <circle cx="48" cy="48" r="27.5" fill="none" stroke="rgba(146,232,42,0.22)" stroke-width="10"/>
+            <circle cx="48" cy="48" r="27.5" fill="none" stroke="#92E82A" stroke-width="10" stroke-linecap="round" stroke-dasharray="138 173" transform="rotate(-90 48 48)"/>
+            <circle cx="48" cy="48" r="15" fill="none" stroke="rgba(30,228,225,0.22)" stroke-width="10"/>
+            <circle cx="48" cy="48" r="15" fill="none" stroke="#1EE4E1" stroke-width="10" stroke-linecap="round" stroke-dasharray="75 94" transform="rotate(-90 48 48)"/>
+          </svg>
+          <div>
+            <div style="margin-bottom:10px;"><span style="color:#FF375F;font-weight:800;">Move</span> <span style="color:rgba(235,235,245,0.6);">— closes when kcal goal met</span></div>
+            <div style="margin-bottom:10px;"><span style="color:#92E82A;font-weight:800;">Exercise</span> <span style="color:rgba(235,235,245,0.6);">— brisk-activity minutes</span></div>
+            <div><span style="color:#1EE4E1;font-weight:800;">Stand</span> <span style="color:rgba(235,235,245,0.6);">— hours with a stand</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-18">18</div>
+          <div class="radius-box r-22">22</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Ring</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: rgba(235,235,245,0.6); font-size: 14px; line-height: 1.55;">Apple Fitness is dark-first on iPhone: the canvas is <em>true black</em> <code>#000000</code> so the three glowing rings are the brightest thing on screen. Grouped cards lift to system <code>#1C1C1E</code>. The ring colors are the entire brand — Move <code>#FA114F</code>, Exercise <code>#92E82A</code>, Stand <code>#1EE4E1</code> — and they never change across themes; each ring sits on a 22%-opacity track of its own color. Labels brighten slightly on black (Move label <code>#FF375F</code>). Text uses Apple's label-on-dark opacity ramp: primary 100%, secondary 60%, tertiary 30%. Fitness+ artwork is full-color and cinematic; the rings glow.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by monday.com iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #181B34;
+    --surface-1: #20243F;
+    --surface-2: #292F4C;
+    --divider: #353B5C;
+    --text-primary: #F5F6F8;
+    --text-secondary: #A7AFC6;
+    --text-tertiary: #6B7394;
+    --ink: #FFFFFF;
+    --mred: #E2445C;
+    --mgreen: #00C875;
+    --morange: #FDAB3D;
+    --myellow: #FFCB00;
+    --mpurple: #A25DDC;
+    --mblue: #0073EA;
+    --mteal: #00D2D2;
+    --mpink: #FF158A;
+    --mnavy: #333D6E;
+    --error: #E2445C;
+    --font: 'Figtree', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--mred); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* App header */
+  .app-head { padding: 4px 18px 10px; }
+  .app-head-top { display: flex; align-items: center; justify-content: space-between; }
+  .board-name { font-size: 22px; font-weight: 800; color: var(--ink); letter-spacing: -0.4px; }
+  .board-name .dot { display: inline-block; width: 9px; height: 9px; border-radius: 3px; background: var(--mred); margin-right: 8px; vertical-align: middle; }
+  .avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--mpurple); color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+  .app-tabs { display: flex; gap: 20px; margin-top: 12px; }
+  .app-tab { font-size: 13px; font-weight: 600; color: var(--text-secondary); padding-bottom: 8px; position: relative; }
+  .app-tab.active { color: var(--text-primary); }
+  .app-tab.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2.5px; background: var(--mblue); border-radius: 2px; }
+
+  /* Group */
+  .group { padding: 6px 0 0; }
+  .group-bar { display: flex; align-items: center; gap: 8px; padding: 12px 18px 8px; }
+  .group-caret { width: 0; height: 0; border-left: 5px solid; border-top: 4px solid transparent; border-bottom: 4px solid transparent; }
+  .group-name { font-size: 14px; font-weight: 700; }
+  .group-count { font-size: 11px; color: var(--text-tertiary); font-weight: 600; }
+
+  /* Board item row */
+  .item { display: flex; align-items: stretch; border-bottom: 1px solid var(--divider); }
+  .item-stripe { width: 6px; flex-shrink: 0; }
+  .item-main { flex: 1; padding: 12px 14px; display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .item-name { flex: 1; font-size: 14px; font-weight: 500; color: var(--text-primary); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .person { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: #FFF; flex-shrink: 0; }
+  .spill { font-size: 11px; font-weight: 700; color: #FFF; padding: 5px 10px; border-radius: 4px; text-align: center; min-width: 88px; flex-shrink: 0; }
+
+  /* Add */
+  .add-row { padding: 12px 18px; }
+  .add-btn { font-size: 13px; font-weight: 600; color: var(--text-secondary); display: flex; align-items: center; gap: 8px; }
+  .add-btn svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2.5; fill: none; }
+
+  /* FAB */
+  .fab { position: absolute; right: 18px; bottom: 86px; width: 56px; height: 56px; border-radius: 50%; background: var(--mblue); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,115,234,0.45); }
+  .fab svg { width: 24px; height: 24px; stroke: #FFF; stroke-width: 2.5; fill: none; }
+
+  /* Tab bar */
+  .tab-bar { height: 68px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(24,27,52,0.95); backdrop-filter: saturate(180%) blur(20px); border-top: 1px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 4px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--mblue); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 800; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-14m { font-size: 14px; font-weight: 500; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 700; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 600; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--mblue); color: #FFF; font-size: 15px; padding: 13px 26px; border-radius: 8px; }
+  .btn-primary:active { transform: scale(0.98); filter: brightness(0.92); }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1px solid var(--divider); font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 8px; }
+  .btn-pill { background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--divider); font-size: 14px; font-weight: 600; padding: 10px 18px; border-radius: 999px; }
+  .btn-text { background: transparent; color: var(--mblue); font-size: 14px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Status cells */
+  .status-grid { display: flex; gap: 8px; flex-wrap: wrap; }
+  .scell { font-size: 12px; font-weight: 700; color: #FFF; padding: 8px 16px; border-radius: 4px; text-align: center; min-width: 100px; }
+  .s-done { background: var(--mgreen); }
+  .s-work { background: var(--morange); }
+  .s-stuck { background: var(--mred); }
+  .s-na { background: var(--mnavy); }
+
+  /* Priority cells */
+  .prio-grid { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pcell { font-size: 12px; font-weight: 700; color: #FFF; padding: 8px 16px; border-radius: 4px; text-align: center; min-width: 84px; }
+  .p-crit { background: #401694; }
+  .p-high { background: var(--mpurple); }
+  .p-med { background: #5559DF; }
+  .p-low { background: #579BFC; }
+
+  /* Battery / progress */
+  .battery { height: 24px; border-radius: 4px; overflow: hidden; display: flex; background: var(--surface-2); }
+  .battery > span { display: block; }
+  .seg-g { background: var(--mgreen); }
+  .seg-o { background: var(--morange); }
+  .seg-r { background: var(--mred); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--mblue); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-pill { border-radius: 999px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .mark { display: inline-flex; width: 40px; height: 40px; align-items: center; justify-content: center; }
+  .mark svg { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="mark">
+      <svg viewBox="0 0 40 40"><circle cx="9" cy="20" r="6" fill="#E2445C"/><circle cx="20" cy="20" r="6" fill="#FDAB3D"/><circle cx="31" cy="20" r="6" fill="#00C875"/></svg>
+    </span>
+    <div class="page-title">monday.com iOS — Design Tokens</div>
+    <div class="page-chip">Night Board</div>
+  </div>
+  <p class="page-subtitle">monday.com's night canvas (#181B34) is a deep indigo, not black. The product is the colorful board: full-bleed status cells in green (#00C875), orange (#FDAB3D), and red (#E2445C) carry all the meaning. Items wear a leading group-color stripe; the blue (#0073EA) primary and FAB anchor every interaction.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="app-head">
+            <div class="app-head-top">
+              <div class="board-name"><span class="dot"></span>Launch Plan</div>
+              <div class="avatar">DK</div>
+            </div>
+            <div class="app-tabs">
+              <div class="app-tab active">Main Table</div>
+              <div class="app-tab">Kanban</div>
+              <div class="app-tab">Timeline</div>
+              <div class="app-tab">Updates</div>
+            </div>
+          </div>
+
+          <div class="group">
+            <div class="group-bar"><span class="group-caret" style="border-left-color:#00C875;"></span><span class="group-name" style="color:#00C875;">This week</span><span class="group-count">4 items</span></div>
+
+            <div class="item">
+              <div class="item-stripe" style="background:#00C875;"></div>
+              <div class="item-main">
+                <span class="item-name">Finalize landing page copy</span>
+                <span class="person" style="background:#A25DDC;">SK</span>
+                <span class="spill s-done">Done</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="item-stripe" style="background:#00C875;"></div>
+              <div class="item-main">
+                <span class="item-name">Ship pricing experiment</span>
+                <span class="person" style="background:#0073EA;">MK</span>
+                <span class="spill s-work">Working on it</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="item-stripe" style="background:#00C875;"></div>
+              <div class="item-main">
+                <span class="item-name">QA the onboarding flow</span>
+                <span class="person" style="background:#FF158A;">AL</span>
+                <span class="spill s-stuck">Stuck</span>
+              </div>
+            </div>
+
+            <div class="group-bar"><span class="group-caret" style="border-left-color:#A25DDC;"></span><span class="group-name" style="color:#A25DDC;">Next sprint</span><span class="group-count">2 items</span></div>
+
+            <div class="item">
+              <div class="item-stripe" style="background:#A25DDC;"></div>
+              <div class="item-main">
+                <span class="item-name">Draft Q3 OKRs</span>
+                <span class="person" style="background:#00C875;">RP</span>
+                <span class="spill s-na">Not started</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="item-stripe" style="background:#A25DDC;"></div>
+              <div class="item-main">
+                <span class="item-name">Vendor contract review</span>
+                <span class="person" style="background:#FDAB3D;">JT</span>
+                <span class="spill s-work">Working on it</span>
+              </div>
+            </div>
+
+            <div class="add-row">
+              <span class="add-btn"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add item</span>
+            </div>
+          </div>
+
+          <div class="fab"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 0 0 1 1h3m10-11l2 2m-2-2v10a1 1 0 0 1-1 1h-3m-6 0a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1m-6 0h6"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="10" x2="9" y2="20"/></svg><span>Boards</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 0 0-4-5.7V5a2 2 0 1 0-4 0v.3A6 6 0 0 0 6 11v3.2a2 2 0 0 1-.6 1.4L4 17h5m6 0v1a3 3 0 1 1-6 0v-1m6 0H9"/></svg><span>Inbox</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Night Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#181B34;"><div class="name">Night Canvas</div>#181B34</div>
+          <div class="swatch" style="background:#20243F;"><div class="name">Surface 1</div>#20243F</div>
+          <div class="swatch" style="background:#292F4C;"><div class="name">Surface 2</div>#292F4C</div>
+          <div class="swatch" style="background:#353B5C;"><div class="name">Divider</div>#353B5C</div>
+          <div class="swatch" style="background:#F5F6F8; color:#181B34;"><div class="name">Text Primary</div>#F5F6F8</div>
+          <div class="swatch" style="background:#A7AFC6; color:#181B34;"><div class="name">Text Secondary</div>#A7AFC6</div>
+          <div class="swatch" style="background:#E2445C;"><div class="name">Status Red</div>#E2445C</div>
+          <div class="swatch" style="background:#00C875;"><div class="name">Status Green</div>#00C875</div>
+          <div class="swatch" style="background:#FDAB3D; color:#181B34;"><div class="name">Status Orange</div>#FDAB3D</div>
+          <div class="swatch" style="background:#0073EA;"><div class="name">Primary Blue</div>#0073EA</div>
+          <div class="swatch" style="background:#A25DDC;"><div class="name">Purple</div>#A25DDC</div>
+          <div class="swatch" style="background:#FFCB00; color:#181B34;"><div class="name">Yellow</div>#FFCB00</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Figtree (Poppins-class brand sans)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 800</div><div class="type-sample t-32">My Work</div></div>
+        <div class="type-row"><div class="type-meta">Board Title · 26pt · 700</div><div class="type-sample t-26">Product Launch Plan</div></div>
+        <div class="type-row"><div class="type-meta">Group Header · 22pt · 800</div><div class="type-sample t-22">This week</div></div>
+        <div class="type-row"><div class="type-meta">Section · 18pt · 700</div><div class="type-sample t-18">Board updates</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Drag any item between groups to re-plan the sprint on the fly.</div></div>
+        <div class="type-row"><div class="type-meta">Item Name · 14pt · 500</div><div class="type-sample t-14m">Finalize landing page copy</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Updated 2h ago · 4 items</div></div>
+        <div class="type-row"><div class="type-meta">Status Label · 11pt · 700</div><div class="type-sample t-11">WORKING ON IT</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">New item</button>
+          <button class="btn btn-outline">Invite</button>
+          <button class="btn btn-pill">Filter</button>
+          <button class="btn-text">Add column</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Status Column Cells (full-bleed)</div>
+        <div class="status-grid">
+          <span class="scell s-done">Done</span>
+          <span class="scell s-work">Working on it</span>
+          <span class="scell s-stuck">Stuck</span>
+          <span class="scell s-na">Not started</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Priority Column Cells</div>
+        <div class="prio-grid">
+          <span class="pcell p-crit">Critical ⚠️</span>
+          <span class="pcell p-high">High</span>
+          <span class="pcell p-med">Medium</span>
+          <span class="pcell p-low">Low</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Battery Column (rollup progress)</div>
+        <div class="battery">
+          <span class="seg-g" style="width:55%;"></span>
+          <span class="seg-o" style="width:25%;"></span>
+          <span class="seg-r" style="width:20%;"></span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">monday.com's night mode uses a deep indigo canvas <code>#181B34</code> — distinctly blue-tinted, never neutral black. Status cells stay <strong>fully saturated and full-bleed</strong> in both themes: green <code>#00C875</code>, orange <code>#FDAB3D</code>, red <code>#E2445C</code> — they carry all of the board's meaning, so they never dim. The leading group-color stripe (6pt) keeps items visually bucketed. Primary blue <code>#0073EA</code> drives the FAB and CTAs. Text inverts to near-white <code>#F5F6F8</code>; surfaces lift from the canvas in cool indigo steps (<code>#20243F</code> → <code>#292F4C</code>).</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Life360 iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #161325;
+    --surface-1: #1F1B33;
+    --surface-2: #2A2542;
+    --sheet: #211D36;
+    --divider: #332E4D;
+    --border: #3D3759;
+    --text-primary: #ECEAF5;
+    --text-secondary: #A6A0C2;
+    --text-tertiary: #6F6990;
+    --ink: #FFFFFF;
+    --purple: #582C83;
+    --purple-light: #7E57C2;
+    --purple-bright: #8B5CF6;
+    --purple-pressed: #4A2470;
+    --map-bg: #1A2138;
+    --map-road: #2C3654;
+    --map-park: #1B3A2E;
+    --map-water: #16314A;
+    --safe: #34C759;
+    --alert: #FF6B6B;
+    --warning: #FFB020;
+    --member-amber: #F2A33C;
+    --member-teal: #2DD4BF;
+    --member-pink: #F472B6;
+    --member-blue: #60A5FA;
+    --font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--purple-light); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 30; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: #FFF; position: absolute; top: 0; left: 0; right: 0; z-index: 25; }
+
+  /* Map */
+  .map { position: absolute; inset: 0; background:
+      radial-gradient(circle at 30% 25%, #20294A 0%, transparent 45%),
+      radial-gradient(circle at 75% 70%, #1C2540 0%, transparent 50%),
+      var(--map-bg); }
+  .road { position: absolute; background: var(--map-road); border-radius: 4px; }
+  .road.r1 { top: 22%; left: -10%; width: 130%; height: 14px; transform: rotate(-8deg); }
+  .road.r2 { top: 55%; left: -10%; width: 130%; height: 12px; transform: rotate(6deg); }
+  .road.r3 { top: -10%; left: 38%; width: 14px; height: 130%; transform: rotate(10deg); }
+  .road.r4 { top: -10%; left: 70%; width: 10px; height: 130%; transform: rotate(-5deg); }
+  .park { position: absolute; top: 60%; left: 8%; width: 30%; height: 22%; background: var(--map-park); border-radius: 40% 30% 35% 45%; }
+  .water { position: absolute; top: 8%; right: -8%; width: 35%; height: 26%; background: var(--map-water); border-radius: 50% 40% 45% 50%; }
+
+  /* Member pins */
+  .pin { position: absolute; display: flex; flex-direction: column; align-items: center; z-index: 12; }
+  .pin-bubble { width: 46px; height: 46px; border-radius: 50%; border: 3px solid #FFF; box-shadow: 0 4px 12px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: #FFF; position: relative; }
+  .pin-bubble::after { content: ''; position: absolute; bottom: -7px; left: 50%; transform: translateX(-50%); border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid #FFF; }
+  .pin-amber .pin-bubble { background: var(--member-amber); }
+  .pin-teal .pin-bubble { background: var(--member-teal); }
+  .pin-pink .pin-bubble { background: var(--member-pink); }
+  .pin-blue .pin-bubble { background: var(--member-blue); }
+  .pin-1 { top: 26%; left: 30%; }
+  .pin-2 { top: 44%; left: 58%; }
+  .pin-3 { top: 62%; left: 40%; }
+  .pin-4 { top: 34%; left: 72%; }
+
+  /* Place geofence circle */
+  .geofence { position: absolute; top: 54%; left: 30%; width: 110px; height: 110px; border-radius: 50%; background: rgba(126,87,194,0.16); border: 2px solid rgba(126,87,194,0.55); z-index: 8; }
+  .place-tag { position: absolute; top: 50%; left: 28%; background: var(--surface-1); border: 1px solid var(--border); border-radius: 999px; padding: 5px 12px; font-size: 11px; font-weight: 700; color: var(--text-primary); z-index: 9; box-shadow: 0 3px 10px rgba(0,0,0,0.4); }
+
+  /* Top circle selector */
+  .circle-bar { position: absolute; top: 56px; left: 16px; right: 16px; display: flex; align-items: center; justify-content: space-between; background: rgba(31,27,51,0.92); backdrop-filter: blur(16px); border: 1px solid var(--border); border-radius: 999px; padding: 10px 16px; z-index: 20; }
+  .circle-name { font-size: 15px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 7px; }
+  .circle-name svg { width: 14px; height: 14px; stroke: var(--text-secondary); stroke-width: 2.5; fill: none; }
+  .circle-bell { width: 30px; height: 30px; border-radius: 50%; background: var(--surface-2); display: flex; align-items: center; justify-content: center; }
+  .circle-bell svg { width: 15px; height: 15px; stroke: var(--text-primary); stroke-width: 2; fill: none; }
+
+  /* Bottom member sheet */
+  .member-sheet { position: absolute; left: 0; right: 0; bottom: 0; background: var(--sheet); border-radius: 22px 22px 0 0; padding: 12px 0 0; z-index: 22; box-shadow: 0 -8px 30px rgba(0,0,0,0.5); }
+  .grabber { width: 38px; height: 4px; border-radius: 2px; background: var(--border); margin: 0 auto 14px; }
+  .member-row { display: flex; align-items: center; gap: 12px; padding: 10px 18px; }
+  .m-avatar { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: #FFF; flex-shrink: 0; }
+  .av-amber { background: var(--member-amber); }
+  .av-teal { background: var(--member-teal); }
+  .av-pink { background: var(--member-pink); }
+  .m-info { flex: 1; min-width: 0; }
+  .m-name { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+  .m-loc { font-size: 12.5px; color: var(--text-secondary); margin-top: 2px; display: flex; align-items: center; gap: 5px; }
+  .m-loc svg { width: 11px; height: 11px; stroke: currentColor; stroke-width: 2.5; fill: none; }
+  .m-batt { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; }
+  .m-batt.ok { color: var(--safe); }
+  .m-batt.low { color: var(--alert); }
+  .batt-icon { width: 22px; height: 11px; border: 1.5px solid currentColor; border-radius: 3px; position: relative; padding: 1.5px; }
+  .batt-icon::after { content: ''; position: absolute; right: -3px; top: 3px; width: 2px; height: 4px; background: currentColor; border-radius: 0 1px 1px 0; }
+  .batt-fill { height: 100%; background: currentColor; border-radius: 1px; }
+
+  /* Tab bar */
+  .tab-bar { position: relative; height: 64px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: var(--sheet); border-top: 0.5px solid var(--divider); z-index: 23; }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 4px; }
+  .tab.active { color: var(--purple-light); }
+  .tab svg { width: 21px; height: 21px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #161325; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-13 { font-size: 13px; font-weight: 600; }
+  .t-12 { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--purple-light); color: #FFF; font-size: 15px; padding: 14px 26px; border-radius: 28px; }
+  .btn-primary:active { background: var(--purple-pressed); transform: scale(0.98); }
+  .btn-secondary { background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--border); font-size: 14px; font-weight: 600; padding: 12px 22px; border-radius: 24px; }
+  .btn-sos { background: var(--alert); color: #FFF; font-size: 15px; font-weight: 800; padding: 14px 26px; border-radius: 28px; letter-spacing: 0.5px; }
+  .btn-text { background: transparent; color: var(--purple-light); font-size: 14px; font-weight: 700; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Member avatars */
+  .avatar-row { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+  .av-demo { width: 52px; height: 52px; border-radius: 50%; border: 3px solid #FFF; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 17px; color: #FFF; box-shadow: 0 3px 10px rgba(0,0,0,0.4); }
+
+  /* Status chips */
+  .chip-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 700; padding: 7px 13px; border-radius: 999px; }
+  .chip-safe { color: var(--safe); background: rgba(52,199,89,0.14); }
+  .chip-alert { color: var(--alert); background: rgba(255,107,107,0.14); }
+  .chip-place { color: var(--purple-light); background: rgba(126,87,194,0.16); }
+  .chip .cdot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--purple-light); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-22 { border-radius: 22px; }
+  .r-28 { border-radius: 28px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logo header */
+  .logo { display: inline-flex; width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #7E57C2, #582C83); align-items: center; justify-content: center; }
+  .logo svg { width: 22px; height: 22px; stroke: #FFF; stroke-width: 2.5; fill: none; }
+  code { font-family: 'SF Mono', Menlo, monospace; font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; color: var(--text-primary); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 24 24"><path d="M12 21s-7-5.2-7-11a7 7 0 0 1 14 0c0 5.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>
+    </span>
+    <div class="page-title">Life360 iOS — Design Tokens</div>
+    <div class="page-chip">Map Dark</div>
+  </div>
+  <p class="page-subtitle">A deep-violet night canvas (#161325) behind a dark-styled map (#1A2138). Life360 Purple (#582C83 / #7E57C2) is the brand spine — Circle selector, Places geofences, primary CTAs — while each family member owns a fixed identity color (amber #F2A33C, teal #2DD4BF, pink #F472B6, blue #60A5FA) carried by their map pin and avatar everywhere.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="map">
+            <div class="road r1"></div>
+            <div class="road r2"></div>
+            <div class="road r3"></div>
+            <div class="road r4"></div>
+            <div class="park"></div>
+            <div class="water"></div>
+
+            <div class="geofence"></div>
+            <div class="place-tag">🏠 Home</div>
+
+            <div class="pin pin-amber pin-1"><div class="pin-bubble">M</div></div>
+            <div class="pin pin-teal pin-2"><div class="pin-bubble">J</div></div>
+            <div class="pin pin-pink pin-3"><div class="pin-bubble">S</div></div>
+            <div class="pin pin-blue pin-4"><div class="pin-bubble">D</div></div>
+          </div>
+
+          <div class="circle-bar">
+            <div class="circle-name">The Carters <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+            <div class="circle-bell"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
+          </div>
+
+          <div class="member-sheet">
+            <div class="grabber"></div>
+            <div class="member-row">
+              <div class="m-avatar av-amber">M</div>
+              <div class="m-info">
+                <div class="m-name">Mom</div>
+                <div class="m-loc"><svg viewBox="0 0 24 24"><path d="M12 21s-7-5-7-11a7 7 0 0 1 14 0c0 6-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>At Home · 2 min ago</div>
+              </div>
+              <div class="m-batt ok"><span class="batt-icon"><span class="batt-fill" style="width:82%"></span></span>82%</div>
+            </div>
+            <div class="member-row">
+              <div class="m-avatar av-teal">J</div>
+              <div class="m-info">
+                <div class="m-name">Jordan</div>
+                <div class="m-loc"><svg viewBox="0 0 24 24"><path d="M12 21s-7-5-7-11a7 7 0 0 1 14 0c0 6-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Lincoln High School</div>
+              </div>
+              <div class="m-batt low"><span class="batt-icon"><span class="batt-fill" style="width:14%"></span></span>14%</div>
+            </div>
+            <div class="member-row">
+              <div class="m-avatar av-pink">S</div>
+              <div class="m-info">
+                <div class="m-name">Sam</div>
+                <div class="m-loc"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Driving · 28 mph</div>
+              </div>
+              <div class="m-batt ok"><span class="batt-icon"><span class="batt-fill" style="width:64%"></span></span>64%</div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M12 21s-7-5.2-7-11a7 7 0 0 1 14 0c0 5.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><span>Map</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/></svg><span>Places</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M5 19V5l7 4 7-4v14"/><circle cx="12" cy="13" r="3"/></svg><span>Driving</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21c0-4 3.5-6 7-6s7 2 7 6"/></svg><span>Safety</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#161325;"><div class="name">Night Canvas</div>#161325</div>
+          <div class="swatch" style="background:#1F1B33;"><div class="name">Surface 1</div>#1F1B33</div>
+          <div class="swatch" style="background:#1A2138;"><div class="name">Map Base</div>#1A2138</div>
+          <div class="swatch" style="background:#582C83;"><div class="name">Life360 Purple</div>#582C83</div>
+          <div class="swatch" style="background:#7E57C2;"><div class="name">Purple Light</div>#7E57C2</div>
+          <div class="swatch" style="background:#8B5CF6;"><div class="name">Purple Bright</div>#8B5CF6</div>
+          <div class="swatch light" style="background:#ECEAF5;"><div class="name">Text Primary</div>#ECEAF5</div>
+          <div class="swatch" style="background:#A6A0C2; color:#161325;"><div class="name">Text Secondary</div>#A6A0C2</div>
+          <div class="swatch" style="background:#34C759; color:#161325;"><div class="name">Safe Green</div>#34C759</div>
+          <div class="swatch" style="background:#FF6B6B;"><div class="name">SOS / Alert</div>#FF6B6B</div>
+          <div class="swatch" style="background:#F2A33C; color:#161325;"><div class="name">Member Amber</div>#F2A33C</div>
+          <div class="swatch" style="background:#2DD4BF; color:#161325;"><div class="name">Member Teal</div>#2DD4BF</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Plus Jakarta Sans (Life360 brand sans)</div>
+        <div class="type-row"><div class="type-meta">Display · 32pt · 800</div><div class="type-sample t-32">The Carters</div></div>
+        <div class="type-row"><div class="type-meta">Title · 26pt · 700</div><div class="type-sample t-26">Family Map</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Today's Driving</div></div>
+        <div class="type-row"><div class="type-meta">Member Name · 18pt · 700</div><div class="type-sample t-18">Jordan</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Sam arrived at Lincoln High School at 8:02 AM.</div></div>
+        <div class="type-row"><div class="type-meta">Row Title · 15pt · 600</div><div class="type-sample t-15m">At Home · 2 min ago</div></div>
+        <div class="type-row"><div class="type-meta">Place / Status · 13pt · 600</div><div class="type-sample t-13">Driving · 28 mph</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Last updated just now</div></div>
+        <div class="type-row"><div class="type-meta">Caption · 12pt · 600</div><div class="type-sample t-12">PLACE ALERT</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Add a Place</button>
+          <button class="btn btn-secondary">Check In</button>
+          <button class="btn btn-sos">SOS</button>
+          <button class="btn-text">Invite Members</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Member Identity Avatars</div>
+        <div class="avatar-row">
+          <div class="av-demo" style="background:#F2A33C;">M</div>
+          <div class="av-demo" style="background:#2DD4BF;">J</div>
+          <div class="av-demo" style="background:#F472B6;">S</div>
+          <div class="av-demo" style="background:#60A5FA;">D</div>
+          <div class="av-demo" style="background:#7E57C2;">A</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Status & Place Chips</div>
+        <div class="chip-row">
+          <span class="chip chip-safe"><span class="cdot"></span>At Home</span>
+          <span class="chip chip-place"><span class="cdot"></span>Geofence</span>
+          <span class="chip chip-alert"><span class="cdot"></span>Left School</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-22">22</div>
+          <div class="radius-box r-28">28</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Life360's dark mode is a deep violet night, canvas <code>#161325</code> with a dark-styled map (<code>#1A2138</code> base, muted roads and parks) so the colored member pins pop. Life360 Purple <code>#7E57C2</code> stays the brand spine across themes — Circle selector, Places geofences, primary CTAs. The defining rule is <strong>member identity color</strong>: every family member is assigned a fixed hue (amber, teal, pink, blue, purple) that is the same on their map pin, their bottom-sheet avatar, and their detail screen — color is how you find your kid on the map. SOS red <code>#FF6B6B</code> and Safe green <code>#34C759</code> are reserved for safety state only.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

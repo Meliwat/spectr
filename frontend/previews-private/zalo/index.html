@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Zalo iOS — Light</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #FFFFFF;
+    --chat-bg: #E8ECF1;
+    --surface-1: #F4F5F7;
+    --surface-2: #EBEDF0;
+    --divider: #E4E6EB;
+    --ink: #1A1A1A;
+    --text-secondary: #6B7280;
+    --text-tertiary: #9AA0AA;
+    --zalo-blue: #0068FF;
+    --zalo-blue-pressed: #0052CC;
+    --zalo-blue-deep: #0047B3;
+    --bubble-out: #DBEBFF;
+    --bubble-out-ink: #14223A;
+    --bubble-in: #FFFFFF;
+    --like-red: #F5325B;
+    --success: #18A957;
+    --warning: #FF9500;
+    --error: #F5325B;
+    --font: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #0C0C0C; color: #E8E8E8; font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: #FFF; }
+  .page-chip { background: var(--zalo-blue); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: #A8A8A8; font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--chat-bg); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: #FFF; background: var(--zalo-blue); }
+
+  /* Chat header */
+  .chat-head { background: var(--zalo-blue); display: flex; align-items: center; gap: 12px; padding: 6px 16px 14px; color: #FFF; }
+  .chat-back svg { width: 22px; height: 22px; stroke: #FFF; stroke-width: 2.4; fill: none; }
+  .ch-av { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #4D9FFF, #0047B3); flex-shrink: 0; }
+  .ch-meta { flex: 1; line-height: 1.2; }
+  .ch-name { font-size: 15px; font-weight: 600; }
+  .ch-status { font-size: 11px; opacity: 0.85; margin-top: 2px; }
+  .ch-actions { display: flex; gap: 18px; }
+  .ch-actions svg { width: 21px; height: 21px; stroke: #FFF; stroke-width: 2; fill: none; }
+
+  /* Chat thread */
+  .thread { flex: 1; overflow-y: auto; scrollbar-width: none; padding: 14px 12px 8px; display: flex; flex-direction: column; gap: 6px; }
+  .thread::-webkit-scrollbar { display: none; }
+  .day { align-self: center; font-size: 11px; color: var(--text-secondary); background: rgba(255,255,255,0.7); padding: 3px 12px; border-radius: 999px; margin: 4px 0 8px; }
+  .row { display: flex; gap: 8px; max-width: 78%; }
+  .row.in { align-self: flex-start; }
+  .row.out { align-self: flex-end; flex-direction: row-reverse; }
+  .row-av { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #4D9FFF, #0047B3); flex-shrink: 0; align-self: flex-end; }
+  .bubble { padding: 9px 13px; font-size: 14px; line-height: 1.4; border-radius: 16px; }
+  .row.in .bubble { background: var(--bubble-in); color: var(--ink); border-bottom-left-radius: 5px; box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+  .row.out .bubble { background: var(--bubble-out); color: var(--bubble-out-ink); border-bottom-right-radius: 5px; }
+  .b-time { font-size: 10px; color: var(--text-tertiary); margin-top: 3px; display: block; }
+  .row.out .b-time { text-align: right; }
+  .b-img { width: 150px; height: 110px; border-radius: 14px; background: linear-gradient(150deg, #Bcd6F5, #6FA8E0 60%, #3E6FA8); }
+  .seen { align-self: flex-end; font-size: 10px; color: var(--text-tertiary); margin: 2px 4px 0; }
+
+  /* Composer */
+  .composer { background: var(--canvas); display: flex; align-items: center; gap: 12px; padding: 9px 14px 14px; border-top: 0.5px solid var(--divider); }
+  .composer svg { width: 23px; height: 23px; stroke: var(--zalo-blue); stroke-width: 2; fill: none; flex-shrink: 0; }
+  .comp-field { flex: 1; height: 38px; background: var(--surface-1); border-radius: 19px; display: flex; align-items: center; padding: 0 16px; font-size: 13px; color: var(--text-tertiary); }
+  .comp-send { width: 38px; height: 38px; border-radius: 50%; background: var(--zalo-blue); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .comp-send svg { width: 18px; height: 18px; stroke: #FFF; stroke-width: 2.4; }
+
+  /* Tab bar */
+  .tab-bar { height: 60px; display: flex; align-items: flex-start; padding: 7px 4px 12px; justify-content: space-around; background: var(--canvas); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 500; gap: 3px; position: relative; }
+  .tab.active { color: var(--zalo-blue); }
+  .tab svg { width: 23px; height: 23px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+  .badge { position: absolute; top: -3px; right: 50%; transform: translateX(16px); background: var(--like-red); color: #FFF; font-size: 9px; font-weight: 700; min-width: 16px; height: 16px; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+
+  /* Token sections */
+  .section { background: #161616; border: 1px solid #262626; border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #9A9A9A; margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid #2A2A2A; color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid #262626; }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: #9A9A9A; width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: #E8E8E8; }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; color: #FFF; }
+  .t-24 { font-size: 24px; font-weight: 700; letter-spacing: -0.3px; color: #FFF; }
+  .t-20 { font-size: 20px; font-weight: 700; }
+  .t-17 { font-size: 17px; font-weight: 600; }
+  .t-15 { font-size: 15px; font-weight: 400; }
+  .t-14m { font-size: 14px; font-weight: 600; }
+  .t-13 { font-size: 13px; font-weight: 400; color: #A8A8A8; }
+  .t-11 { font-size: 11px; font-weight: 600; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--zalo-blue); color: #FFF; font-size: 15px; padding: 13px 28px; border-radius: 8px; }
+  .btn-primary:active { background: var(--zalo-blue-pressed); transform: scale(0.98); }
+  .btn-soft { background: #DBEBFF; color: var(--zalo-blue); font-size: 15px; padding: 13px 28px; border-radius: 8px; }
+  .btn-outline { background: transparent; color: #E8E8E8; border: 1px solid #404040; font-size: 14px; font-weight: 600; padding: 11px 22px; border-radius: 8px; }
+  .btn-pill { background: var(--zalo-blue); color: #FFF; font-size: 13px; font-weight: 700; padding: 8px 20px; border-radius: 500px; }
+  .btn-text { background: transparent; color: var(--zalo-blue); font-size: 14px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Chat bubbles preview */
+  .bubble-demo { display: flex; flex-direction: column; gap: 8px; max-width: 280px; }
+  .bd { padding: 9px 13px; font-size: 14px; border-radius: 16px; }
+  .bd.in { background: #FFF; color: #1A1A1A; align-self: flex-start; border-bottom-left-radius: 5px; }
+  .bd.out { background: #DBEBFF; color: #14223A; align-self: flex-end; border-bottom-right-radius: 5px; }
+
+  /* Mini-app grid */
+  .mini-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .mini { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+  .mini-ic { width: 52px; height: 52px; border-radius: 15px; display: flex; align-items: center; justify-content: center; }
+  .mini-ic svg { width: 24px; height: 24px; stroke: #FFF; stroke-width: 2; fill: none; }
+  .mini-lb { font-size: 11px; color: #C8C8C8; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--zalo-blue); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-5 { border-radius: 5px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-20 { border-radius: 20px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 12px; background: var(--zalo-blue); }
+  .logo span { font-family: var(--font); font-weight: 800; font-size: 19px; color: #FFF; letter-spacing: -0.5px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo"><span>Zalo</span></span>
+    <div class="page-title">Zalo iOS — Design Tokens</div>
+    <div class="page-chip">Super-App Blue</div>
+  </div>
+  <p class="page-subtitle">Vietnam's #1 messaging super-app. Zalo Blue (#0068FF) anchors every header, primary action, and outgoing bubble tint. White content canvas, soft blue-grey chat backdrop (#E8ECF1), asymmetric message bubbles with a clipped tail corner, and a mini-app launcher grid. Signature screens = the chat thread + the discovery/mini-app hub.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="chat-head">
+            <span class="chat-back"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></span>
+            <span class="ch-av"></span>
+            <div class="ch-meta">
+              <div class="ch-name">Linh Nguyễn</div>
+              <div class="ch-status">Active now</div>
+            </div>
+            <div class="ch-actions">
+              <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+            </div>
+          </div>
+
+          <div class="thread">
+            <div class="day">Hôm nay · Today</div>
+            <div class="row in">
+              <span class="row-av"></span>
+              <div><div class="bubble">Chào bạn! Bạn rảnh cuối tuần này không?<span class="b-time">09:24</span></div></div>
+            </div>
+            <div class="row out">
+              <div><div class="bubble">Rảnh nha! Đi cà phê nhé ☕<span class="b-time">09:25</span></div></div>
+            </div>
+            <div class="row in">
+              <span class="row-av"></span>
+              <div><div class="bubble" style="padding:5px;"><div class="b-img"></div></div></div>
+            </div>
+            <div class="row out">
+              <div><div class="bubble">Quán này đẹp quá, chốt luôn!<span class="b-time">09:27</span></div></div>
+            </div>
+            <div class="seen">Đã xem · Seen 09:27</div>
+            <div class="row in">
+              <span class="row-av"></span>
+              <div><div class="bubble">Ok hẹn 3h chiều thứ 7 nha 👍<span class="b-time">09:28</span></div></div>
+            </div>
+          </div>
+
+          <div class="composer">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            <div class="comp-field">Tin nhắn</div>
+            <svg viewBox="0 0 24 24"><path d="M4 7h3l2-3h6l2 3h3v13H4z"/><circle cx="12" cy="13" r="4"/></svg>
+            <div class="comp-send"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg></div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M4 4h16v12H7l-3 3z"/></svg><span>Tin nhắn</span><span class="badge">5</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>Danh bạ</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Khám phá</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-7 17l-1 4 4-1a10 10 0 1 0 4-20z"/></svg><span>Nhật ký</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 21c0-4 3.5-6 7-6s7 2 7 6"/></svg><span>Cá nhân</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0068FF;"><div class="name">Zalo Blue</div>#0068FF</div>
+          <div class="swatch" style="background:#0052CC;"><div class="name">Blue Pressed</div>#0052CC</div>
+          <div class="swatch" style="background:#0047B3;"><div class="name">Blue Deep</div>#0047B3</div>
+          <div class="swatch" style="background:#FFFFFF; color:#1A1A1A;"><div class="name">Canvas White</div>#FFFFFF</div>
+          <div class="swatch" style="background:#E8ECF1; color:#1A1A1A;"><div class="name">Chat Backdrop</div>#E8ECF1</div>
+          <div class="swatch" style="background:#DBEBFF; color:#14223A;"><div class="name">Bubble Out</div>#DBEBFF</div>
+          <div class="swatch" style="background:#E4E6EB; color:#1A1A1A;"><div class="name">Divider</div>#E4E6EB</div>
+          <div class="swatch" style="background:#1A1A1A;"><div class="name">Ink</div>#1A1A1A</div>
+          <div class="swatch" style="background:#6B7280;"><div class="name">Text Secondary</div>#6B7280</div>
+          <div class="swatch" style="background:#18A957;"><div class="name">Success</div>#18A957</div>
+          <div class="swatch" style="background:#FF9500; color:#222;"><div class="name">Warning</div>#FF9500</div>
+          <div class="swatch" style="background:#F5325B;"><div class="name">Notify / Like</div>#F5325B</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Be Vietnam Pro (Vietnamese-first)</div>
+        <div class="type-row"><div class="type-meta">Display · 32pt · 800</div><div class="type-sample t-32">Khám phá</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 24pt · 700</div><div class="type-sample t-24">Tin nhắn</div></div>
+        <div class="type-row"><div class="type-meta">Section · 20pt · 700</div><div class="type-sample t-20">Danh bạ</div></div>
+        <div class="type-row"><div class="type-meta">List Title · 17pt · 600</div><div class="type-sample t-17">Linh Nguyễn</div></div>
+        <div class="type-row"><div class="type-meta">Body / Bubble · 15pt · 400</div><div class="type-sample t-15">Chào bạn! Bạn rảnh cuối tuần này không?</div></div>
+        <div class="type-row"><div class="type-meta">Cell Title · 14pt · 600</div><div class="type-sample t-14m">Nhóm gia đình (8)</div></div>
+        <div class="type-row"><div class="type-meta">Preview · 13pt · 400</div><div class="type-sample t-13">Linh: Ok hẹn 3h chiều thứ 7 nha</div></div>
+        <div class="type-row"><div class="type-meta">Timestamp · 11pt · 600</div><div class="type-sample t-11">09:28 · Đã xem</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Gửi</button>
+          <button class="btn btn-soft">Kết bạn</button>
+          <button class="btn btn-outline">Hủy</button>
+          <button class="btn btn-pill">Theo dõi</button>
+          <button class="btn-text">Xem tất cả</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Chat Bubbles</div>
+        <div class="bubble-demo">
+          <div class="bd in">Chào bạn! Bạn rảnh cuối tuần này không?</div>
+          <div class="bd out">Rảnh nha! Đi cà phê nhé</div>
+          <div class="bd in">Ok hẹn 3h chiều thứ 7 nha</div>
+          <div class="bd out">Chốt luôn 👍</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Mini-App Launcher Grid</div>
+        <div class="mini-grid">
+          <div class="mini"><div class="mini-ic" style="background:#0068FF;"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/></svg></div><div class="mini-lb">Zalo Pay</div></div>
+          <div class="mini"><div class="mini-ic" style="background:#18A957;"><svg viewBox="0 0 24 24"><path d="M3 12h18M12 3v18"/></svg></div><div class="mini-lb">Nạp tiền</div></div>
+          <div class="mini"><div class="mini-ic" style="background:#FF9500;"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div><div class="mini-lb">Lịch</div></div>
+          <div class="mini"><div class="mini-ic" style="background:#F5325B;"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg></div><div class="mini-lb">Quà tặng</div></div>
+          <div class="mini"><div class="mini-ic" style="background:#7B5CFF;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg></div><div class="mini-lb">Hình ảnh</div></div>
+          <div class="mini"><div class="mini-ic" style="background:#00B8D4;"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-9 8.5 8.5 8.5 0 0 1-4-1L3 21l1.5-4.5A8.38 8.38 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5z"/></svg></div><div class="mini-lb">OA</div></div>
+          <div class="mini"><div class="mini-ic" style="background:#0068FF;"><svg viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z"/></svg></div><div class="mini-lb">Dịch vụ</div></div>
+          <div class="mini"><div class="mini-ic" style="background:#6B7280;"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.5-2.3 1a7 7 0 0 0-1.7-1l-.3-2.5h-4l-.3 2.5a7 7 0 0 0-1.7 1l-2.3-1-2 3.5 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.5 2.3-1a7 7 0 0 0 1.7 1l.3 2.5h4l.3-2.5a7 7 0 0 0 1.7-1l2.3 1 2-3.5-2-1.5a7 7 0 0 0 .1-1z"/></svg></div><div class="mini-lb">Cài đặt</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-5">5</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: #A8A8A8; font-size: 14px; line-height: 1.55;">Zalo's dark mode keeps the brand intact: headers and the active tab stay Zalo Blue <code>#0068FF</code> — the blue reads well on dark. The chat backdrop flips from soft blue-grey <code>#E8ECF1</code> to <code>#101418</code>; incoming bubbles become <code>#1F2329</code> with light text, outgoing bubbles shift to a deep Zalo-blue tint <code>#0A3A7A</code> with white text (the asymmetric clipped-tail corner is preserved). Content surfaces drop to <code>#15171A</code>; dividers to <code>#262A30</code>. The notification red <code>#F5325B</code> and mini-app icon colors stay identical. Vietnamese diacritics must always have full ascender/descender room — never clip the line box.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

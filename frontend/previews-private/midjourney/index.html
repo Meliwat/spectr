@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Midjourney iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #000000;
+    --surface-1: #0E0E0E;
+    --surface-2: #1A1A1A;
+    --surface-3: #242424;
+    --divider: #2A2A2A;
+    --text-primary: #FFFFFF;
+    --text-secondary: #A1A1A1;
+    --text-tertiary: #6E6E6E;
+    --ink: #FFFFFF;
+    --accent: #FFFFFF;
+    --blurple: #4D5BCE;
+    --rate-blue: #2D7FF9;
+    --success: #2ECC71;
+    --warning: #F5A623;
+    --error: #E5484D;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: #FFFFFF; color: #000; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Top bar */
+  .top-bar { display: flex; align-items: center; justify-content: space-between; padding: 4px 18px 12px; }
+  .top-left { display: flex; align-items: center; gap: 8px; }
+  .top-sail { width: 22px; height: 22px; }
+  .top-sail svg { width: 100%; height: 100%; fill: #FFF; }
+  .top-title { font-size: 19px; font-weight: 700; letter-spacing: -0.3px; color: var(--text-primary); }
+  .top-actions { display: flex; gap: 16px; color: var(--text-secondary); }
+  .top-actions svg { width: 21px; height: 21px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Segmented */
+  .seg { display: flex; gap: 22px; padding: 0 18px 14px; border-bottom: 0.5px solid var(--divider); }
+  .seg-item { font-size: 14px; font-weight: 600; color: var(--text-tertiary); padding-bottom: 8px; position: relative; }
+  .seg-item.active { color: var(--text-primary); }
+  .seg-item.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: #FFF; border-radius: 2px; }
+
+  /* Image grid */
+  .feed { flex: 1; padding: 14px; overflow-y: auto; scrollbar-width: none; }
+  .feed::-webkit-scrollbar { display: none; }
+  .job { margin-bottom: 18px; }
+  .prompt-line { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; line-height: 1.4; }
+  .prompt-line b { color: var(--text-primary); font-weight: 600; }
+  .img-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; border-radius: 12px; overflow: hidden; }
+  .cell { aspect-ratio: 1; position: relative; }
+  .c1 { background: linear-gradient(150deg, #6E4B8F 0%, #3A2A52 45%, #150E22 100%); }
+  .c1::after { content: ''; position: absolute; inset: 22% 28% 30% 24%; background: radial-gradient(circle, #C9A6E8 0%, #7A4FA8 60%, transparent 75%); border-radius: 50%; }
+  .c2 { background: linear-gradient(160deg, #C46A3D 0%, #7E3C24 50%, #2B1610 100%); }
+  .c2::after { content: ''; position: absolute; left: 18%; right: 18%; bottom: 16%; height: 46%; background: linear-gradient(180deg, #E8A36B, #9E5530); border-radius: 4px 4px 0 0; }
+  .c3 { background: linear-gradient(145deg, #2F6E6A 0%, #1C4744 55%, #0C1F1E 100%); }
+  .c3::after { content: ''; position: absolute; inset: 26% 24% 24% 26%; background: linear-gradient(135deg, #7FD8D0, #2F8079); border-radius: 50% 50% 50% 8px; }
+  .c4 { background: linear-gradient(160deg, #B5485F 0%, #6E2A3A 52%, #240F16 100%); }
+  .c4::after { content: ''; position: absolute; left: 50%; top: 22%; width: 40%; height: 56%; transform: translateX(-50%); background: linear-gradient(180deg, #E58AA0, #9E3F56); border-radius: 50% 50% 45% 45%; }
+  .job-bar { display: flex; align-items: center; gap: 14px; margin-top: 10px; color: var(--text-secondary); }
+  .job-bar svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .job-bar .spacer { flex: 1; }
+  .job-bar .uv { font-size: 11px; font-weight: 600; color: var(--text-tertiary); border: 1px solid var(--divider); border-radius: 6px; padding: 3px 8px; }
+
+  /* Prompt bar */
+  .prompt-bar { margin: 8px 14px 0; display: flex; align-items: center; gap: 10px; height: 50px; background: var(--surface-2); border: 1px solid var(--divider); border-radius: 25px; padding: 0 8px 0 18px; }
+  .prompt-bar .pl { color: var(--text-tertiary); flex: 1; font-size: 14px; }
+  .prompt-bar .imagine { width: 36px; height: 36px; border-radius: 50%; background: #FFF; display: flex; align-items: center; justify-content: center; }
+  .prompt-bar .imagine svg { width: 16px; height: 16px; stroke: #000; stroke-width: 2.5; fill: none; }
+
+  /* Tab bar */
+  .tab-bar { height: 70px; display: flex; align-items: flex-start; padding: 10px 4px 16px; justify-content: space-around; background: rgba(0,0,0,0.92); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 500; gap: 4px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--text-primary); }
+  .tab svg { width: 23px; height: 23px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { stroke-width: 2.4; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #000; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-13mono { font-size: 13px; font-weight: 400; font-family: 'SF Mono', Menlo, monospace; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 500; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 600; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: #FFFFFF; color: #000; font-size: 16px; padding: 14px 28px; border-radius: 999px; }
+  .btn-primary:active { background: #DADADA; transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1px solid var(--divider); font-size: 14px; font-weight: 500; padding: 12px 20px; border-radius: 999px; }
+  .btn-ghost { background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--divider); font-size: 14px; font-weight: 500; padding: 10px 18px; border-radius: 8px; }
+  .btn-text { background: transparent; color: var(--text-secondary); font-size: 14px; font-weight: 500; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Job action chips */
+  .chip-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .ujchip { font-family: 'SF Mono', Menlo, monospace; font-weight: 600; font-size: 13px; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--divider); background: var(--surface-2); color: var(--text-primary); }
+  .ujchip.solid { background: #FFF; color: #000; border-color: #FFF; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--surface-3); border: 1px solid var(--divider); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-25 { border-radius: 25px; }
+  .r-pill { border-radius: 999px; }
+  .r-circle { border-radius: 50%; }
+
+  .sail-logo { display: inline-block; width: 40px; height: 40px; }
+  .sail-logo svg { width: 100%; height: 100%; fill: #FFFFFF; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="sail-logo">
+      <svg viewBox="0 0 32 32"><path d="M3 27 L15 5 L15 27 Z M17 27 L17 9 L28 27 Z"/></svg>
+    </span>
+    <div class="page-title">Midjourney iOS — Design Tokens</div>
+    <div class="page-chip">Pure Black</div>
+  </div>
+  <p class="page-subtitle">A true-black canvas (#000000) where generated imagery is the entire interface. There is no brand accent color — white (#FFFFFF) is the only "primary"; chrome recedes to #A1A1A1 grey so the 2×2 image grid carries all the color. The signature screen is the Create feed: prompt bar on top, jobs streaming as 4-up grids below.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="top-bar">
+            <div class="top-left">
+              <span class="top-sail"><svg viewBox="0 0 32 32"><path d="M3 27 L15 5 L15 27 Z M17 27 L17 9 L28 27 Z"/></svg></span>
+              <span class="top-title">Create</span>
+            </div>
+            <div class="top-actions">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+              <svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="14" y2="18"/></svg>
+            </div>
+          </div>
+
+          <div class="seg">
+            <div class="seg-item active">Imagine</div>
+            <div class="seg-item">Edit</div>
+            <div class="seg-item">Personalize</div>
+          </div>
+
+          <div class="feed">
+            <div class="job">
+              <div class="prompt-line"><b>an opal jellyfish drifting through a nebula</b>, cinematic, volumetric light --ar 1:1 --v 6</div>
+              <div class="img-grid">
+                <div class="cell c1"></div>
+                <div class="cell c2"></div>
+                <div class="cell c3"></div>
+                <div class="cell c4"></div>
+              </div>
+              <div class="job-bar">
+                <svg viewBox="0 0 24 24"><path d="M12 21C-2 12 4 3 12 8c8-5 14 4 0 13z"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v14"/></svg>
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/><circle cx="5" cy="12" r="1.6"/></svg>
+                <span class="spacer"></span>
+                <span class="uv">U1 U2 U3 U4</span>
+              </div>
+            </div>
+
+            <div class="job">
+              <div class="prompt-line"><b>brutalist concrete museum at golden hour</b> --ar 1:1 --style raw</div>
+              <div class="img-grid">
+                <div class="cell c2"></div>
+                <div class="cell c4"></div>
+                <div class="cell c1"></div>
+                <div class="cell c3"></div>
+              </div>
+              <div class="job-bar">
+                <svg viewBox="0 0 24 24"><path d="M12 21C-2 12 4 3 12 8c8-5 14 4 0 13z"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v14"/></svg>
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/><circle cx="5" cy="12" r="1.6"/></svg>
+                <span class="spacer"></span>
+                <span class="uv">U1 U2 U3 U4</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="prompt-bar">
+            <span class="pl">What will you imagine?</span>
+            <span class="imagine"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Create</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Explore</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 15l5-5 4 4 3-3 6 6"/></svg><span>Library</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 21c1-4 4-6 7-6s6 2 7 6"/></svg><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Dark Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#000000;"><div class="name">True Black Canvas</div>#000000</div>
+          <div class="swatch" style="background:#0E0E0E;"><div class="name">Surface 1</div>#0E0E0E</div>
+          <div class="swatch" style="background:#1A1A1A;"><div class="name">Surface 2</div>#1A1A1A</div>
+          <div class="swatch" style="background:#242424;"><div class="name">Surface 3</div>#242424</div>
+          <div class="swatch" style="background:#2A2A2A;"><div class="name">Divider</div>#2A2A2A</div>
+          <div class="swatch light" style="background:#FFFFFF;"><div class="name">White (Primary)</div>#FFFFFF</div>
+          <div class="swatch" style="background:#A1A1A1; color:#000;"><div class="name">Text Secondary</div>#A1A1A1</div>
+          <div class="swatch" style="background:#6E6E6E;"><div class="name">Text Tertiary</div>#6E6E6E</div>
+          <div class="swatch" style="background:#4D5BCE;"><div class="name">Discord Blurple</div>#4D5BCE</div>
+          <div class="swatch" style="background:#2D7FF9;"><div class="name">Rate / Link Blue</div>#2D7FF9</div>
+          <div class="swatch" style="background:#2ECC71;"><div class="name">Success</div>#2ECC71</div>
+          <div class="swatch" style="background:#E5484D;"><div class="name">Error</div>#E5484D</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter (UI) · monospace for prompts &amp; parameters</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 800</div><div class="type-sample t-32">Create</div></div>
+        <div class="type-row"><div class="type-meta">Nav Title · 22pt · 700</div><div class="type-sample t-22">Explore</div></div>
+        <div class="type-row"><div class="type-meta">Section · 19pt · 700</div><div class="type-sample t-18">Recent jobs</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Upscale a single image to a higher resolution.</div></div>
+        <div class="type-row"><div class="type-meta">Action / Tab Active · 15pt · 600</div><div class="type-sample t-15m">Imagine</div></div>
+        <div class="type-row"><div class="type-meta">Prompt · 13pt · mono · 400</div><div class="type-sample t-13mono">opal jellyfish in a nebula --ar 1:1 --v 6</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Relaxed · 4 images · 38s</div></div>
+        <div class="type-row"><div class="type-meta">Param Chip · 13pt · mono · 600</div><div class="type-sample t-13mono" style="color:var(--text-primary);">--stylize 250</div></div>
+        <div class="type-row"><div class="type-meta">Tab Label · 10pt · 500</div><div class="type-sample t-12">Library</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Imagine</button>
+          <button class="btn btn-outline">Vary (Subtle)</button>
+          <button class="btn btn-ghost">Remix</button>
+          <button class="btn-text">Cancel job</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Upscale / Variation Job Chips</div>
+        <div class="chip-row">
+          <div class="ujchip solid">U1</div>
+          <div class="ujchip solid">U2</div>
+          <div class="ujchip">V1</div>
+          <div class="ujchip">V2</div>
+          <div class="ujchip">🔄 Re-roll</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-25">25</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Midjourney is dark-only and the canvas is true black <code>#000000</code> — not a warm charcoal — because OLED black makes generated imagery glow. There is intentionally <strong>no brand accent</strong>: white <code>#FFFFFF</code> is the only "primary" (Imagine button, active tab, upscale chips). All chrome — prompt placeholder, job metadata, icons — sits at <code>#A1A1A1</code> or dimmer so it never competes with the 2×2 grid. Prompts and parameters render in monospace; the colored 4-up grid is the single source of saturation in the entire UI.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

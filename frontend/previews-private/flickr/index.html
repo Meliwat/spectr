@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Flickr iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Proza+Libre:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0C0D0E;
+    --surface-1: #1A1B1D;
+    --surface-2: #232427;
+    --divider: #2A2C30;
+    --text-primary: #FFFFFF;
+    --text-secondary: #B0B3B8;
+    --text-tertiary: #6E7176;
+    --ink: #FFFFFF;
+    --flickr-pink: #FF0084;
+    --flickr-pink-pressed: #D60070;
+    --flickr-blue: #0063DC;
+    --flickr-blue-pressed: #0052B8;
+    --success: #00C781;
+    --error: #FF3B5C;
+    --star: #FFB200;
+    --font: 'Proza Libre', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+    --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font-ui); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--flickr-pink); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Top bar */
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 6px 18px 14px; }
+  .topbar-title { font-family: var(--font); font-size: 22px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.3px; }
+  .topbar-icons { display: flex; gap: 18px; align-items: center; }
+  .topbar-icons svg { width: 21px; height: 21px; stroke: var(--text-primary); stroke-width: 2; fill: none; }
+
+  /* Justified photo mosaic */
+  .mosaic { flex: 1; overflow-y: auto; scrollbar-width: none; padding: 0 2px; }
+  .mosaic::-webkit-scrollbar { display: none; }
+  .m-row { display: flex; gap: 3px; margin-bottom: 3px; }
+  .tile { position: relative; overflow: hidden; }
+  .tile .fav { position: absolute; bottom: 7px; left: 8px; display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; color: #FFF; text-shadow: 0 1px 3px rgba(0,0,0,0.7); }
+  .tile .fav svg { width: 13px; height: 13px; fill: #FFF; }
+  .ph { width: 100%; height: 100%; }
+  .ph-1 { background: linear-gradient(150deg, #2E5C8A 0%, #6FA8C8 55%, #C9E3EE 100%); }
+  .ph-2 { background: linear-gradient(160deg, #C76B3B 0%, #E0A24E 45%, #F4D58D 100%); }
+  .ph-3 { background: linear-gradient(140deg, #1F2A33 0%, #3E5C5A 60%, #7FA89C 100%); }
+  .ph-4 { background: linear-gradient(155deg, #6A2C5A 0%, #B5417E 50%, #F08FB8 100%); }
+  .ph-5 { background: linear-gradient(165deg, #14323F 0%, #2E6F7A 55%, #67B3B0 100%); }
+  .ph-6 { background: linear-gradient(150deg, #4A3B6B 0%, #7A5CA8 50%, #C2A8E0 100%); }
+  .ph-7 { background: linear-gradient(160deg, #8A3B2E 0%, #C8694E 50%, #EFB48F 100%); }
+
+  /* Photo detail card */
+  .detail { flex: 1; overflow-y: auto; scrollbar-width: none; }
+  .detail::-webkit-scrollbar { display: none; }
+  .detail-photo { width: 100%; aspect-ratio: 4/3; }
+  .detail-meta { padding: 14px 16px 8px; }
+  .detail-title { font-family: var(--font); font-size: 17px; font-weight: 600; color: var(--text-primary); }
+  .detail-author { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+  .avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #FF0084, #0063DC); flex-shrink: 0; }
+  .author-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+  .author-sub { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
+  .detail-actions { display: flex; gap: 22px; padding: 10px 16px 12px; border-bottom: 0.5px solid var(--divider); }
+  .act { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+  .act svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .act.faved { color: var(--flickr-pink); }
+  .act.faved svg { fill: var(--flickr-pink); stroke: var(--flickr-pink); }
+
+  /* EXIF rows */
+  .exif { padding: 12px 16px 16px; }
+  .exif-title { font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 10px; }
+  .exif-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 0.5px solid var(--divider); font-size: 12px; }
+  .exif-row:last-child { border-bottom: none; }
+  .exif-k { color: var(--text-secondary); }
+  .exif-v { color: var(--text-primary); font-weight: 600; }
+
+  /* Tab bar */
+  .tab-bar { height: 64px; display: flex; align-items: flex-start; padding: 9px 4px 14px; justify-content: space-around; background: rgba(12,13,14,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 500; gap: 4px; }
+  .tab.active { color: var(--text-primary); }
+  .tab svg { width: 23px; height: 23px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+  .tab.camera svg { width: 27px; height: 27px; stroke: var(--flickr-pink); fill: none; stroke-width: 2; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font-ui); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-family: var(--font); font-size: 32px; font-weight: 700; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-family: var(--font); font-size: 26px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-family: var(--font); font-size: 22px; font-weight: 600; }
+  .t-18 { font-family: var(--font); font-size: 18px; font-weight: 600; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; letter-spacing: 0.3px; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font-ui); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--flickr-pink); color: #FFF; font-size: 15px; padding: 13px 26px; border-radius: 6px; }
+  .btn-primary:active { background: var(--flickr-pink-pressed); transform: scale(0.98); }
+  .btn-secondary { background: var(--flickr-blue); color: #FFF; font-size: 15px; padding: 13px 26px; border-radius: 6px; }
+  .btn-secondary:active { background: var(--flickr-blue-pressed); }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1px solid var(--text-secondary); font-size: 14px; font-weight: 600; padding: 11px 20px; border-radius: 6px; }
+  .btn-follow { background: var(--flickr-pink); color: #FFF; font-size: 13px; font-weight: 700; padding: 8px 18px; border-radius: 500px; }
+  .btn-text { background: transparent; color: var(--flickr-blue); font-size: 14px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Camera meta chips */
+  .chip-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .chip { font-size: 12px; font-weight: 600; padding: 7px 14px; border-radius: 500px; background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--divider); }
+  .chip.exifc { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--flickr-pink); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-2 { border-radius: 2px; }
+  .r-4 { border-radius: 4px; }
+  .r-6 { border-radius: 6px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; align-items: center; gap: 0; }
+  .logo .dot { width: 26px; height: 26px; border-radius: 50%; }
+  .logo .dot.pink { background: var(--flickr-pink); }
+  .logo .dot.blue { background: var(--flickr-blue); margin-left: -6px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <span class="dot pink"></span><span class="dot blue"></span>
+    </span>
+    <div class="page-title">Flickr iOS — Design Tokens</div>
+    <div class="page-chip">Photo Dark</div>
+  </div>
+  <p class="page-subtitle">Near-black gallery canvas (#0C0D0E) so photography reads first — chrome recedes, color pops. Twin brand dots: Flickr Pink (#FF0084) for favorites &amp; primary actions, Flickr Blue (#0063DC) for links &amp; secondary. Justified mosaic rows + EXIF/camera detail tables are the signature surfaces.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="topbar">
+            <div class="topbar-title">Photostream</div>
+            <div class="topbar-icons">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M4 7h3l2-3h6l2 3h3v13H4z"/><circle cx="12" cy="13" r="4"/></svg>
+            </div>
+          </div>
+
+          <div class="mosaic">
+            <div class="m-row" style="height:118px;">
+              <div class="tile" style="flex:1.5;"><div class="ph ph-1"></div><div class="fav"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg>312</div></div>
+              <div class="tile" style="flex:1;"><div class="ph ph-2"></div><div class="fav"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg>88</div></div>
+            </div>
+            <div class="m-row" style="height:104px;">
+              <div class="tile" style="flex:1;"><div class="ph ph-3"></div><div class="fav"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg>47</div></div>
+              <div class="tile" style="flex:1;"><div class="ph ph-4"></div></div>
+              <div class="tile" style="flex:1.3;"><div class="ph ph-5"></div><div class="fav"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg>204</div></div>
+            </div>
+            <div class="m-row" style="height:130px;">
+              <div class="tile" style="flex:1.7;"><div class="ph ph-6"></div><div class="fav"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg>521</div></div>
+              <div class="tile" style="flex:1;"><div class="ph ph-7"></div><div class="fav"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg>63</div></div>
+            </div>
+            <div class="m-row" style="height:96px;">
+              <div class="tile" style="flex:1;"><div class="ph ph-2"></div></div>
+              <div class="tile" style="flex:1.4;"><div class="ph ph-1"></div><div class="fav"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg>129</div></div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Feed</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+            <div class="tab camera"><svg viewBox="0 0 24 24"><path d="M4 7h3l2-3h6l2 3h3v13H4z"/><circle cx="12" cy="13" r="4"/></svg></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 15s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="10" r="1"/><circle cx="15" cy="10" r="1"/></svg><span>Notify</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 21c0-4 3.5-6 7-6s7 2 7 6"/></svg><span>You</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0C0D0E;"><div class="name">Gallery Canvas</div>#0C0D0E</div>
+          <div class="swatch" style="background:#1A1B1D;"><div class="name">Surface 1</div>#1A1B1D</div>
+          <div class="swatch" style="background:#232427;"><div class="name">Surface 2</div>#232427</div>
+          <div class="swatch" style="background:#2A2C30;"><div class="name">Divider</div>#2A2C30</div>
+          <div class="swatch" style="background:#FF0084;"><div class="name">Flickr Pink</div>#FF0084</div>
+          <div class="swatch" style="background:#0063DC;"><div class="name">Flickr Blue</div>#0063DC</div>
+          <div class="swatch" style="background:#FFFFFF; color:#0C0D0E;"><div class="name">Text Primary</div>#FFFFFF</div>
+          <div class="swatch" style="background:#B0B3B8; color:#0C0D0E;"><div class="name">Text Secondary</div>#B0B3B8</div>
+          <div class="swatch" style="background:#6E7176;"><div class="name">Text Tertiary</div>#6E7176</div>
+          <div class="swatch" style="background:#FFB200; color:#222;"><div class="name">Pro Star</div>#FFB200</div>
+          <div class="swatch" style="background:#00C781;"><div class="name">Success</div>#00C781</div>
+          <div class="swatch" style="background:#FF3B5C;"><div class="name">Error</div>#FF3B5C</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Proza Libre (headlines) + Inter (UI)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 700</div><div class="type-sample t-32">Explore</div></div>
+        <div class="type-row"><div class="type-meta">Section · 26pt · 700</div><div class="type-sample t-26">Recent activity</div></div>
+        <div class="type-row"><div class="type-meta">Nav Title · 22pt · 600</div><div class="type-sample t-22">Photostream</div></div>
+        <div class="type-row"><div class="type-meta">Photo Title · 18pt · 600</div><div class="type-sample t-18">Aurora over Vestrahorn</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Shot on a 30-second exposure just after the storm cleared the ridge.</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 15pt · 600</div><div class="type-sample t-15m">Golden hour, Lofoten</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 400</div><div class="type-sample t-13">by Sofia Marent · 312 faves · 2d ago</div></div>
+        <div class="type-row"><div class="type-meta">EXIF · 11pt · 600 mono</div><div class="type-sample t-11">f/2.8 · 1/250s · ISO 100 · 35mm</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Upload</button>
+          <button class="btn btn-secondary">Add to Album</button>
+          <button class="btn btn-outline">Edit</button>
+          <button class="btn btn-follow">Follow</button>
+          <button class="btn-text">View all 248 photos</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Camera &amp; EXIF Chips</div>
+        <div class="chip-row">
+          <div class="chip">Sony &alpha;7 IV</div>
+          <div class="chip">FE 35mm F1.4 GM</div>
+          <div class="chip exifc">f/2.8</div>
+          <div class="chip exifc">1/250s</div>
+          <div class="chip exifc">ISO 100</div>
+          <div class="chip">Long Exposure</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">EXIF Detail Rows</div>
+        <div class="exif" style="padding:0;">
+          <div class="exif-row"><span class="exif-k">Camera</span><span class="exif-v">Sony ILCE-7M4</span></div>
+          <div class="exif-row"><span class="exif-k">Lens</span><span class="exif-v">FE 35mm F1.4 GM</span></div>
+          <div class="exif-row"><span class="exif-k">Exposure</span><span class="exif-v">1/250 sec</span></div>
+          <div class="exif-row"><span class="exif-k">Aperture</span><span class="exif-v">f/2.8</span></div>
+          <div class="exif-row"><span class="exif-k">ISO</span><span class="exif-v">100</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-2">2</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Flickr is photography-first, so the dark canvas sits at near-black <code>#0C0D0E</code> — darker than most apps — letting full-color photos dominate the justified mosaic with only 3px gutters of negative space. Cards lift to <code>#1A1B1D</code>. Flickr Pink <code>#FF0084</code> and Flickr Blue <code>#0063DC</code> are identical across themes — the saturated dual brand reads beautifully on both. Photos never dim; only chrome, EXIF tables, and dividers (<code>#2A2C30</code>) recede. Light mode flips canvas to <code>#FFFFFF</code> with text at <code>#1C1F23</code>.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Tubi iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0A0A2A;
+    --surface-1: #15153D;
+    --surface-2: #1E1E52;
+    --divider: #2A2A5C;
+    --text-primary: #FFFFFF;
+    --text-secondary: #B9B9D6;
+    --text-tertiary: #7A7AA0;
+    --ink: #FFFFFF;
+    --tubi-purple: #7408FF;
+    --tubi-magenta: #FF00FF;
+    --tubi-violet: #A12BFF;
+    --tubi-pink: #FF4FD8;
+    --accent-yellow: #FFD400;
+    --success: #1FD17B;
+    --error: #FF4A6E;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: linear-gradient(135deg, var(--tubi-purple), var(--tubi-magenta)); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050510; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(116,8,255,0.5), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Top bar */
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 4px 18px 12px; }
+  .topbar-logo { font-size: 22px; font-weight: 900; letter-spacing: -1px; background: linear-gradient(120deg, var(--tubi-purple), var(--tubi-magenta)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .topbar-icons { display: flex; gap: 16px; }
+  .topbar-icons svg { width: 20px; height: 20px; stroke: var(--text-primary); stroke-width: 2; fill: none; }
+
+  /* Featured hero */
+  .hero { margin: 0 14px 8px; height: 230px; border-radius: 18px; position: relative; overflow: hidden; background: linear-gradient(160deg, #2B0A5C 0%, #5A0F8F 45%, #18103F 100%); }
+  .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 72% 32%, rgba(255,0,255,0.42), transparent 58%); }
+  .hero::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 60%; background: linear-gradient(180deg, transparent, rgba(10,10,42,0.95)); }
+  .hero-badge { position: absolute; top: 14px; left: 14px; background: linear-gradient(135deg, var(--tubi-purple), var(--tubi-magenta)); font-size: 9px; font-weight: 800; letter-spacing: 0.6px; padding: 4px 8px; border-radius: 5px; text-transform: uppercase; z-index: 2; }
+  .hero-body { position: absolute; left: 16px; right: 16px; bottom: 14px; z-index: 2; }
+  .hero-title { font-size: 26px; font-weight: 900; letter-spacing: -0.6px; line-height: 1; }
+  .hero-meta { font-size: 11px; color: var(--text-secondary); margin-top: 7px; font-weight: 500; }
+  .hero-btns { display: flex; gap: 8px; margin-top: 12px; }
+  .hero-play { flex: 1; background: #FFF; color: #0A0A2A; font-size: 13px; font-weight: 800; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .hero-play svg { width: 13px; height: 13px; fill: #0A0A2A; }
+  .hero-add { width: 44px; height: 38px; border-radius: 8px; background: rgba(255,255,255,0.16); display: flex; align-items: center; justify-content: center; }
+  .hero-add svg { width: 18px; height: 18px; stroke: #FFF; stroke-width: 2.4; fill: none; }
+
+  /* Content rows */
+  .rows { flex: 1; overflow-y: auto; scrollbar-width: none; padding-bottom: 8px; }
+  .rows::-webkit-scrollbar { display: none; }
+  .row { margin-top: 16px; }
+  .row-title { font-size: 15px; font-weight: 800; padding: 0 16px 10px; letter-spacing: -0.2px; }
+  .posters { display: flex; gap: 10px; padding: 0 16px; overflow-x: auto; scrollbar-width: none; }
+  .posters::-webkit-scrollbar { display: none; }
+  .poster { width: 100px; height: 150px; border-radius: 10px; flex-shrink: 0; position: relative; overflow: hidden; box-shadow: 0 6px 16px rgba(0,0,0,0.45); }
+  .poster span { position: absolute; left: 8px; right: 8px; bottom: 8px; font-size: 11px; font-weight: 700; line-height: 1.1; text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
+  .p1 { background: linear-gradient(160deg, #6A0FBF, #2B0A5C); }
+  .p2 { background: linear-gradient(160deg, #FF00FF, #7408FF); }
+  .p3 { background: linear-gradient(160deg, #1E1E52, #5A0F8F); }
+  .p4 { background: linear-gradient(160deg, #B3179F, #3A0E6B); }
+  .p5 { background: linear-gradient(160deg, #4A0F7F, #18103F); }
+  .free-tag { position: absolute; top: 6px; left: 6px; background: var(--accent-yellow); color: #1A0A2A; font-size: 8px; font-weight: 900; padding: 2px 5px; border-radius: 3px; letter-spacing: 0.3px; }
+
+  /* Tab bar */
+  .tab-bar { height: 68px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(10,10,42,0.96); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 4px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--tubi-magenta); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 900; letter-spacing: -0.6px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 800; letter-spacing: -0.3px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-13 { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 800; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: #FFFFFF; color: #0A0A2A; font-size: 15px; padding: 13px 30px; border-radius: 8px; }
+  .btn-primary:active { background: #E6E6F2; transform: scale(0.98); }
+  .btn-gradient { background: linear-gradient(135deg, var(--tubi-purple), var(--tubi-magenta)); color: #FFF; font-size: 15px; padding: 13px 30px; border-radius: 8px; }
+  .btn-gradient:active { filter: brightness(0.92); transform: scale(0.98); }
+  .btn-outline { background: rgba(255,255,255,0.1); color: var(--text-primary); border: 1px solid rgba(255,255,255,0.25); font-size: 14px; font-weight: 700; padding: 12px 22px; border-radius: 8px; }
+  .btn-text { background: transparent; color: var(--tubi-pink); font-size: 14px; font-weight: 700; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Poster card mini */
+  .card-row { display: flex; gap: 14px; align-items: flex-end; }
+  .mini-poster { width: 86px; height: 128px; border-radius: 10px; position: relative; overflow: hidden; box-shadow: 0 6px 16px rgba(0,0,0,0.5); }
+  .mini-poster .badge { position: absolute; top: 6px; left: 6px; background: var(--accent-yellow); color: #1A0A2A; font-size: 8px; font-weight: 900; padding: 2px 5px; border-radius: 3px; }
+  .mini-poster .cap { position: absolute; left: 6px; right: 6px; bottom: 6px; font-size: 10px; font-weight: 700; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+
+  /* Progress chip */
+  .progress-wrap { display: flex; flex-direction: column; gap: 10px; }
+  .progress-track { height: 4px; border-radius: 2px; background: rgba(255,255,255,0.16); overflow: hidden; }
+  .progress-fill { height: 100%; width: 62%; background: linear-gradient(90deg, var(--tubi-purple), var(--tubi-magenta)); border-radius: 2px; }
+  .progress-label { font-size: 12px; color: var(--text-secondary); font-weight: 500; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: linear-gradient(135deg, var(--tubi-purple), var(--tubi-magenta)); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-10 { border-radius: 10px; }
+  .r-16 { border-radius: 16px; }
+  .r-18 { border-radius: 18px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logomark { display: inline-flex; align-items: center; height: 40px; }
+  .logomark svg { height: 30px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logomark">
+      <svg viewBox="0 0 120 36" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="tg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#7408FF"/><stop offset="1" stop-color="#FF00FF"/>
+        </linearGradient></defs>
+        <text x="0" y="28" font-family="Inter, sans-serif" font-size="30" font-weight="900" fill="url(#tg)" letter-spacing="-1.5">tubi</text>
+      </svg>
+    </span>
+    <div class="page-title">Tubi iOS — Design Tokens</div>
+    <div class="page-chip">Neon Dark</div>
+  </div>
+  <p class="page-subtitle">Deep indigo-black canvas (#0A0A2A) carrying Tubi's signature purple→magenta gradient (#7408FF → #FF00FF). Free-with-ads streaming UI: oversized featured hero, dense horizontal poster rows, white primary play button against the cool dark. The gradient is the brand — used on the wordmark, focus states, and the active tab.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="topbar">
+            <div class="topbar-logo">tubi</div>
+            <div class="topbar-icons">
+              <svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/></svg>
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21c1.5-4 4-6 7-6s5.5 2 7 6"/></svg>
+            </div>
+          </div>
+
+          <div class="hero">
+            <div class="hero-badge">Tubi Original</div>
+            <div class="hero-body">
+              <div class="hero-title">Midnight<br>Reckoning</div>
+              <div class="hero-meta">2024 · Thriller · 1h 52m · TV-MA</div>
+              <div class="hero-btns">
+                <div class="hero-play"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg> Play Free</div>
+                <div class="hero-add"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rows">
+            <div class="row">
+              <div class="row-title">Continue Watching</div>
+              <div class="posters">
+                <div class="poster p1"><div class="free-tag">FREE</div><span>Echo Valley</span></div>
+                <div class="poster p2"><div class="free-tag">FREE</div><span>Last Signal</span></div>
+                <div class="poster p3"><div class="free-tag">FREE</div><span>The Drift</span></div>
+                <div class="poster p4"><div class="free-tag">FREE</div><span>Nightfall</span></div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="row-title">Trending Now</div>
+              <div class="posters">
+                <div class="poster p5"><div class="free-tag">FREE</div><span>Crimson Road</span></div>
+                <div class="poster p2"><div class="free-tag">FREE</div><span>Static</span></div>
+                <div class="poster p1"><div class="free-tag">FREE</div><span>Outlier</span></div>
+                <div class="poster p4"><div class="free-tag">FREE</div><span>Halcyon</span></div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="row-title">Free Movies You'll Love</div>
+              <div class="posters">
+                <div class="poster p3"><div class="free-tag">FREE</div><span>Undertow</span></div>
+                <div class="poster p5"><div class="free-tag">FREE</div><span>Glass City</span></div>
+                <div class="poster p1"><div class="free-tag">FREE</div><span>Vapor</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg><span>Live TV</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M5 4h14v17l-7-4-7 4z"/></svg><span>My List</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21c1.5-4 4-6 7-6s5.5 2 7 6"/></svg><span>Account</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0A0A2A;"><div class="name">Canvas (Indigo Black)</div>#0A0A2A</div>
+          <div class="swatch" style="background:#15153D;"><div class="name">Surface 1</div>#15153D</div>
+          <div class="swatch" style="background:#1E1E52;"><div class="name">Surface 2</div>#1E1E52</div>
+          <div class="swatch" style="background:#2A2A5C;"><div class="name">Divider</div>#2A2A5C</div>
+          <div class="swatch" style="background:#7408FF;"><div class="name">Tubi Purple</div>#7408FF</div>
+          <div class="swatch" style="background:#FF00FF;"><div class="name">Tubi Magenta</div>#FF00FF</div>
+          <div class="swatch" style="background:#A12BFF;"><div class="name">Violet (mid)</div>#A12BFF</div>
+          <div class="swatch" style="background:#FF4FD8;"><div class="name">Pink (link)</div>#FF4FD8</div>
+          <div class="swatch" style="background:#FFD400; color:#1A0A2A;"><div class="name">Free Tag Yellow</div>#FFD400</div>
+          <div class="swatch" style="background:#FFFFFF; color:#0A0A2A;"><div class="name">Play Button</div>#FFFFFF</div>
+          <div class="swatch" style="background:#B9B9D6; color:#0A0A2A;"><div class="name">Text Secondary</div>#B9B9D6</div>
+          <div class="swatch" style="background:#FF4A6E;"><div class="name">Error</div>#FF4A6E</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter (Tubi uses a geometric grotesque)</div>
+        <div class="type-row"><div class="type-meta">Hero Title · 32pt · 900</div><div class="type-sample t-32">Midnight Reckoning</div></div>
+        <div class="type-row"><div class="type-meta">Detail Title · 26pt · 800</div><div class="type-sample t-26">Echo Valley: Season 2</div></div>
+        <div class="type-row"><div class="type-meta">Row Header · 22pt · 800</div><div class="type-sample t-22">Trending Now</div></div>
+        <div class="type-row"><div class="type-meta">Section · 18pt · 700</div><div class="type-sample t-18">Free Movies You'll Love</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">A detective races against the clock to stop a citywide blackout.</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 15pt · 600</div><div class="type-sample t-15m">The Drift</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 500</div><div class="type-sample t-13">2024 · Thriller · 1h 52m · TV-MA</div></div>
+        <div class="type-row"><div class="type-meta">Badge · 11pt · 700 caps</div><div class="type-sample t-11">Tubi Original</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Play Free</button>
+          <button class="btn btn-gradient">Register</button>
+          <button class="btn btn-outline">+ My List</button>
+          <button class="btn-text">More Like This</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Poster Cards (Free badge + caption)</div>
+        <div class="card-row">
+          <div class="mini-poster p1"><div class="badge">FREE</div><div class="cap">Echo Valley</div></div>
+          <div class="mini-poster p2"><div class="badge">FREE</div><div class="cap">Last Signal</div></div>
+          <div class="mini-poster p4"><div class="badge">FREE</div><div class="cap">Nightfall</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Continue-Watching Progress</div>
+        <div class="progress-wrap">
+          <div class="progress-track"><div class="progress-fill"></div></div>
+          <div class="progress-label">62% watched · 41 min left</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-18">18</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Tubi is dark-only — there is no light mode. The canvas is a deep indigo-black <code>#0A0A2A</code>, not neutral grey, which makes the purple→magenta gradient (<code>#7408FF</code> → <code>#FF00FF</code>) glow. Cards lift to <code>#15153D</code>. The primary play button is pure white <code>#FFFFFF</code> with near-black text for maximum contrast against the cool field; the gradient is reserved for the wordmark, secondary CTAs, the active tab, and progress bars. The yellow <code>#FFD400</code> "FREE" tag is the one warm accent — it signals Tubi's core promise. Posters render full-color; only chrome dims.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

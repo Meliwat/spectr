@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Bandcamp iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #101417;
+    --surface-1: #1A2024;
+    --surface-2: #232B30;
+    --divider: #2C353B;
+    --text-primary: #EDF1F3;
+    --text-secondary: #93A1A8;
+    --text-tertiary: #5F6E75;
+    --ink: #FFFFFF;
+    --teal: #1DA0C3;
+    --teal-deep: #629AA9;
+    --teal-pressed: #17819E;
+    --buy: #1DA0C3;
+    --paper: #FFFFFF;
+    --paper-gray: #F4F4F4;
+    --success: #4CAF50;
+    --error: #E45858;
+    --font: 'DM Sans', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 700; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--teal); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--paper); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: #1A1A1A; }
+
+  .nav { display: flex; align-items: center; justify-content: space-between; padding: 2px 18px 12px; }
+  .nav svg { width: 22px; height: 22px; stroke: #1A1A1A; stroke-width: 2; fill: none; }
+  .nav-title { font-size: 13px; font-weight: 700; color: #1A1A1A; letter-spacing: 0.2px; }
+
+  .scroll-body { flex: 1; overflow-y: auto; scrollbar-width: none; }
+  .scroll-body::-webkit-scrollbar { display: none; }
+
+  /* Album page (signature) */
+  .album-art { width: 100%; aspect-ratio: 1/1; position: relative; background: linear-gradient(150deg, #2A3B44 0%, #1DA0C3 55%, #0E5566 100%); }
+  .album-art::before { content: ''; position: absolute; inset: 14% 16%; border: 3px solid rgba(255,255,255,0.5); border-radius: 50%; }
+  .album-art::after { content: ''; position: absolute; top: 46%; left: 46%; width: 8%; height: 8%; background: rgba(255,255,255,0.85); border-radius: 50%; }
+  .album-body { padding: 20px 20px 0; }
+  .album-title { font-size: 22px; font-weight: 700; color: #1A1A1A; letter-spacing: -0.3px; }
+  .album-artist { font-size: 16px; font-weight: 600; color: var(--teal); margin-top: 4px; }
+  .album-meta { font-size: 13px; color: #767676; margin-top: 10px; }
+
+  .buy-card { margin: 16px 20px 0; border: 1px solid #E2E2E2; border-radius: 6px; padding: 16px; background: var(--paper-gray); }
+  .buy-row { display: flex; align-items: baseline; justify-content: space-between; }
+  .buy-price { font-size: 22px; font-weight: 700; color: #1A1A1A; }
+  .buy-cur { font-size: 13px; color: #767676; font-weight: 600; }
+  .buy-nyp { font-size: 12px; color: #767676; margin-top: 4px; }
+  .buy-btn { margin-top: 14px; width: 100%; background: var(--teal); color: #FFF; border: none; font-family: var(--font); font-size: 15px; font-weight: 700; padding: 13px 0; border-radius: 4px; cursor: pointer; }
+  .buy-btn:active { background: var(--teal-pressed); }
+  .buy-sub { display: block; text-align: center; font-size: 12px; color: var(--teal); font-weight: 600; margin-top: 10px; }
+
+  .player-bar { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-top: 1px solid #EAEAEA; border-bottom: 1px solid #EAEAEA; margin-top: 16px; }
+  .pb-play { width: 36px; height: 36px; border-radius: 50%; background: #1A1A1A; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .pb-play svg { width: 14px; height: 14px; fill: #FFF; margin-left: 2px; }
+  .pb-meta { flex: 1; min-width: 0; }
+  .pb-track { font-size: 13px; font-weight: 600; color: #1A1A1A; }
+  .pb-time { font-size: 11px; color: #767676; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .pb-wave { display: flex; align-items: center; gap: 2px; height: 18px; }
+  .pb-wave span { width: 2.5px; background: var(--teal); border-radius: 1px; }
+
+  .track-list { padding: 8px 20px 16px; }
+  .track { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #F0F0F0; }
+  .track:last-child { border-bottom: none; }
+  .track-num { font-size: 12px; color: #9A9A9A; width: 18px; font-variant-numeric: tabular-nums; }
+  .track-name { flex: 1; font-size: 14px; color: #1A1A1A; font-weight: 500; }
+  .track-name.playing { color: var(--teal); font-weight: 700; }
+  .track-dur { font-size: 12px; color: #767676; font-variant-numeric: tabular-nums; }
+
+  /* Tab bar */
+  .tab-bar { height: 64px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: #FFFFFF; border-top: 1px solid #EAEAEA; }
+  .tab { display: flex; flex-direction: column; align-items: center; color: #9A9A9A; font-size: 10px; font-weight: 600; gap: 3px; }
+  .tab.active { color: var(--teal); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 700; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 600; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 600; letter-spacing: 0.3px; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-buy { background: var(--teal); color: #FFF; font-size: 15px; padding: 13px 28px; border-radius: 4px; }
+  .btn-buy:active { background: var(--teal-pressed); transform: scale(0.99); }
+  .btn-outline { background: transparent; color: var(--teal); border: 1px solid var(--teal); font-size: 14px; font-weight: 600; padding: 11px 20px; border-radius: 4px; }
+  .btn-secondary { background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--divider); font-size: 14px; font-weight: 600; padding: 11px 20px; border-radius: 4px; }
+  .btn-text { background: transparent; color: var(--teal); font-size: 14px; font-weight: 600; padding: 11px 0; text-decoration: underline; border: none; cursor: pointer; }
+
+  /* Collection feed cards */
+  .coll-row { display: flex; gap: 12px; }
+  .coll-card { flex: 1; }
+  .coll-art { width: 100%; aspect-ratio: 1/1; border-radius: 4px; }
+  .ca-1 { background: linear-gradient(135deg, #1DA0C3, #0E5566); }
+  .ca-2 { background: linear-gradient(135deg, #629AA9, #2A3B44); }
+  .ca-3 { background: linear-gradient(135deg, #2C353B, #1DA0C3); }
+  .coll-title { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-top: 8px; }
+  .coll-artist { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--teal); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-2 { border-radius: 2px; }
+  .r-4 { border-radius: 4px; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; }
+  .logo svg { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 48 48" fill="none"><rect x="4" y="4" width="40" height="40" rx="7" fill="#1DA0C3"/><path d="M11 30l9-13h10l-9 13z" fill="#FFF"/></svg>
+    </span>
+    <div class="page-title">Bandcamp iOS — Design Tokens</div>
+    <div class="page-chip">Editorial Teal</div>
+  </div>
+  <p class="page-subtitle">Bandcamp is paper-first: a near-white canvas (#FFFFFF / #F4F4F4) where big square album art is the hero and Bandcamp Teal (#1DA0C3) is reserved for the things that matter — artist links, the buy/support price, and the fan collection. This catalog shell is dark so the tokens read; the phone shows Bandcamp's true light album page + player.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="nav">
+            <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+            <div class="nav-title">Album</div>
+            <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
+          </div>
+
+          <div class="scroll-body">
+            <div class="album-art"></div>
+
+            <div class="album-body">
+              <div class="album-title">Carrier</div>
+              <div class="album-artist">by Tycho</div>
+              <div class="album-meta">Released June 4 · 10 tracks · Ambient / Electronic</div>
+            </div>
+
+            <div class="buy-card">
+              <div class="buy-row">
+                <div><span class="buy-price">$9</span> <span class="buy-cur">USD</span></div>
+                <div class="buy-cur">or more</div>
+              </div>
+              <div class="buy-nyp">Name your price · Pay what you want</div>
+              <button class="buy-btn">Buy Digital Album</button>
+              <span class="buy-sub">Add to wishlist</span>
+            </div>
+
+            <div class="player-bar">
+              <div class="pb-play"><svg viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg></div>
+              <div class="pb-meta">
+                <div class="pb-track">2. Glider</div>
+                <div class="pb-time">1:42 / 5:08</div>
+              </div>
+              <div class="pb-wave"><span style="height:6px"></span><span style="height:13px"></span><span style="height:9px"></span><span style="height:16px"></span><span style="height:7px"></span><span style="height:11px"></span></div>
+            </div>
+
+            <div class="track-list">
+              <div class="track"><span class="track-num">1</span><span class="track-name">Awake</span><span class="track-dur">4:12</span></div>
+              <div class="track"><span class="track-num">2</span><span class="track-name playing">Glider</span><span class="track-dur">5:08</span></div>
+              <div class="track"><span class="track-num">3</span><span class="track-name">L</span><span class="track-dur">3:47</span></div>
+              <div class="track"><span class="track-num">4</span><span class="track-name">Montana</span><span class="track-dur">4:55</span></div>
+              <div class="track"><span class="track-num">5</span><span class="track-name">Apogee</span><span class="track-dur">5:30</span></div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Feed</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Discover</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><span>Collection</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#FFFFFF; color:#1A1A1A;"><div class="name">Paper (canvas)</div>#FFFFFF</div>
+          <div class="swatch" style="background:#F4F4F4; color:#1A1A1A;"><div class="name">Paper Gray</div>#F4F4F4</div>
+          <div class="swatch" style="background:#1DA0C3;"><div class="name">Bandcamp Teal</div>#1DA0C3</div>
+          <div class="swatch" style="background:#629AA9;"><div class="name">Teal Deep</div>#629AA9</div>
+          <div class="swatch" style="background:#17819E;"><div class="name">Teal Pressed</div>#17819E</div>
+          <div class="swatch" style="background:#1A1A1A;"><div class="name">Ink (text)</div>#1A1A1A</div>
+          <div class="swatch" style="background:#767676;"><div class="name">Text Secondary</div>#767676</div>
+          <div class="swatch" style="background:#E2E2E2; color:#1A1A1A;"><div class="name">Divider</div>#E2E2E2</div>
+          <div class="swatch" style="background:#101417;"><div class="name">Dark Canvas</div>#101417</div>
+          <div class="swatch" style="background:#1A2024;"><div class="name">Dark Surface</div>#1A2024</div>
+          <div class="swatch" style="background:#4CAF50;"><div class="name">Success</div>#4CAF50</div>
+          <div class="swatch" style="background:#E45858;"><div class="name">Error</div>#E45858</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Bandcamp (DM Sans fallback)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 700</div><div class="type-sample t-32">Collection</div></div>
+        <div class="type-row"><div class="type-meta">Album Title · 22pt · 700</div><div class="type-sample t-22">Carrier</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Recently collected</div></div>
+        <div class="type-row"><div class="type-meta">Artist Link · 18pt · 600</div><div class="type-sample t-18" style="color:var(--teal);">by Tycho</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Support the artist directly — pay what you want and the money goes to them.</div></div>
+        <div class="type-row"><div class="type-meta">Price · 15pt · 600</div><div class="type-sample t-15m">$9 USD or more</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Released June 4 · 10 tracks</div></div>
+        <div class="type-row"><div class="type-meta">Track / Caption · 12pt · 600</div><div class="type-sample t-12">2. Glider · 5:08</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-buy">Buy Digital Album</button>
+          <button class="btn btn-outline">Follow</button>
+          <button class="btn btn-secondary">Share</button>
+          <button class="btn-text">Add to wishlist</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Fan Collection Feed</div>
+        <div class="coll-row">
+          <div class="coll-card">
+            <div class="coll-art ca-1"></div>
+            <div class="coll-title">Carrier</div>
+            <div class="coll-artist">Tycho</div>
+          </div>
+          <div class="coll-card">
+            <div class="coll-art ca-2"></div>
+            <div class="coll-title">A Moment Apart</div>
+            <div class="coll-artist">ODESZA</div>
+          </div>
+          <div class="coll-card">
+            <div class="coll-art ca-3"></div>
+            <div class="coll-title">Singularity</div>
+            <div class="coll-artist">Jon Hopkins</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-2">2</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Bandcamp is fundamentally a <strong>light, editorial</strong> product — paper-white <code>#FFFFFF</code> / <code>#F4F4F4</code> with big square album art as the hero, because the artwork (uploaded by the artist) is the brand, not the chrome. Bandcamp Teal <code>#1DA0C3</code> is scarce: it marks artist links, the buy/support price, and collection accents — the "support the artist" path. In dark mode the canvas inverts to a cool charcoal <code>#101417</code> with surfaces at <code>#1A2024</code>; teal shifts slightly toward <code>#3DB5D6</code> for contrast, text inverts to <code>#EDF1F3</code>, and album art stays full-color and untinted — content never dims, only chrome does.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

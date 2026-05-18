@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by ESPN iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0E0F11;
+    --surface-1: #18191B;
+    --surface-2: #212327;
+    --surface-3: #2B2D31;
+    --divider: #2A2C30;
+    --text-primary: #FFFFFF;
+    --text-secondary: #9AA0A6;
+    --text-tertiary: #6B7075;
+    --ink: #FFFFFF;
+    --red: #D50A0A;
+    --red-bright: #CC0000;
+    --red-pressed: #A50808;
+    --live: #FF1A1A;
+    --win-green: #1FAA59;
+    --gold: #F2C200;
+    --error: #E5484D;
+    --font: 'Archivo', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 900; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--red); color: #FFF; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.4px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 30; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); flex-shrink: 0; }
+
+  /* Scores ticker */
+  .ticker { display: flex; gap: 8px; padding: 4px 12px 12px; overflow-x: auto; scrollbar-width: none; flex-shrink: 0; border-bottom: 1px solid var(--divider); }
+  .ticker::-webkit-scrollbar { display: none; }
+  .tk { min-width: 116px; flex-shrink: 0; background: var(--surface-2); border-radius: 8px; padding: 8px 10px; }
+  .tk-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .tk-league { font-size: 10px; font-weight: 800; color: var(--text-secondary); letter-spacing: 0.4px; }
+  .tk-live { font-size: 9px; font-weight: 900; color: #FFF; background: var(--live); padding: 2px 5px; border-radius: 3px; letter-spacing: 0.4px; } .tk-final { font-size: 9px; font-weight: 800; color: var(--text-tertiary); letter-spacing: 0.4px; }
+  .tk-team { display: flex; align-items: center; justify-content: space-between; font-size: 13px; font-weight: 700; padding: 1px 0; }
+  .tk-team.win { color: #FFF; } .tk-team.lose { color: var(--text-secondary); }
+  .tk-abbr { display: flex; align-items: center; gap: 6px; }
+  .tk-logo { width: 16px; height: 16px; border-radius: 50%; } .tk-score { font-variant-numeric: tabular-nums; }
+
+  /* Feed */
+  .feed { flex: 1; overflow-y: auto; scrollbar-width: none; }
+  .feed::-webkit-scrollbar { display: none; }
+  .feed-pad { padding: 16px; }
+
+  /* Live game card */
+  .game-card { background: var(--surface-1); border-radius: 12px; overflow: hidden; margin-bottom: 16px; border: 1px solid var(--divider); }
+  .gc-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--surface-2); }
+  .gc-league { font-size: 11px; font-weight: 800; color: var(--text-secondary); letter-spacing: 0.5px; }
+  .gc-live { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 900; color: var(--live); letter-spacing: 0.5px; }
+  .gc-live .pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--live); } .gc-body { padding: 14px; }
+  .gc-team { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; }
+  .gc-tinfo { display: flex; align-items: center; gap: 12px; }
+  .gc-tlogo { width: 30px; height: 30px; border-radius: 50%; }
+  .gc-tname { font-size: 16px; font-weight: 700; color: #FFF; } .gc-trec { font-size: 12px; color: var(--text-secondary); margin-top: 1px; }
+  .gc-tscore { font-size: 26px; font-weight: 900; color: #FFF; font-variant-numeric: tabular-nums; } .gc-tscore.dim { color: var(--text-secondary); }
+  .gc-div { height: 1px; background: var(--divider); margin: 4px 0; }
+  .gc-foot { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-top: 1px solid var(--divider); }
+  .gc-clock { font-size: 13px; font-weight: 700; color: #FFF; }
+  .gc-watch { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: var(--red-bright); } .gc-watch svg { width: 14px; height: 14px; fill: var(--red-bright); }
+
+  /* SportsCenter story */
+  .story { display: flex; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .story-thumb { width: 96px; height: 72px; border-radius: 8px; flex-shrink: 0; background: linear-gradient(150deg, #2B3A55 0%, #1A2433 100%); }
+  .story-thumb.t2 { background: linear-gradient(150deg, #553A2B 0%, #33241A 100%); }
+  .story-info { flex: 1; min-width: 0; }
+  .story-tag { font-size: 10px; font-weight: 900; color: var(--red-bright); letter-spacing: 0.5px; text-transform: uppercase; }
+  .story-title { font-size: 15px; font-weight: 700; color: #FFF; margin-top: 4px; line-height: 1.3; } .story-meta { font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
+
+  /* Tab bar */
+  .tab-bar { height: 64px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: rgba(14,15,17,0.96); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); flex-shrink: 0; }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 700; gap: 4px; letter-spacing: 0.1px; }
+  .tab.active { color: #FFF; }
+  .tab.active svg { stroke: #FFF; }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab .tab-dot { display: none; }
+  .tab.active .tab-dot { display: block; width: 4px; height: 4px; border-radius: 50%; background: var(--red); margin-top: 2px; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 700; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 900; letter-spacing: -0.5px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 900; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 800; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; } .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 700; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-num { font-size: 26px; font-weight: 900; font-variant-numeric: tabular-nums; }
+  .t-12 { font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 800; cursor: pointer; border: none; letter-spacing: 0.3px; }
+  .btn-primary { background: var(--red); color: #FFF; font-size: 16px; padding: 14px 28px; border-radius: 6px; display: inline-flex; align-items: center; gap: 8px; }
+  .btn-primary svg { width: 16px; height: 16px; fill: #FFF; } .btn-primary:active { background: var(--red-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: #FFF; border: 1.5px solid rgba(255,255,255,0.35); font-size: 14px; font-weight: 700; padding: 12px 20px; border-radius: 6px; }
+  .btn-ghost { background: var(--surface-2); color: #FFF; font-size: 14px; font-weight: 700; padding: 12px 20px; border-radius: 6px; }
+  .btn-text { background: transparent; color: var(--red-bright); font-size: 14px; font-weight: 800; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Status badges */
+  .badge-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .b { font-size: 11px; font-weight: 900; letter-spacing: 0.5px; text-transform: uppercase; padding: 4px 9px; border-radius: 3px; display: inline-flex; align-items: center; gap: 5px; }
+  .b-live { background: var(--live); color: #FFF; } .b-watch { background: var(--red); color: #FFF; }
+  .b-final { background: var(--surface-3); color: var(--text-secondary); }
+  .b-soon { background: transparent; color: #FFF; border: 1px solid rgba(255,255,255,0.4); }
+  .b .pulse { width: 6px; height: 6px; border-radius: 50%; background: #FFF; }
+
+  /* Score row demo */
+  .score-demo { display: flex; flex-direction: column; gap: 10px; }
+  .sr { display: flex; align-items: center; justify-content: space-between; background: var(--surface-2); border-radius: 8px; padding: 12px 14px; }
+  .sr-team { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 700; }
+  .sr-logo { width: 22px; height: 22px; border-radius: 50%; }
+  .sr-score { font-size: 20px; font-weight: 900; font-variant-numeric: tabular-nums; } .sr.win .sr-score { color: var(--win-green); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--red); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; } .r-3 { border-radius: 3px; } .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; } .r-12 { border-radius: 12px; } .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 500px; } .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; align-items: center; justify-content: center; height: 44px; padding: 0 12px; border-radius: 8px; background: var(--red); }
+  .logo span { font-family: var(--font); font-weight: 900; font-style: italic; font-size: 22px; color: #FFF; letter-spacing: -1px; }
+  code { font-family: 'SF Mono', Menlo, monospace; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; font-size: 12px; color: #FF6B6B; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo"><span>ESPN</span></span>
+    <div class="page-title">ESPN iOS — Design Tokens</div>
+    <div class="page-chip">Live Dark</div>
+  </div>
+  <p class="page-subtitle">Near-black canvas (#0E0F11) with ESPN Red (#D50A0A) as the single accent. A horizontal scores ticker sits above the SportsCenter feed; live game cards pulse red, finals dim, and the winning score turns green. Tabular numerals keep scores aligned.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="ticker">
+            <div class="tk">
+              <div class="tk-top"><span class="tk-league">NBA</span><span class="tk-live">LIVE Q3</span></div>
+              <div class="tk-team win"><span class="tk-abbr"><span class="tk-logo" style="background:#552583"></span>LAL</span><span class="tk-score">88</span></div>
+              <div class="tk-team lose"><span class="tk-abbr"><span class="tk-logo" style="background:#007A33"></span>BOS</span><span class="tk-score">81</span></div>
+            </div>
+            <div class="tk">
+              <div class="tk-top"><span class="tk-league">NFL</span><span class="tk-final">FINAL</span></div>
+              <div class="tk-team lose"><span class="tk-abbr"><span class="tk-logo" style="background:#0B162A"></span>CHI</span><span class="tk-score">17</span></div>
+              <div class="tk-team win"><span class="tk-abbr"><span class="tk-logo" style="background:#004C54"></span>PHI</span><span class="tk-score">24</span></div>
+            </div>
+            <div class="tk">
+              <div class="tk-top"><span class="tk-league">MLB</span><span class="tk-final">7:05 ET</span></div>
+              <div class="tk-team lose"><span class="tk-abbr"><span class="tk-logo" style="background:#BD3039"></span>NYY</span><span class="tk-score">—</span></div>
+              <div class="tk-team lose"><span class="tk-abbr"><span class="tk-logo" style="background:#132448"></span>HOU</span><span class="tk-score">—</span></div>
+            </div>
+          </div>
+
+          <div class="feed">
+            <div class="feed-pad">
+              <div class="game-card">
+                <div class="gc-head">
+                  <span class="gc-league">NBA · WESTERN FINALS · GAME 5</span>
+                  <span class="gc-live"><span class="pulse"></span>LIVE</span>
+                </div>
+                <div class="gc-body">
+                  <div class="gc-team">
+                    <div class="gc-tinfo">
+                      <span class="gc-tlogo" style="background:#552583"></span>
+                      <div><div class="gc-tname">Lakers</div><div class="gc-trec">48–34 · Home</div></div>
+                    </div>
+                    <div class="gc-tscore">88</div>
+                  </div>
+                  <div class="gc-div"></div>
+                  <div class="gc-team">
+                    <div class="gc-tinfo">
+                      <span class="gc-tlogo" style="background:#007A33"></span>
+                      <div><div class="gc-tname">Celtics</div><div class="gc-trec">51–31 · Away</div></div>
+                    </div>
+                    <div class="gc-tscore dim">81</div>
+                  </div>
+                </div>
+                <div class="gc-foot">
+                  <span class="gc-clock">Q3 · 4:12</span>
+                  <span class="gc-watch"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg>Watch on ESPN+</span>
+                </div>
+              </div>
+
+              <div class="story">
+                <div class="story-thumb"></div>
+                <div class="story-info">
+                  <div class="story-tag">Breaking</div>
+                  <div class="story-title">Lakers surge in third behind 22-point run</div>
+                  <div class="story-meta">NBA · 14m ago · 3 min read</div>
+                </div>
+              </div>
+              <div class="story">
+                <div class="story-thumb t2"></div>
+                <div class="story-info">
+                  <div class="story-tag">Analysis</div>
+                  <div class="story-title">Why the Eagles' defense flipped the NFC race</div>
+                  <div class="story-meta">NFL · 1h ago · 6 min read</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Home</span><span class="tab-dot"></span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg><span>Scores</span><span class="tab-dot"></span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="14" height="14" rx="2"/><path d="M17 9l4-2v10l-4-2z"/></svg><span>Watch</span><span class="tab-dot"></span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 19v-7M12 19v-11M16 19v-5M20 19v-9"/></svg><span>ESPN BET</span><span class="tab-dot"></span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/></svg><span>More</span><span class="tab-dot"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0E0F11;"><div class="name">Near-Black Canvas</div>#0E0F11</div>
+          <div class="swatch" style="background:#18191B;"><div class="name">Surface 1</div>#18191B</div>
+          <div class="swatch" style="background:#212327;"><div class="name">Surface 2</div>#212327</div>
+          <div class="swatch" style="background:#2B2D31;"><div class="name">Surface 3</div>#2B2D31</div>
+          <div class="swatch" style="background:#2A2C30;"><div class="name">Divider</div>#2A2C30</div>
+          <div class="swatch" style="background:#D50A0A;"><div class="name">ESPN Red</div>#D50A0A</div>
+          <div class="swatch" style="background:#CC0000;"><div class="name">Red Bright</div>#CC0000</div>
+          <div class="swatch" style="background:#FF1A1A;"><div class="name">Live Red</div>#FF1A1A</div>
+          <div class="swatch" style="background:#1FAA59;"><div class="name">Win Green</div>#1FAA59</div>
+          <div class="swatch" style="background:#FFFFFF; color:#0E0F11;"><div class="name">Text Primary</div>#FFFFFF</div>
+          <div class="swatch" style="background:#9AA0A6; color:#0E0F11;"><div class="name">Text Secondary</div>#9AA0A6</div>
+          <div class="swatch" style="background:#F2C200; color:#222;"><div class="name">Gold (rank)</div>#F2C200</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Archivo (ESPN-style condensed sans)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 900</div><div class="type-sample t-32">Scores</div></div>
+        <div class="type-row"><div class="type-meta">Headline · 26pt · 900</div><div class="type-sample t-26">Lakers surge past Celtics</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 800</div><div class="type-sample t-22">Top Headlines</div></div>
+        <div class="type-row"><div class="type-meta">Team Name · 18pt · 700</div><div class="type-sample t-18">Los Angeles Lakers</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">A 22-point third-quarter run flipped the series in Los Angeles.</div></div>
+        <div class="type-row"><div class="type-meta">Story Title · 15pt · 700</div><div class="type-sample t-15m">Why the Eagles' defense flipped the race</div></div>
+        <div class="type-row"><div class="type-meta">Score · 26pt · 900 tabular</div><div class="type-sample t-num">88 – 81</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">NBA · 14m ago · 3 min read</div></div>
+        <div class="type-row"><div class="type-meta">Status · 12pt · 900 caps</div><div class="type-sample t-12">Live Q3</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg> Watch Live</button>
+          <button class="btn btn-outline">Follow Team</button>
+          <button class="btn btn-ghost">Game Cast</button>
+          <button class="btn-text">Full box score</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Status Badges</div>
+        <div class="badge-row">
+          <span class="b b-live"><span class="pulse"></span>Live</span>
+          <span class="b b-final">Final</span>
+          <span class="b b-soon">7:05 ET</span>
+          <span class="b b-watch">Watch on ESPN+</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Score Row (winner in green)</div>
+        <div class="score-demo">
+          <div class="sr win">
+            <span class="sr-team"><span class="sr-logo" style="background:#552583"></span>Lakers</span>
+            <span class="sr-score">112</span>
+          </div>
+          <div class="sr">
+            <span class="sr-team"><span class="sr-logo" style="background:#007A33"></span>Celtics</span>
+            <span class="sr-score" style="color:var(--text-secondary)">104</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-3">3</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">ESPN's dark mode is a near-black <code>#0E0F11</code> (not pure black) so the scores ticker and game cards lift cleanly on <code>#212327</code> surfaces. ESPN Red <code>#D50A0A</code> is the single brand accent — the logo block, the primary "Watch Live" CTA, the active-tab indicator dot, and section accents. Live state is a brighter red <code>#FF1A1A</code> with a pulsing dot; finals dim to gray; the winning team's score turns green <code>#1FAA59</code>. Scores always use tabular numerals so columns stay aligned across every card.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

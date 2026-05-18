@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Coffee Meets Bagel iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #14100D;
+    --surface-1: #1F1813;
+    --surface-2: #2A2017;
+    --divider: #33281D;
+    --text-primary: #EFE6DA;
+    --text-secondary: #B7A48E;
+    --text-tertiary: #7C6B57;
+    --ink: #F7EFE3;
+    --brew: #A0522D;
+    --brew-deep: #7E3F22;
+    --brew-pressed: #693318;
+    --bagel: #F4623A;
+    --bagel-deep: #D94E2A;
+    --cream: #F3E4CF;
+    --cream-soft: #E8D4B8;
+    --like: #4CC38A;
+    --pass: #B7A48E;
+    --premium: #E0A82E;
+    --font: 'Poppins', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--bagel); color: #2A0F06; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+
+  /* Top bar */
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 4px 20px 12px; }
+  .topbar-title { font-size: 19px; font-weight: 700; color: var(--ink); }
+  .topbar-sub { font-size: 12px; color: var(--text-secondary); margin-top: 1px; }
+  .topbar-icon { width: 38px; height: 38px; border-radius: 50%; background: var(--surface-2); display: flex; align-items: center; justify-content: center; }
+  .topbar-icon svg { width: 18px; height: 18px; stroke: var(--text-primary); stroke-width: 2; fill: none; }
+
+  /* Today's bagel card */
+  .bagel-scroll { flex: 1; overflow-y: auto; scrollbar-width: none; padding: 0 20px 16px; }
+  .bagel-scroll::-webkit-scrollbar { display: none; }
+  .bagel-card { border-radius: 24px; overflow: hidden; position: relative; box-shadow: 0 16px 40px -16px rgba(0,0,0,0.7); }
+  .bagel-photo { aspect-ratio: 3/4; position: relative; background: linear-gradient(165deg, #C77B53 0%, #A0522D 45%, #5E2F18 100%); }
+  .bagel-photo::before { content: ''; position: absolute; left: 28%; right: 28%; top: 16%; height: 30%; background: #6E4630; border-radius: 50%; }
+  .bagel-photo::after { content: ''; position: absolute; left: 20%; right: 20%; top: 44%; bottom: 0; background: linear-gradient(180deg, #8A5234 0%, #4D2814 100%); border-radius: 40% 40% 0 0; }
+  .bagel-badge { position: absolute; top: 16px; left: 16px; background: rgba(20,16,13,0.55); backdrop-filter: blur(8px); color: var(--cream); font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 999px; display: flex; align-items: center; gap: 6px; z-index: 2; }
+  .bagel-badge .ico { width: 12px; height: 12px; }
+  .bagel-grad { position: absolute; left: 0; right: 0; bottom: 0; height: 55%; background: linear-gradient(180deg, transparent 0%, rgba(20,16,13,0.55) 50%, rgba(20,16,13,0.95) 100%); z-index: 1; }
+  .bagel-info { position: absolute; left: 20px; right: 20px; bottom: 18px; z-index: 2; }
+  .bagel-name { font-size: 26px; font-weight: 700; color: #FFF; letter-spacing: -0.3px; }
+  .bagel-name .age { font-weight: 500; }
+  .bagel-meta { font-size: 14px; color: var(--cream); margin-top: 4px; display: flex; align-items: center; gap: 6px; }
+  .bagel-tags { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .bagel-tag { background: rgba(243,228,207,0.18); border: 1px solid rgba(243,228,207,0.28); color: var(--cream); font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 999px; }
+
+  /* Action row */
+  .actions { display: flex; align-items: center; justify-content: center; gap: 28px; padding: 16px 0 6px; }
+  .act { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .act-btn { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px -8px rgba(0,0,0,0.6); }
+  .act-pass { background: var(--surface-2); border: 1.5px solid var(--divider); }
+  .act-pass svg { width: 24px; height: 24px; stroke: var(--text-secondary); stroke-width: 2.4; fill: none; }
+  .act-like { background: var(--bagel); width: 72px; height: 72px; }
+  .act-like svg { width: 32px; height: 32px; fill: #FFF; }
+  .act-label { font-size: 11px; font-weight: 600; color: var(--text-secondary); }
+
+  /* Tab bar */
+  .tab-bar { height: 66px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: rgba(20,16,13,0.96); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 4px; }
+  .tab.active { color: var(--bagel); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; }
+  .tab-badge { position: relative; }
+  .tab-badge::after { content: ''; position: absolute; top: -3px; right: -6px; width: 8px; height: 8px; border-radius: 50%; background: var(--bagel); border: 1.5px solid var(--canvas); }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 600; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-13 { font-size: 13px; font-weight: 600; }
+  .t-12 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--bagel); color: #FFF; font-size: 16px; padding: 14px 28px; border-radius: 999px; }
+  .btn-primary:active { background: var(--bagel-deep); transform: scale(0.98); }
+  .btn-brew { background: var(--brew); color: var(--cream); font-size: 15px; font-weight: 600; padding: 13px 24px; border-radius: 999px; }
+  .btn-outline { background: transparent; color: var(--cream); border: 1.5px solid var(--cream-soft); font-size: 15px; font-weight: 600; padding: 12px 22px; border-radius: 999px; }
+  .btn-text { background: transparent; color: var(--bagel); font-size: 14px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Profile chips */
+  .chip-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .chip { background: var(--surface-2); border: 1px solid var(--divider); color: var(--text-primary); font-size: 13px; font-weight: 600; padding: 8px 14px; border-radius: 999px; }
+  .chip-active { background: var(--brew); border-color: var(--brew); color: var(--cream); }
+
+  /* Like circle buttons */
+  .like-row { display: flex; gap: 18px; align-items: center; }
+  .circ { border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 16px -6px rgba(0,0,0,0.6); }
+  .circ-pass { width: 56px; height: 56px; background: var(--surface-2); border: 1.5px solid var(--divider); color: var(--text-secondary); font-size: 22px; }
+  .circ-like { width: 68px; height: 68px; background: var(--bagel); color: #FFF; font-size: 26px; }
+  .circ-super { width: 56px; height: 56px; background: var(--brew); color: var(--cream); font-size: 20px; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--bagel); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-6 { border-radius: 6px; }
+  .r-10 { border-radius: 10px; }
+  .r-16 { border-radius: 16px; }
+  .r-20 { border-radius: 20px; }
+  .r-24 { border-radius: 24px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; background: var(--bagel); border-radius: 12px; }
+  .logo svg { width: 26px; height: 26px; fill: none; stroke: #FFF; stroke-width: 2.2; }
+  code { font-family: 'SF Mono', Menlo, monospace; font-size: 12px; color: var(--bagel); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.4"/></svg>
+    </span>
+    <div class="page-title">Coffee Meets Bagel iOS — Design Tokens</div>
+    <div class="page-chip">Warm Brew</div>
+  </div>
+  <p class="page-subtitle">Cozy coffee-house dark canvas (#14100D) built on CMB's roasted-brown (#A0522D) and warm bagel-orange (#F4623A) over cream (#F3E4CF). The signature screen is Today's Bagels — one curated profile card at a time, with a roasted-brown pass and a big bagel-orange like, framed like a relaxed first date over coffee.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="topbar">
+            <div>
+              <div class="topbar-title">Today's Bagels</div>
+              <div class="topbar-sub">6 fresh picks · expires in 23h</div>
+            </div>
+            <div class="topbar-icon"><svg viewBox="0 0 24 24"><path d="M12 8v8M8 12h8"/><circle cx="12" cy="12" r="9"/></svg></div>
+          </div>
+
+          <div class="bagel-scroll">
+            <div class="bagel-card">
+              <div class="bagel-photo">
+                <div class="bagel-badge"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 2a9 9 0 1 0 9 9"/><path d="M12 7v5l3 2"/></svg> Active today</div>
+                <div class="bagel-grad"></div>
+                <div class="bagel-info">
+                  <div class="bagel-name">Maya <span class="age">28</span></div>
+                  <div class="bagel-meta">Designer · 2 mi away · ☕ Latte person</div>
+                  <div class="bagel-tags">
+                    <span class="bagel-tag">📚 Reading</span>
+                    <span class="bagel-tag">🎨 Art galleries</span>
+                    <span class="bagel-tag">🥾 Hiking</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="actions">
+              <div class="act">
+                <div class="act-btn act-pass"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+                <span class="act-label">Pass</span>
+              </div>
+              <div class="act">
+                <div class="act-btn act-like"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+                <span class="act-label">Like</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg><span>Suggested</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Discover</span></div>
+            <div class="tab tab-badge"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Chats</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21c1-4 4-6 7-6s6 2 7 6"/></svg><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#A0522D;"><div class="name">Brew Brown</div>#A0522D</div>
+          <div class="swatch" style="background:#7E3F22;"><div class="name">Brew Deep</div>#7E3F22</div>
+          <div class="swatch" style="background:#F4623A;"><div class="name">Bagel Orange</div>#F4623A</div>
+          <div class="swatch" style="background:#D94E2A;"><div class="name">Bagel Deep</div>#D94E2A</div>
+          <div class="swatch" style="background:#F3E4CF; color:#3A2A18;"><div class="name">Cream</div>#F3E4CF</div>
+          <div class="swatch" style="background:#E8D4B8; color:#3A2A18;"><div class="name">Cream Soft</div>#E8D4B8</div>
+          <div class="swatch" style="background:#4CC38A;"><div class="name">Like Green</div>#4CC38A</div>
+          <div class="swatch" style="background:#E0A82E; color:#2A1E04;"><div class="name">Premium Gold</div>#E0A82E</div>
+          <div class="swatch" style="background:#14100D;"><div class="name">Coffee Canvas</div>#14100D</div>
+          <div class="swatch" style="background:#1F1813;"><div class="name">Surface 1</div>#1F1813</div>
+          <div class="swatch" style="background:#EFE6DA; color:#14100D;"><div class="name">Text Primary</div>#EFE6DA</div>
+          <div class="swatch" style="background:#B7A48E; color:#14100D;"><div class="name">Text Secondary</div>#B7A48E</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Poppins (Brandon / Gotham in product)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 800</div><div class="type-sample t-32">Today's Bagels</div></div>
+        <div class="type-row"><div class="type-meta">Profile Name · 26pt · 700</div><div class="type-sample t-26">Maya, 28</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">A little about Maya</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 18pt · 600</div><div class="type-sample t-18">Why you matched</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Designer who loves galleries, slow mornings, and good coffee.</div></div>
+        <div class="type-row"><div class="type-meta">Prompt Answer · 15pt · 600</div><div class="type-sample t-15m">My ideal Sunday is a long hike then brunch</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Designer · 2 mi away · ☕ Latte person</div></div>
+        <div class="type-row"><div class="type-meta">Chip · 13pt · 600</div><div class="type-sample t-13">🥾 Hiking</div></div>
+        <div class="type-row"><div class="type-meta">Badge · 12pt · 700</div><div class="type-sample t-12">Active today</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Like Maya</button>
+          <button class="btn btn-brew">Send a Bagel</button>
+          <button class="btn btn-outline">Pass</button>
+          <button class="btn-text">See full profile</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Like / Pass Action Buttons</div>
+        <div class="like-row">
+          <div class="circ circ-pass">✕</div>
+          <div class="circ circ-like">♥</div>
+          <div class="circ circ-super">★</div>
+          <span style="color:var(--text-secondary); font-size:13px;">Pass · Like (primary, enlarged) · Send a Bagel</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Profile Interest Chips</div>
+        <div class="chip-row">
+          <span class="chip chip-active">☕ Coffee</span>
+          <span class="chip">📚 Reading</span>
+          <span class="chip">🎨 Art galleries</span>
+          <span class="chip">🥾 Hiking</span>
+          <span class="chip">🎬 Indie films</span>
+          <span class="chip">🌮 Foodie</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-24">24</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Coffee Meets Bagel's dark mode is a cozy coffee-house, not a black void. The canvas is a deep roasted brown-black <code>#14100D</code> with cards lifted to <code>#1F1813</code> — warm, never neutral grey. Bagel-orange <code>#F4623A</code> stays the primary action color (the big Like button, active tab, badges) and reads warmly on the dark roast. Roasted brew-brown <code>#A0522D</code> is the secondary brand color for "Send a Bagel" and selected chips. Cream <code>#F3E4CF</code> replaces white for on-photo text and outlines so nothing feels stark. Profile photography stays full-color and full-bleed inside the 24pt-radius bagel card — the person is the hero; the warm chrome only frames them.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

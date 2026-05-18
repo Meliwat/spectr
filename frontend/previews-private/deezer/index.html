@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Deezer iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0F0D13;
+    --surface-1: #19161F;
+    --surface-2: #221E2B;
+    --divider: #2A2633;
+    --text-primary: #FFFFFF;
+    --text-secondary: #A29CB0;
+    --text-tertiary: #6E6880;
+    --ink: #FFFFFF;
+    --purple: #A238FF;
+    --pink: #FF0092;
+    --purple-deep: #7C28C4;
+    --flow-1: #A238FF;
+    --flow-2: #FF0092;
+    --eq: #FF0092;
+    --success: #1ED760;
+    --error: #FF4D5E;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: linear-gradient(90deg, var(--flow-1), var(--flow-2)); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .np-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; padding: 0 24px; }
+
+  .np-top { display: flex; align-items: center; justify-content: space-between; padding: 4px 0 18px; }
+  .np-chev svg { width: 22px; height: 22px; stroke: var(--text-primary); stroke-width: 2.4; fill: none; }
+  .np-ctx { text-align: center; line-height: 1.25; }
+  .np-ctx-label { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; color: var(--text-secondary); text-transform: uppercase; }
+  .np-ctx-title { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-top: 2px; }
+  .np-more svg { width: 22px; height: 22px; stroke: var(--text-primary); stroke-width: 2.4; fill: none; }
+
+  /* Living-gradient Flow artwork w/ embedded equalizer */
+  .art { width: 100%; aspect-ratio: 1/1; border-radius: 16px; position: relative; overflow: hidden; background: linear-gradient(135deg, #A238FF 0%, #C71F8E 45%, #FF0092 100%); box-shadow: 0 24px 48px -20px rgba(162,56,255,0.55); }
+  .art::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 78% 22%, rgba(255,255,255,0.22), transparent 55%), radial-gradient(circle at 20% 82%, rgba(124,40,196,0.55), transparent 60%); }
+  .flow-badge { position: absolute; top: 16px; left: 16px; display: flex; align-items: center; gap: 7px; background: rgba(15,13,19,0.55); backdrop-filter: blur(8px); padding: 7px 13px 7px 11px; border-radius: 999px; }
+  .flow-badge svg { width: 14px; height: 14px; fill: #FFF; }
+  .flow-badge span { font-size: 12px; font-weight: 800; letter-spacing: 0.4px; color: #FFF; }
+  .eqbars { position: absolute; bottom: 0; left: 0; right: 0; height: 46%; display: flex; align-items: flex-end; gap: 4px; padding: 0 18px 22px; }
+  .eqbar { flex: 1; background: rgba(255,255,255,0.62); border-radius: 3px 3px 0 0; }
+
+  .np-meta { padding: 22px 0 12px; }
+  .np-title { font-size: 24px; font-weight: 800; letter-spacing: -0.4px; color: var(--text-primary); }
+  .np-artist { font-size: 15px; font-weight: 500; color: var(--text-secondary); margin-top: 4px; }
+  .np-heart svg { width: 24px; height: 24px; fill: var(--pink); }
+  .np-titlerow { display: flex; align-items: flex-start; justify-content: space-between; }
+
+  /* Gradient scrubber */
+  .scrub { margin: 6px 0 4px; }
+  .scrub-track { height: 4px; border-radius: 2px; background: var(--surface-2); position: relative; }
+  .scrub-fill { position: absolute; left: 0; top: 0; height: 100%; width: 42%; border-radius: 2px; background: linear-gradient(90deg, var(--flow-1), var(--flow-2)); }
+  .scrub-knob { position: absolute; left: 42%; top: 50%; width: 13px; height: 13px; border-radius: 50%; background: #FFF; transform: translate(-50%, -50%); box-shadow: 0 2px 6px rgba(0,0,0,0.5); }
+  .scrub-time { display: flex; justify-content: space-between; font-size: 11px; font-weight: 500; color: var(--text-secondary); margin-top: 9px; font-variant-numeric: tabular-nums; }
+
+  /* Transport */
+  .transport { display: flex; align-items: center; justify-content: space-between; padding: 18px 0 22px; }
+  .tp-ic svg { width: 26px; height: 26px; fill: var(--text-primary); }
+  .tp-ic.sec svg { width: 22px; height: 22px; stroke: var(--text-secondary); stroke-width: 2; fill: none; }
+  .tp-play { width: 68px; height: 68px; border-radius: 50%; background: linear-gradient(135deg, var(--flow-1), var(--flow-2)); display: flex; align-items: center; justify-content: center; box-shadow: 0 12px 28px -8px rgba(255,0,146,0.6); }
+  .tp-play svg { width: 26px; height: 26px; fill: #FFF; margin-left: 2px; }
+
+  /* Bottom tab */
+  .tab-bar { height: 68px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(15,13,19,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 4px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--purple); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.grad { background: linear-gradient(135deg, #A238FF, #FF0092); }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: linear-gradient(90deg, var(--flow-1), var(--flow-2)); color: #FFF; font-size: 16px; padding: 14px 30px; border-radius: 999px; }
+  .btn-primary:active { filter: brightness(0.92); transform: scale(0.98); }
+  .btn-solid { background: var(--purple); color: #FFF; font-size: 15px; font-weight: 700; padding: 13px 26px; border-radius: 999px; }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1.5px solid rgba(255,255,255,0.4); font-size: 14px; font-weight: 600; padding: 12px 22px; border-radius: 999px; }
+  .btn-text { background: transparent; color: var(--purple); font-size: 14px; font-weight: 700; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Song rows */
+  .song { display: flex; align-items: center; gap: 12px; padding: 10px 0; }
+  .song-cover { width: 44px; height: 44px; border-radius: 6px; flex-shrink: 0; }
+  .sc-1 { background: linear-gradient(135deg, #6A2CC0, #FF0092); }
+  .sc-2 { background: linear-gradient(135deg, #2B2240, #5A3A8C); }
+  .song-meta { flex: 1; min-width: 0; }
+  .song-title { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+  .song-title.playing { color: var(--pink); }
+  .song-sub { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+  .song-eq { display: flex; align-items: flex-end; gap: 2px; height: 16px; }
+  .song-eq span { width: 3px; background: var(--pink); border-radius: 1px; }
+  .song-more svg { width: 18px; height: 18px; fill: var(--text-secondary); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: linear-gradient(135deg, var(--flow-1), var(--flow-2)); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logomark */
+  .logo { display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; }
+  .logo svg { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 48 48" fill="none"><defs><linearGradient id="dz" x1="0" y1="0" x2="48" y2="48"><stop offset="0" stop-color="#A238FF"/><stop offset="1" stop-color="#FF0092"/></linearGradient></defs><rect x="4" y="9" width="7" height="6" rx="1" fill="url(#dz)"/><rect x="13.5" y="9" width="7" height="6" rx="1" fill="url(#dz)"/><rect x="23" y="9" width="7" height="6" rx="1" fill="url(#dz)"/><rect x="32.5" y="9" width="7" height="6" rx="1" fill="url(#dz)"/><rect x="13.5" y="17" width="7" height="6" rx="1" fill="url(#dz)"/><rect x="23" y="17" width="7" height="6" rx="1" fill="url(#dz)"/><rect x="32.5" y="17" width="7" height="6" rx="1" fill="url(#dz)"/><rect x="23" y="25" width="7" height="6" rx="1" fill="url(#dz)"/><rect x="32.5" y="25" width="7" height="6" rx="1" fill="url(#dz)"/><rect x="32.5" y="33" width="7" height="6" rx="1" fill="url(#dz)"/></svg>
+    </span>
+    <div class="page-title">Deezer iOS — Design Tokens</div>
+    <div class="page-chip">Flow Gradient</div>
+  </div>
+  <p class="page-subtitle">Violet-tinted near-black canvas (#0F0D13) where the Deezer purple→pink gradient (#A238FF→#FF0092) is deliberately scarce — it lights only the circular play button, the scrubber fill, the Flow badge, and the now-playing equalizer. Everything else is monochrome so the gradient always reads as "the music is alive."</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="np-body">
+            <div class="np-top">
+              <div class="np-chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></div>
+              <div class="np-ctx">
+                <div class="np-ctx-label">Flow · Your Mix</div>
+                <div class="np-ctx-title">Made for you</div>
+              </div>
+              <div class="np-more"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></div>
+            </div>
+
+            <div class="art">
+              <div class="flow-badge">
+                <svg viewBox="0 0 24 24"><path d="M13 2L4.5 13.5H11l-1 8.5L19.5 10H13z"/></svg>
+                <span>FLOW</span>
+              </div>
+              <div class="eqbars">
+                <span class="eqbar" style="height:38%"></span><span class="eqbar" style="height:62%"></span><span class="eqbar" style="height:88%"></span><span class="eqbar" style="height:54%"></span><span class="eqbar" style="height:76%"></span><span class="eqbar" style="height:42%"></span><span class="eqbar" style="height:68%"></span><span class="eqbar" style="height:92%"></span><span class="eqbar" style="height:50%"></span><span class="eqbar" style="height:72%"></span><span class="eqbar" style="height:34%"></span><span class="eqbar" style="height:60%"></span>
+              </div>
+            </div>
+
+            <div class="np-meta">
+              <div class="np-titlerow">
+                <div>
+                  <div class="np-title">Midnight City</div>
+                  <div class="np-artist">M83 · Hurry Up, We're Dreaming</div>
+                </div>
+                <div class="np-heart"><svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-10-9.3C.6 8.5 2.4 5 6 5c2.1 0 3.6 1.2 4.5 2.6C11.4 6.2 12.9 5 15 5c3.6 0 5.4 3.5 4 6.7-2.5 4.7-10 9.3-10 9.3z"/></svg></div>
+              </div>
+              <div class="scrub">
+                <div class="scrub-track">
+                  <div class="scrub-fill"></div>
+                  <div class="scrub-knob"></div>
+                </div>
+                <div class="scrub-time"><span>1:48</span><span>-2:31</span></div>
+              </div>
+              <div class="transport">
+                <div class="tp-ic sec"><svg viewBox="0 0 24 24"><path d="M17 3l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 21l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div>
+                <div class="tp-ic"><svg viewBox="0 0 24 24"><path d="M19 5v14l-9-7zM7 5h-3v14h3z"/></svg></div>
+                <div class="tp-play"><svg viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg></div>
+                <div class="tp-ic"><svg viewBox="0 0 24 24"><path d="M5 5v14l9-7zM17 5h3v14h-3z"/></svg></div>
+                <div class="tp-ic sec"><svg viewBox="0 0 24 24"><path d="M12 5V2L8 6l4 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z"/></svg></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span>Music</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0F0D13;"><div class="name">Canvas</div>#0F0D13</div>
+          <div class="swatch" style="background:#19161F;"><div class="name">Surface 1</div>#19161F</div>
+          <div class="swatch" style="background:#221E2B;"><div class="name">Surface 2</div>#221E2B</div>
+          <div class="swatch" style="background:#2A2633;"><div class="name">Divider</div>#2A2633</div>
+          <div class="swatch grad"><div class="name">Flow Gradient</div>A238FF→FF0092</div>
+          <div class="swatch" style="background:#A238FF;"><div class="name">Deezer Purple</div>#A238FF</div>
+          <div class="swatch" style="background:#FF0092;"><div class="name">Deezer Pink</div>#FF0092</div>
+          <div class="swatch" style="background:#7C28C4;"><div class="name">Purple Deep</div>#7C28C4</div>
+          <div class="swatch" style="background:#FFFFFF; color:#0F0D13;"><div class="name">Text Primary</div>#FFFFFF</div>
+          <div class="swatch" style="background:#A29CB0; color:#0F0D13;"><div class="name">Text Secondary</div>#A29CB0</div>
+          <div class="swatch" style="background:#1ED760; color:#06210F;"><div class="name">Success</div>#1ED760</div>
+          <div class="swatch" style="background:#FF4D5E;"><div class="name">Error</div>#FF4D5E</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Deezer Sans (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 800</div><div class="type-sample t-32">Flow</div></div>
+        <div class="type-row"><div class="type-meta">Now Playing · 26pt · 800</div><div class="type-sample t-26">Midnight City</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Made for you</div></div>
+        <div class="type-row"><div class="type-meta">Subhead · 18pt · 700</div><div class="type-sample t-18">Your top mixes</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Flow is your personal soundtrack, an endless mix that adapts to your taste.</div></div>
+        <div class="type-row"><div class="type-meta">Row Title · 15pt · 600</div><div class="type-sample t-15m">Midnight City</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">M83 · Hurry Up, We're Dreaming</div></div>
+        <div class="type-row"><div class="type-meta">Overline · 12pt · 700</div><div class="type-sample t-12">Flow · Your Mix</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">▶ Play Flow</button>
+          <button class="btn btn-solid">Shuffle</button>
+          <button class="btn btn-outline">Follow</button>
+          <button class="btn-text">See all</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Song Rows (now-playing aware)</div>
+        <div class="song">
+          <div class="song-cover sc-1"></div>
+          <div class="song-meta">
+            <div class="song-title playing">Outro</div>
+            <div class="song-sub">M83 · Hurry Up, We're Dreaming</div>
+          </div>
+          <div class="song-eq"><span style="height:7px"></span><span style="height:14px"></span><span style="height:5px"></span><span style="height:11px"></span></div>
+        </div>
+        <div class="song">
+          <div class="song-cover sc-2"></div>
+          <div class="song-meta">
+            <div class="song-title">Instant Crush</div>
+            <div class="song-sub">Daft Punk · Random Access Memories</div>
+          </div>
+          <div class="song-more"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Deezer is dark-native — there is no real light theme. The canvas is a violet-tinted near-black <code>#0F0D13</code>, not pure black, so the purple→pink Flow gradient feels embedded in the same color world. The gradient (<code>#A238FF</code> → <code>#FF0092</code>) is treated as a scarce resource: it appears on the 68pt circular play button, the scrubber fill, the Flow badge, and the now-playing equalizer marker — nowhere else. Album/Flow artwork stays full-color and luminous; UI chrome (chevrons, secondary transport, tab icons) stays monochrome <code>#A29CB0</code> so the eye is always pulled to where the music is playing.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

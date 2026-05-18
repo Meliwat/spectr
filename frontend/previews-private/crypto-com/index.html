@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Crypto.com iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #03060F;
+    --surface-1: #0B1426;
+    --surface-2: #103F68;
+    --surface-3: #15263F;
+    --divider: #1C3354;
+    --text-primary: #F4F7FB;
+    --text-secondary: #8DA0BD;
+    --text-tertiary: #5B6E8C;
+    --ink: #FFFFFF;
+    --navy: #002D74;
+    --navy-2: #103F68;
+    --accent: #1199FA;
+    --accent-pressed: #0B7AD1;
+    --up: #00C08B;
+    --down: #F6485D;
+    --gold: #C8A24A;
+    --link: #1199FA;
+    --font: 'Manrope', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+    --mono: 'Roboto Mono', 'SF Mono', Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--accent); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow-y: auto; scrollbar-width: none; }
+  .scroll-body::-webkit-scrollbar { display: none; }
+
+  /* Greeting */
+  .greet { display: flex; align-items: center; justify-content: space-between; padding: 4px 20px 8px; }
+  .greet-hi { font-size: 18px; font-weight: 800; color: var(--text-primary); }
+  .greet-icons { display: flex; gap: 14px; color: var(--text-primary); }
+  .greet-icons svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Balance */
+  .bal-wrap { padding: 8px 20px 16px; }
+  .bal-label { font-size: 12px; color: var(--text-secondary); }
+  .bal-value { font-family: var(--mono); font-size: 30px; font-weight: 600; color: var(--text-primary); margin-top: 4px; letter-spacing: -0.5px; }
+  .bal-pnl { font-family: var(--mono); font-size: 12px; color: var(--up); margin-top: 4px; }
+
+  /* Visa card */
+  .card-wrap { padding: 4px 20px 18px; }
+  .visa-card { border-radius: 18px; height: 168px; padding: 20px; position: relative; overflow: hidden; background: linear-gradient(135deg, #1A1A1E 0%, #2A2A30 55%, #3A3A42 100%); box-shadow: 0 14px 30px -14px rgba(0,0,0,0.8); }
+  .visa-card.obsidian { background: linear-gradient(135deg, #0A0A0C 0%, #1A1A1E 60%, #26262C 100%); }
+  .card-tier { font-size: 13px; font-weight: 700; letter-spacing: 1.5px; color: #E7C766; text-transform: uppercase; }
+  .card-chip { position: absolute; top: 56px; left: 20px; width: 36px; height: 26px; border-radius: 5px; background: linear-gradient(135deg, #D9C079, #A88D45); }
+  .card-num { position: absolute; bottom: 46px; left: 20px; font-family: var(--mono); font-size: 15px; letter-spacing: 2px; color: rgba(255,255,255,0.92); }
+  .card-name { position: absolute; bottom: 20px; left: 20px; font-size: 12px; font-weight: 600; letter-spacing: 1px; color: rgba(255,255,255,0.75); text-transform: uppercase; }
+  .card-brand { position: absolute; bottom: 18px; right: 20px; font-size: 18px; font-weight: 800; font-style: italic; color: #FFF; }
+  .card-mark { position: absolute; top: 20px; right: 20px; width: 22px; height: 22px; }
+  .card-mark svg { width: 100%; height: 100%; fill: #FFF; }
+
+  /* Quick actions */
+  .quick { display: flex; justify-content: space-between; padding: 0 20px 18px; }
+  .qa { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
+  .qa-ico { width: 46px; height: 46px; border-radius: 23px; background: var(--surface-1); display: flex; align-items: center; justify-content: center; color: var(--accent); }
+  .qa-ico svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .qa-lbl { font-size: 11px; font-weight: 600; color: var(--text-secondary); }
+
+  /* Section head */
+  .sec-head { display: flex; align-items: center; justify-content: space-between; padding: 4px 20px 10px; }
+  .sec-h { font-size: 16px; font-weight: 800; color: var(--text-primary); }
+  .sec-link { font-size: 13px; font-weight: 600; color: var(--accent); }
+
+  /* Price list */
+  .pl-row { display: flex; align-items: center; padding: 11px 20px; gap: 12px; }
+  .pl-ico { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #fff; flex-shrink: 0; }
+  .i-btc { background: #F7931A; } .i-eth { background: #627EEA; } .i-cro { background: #1199FA; } .i-sol { background: #14F195; color:#03060F; }
+  .pl-name { flex: 1; }
+  .pl-sym { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+  .pl-full { font-size: 12px; color: var(--text-secondary); margin-top: 1px; }
+  .pl-price { text-align: right; }
+  .pl-px { font-family: var(--mono); font-size: 15px; font-weight: 600; color: var(--text-primary); }
+  .pl-chg { font-family: var(--mono); font-size: 12px; font-weight: 600; margin-top: 2px; }
+  .c-up { color: var(--up); } .c-down { color: var(--down); }
+
+  /* Tab bar */
+  .tab-bar { height: 64px; display: flex; align-items: flex-start; padding: 8px 4px 14px; justify-content: space-around; background: rgba(3,6,15,0.96); border-top: 1px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 4px; }
+  .tab.active { color: var(--accent); }
+  .tab svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+  .tab-c { width: 44px; height: 44px; border-radius: 22px; background: var(--accent); display: flex; align-items: center; justify-content: center; margin-top: -6px; }
+  .tab-c svg { width: 22px; height: 22px; stroke: #FFF; stroke-width: 2.4; fill: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: var(--mono); border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: var(--mono); font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-30 { font-size: 30px; font-weight: 600; letter-spacing: -0.3px; color: var(--ink); font-family: var(--mono); }
+  .t-22 { font-size: 22px; font-weight: 800; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 700; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+  .t-mono { font-family: var(--mono); font-size: 15px; font-weight: 600; color: var(--up); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--accent); color: #FFF; font-size: 15px; padding: 13px 28px; border-radius: 999px; }
+  .btn-primary:active { background: var(--accent-pressed); transform: scale(0.98); }
+  .btn-buy { background: var(--up); color: #FFF; font-size: 15px; padding: 13px 28px; border-radius: 999px; }
+  .btn-sell { background: var(--down); color: #FFF; font-size: 15px; padding: 13px 28px; border-radius: 999px; }
+  .btn-ghost { background: transparent; color: var(--accent); border: 1.5px solid var(--accent); font-size: 14px; padding: 11px 22px; border-radius: 999px; }
+  .btn-text { background: transparent; color: var(--accent); font-size: 14px; font-weight: 700; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Card tier chips */
+  .tier-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .tier { padding: 14px 18px; border-radius: 14px; min-width: 110px; }
+  .tier .nm { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+  .tier .cb { font-size: 11px; margin-top: 6px; opacity: 0.8; }
+  .t-midnight { background: linear-gradient(135deg,#1A1A1E,#2A2A30); color:#E7C766; }
+  .t-ruby { background: linear-gradient(135deg,#5A1020,#8A1830); color:#F0C0C8; }
+  .t-jade { background: linear-gradient(135deg,#0E3A30,#14564A); color:#9FE3CF; }
+  .t-obsidian { background: linear-gradient(135deg,#0A0A0C,#26262C); color:#C8A24A; }
+
+  /* Earn rows */
+  .earn { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--divider); }
+  .earn:last-child { border-bottom: none; }
+  .earn-l { display: flex; align-items: center; gap: 10px; }
+  .earn-ico { width: 30px; height: 30px; border-radius: 50%; }
+  .earn-nm { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+  .earn-sub { font-size: 11px; color: var(--text-secondary); }
+  .earn-apr { font-family: var(--mono); font-size: 15px; font-weight: 600; color: var(--up); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--accent); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; font-weight: 600; }
+  .r-0 { border-radius: 0; }
+  .r-6 { border-radius: 6px; }
+  .r-10 { border-radius: 10px; }
+  .r-14 { border-radius: 14px; }
+  .r-18 { border-radius: 18px; }
+  .r-24 { border-radius: 24px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  code { font-family: var(--mono); background: var(--surface-3); padding: 1px 5px; border-radius: 3px; font-size: 12px; color: var(--accent); }
+
+  /* Crypto.com logomark */
+  .logo { display: inline-block; width: 40px; height: 40px; }
+  .logo svg { width: 100%; height: 100%; fill: var(--accent); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 48 48"><path d="M24 2L4 13v22l20 11 20-11V13L24 2zm0 5.2l15 8.3v16.9l-15 8.3-15-8.3V15.5l15-8.3zM24 13l-9 5v12l9 5 9-5V18l-9-5zm0 4.4l5 2.8v5.6l-5 2.8-5-2.8v-5.6l5-2.8z"/></svg>
+    </span>
+    <div class="page-title">Crypto.com iOS — Design Tokens</div>
+    <div class="page-chip">Deep Navy</div>
+  </div>
+  <p class="page-subtitle">Crypto.com is a deep-navy financial app (#03060F → #0B1426) with an electric blue accent (#1199FA) and Crypto.com brand navy (#002D74 / #103F68). The metallic Visa card is the hero; semantic green (#00C08B) and red (#F6485D) carry market data in Roboto Mono.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="scroll-body">
+            <div class="greet">
+              <div class="greet-hi">Hi, Alex</div>
+              <div class="greet-icons">
+                <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7v4l-2 3h18l-2-3V9a7 7 0 0 0-7-7z"/><path d="M9 19a3 3 0 0 0 6 0"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+              </div>
+            </div>
+
+            <div class="bal-wrap">
+              <div class="bal-label">Total Balance (USD)</div>
+              <div class="bal-value">$ 18,402.65</div>
+              <div class="bal-pnl">+$320.18 (+1.77%) Today</div>
+            </div>
+
+            <div class="card-wrap">
+              <div class="visa-card obsidian">
+                <div class="card-tier">Obsidian</div>
+                <div class="card-mark"><svg viewBox="0 0 48 48"><path d="M24 4L8 13v22l16 9 16-9V13L24 4zm0 8l8 4.5v9L24 30l-8-4.5v-9L24 12z"/></svg></div>
+                <div class="card-chip"></div>
+                <div class="card-num">5482 •••• •••• 7310</div>
+                <div class="card-name">Alex Rivera</div>
+                <div class="card-brand">VISA</div>
+              </div>
+            </div>
+
+            <div class="quick">
+              <div class="qa"><div class="qa-ico"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div><div class="qa-lbl">Deposit</div></div>
+              <div class="qa"><div class="qa-ico"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div><div class="qa-lbl">Send</div></div>
+              <div class="qa"><div class="qa-ico"><svg viewBox="0 0 24 24"><path d="M17 3l4 4-4 4M7 21l-4-4 4-4M21 7H7M3 17h14"/></svg></div><div class="qa-lbl">Trade</div></div>
+              <div class="qa"><div class="qa-ico"><svg viewBox="0 0 24 24"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="9"/></svg></div><div class="qa-lbl">Earn</div></div>
+            </div>
+
+            <div class="sec-head">
+              <div class="sec-h">Watchlist</div>
+              <div class="sec-link">See all</div>
+            </div>
+
+            <div class="pl-row">
+              <div class="pl-ico i-btc">B</div>
+              <div class="pl-name"><div class="pl-sym">BTC</div><div class="pl-full">Bitcoin</div></div>
+              <div class="pl-price"><div class="pl-px">$67,284.10</div><div class="pl-chg c-up">+2.34%</div></div>
+            </div>
+            <div class="pl-row">
+              <div class="pl-ico i-eth">E</div>
+              <div class="pl-name"><div class="pl-sym">ETH</div><div class="pl-full">Ethereum</div></div>
+              <div class="pl-price"><div class="pl-px">$3,512.66</div><div class="pl-chg c-down">-0.92%</div></div>
+            </div>
+            <div class="pl-row">
+              <div class="pl-ico i-cro">C</div>
+              <div class="pl-name"><div class="pl-sym">CRO</div><div class="pl-full">Cronos</div></div>
+              <div class="pl-price"><div class="pl-px">$0.1284</div><div class="pl-chg c-up">+5.10%</div></div>
+            </div>
+            <div class="pl-row">
+              <div class="pl-ico i-sol">S</div>
+              <div class="pl-name"><div class="pl-sym">SOL</div><div class="pl-full">Solana</div></div>
+              <div class="pl-price"><div class="pl-px">$172.43</div><div class="pl-chg c-up">+4.61%</div></div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 18V8M9 18V4M14 18v-7M19 18v-10"/></svg><span>Prices</span></div>
+            <div class="tab"><div class="tab-c"><svg viewBox="0 0 24 24"><path d="M17 3l4 4-4 4M7 21l-4-4 4-4M21 7H7M3 17h14"/></svg></div></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 12h6"/></svg><span>Earn</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 10h20"/></svg><span>Card</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#03060F;"><div class="name">Canvas</div>#03060F</div>
+          <div class="swatch" style="background:#0B1426;"><div class="name">Surface 1</div>#0B1426</div>
+          <div class="swatch" style="background:#15263F;"><div class="name">Surface 3</div>#15263F</div>
+          <div class="swatch" style="background:#1C3354;"><div class="name">Divider</div>#1C3354</div>
+          <div class="swatch" style="background:#002D74;"><div class="name">Brand Navy</div>#002D74</div>
+          <div class="swatch" style="background:#103F68;"><div class="name">Navy 2</div>#103F68</div>
+          <div class="swatch" style="background:#1199FA;"><div class="name">Accent Blue</div>#1199FA</div>
+          <div class="swatch" style="background:#0B7AD1;"><div class="name">Accent Pressed</div>#0B7AD1</div>
+          <div class="swatch" style="background:#00C08B;"><div class="name">Up / Buy</div>#00C08B</div>
+          <div class="swatch" style="background:#F6485D;"><div class="name">Down / Sell</div>#F6485D</div>
+          <div class="swatch" style="background:#C8A24A; color:#03060F;"><div class="name">Card Gold</div>#C8A24A</div>
+          <div class="swatch" style="background:#F4F7FB; color:#03060F;"><div class="name">Text Primary</div>#F4F7FB</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Manrope + Roboto Mono</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 800</div><div class="type-sample t-32">Prices</div></div>
+        <div class="type-row"><div class="type-meta">Balance · 30pt · 600 · mono</div><div class="type-sample t-30">$ 18,402.65</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 800</div><div class="type-sample t-22">Your Visa Card</div></div>
+        <div class="type-row"><div class="type-meta">Row Title · 18pt · 700</div><div class="type-sample t-18">Bitcoin</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Buy, sell and pay with 250+ cryptocurrencies.</div></div>
+        <div class="type-row"><div class="type-meta">Price · 15pt · 600 · mono</div><div class="type-sample t-mono">$67,284.10 +2.34%</div></div>
+        <div class="type-row"><div class="type-meta">List Label · 15pt · 700</div><div class="type-sample t-15m">CRO Visa Card</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">Stake CRO to unlock higher cashback</div></div>
+        <div class="type-row"><div class="type-meta">Caption · 12pt · 600</div><div class="type-sample t-12">Available 0.482 BTC</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Buy Crypto</button>
+          <button class="btn btn-buy">Buy</button>
+          <button class="btn btn-sell">Sell</button>
+          <button class="btn btn-ghost">Stake CRO</button>
+          <button class="btn-text">See all assets</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Visa Card Tiers</div>
+        <div class="tier-row">
+          <div class="tier t-midnight"><div class="nm">Midnight Blue</div><div class="cb">1% cashback</div></div>
+          <div class="tier t-ruby"><div class="nm">Ruby Steel</div><div class="cb">2% cashback</div></div>
+          <div class="tier t-jade"><div class="nm">Jade Green</div><div class="cb">3% cashback</div></div>
+          <div class="tier t-obsidian"><div class="nm">Obsidian</div><div class="cb">5% cashback</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Earn / Allocations</div>
+        <div class="earn">
+          <div class="earn-l"><div class="earn-ico i-btc"></div><div><div class="earn-nm">Bitcoin</div><div class="earn-sub">Flexible · Daily payout</div></div></div>
+          <div class="earn-apr">2.50% APR</div>
+        </div>
+        <div class="earn">
+          <div class="earn-l"><div class="earn-ico i-cro"></div><div><div class="earn-nm">Cronos</div><div class="earn-sub">3-month term</div></div></div>
+          <div class="earn-apr">8.00% APR</div>
+        </div>
+        <div class="earn">
+          <div class="earn-l"><div class="earn-ico i-eth"></div><div><div class="earn-nm">Ethereum</div><div class="earn-sub">Flexible · Daily payout</div></div></div>
+          <div class="earn-apr">3.25% APR</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-10">10</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-18">18</div>
+          <div class="radius-box r-24">24</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Crypto.com is dark-first with a distinctly navy bias — the canvas <code>#03060F</code> and surfaces <code>#0B1426</code> carry a cool blue undertone, not neutral gray. Brand navy <code>#002D74</code>/<code>#103F68</code> appears in hero gradients and banners; electric blue <code>#1199FA</code> is the interactive accent for CTAs, links, and the active tab. The metallic Visa card renders identically in both themes — its gradient is the brand centerpiece. Market semantics green <code>#00C08B</code> / red <code>#F6485D</code> never invert. The light theme swaps canvas to <code>#FFFFFF</code> and text to <code>#0A1F44</code> while keeping accent, navy, and card metals unchanged. All monetary values use Roboto Mono with tabular figures.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

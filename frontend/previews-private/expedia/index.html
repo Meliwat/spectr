@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Expedia iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0E1116;
+    --surface-1: #161B22;
+    --surface-2: #1F2630;
+    --divider: #2A323E;
+    --text-primary: #E8EBEF;
+    --text-secondary: #9AA4B2;
+    --text-tertiary: #6A7585;
+    --ink: #F4F6F8;
+    --navy: #00355F;
+    --navy-soft: #14416B;
+    --action: #1668E3;
+    --action-pressed: #0F4FB0;
+    --yellow: #FFC94D;
+    --yellow-deep: #FFB31A;
+    --onekey-gold: #F5C518;
+    --success: #1A8B4B;
+    --error: #D93A3A;
+    --star: #FFC94D;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--yellow); color: #00355F; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* App header */
+  .app-bar { padding: 4px 18px 10px; display: flex; align-items: center; justify-content: space-between; }
+  .app-bar .brand { display: flex; align-items: center; gap: 8px; }
+  .app-bar .brand svg { width: 22px; height: 22px; }
+  .app-bar .brand-name { font-size: 18px; font-weight: 800; letter-spacing: -0.3px; color: var(--text-primary); }
+  .onekey-pill { display: flex; align-items: center; gap: 5px; background: var(--surface-2); border: 0.5px solid var(--divider); border-radius: 500px; padding: 5px 12px; font-size: 11px; font-weight: 700; color: var(--onekey-gold); }
+  .onekey-pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--onekey-gold); }
+
+  /* Search pill */
+  .search-wrap { padding: 4px 16px 12px; }
+  .search-pill { display: flex; align-items: center; height: 52px; border-radius: 14px; background: var(--surface-1); border: 0.5px solid var(--divider); padding: 0 16px; gap: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+  .search-pill svg { width: 17px; height: 17px; stroke: var(--text-secondary); stroke-width: 2.2; fill: none; }
+  .search-texts { flex: 1; line-height: 1.15; }
+  .search-top { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+  .search-sub { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+
+  /* Tabs row (Stays / Flights / Cars / Bundle) */
+  .seg { display: flex; gap: 8px; padding: 0 16px 14px; }
+  .seg-item { flex: 1; text-align: center; font-size: 12px; font-weight: 600; color: var(--text-secondary); padding: 9px 0; border-radius: 10px; background: var(--surface-1); border: 0.5px solid var(--divider); }
+  .seg-item.active { color: #00355F; background: var(--yellow); border-color: var(--yellow); }
+
+  /* Section heading */
+  .sec-head { padding: 4px 18px 10px; display: flex; align-items: baseline; justify-content: space-between; }
+  .sec-head .h { font-size: 17px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.2px; }
+  .sec-head .a { font-size: 12px; font-weight: 600; color: var(--action); }
+
+  /* Property cards */
+  .stay-list { flex: 1; padding: 0 16px 16px; overflow-y: auto; scrollbar-width: none; }
+  .stay-list::-webkit-scrollbar { display: none; }
+  .stay { background: var(--surface-1); border: 0.5px solid var(--divider); border-radius: 16px; overflow: hidden; margin-bottom: 16px; }
+  .photo { width: 100%; aspect-ratio: 16/10; position: relative; }
+  .photo-a { background: linear-gradient(150deg, #2E6F9E 0%, #1C4C72 45%, #10283C 100%); }
+  .photo-a::before { content: ''; position: absolute; left: 12%; right: 12%; top: 30%; bottom: 16%; background: #143552; border-radius: 4px; box-shadow: 3px 4px 0 #0C2233; }
+  .photo-b { background: linear-gradient(150deg, #C99A5B 0%, #A2723F 45%, #5E3A20 100%); }
+  .photo-b::before { content: ''; position: absolute; left: 14%; right: 14%; top: 38%; bottom: 14%; background: #D9CBA9; border-radius: 2px 2px 6px 6px; }
+  .deal-tag { position: absolute; top: 12px; left: 12px; background: var(--yellow); color: #00355F; font-size: 11px; font-weight: 800; padding: 4px 9px; border-radius: 6px; }
+  .heart { position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+  .heart svg { width: 20px; height: 20px; }
+  .heart.saved path { fill: var(--action); stroke: #FFF; stroke-width: 1.6; }
+  .heart.unsaved path { fill: rgba(0,0,0,0.4); stroke: #FFF; stroke-width: 1.8; }
+  .stay-body { padding: 12px 14px 14px; }
+  .stay-title { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+  .stay-loc { font-size: 13px; color: var(--text-secondary); margin-top: 3px; }
+  .rating-row { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 12px; }
+  .rating-badge { background: var(--navy-soft); color: var(--text-primary); font-weight: 700; font-size: 12px; padding: 3px 7px; border-radius: 6px; }
+  .rating-word { font-weight: 700; color: var(--text-primary); }
+  .rating-count { color: var(--text-secondary); }
+  .price-row { display: flex; align-items: baseline; gap: 6px; margin-top: 10px; }
+  .price-strike { font-size: 13px; color: var(--text-tertiary); text-decoration: line-through; }
+  .price-now { font-size: 18px; font-weight: 800; color: var(--text-primary); }
+  .price-per { font-size: 12px; color: var(--text-secondary); }
+  .onekey-line { display: flex; align-items: center; gap: 5px; margin-top: 7px; font-size: 11px; font-weight: 700; color: var(--onekey-gold); }
+  .onekey-line svg { width: 12px; height: 12px; fill: var(--onekey-gold); }
+
+  /* Tab bar */
+  .tab-bar { height: 68px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(14,17,22,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 3px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--action); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 400; }
+  .t-15m { font-size: 15px; font-weight: 600; }
+  .t-14 { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 600; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--action); color: #FFF; font-size: 16px; padding: 14px 28px; border-radius: 8px; }
+  .btn-primary:active { background: var(--action-pressed); transform: scale(0.98); }
+  .btn-yellow { background: var(--yellow); color: #00355F; font-size: 16px; padding: 14px 28px; border-radius: 8px; }
+  .btn-yellow:active { background: var(--yellow-deep); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--action); border: 1px solid var(--action); font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 8px; }
+  .btn-text { background: transparent; color: var(--action); font-size: 14px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* One Key reward strip */
+  .reward { display: flex; align-items: center; gap: 12px; background: var(--surface-2); border: 0.5px solid var(--divider); border-radius: 12px; padding: 14px 16px; }
+  .reward .coin { width: 36px; height: 36px; border-radius: 50%; background: var(--onekey-gold); display: flex; align-items: center; justify-content: center; color: #1B1B1B; font-weight: 800; font-size: 13px; }
+  .reward .body { flex: 1; }
+  .reward .body .t { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+  .reward .body .s { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+  .reward .bal { font-size: 16px; font-weight: 800; color: var(--onekey-gold); }
+
+  /* Review badge scale */
+  .badge-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .rev-badge { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .rev-badge .sq { font-weight: 800; color: #FFF; padding: 6px 9px; border-radius: 8px; }
+  .rev-badge .sq.exc { background: var(--success); }
+  .rev-badge .sq.good { background: var(--action); }
+  .rev-badge .sq.ok { background: var(--navy-soft); }
+  .rev-badge .lbl { font-weight: 700; color: var(--text-primary); }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--action); color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-16 { border-radius: 16px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  .logo { display: inline-flex; width: 40px; height: 40px; align-items: center; justify-content: center; }
+  .logo svg { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="logo">
+      <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="22" fill="#00355F"/><path d="M14 30c4-9 9-13 16-13 0 8-5 14-13 15-1-1-2-1-3-2z" fill="#FFC94D"/><circle cx="30" cy="18" r="3.4" fill="#FFC94D"/></svg>
+    </span>
+    <div class="page-title">Expedia iOS — Design Tokens</div>
+    <div class="page-chip">One Key Dark</div>
+  </div>
+  <p class="page-subtitle">Expedia Yellow (#FFC94D) anchors deals and primary moments over a deep navy-tinted dark canvas (#0E1116). Action Blue (#1668E3) carries links and CTAs; One Key gold (#F5C518) marks rewards. Shadows deepen to 0.4–0.5 opacity to register over the dark surface.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="app-bar">
+            <div class="brand">
+              <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="22" fill="#00355F"/><path d="M14 30c4-9 9-13 16-13 0 8-5 14-13 15-1-1-2-1-3-2z" fill="#FFC94D"/><circle cx="30" cy="18" r="3.4" fill="#FFC94D"/></svg>
+              <span class="brand-name">Expedia</span>
+            </div>
+            <div class="onekey-pill"><span class="dot"></span>12,480 One Key</div>
+          </div>
+
+          <div class="seg">
+            <div class="seg-item active">Stays</div>
+            <div class="seg-item">Flights</div>
+            <div class="seg-item">Cars</div>
+            <div class="seg-item">Bundle</div>
+          </div>
+
+          <div class="search-wrap">
+            <div class="search-pill">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+              <div class="search-texts">
+                <div class="search-top">San Diego, CA</div>
+                <div class="search-sub">Oct 12 – 17 · 2 travelers · 1 room</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sec-head">
+            <div class="h">Bundle + Save deals</div>
+            <div class="a">See all</div>
+          </div>
+
+          <div class="stay-list">
+            <div class="stay">
+              <div class="photo photo-a">
+                <div class="deal-tag">−24% Bundle</div>
+                <div class="heart saved"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+              </div>
+              <div class="stay-body">
+                <div class="stay-title">Hotel Republic San Diego</div>
+                <div class="stay-loc">Downtown · Gaslamp Quarter</div>
+                <div class="rating-row">
+                  <span class="rating-badge">9.2</span>
+                  <span class="rating-word">Wonderful</span>
+                  <span class="rating-count">· 1,847 reviews</span>
+                </div>
+                <div class="price-row">
+                  <span class="price-strike">$268</span>
+                  <span class="price-now">$204</span>
+                  <span class="price-per">/ night</span>
+                </div>
+                <div class="onekey-line"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg> Earn 2,040 One Key cash</div>
+              </div>
+            </div>
+
+            <div class="stay">
+              <div class="photo photo-b">
+                <div class="deal-tag">Member price</div>
+                <div class="heart unsaved"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+              </div>
+              <div class="stay-body">
+                <div class="stay-title">The Guild Hotel, Autograph</div>
+                <div class="stay-loc">Marina District · 0.4 mi from center</div>
+                <div class="rating-row">
+                  <span class="rating-badge">8.8</span>
+                  <span class="rating-word">Excellent</span>
+                  <span class="rating-count">· 932 reviews</span>
+                </div>
+                <div class="price-row">
+                  <span class="price-now">$251</span>
+                  <span class="price-per">/ night</span>
+                </div>
+                <div class="onekey-line"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg> Earn 2,510 One Key cash</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span>Saved</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 7h18M3 12h18M3 17h18"/></svg><span>Trips</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.5 9a2.5 2.5 0 1 1 3.6 2.2c-.9.5-1.6 1-1.6 2"/><circle cx="11.6" cy="16.5" r="0.6" fill="currentColor"/></svg><span>Support</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="3.4"/><path d="M5.5 19c1.2-3 3.6-4.4 6.5-4.4S17.3 16 18.5 19"/></svg><span>Account</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Dark Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0E1116;"><div class="name">Dark Canvas</div>#0E1116</div>
+          <div class="swatch" style="background:#161B22;"><div class="name">Surface 1</div>#161B22</div>
+          <div class="swatch" style="background:#1F2630;"><div class="name">Surface 2</div>#1F2630</div>
+          <div class="swatch" style="background:#2A323E;"><div class="name">Divider</div>#2A323E</div>
+          <div class="swatch" style="background:#FFC94D; color:#00355F;"><div class="name">Expedia Yellow</div>#FFC94D</div>
+          <div class="swatch" style="background:#FFB31A; color:#00355F;"><div class="name">Yellow Deep</div>#FFB31A</div>
+          <div class="swatch" style="background:#00355F;"><div class="name">Expedia Navy</div>#00355F</div>
+          <div class="swatch" style="background:#1668E3;"><div class="name">Action Blue</div>#1668E3</div>
+          <div class="swatch" style="background:#F5C518; color:#1B1B1B;"><div class="name">One Key Gold</div>#F5C518</div>
+          <div class="swatch" style="background:#1A8B4B;"><div class="name">Success</div>#1A8B4B</div>
+          <div class="swatch" style="background:#E8EBEF; color:#0E1116;"><div class="name">Text Primary</div>#E8EBEF</div>
+          <div class="swatch" style="background:#D93A3A;"><div class="name">Error</div>#D93A3A</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Expedia Sans (Inter fallback)</div>
+        <div class="type-row"><div class="type-meta">Display · 32pt · 800</div><div class="type-sample t-32">Find your next trip</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 26pt · 800</div><div class="type-sample t-26">San Diego, California</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">Bundle + Save deals</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 18pt · 700</div><div class="type-sample t-18">Hotel Republic San Diego</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 400</div><div class="type-sample t-16">Add a flight to unlock a lower bundled price on this stay.</div></div>
+        <div class="type-row"><div class="type-meta">Card Subtitle · 15pt · 600</div><div class="type-sample t-15m">Downtown · Gaslamp Quarter</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 14pt · 400</div><div class="type-sample t-14">1,847 reviews · Free cancellation</div></div>
+        <div class="type-row"><div class="type-meta">Badge · 12pt · 600</div><div class="type-sample t-12">Member price · −24%</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Reserve</button>
+          <button class="btn btn-yellow">Bundle &amp; save</button>
+          <button class="btn btn-outline">Add a flight</button>
+          <button class="btn-text">See all 38 deals</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">One Key Rewards Strip</div>
+        <div class="reward">
+          <div class="coin">1K</div>
+          <div class="body">
+            <div class="t">One Key cash available</div>
+            <div class="s">Apply at checkout on any stay, flight, or car</div>
+          </div>
+          <div class="bal">$124.80</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Guest Review Score Badges</div>
+        <div class="badge-row">
+          <div class="rev-badge"><span class="sq exc">9.2</span><span class="lbl">Wonderful</span></div>
+          <div class="rev-badge"><span class="sq good">8.8</span><span class="lbl">Excellent</span></div>
+          <div class="rev-badge"><span class="sq ok">7.4</span><span class="lbl">Good</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-16">16</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Expedia's dark canvas carries a subtle navy bias (<code>#0E1116</code>) that echoes the brand's deep <code>#00355F</code> blue; cards lift to <code>#161B22</code>. Expedia Yellow <code>#FFC94D</code> stays identical across themes — it is the deal/savings signal and reads vividly on dark. Action Blue <code>#1668E3</code> lightens its perceived contrast on dark surfaces but the hex holds. One Key gold <code>#F5C518</code> is reserved exclusively for rewards balances and earn lines. Property photography stays full-color; only chrome dims.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Vimeo iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0D0E12;
+    --surface-1: #16181F;
+    --surface-2: #1F222B;
+    --divider: #262A34;
+    --text-primary: #FFFFFF;
+    --text-secondary: #AEB6C2;
+    --text-tertiary: #6B7280;
+    --ink: #FFFFFF;
+    --vimeo-blue: #00ADEF;
+    --vimeo-blue-legacy: #1AB7EA;
+    --vimeo-blue-pressed: #008FC4;
+    --vimeo-navy: #1A2E3B;
+    --staff-gold: #FFD24C;
+    --plus-purple: #8B5CF6;
+    --success: #2ECC71;
+    --error: #FF4D4F;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--vimeo-blue); color: #04121A; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Top bar */
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 4px 18px 14px; }
+  .topbar-logo svg { width: 96px; height: 22px; fill: var(--text-primary); }
+  .topbar-actions { display: flex; gap: 18px; }
+  .topbar-actions svg { width: 21px; height: 21px; stroke: var(--text-primary); stroke-width: 1.8; fill: none; }
+
+  /* Player */
+  .player { margin: 0 16px; border-radius: 14px; overflow: hidden; background: linear-gradient(150deg, #16384A 0%, #0E212E 55%, #08151D 100%); position: relative; aspect-ratio: 16/9; }
+  .player::before { content: ''; position: absolute; top: 22%; left: 14%; right: 14%; bottom: 34%; background: linear-gradient(160deg, #2B5066 0%, #14303F 100%); border-radius: 6px; }
+  .player-play { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 52px; height: 52px; border-radius: 50%; background: rgba(13,14,18,0.55); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; border: 1.5px solid rgba(255,255,255,0.55); }
+  .player-play svg { width: 18px; height: 18px; fill: #FFF; margin-left: 3px; }
+  .player-bar { position: absolute; left: 0; right: 0; bottom: 0; height: 34px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: linear-gradient(0deg, rgba(8,21,29,0.85), transparent); }
+  .player-time { font-size: 10px; font-weight: 600; color: #FFF; font-variant-numeric: tabular-nums; }
+  .player-track { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.28); position: relative; }
+  .player-track::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 42%; background: var(--vimeo-blue); border-radius: 2px; }
+  .player-track::before { content: ''; position: absolute; left: 42%; top: 50%; transform: translate(-50%,-50%); width: 9px; height: 9px; border-radius: 50%; background: #FFF; }
+  .player-hd { font-size: 9px; font-weight: 700; color: #FFF; border: 1px solid rgba(255,255,255,0.5); border-radius: 3px; padding: 1px 4px; }
+
+  /* Video meta */
+  .vmeta { padding: 14px 16px 4px; }
+  .vmeta-title { font-size: 17px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.2px; line-height: 1.3; }
+  .vmeta-sub { font-size: 13px; color: var(--text-secondary); margin-top: 5px; }
+  .vmeta-row { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+  .creator-av { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, #00ADEF, #8B5CF6); flex-shrink: 0; }
+  .creator-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+  .creator-meta { font-size: 11px; color: var(--text-tertiary); margin-top: 1px; }
+  .follow-btn { margin-left: auto; background: var(--vimeo-blue); color: #04121A; font-size: 12px; font-weight: 700; padding: 7px 16px; border-radius: 999px; }
+
+  /* Staff picks feed */
+  .feed { flex: 1; padding: 14px 16px 8px; overflow-y: auto; scrollbar-width: none; }
+  .feed::-webkit-scrollbar { display: none; }
+  .feed-head { display: flex; align-items: center; gap: 7px; margin-bottom: 12px; }
+  .feed-title { font-size: 12px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-secondary); }
+  .feed-star { width: 13px; height: 13px; fill: var(--staff-gold); }
+  .pick { display: flex; gap: 11px; margin-bottom: 14px; }
+  .pick-thumb { width: 124px; aspect-ratio: 16/9; border-radius: 8px; flex-shrink: 0; position: relative; overflow: hidden; }
+  .pick-thumb.a { background: linear-gradient(145deg, #4A6B7C, #1E323D); }
+  .pick-thumb.b { background: linear-gradient(145deg, #6E5A8C, #2C2440); }
+  .pick-dur { position: absolute; bottom: 5px; right: 5px; font-size: 9px; font-weight: 700; color: #FFF; background: rgba(0,0,0,0.7); border-radius: 3px; padding: 1px 4px; font-variant-numeric: tabular-nums; }
+  .pick-badge { position: absolute; top: 5px; left: 5px; width: 16px; height: 16px; border-radius: 50%; background: var(--staff-gold); display: flex; align-items: center; justify-content: center; }
+  .pick-badge svg { width: 9px; height: 9px; fill: #04121A; }
+  .pick-body { flex: 1; min-width: 0; }
+  .pick-name { font-size: 13px; font-weight: 600; color: var(--text-primary); line-height: 1.35; }
+  .pick-by { font-size: 11px; color: var(--text-tertiary); margin-top: 4px; }
+  .pick-stats { font-size: 11px; color: var(--text-tertiary); margin-top: 6px; }
+
+  /* Tab bar */
+  .tab-bar { height: 68px; display: flex; align-items: flex-start; padding: 8px 4px 16px; justify-content: space-around; background: rgba(13,14,18,0.94); backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 500; gap: 3px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--vimeo-blue); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: currentColor; }
+  .tab-fab svg { width: 26px; height: 26px; fill: var(--vimeo-blue); stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+  .swatch.light { color: #04121A; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-17 { font-size: 17px; font-weight: 600; }
+  .t-15 { font-size: 15px; font-weight: 500; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-11 { font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-tertiary); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--vimeo-blue); color: #04121A; font-size: 15px; padding: 13px 26px; border-radius: 8px; }
+  .btn-primary:active { background: var(--vimeo-blue-pressed); transform: scale(0.98); }
+  .btn-outline { background: transparent; color: var(--text-primary); border: 1px solid var(--text-secondary); font-size: 14px; font-weight: 600; padding: 11px 20px; border-radius: 8px; }
+  .btn-pill { background: var(--vimeo-blue); color: #04121A; font-size: 13px; font-weight: 700; padding: 9px 18px; border-radius: 999px; }
+  .btn-ghost { background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--divider); font-size: 14px; font-weight: 600; padding: 11px 18px; border-radius: 8px; }
+  .btn-text { background: transparent; color: var(--vimeo-blue); font-size: 14px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Signature: player scrubber */
+  .scrub-demo { background: var(--surface-2); border-radius: 12px; padding: 18px 16px; }
+  .scrub-bar { display: flex; align-items: center; gap: 10px; }
+  .scrub-bar .t { font-size: 11px; font-weight: 600; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+  .scrub-track { flex: 1; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.22); position: relative; }
+  .scrub-track::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 55%; background: var(--vimeo-blue); border-radius: 2px; }
+  .scrub-track::before { content: ''; position: absolute; left: 55%; top: 50%; transform: translate(-50%,-50%); width: 12px; height: 12px; border-radius: 50%; background: #FFF; box-shadow: 0 1px 4px rgba(0,0,0,0.6); }
+
+  /* Signature: staff pick card */
+  .pickcard { background: var(--surface-2); border-radius: 12px; overflow: hidden; max-width: 280px; }
+  .pickcard-thumb { aspect-ratio: 16/9; background: linear-gradient(145deg, #4A6B7C, #1E323D); position: relative; }
+  .pickcard-badge { position: absolute; top: 8px; left: 8px; display: flex; align-items: center; gap: 4px; background: var(--staff-gold); color: #04121A; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 999px; }
+  .pickcard-badge svg { width: 10px; height: 10px; fill: #04121A; }
+  .pickcard-body { padding: 12px 14px 14px; }
+  .pickcard-title { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .pickcard-meta { font-size: 11px; color: var(--text-tertiary); margin-top: 4px; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--vimeo-blue); color: #04121A; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-14 { border-radius: 14px; }
+  .r-20 { border-radius: 20px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Logo */
+  .vlogo { display: inline-flex; align-items: center; }
+  .vlogo svg { height: 30px; fill: var(--vimeo-blue); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="vlogo">
+      <svg viewBox="0 0 84 24"><path d="M83.9 5.6c-.4 8.2-6.1 19.4-17.2 33.6C55.1 53.9 45.4 61 37.4 61c-4.9 0-9.1-4.6-12.5-13.7-2.3-8.4-4.6-16.7-6.8-25.1-2.6-9.1-5.3-13.7-8.3-13.7-.6 0-2.9 1.4-6.7 4.1L0 9.3C4.4 5.5 8.7 1.7 12.9-2c5.8-5 10.2-7.6 13.1-7.9 6.9-.7 11.2 4.1 12.8 14.3 1.8 11 3 17.8 3.7 20.4 2 9.2 4.2 13.7 6.6 13.7 1.9 0 4.7-3 8.5-8.9 3.8-5.9 5.8-10.4 6.1-13.5.5-5-1.4-7.5-5.8-7.5-2.1 0-4.2.5-6.4 1.5C56 6.7 64.3-1.3 75 .7c8 .6 11.7 5.7 11.3 15.4z" transform="scale(0.95)"/></svg>
+    </span>
+    <div class="page-title">Vimeo iOS — Design Tokens</div>
+    <div class="page-chip">Cinematic Dark</div>
+  </div>
+  <p class="page-subtitle">Deep-ink canvas (#0D0E12) built for video — a near-black theatre that makes thumbnails and the player glow. Vimeo Blue (#00ADEF) is the single accent; chrome stays minimal so curated, staff-picked work is the loudest thing on screen.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="topbar">
+            <span class="topbar-logo">
+              <svg viewBox="0 0 84 24"><path d="M83.9 5.6c-.4 8.2-6.1 19.4-17.2 33.6C55.1 53.9 45.4 61 37.4 61c-4.9 0-9.1-4.6-12.5-13.7-2.3-8.4-4.6-16.7-6.8-25.1-2.6-9.1-5.3-13.7-8.3-13.7-.6 0-2.9 1.4-6.7 4.1L0 9.3C4.4 5.5 8.7 1.7 12.9-2c5.8-5 10.2-7.6 13.1-7.9 6.9-.7 11.2 4.1 12.8 14.3 1.8 11 3 17.8 3.7 20.4 2 9.2 4.2 13.7 6.6 13.7 1.9 0 4.7-3 8.5-8.9 3.8-5.9 5.8-10.4 6.1-13.5.5-5-1.4-7.5-5.8-7.5-2.1 0-4.2.5-6.4 1.5C56 6.7 64.3-1.3 75 .7c8 .6 11.7 5.7 11.3 15.4z" transform="scale(0.95)"/></svg>
+            </span>
+            <div class="topbar-actions">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+            </div>
+          </div>
+
+          <div class="player">
+            <div class="player-play"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></div>
+            <div class="player-bar">
+              <span class="player-time">1:24</span>
+              <div class="player-track"></div>
+              <span class="player-time">4:07</span>
+              <span class="player-hd">HD</span>
+            </div>
+          </div>
+
+          <div class="vmeta">
+            <div class="vmeta-title">After the Storm — A Short Film</div>
+            <div class="vmeta-sub">48K plays · 2 days ago</div>
+            <div class="vmeta-row">
+              <div class="creator-av"></div>
+              <div>
+                <div class="creator-name">Lumen Pictures</div>
+                <div class="creator-meta">Staff · 12.4K followers</div>
+              </div>
+              <button class="follow-btn">Follow</button>
+            </div>
+          </div>
+
+          <div class="feed">
+            <div class="feed-head">
+              <svg class="feed-star" viewBox="0 0 24 24"><polygon points="12,2 15.1,8.4 22,9.3 17,14.1 18.2,21 12,17.8 5.8,21 7,14.1 2,9.3 8.9,8.4"/></svg>
+              <span class="feed-title">Staff Picks</span>
+            </div>
+
+            <div class="pick">
+              <div class="pick-thumb a">
+                <div class="pick-badge"><svg viewBox="0 0 24 24"><polygon points="12,2 15.1,8.4 22,9.3 17,14.1 18.2,21 12,17.8 5.8,21 7,14.1 2,9.3 8.9,8.4"/></svg></div>
+                <span class="pick-dur">3:12</span>
+              </div>
+              <div class="pick-body">
+                <div class="pick-name">Grain — shot entirely on 16mm</div>
+                <div class="pick-by">by Atelier Nord</div>
+                <div class="pick-stats">21K plays · 4 comments</div>
+              </div>
+            </div>
+
+            <div class="pick">
+              <div class="pick-thumb b">
+                <div class="pick-badge"><svg viewBox="0 0 24 24"><polygon points="12,2 15.1,8.4 22,9.3 17,14.1 18.2,21 12,17.8 5.8,21 7,14.1 2,9.3 8.9,8.4"/></svg></div>
+                <span class="pick-dur">6:48</span>
+              </div>
+              <div class="pick-body">
+                <div class="pick-name">Tidal — a meditation on water</div>
+                <div class="pick-by">by Sea & Sky Studio</div>
+                <div class="pick-stats">37K plays · 11 comments</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+            <div class="tab tab-fab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10,8 17,12 10,16" fill="#04121A"/></svg><span>&nbsp;</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M2 7l10 6 10-6"/><rect x="2" y="5" width="20" height="14" rx="2"/></svg><span>Inbox</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/></svg><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0D0E12;"><div class="name">Ink Canvas</div>#0D0E12</div>
+          <div class="swatch" style="background:#16181F;"><div class="name">Surface 1</div>#16181F</div>
+          <div class="swatch" style="background:#1F222B;"><div class="name">Surface 2</div>#1F222B</div>
+          <div class="swatch" style="background:#262A34;"><div class="name">Divider</div>#262A34</div>
+          <div class="swatch light" style="background:#00ADEF;"><div class="name">Vimeo Blue</div>#00ADEF</div>
+          <div class="swatch light" style="background:#1AB7EA;"><div class="name">Blue (legacy)</div>#1AB7EA</div>
+          <div class="swatch light" style="background:#008FC4;"><div class="name">Blue Pressed</div>#008FC4</div>
+          <div class="swatch light" style="background:#FFD24C;"><div class="name">Staff Gold</div>#FFD24C</div>
+          <div class="swatch" style="background:#8B5CF6;"><div class="name">Plus Purple</div>#8B5CF6</div>
+          <div class="swatch" style="background:#FFFFFF; color:#0D0E12;"><div class="name">Text Primary</div>#FFFFFF</div>
+          <div class="swatch" style="background:#AEB6C2; color:#0D0E12;"><div class="name">Text Secondary</div>#AEB6C2</div>
+          <div class="swatch" style="background:#FF4D4F;"><div class="name">Error</div>#FF4D4F</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter (Vimeo's UI sans)</div>
+        <div class="type-row"><div class="type-meta">Display · 32pt · 800</div><div class="type-sample t-32">Watch</div></div>
+        <div class="type-row"><div class="type-meta">Screen Title · 26pt · 700</div><div class="type-sample t-26">Staff Picks</div></div>
+        <div class="type-row"><div class="type-meta">Section · 22pt · 700</div><div class="type-sample t-22">From creators you follow</div></div>
+        <div class="type-row"><div class="type-meta">Video Title · 18pt · 700</div><div class="type-sample t-18">After the Storm — A Short Film</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 17pt · 600</div><div class="type-sample t-17">Grain — shot entirely on 16mm</div></div>
+        <div class="type-row"><div class="type-meta">Body · 15pt · 500</div><div class="type-sample t-15">A quiet study of light, filmed over one winter on the northern coast.</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 400</div><div class="type-sample t-13">48K plays · 2 days ago</div></div>
+        <div class="type-row"><div class="type-meta">Overline · 11pt · 600</div><div class="type-sample t-11">Staff Picks</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Upload</button>
+          <button class="btn btn-outline">Save to Watch Later</button>
+          <button class="btn btn-pill">Follow</button>
+          <button class="btn btn-ghost">Share</button>
+          <button class="btn-text">See all staff picks</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Signature — Player Scrubber</div>
+        <div class="scrub-demo">
+          <div class="scrub-bar">
+            <span class="t">2:18</span>
+            <div class="scrub-track"></div>
+            <span class="t">4:07</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Signature — Staff Pick Card</div>
+        <div class="pickcard">
+          <div class="pickcard-thumb">
+            <div class="pickcard-badge"><svg viewBox="0 0 24 24"><polygon points="12,2 15.1,8.4 22,9.3 17,14.1 18.2,21 12,17.8 5.8,21 7,14.1 2,9.3 8.9,8.4"/></svg> Staff Pick</div>
+          </div>
+          <div class="pickcard-body">
+            <div class="pickcard-title">Tidal — a meditation on water</div>
+            <div class="pickcard-meta">by Sea &amp; Sky Studio · 37K plays</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-14">14</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Vimeo is dark-first — the app is a screening room. Canvas sits at near-black <code>#0D0E12</code> so the 16:9 player and thumbnails read as the light source; cards lift only one step to <code>#16181F</code>. Vimeo Blue <code>#00ADEF</code> is the sole interactive accent (the legacy <code>#1AB7EA</code> still appears in older surfaces) and is reserved for the scrubber fill, primary CTAs, and active tabs. Staff Gold <code>#FFD24C</code> exclusively marks curated picks. Video frames are never dimmed — only chrome recedes.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

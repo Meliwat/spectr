@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Inspired by Paramount+ iOS — Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #0A0E2D;
+    --canvas-2: #0E1438;
+    --surface-1: #161C44;
+    --surface-2: #1F2655;
+    --divider: #2A3266;
+    --text-primary: #FFFFFF;
+    --text-secondary: #AEB4D6;
+    --text-tertiary: #6F77A6;
+    --ink: #FFFFFF;
+    --pplus-blue: #0064FF;
+    --pplus-blue-pressed: #0052CC;
+    --pplus-sky: #4D9DFF;
+    --gold: #F5C518;
+    --live: #FF2D46;
+    --success: #1ED760;
+    --error: #FF453A;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 24px 80px; }
+  .page { max-width: 1200px; margin: 0 auto; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink); }
+  .page-chip { background: var(--pplus-blue); color: #FFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 720px; margin-bottom: 40px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone */
+  .phone { width: 340px; height: 720px; border-radius: 48px; background: #050505; padding: 12px; margin: 0 auto; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.06) inset; position: sticky; top: 24px; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--canvas); position: relative; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; border-radius: 14px; z-index: 10; }
+
+  .status { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 14px; font-weight: 600; color: var(--text-primary); z-index: 6; }
+  .scroll-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Top bar */
+  .top-bar { display: flex; align-items: center; justify-content: space-between; padding: 4px 18px 10px; }
+  .pp-logo { display: flex; align-items: baseline; gap: 1px; }
+  .pp-logo svg { width: 22px; height: 22px; align-self: center; }
+  .pp-logo .wm { font-size: 19px; font-weight: 800; letter-spacing: -0.5px; color: #fff; }
+  .pp-logo .plus { font-size: 19px; font-weight: 800; color: var(--pplus-blue); margin-left: 1px; }
+  .top-actions { display: flex; gap: 16px; align-items: center; color: var(--text-primary); }
+  .top-actions svg { width: 21px; height: 21px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* Brand hubs row */
+  .hubs { display: flex; gap: 8px; padding: 2px 18px 12px; overflow-x: auto; scrollbar-width: none; }
+  .hubs::-webkit-scrollbar { display: none; }
+  .hub { height: 40px; min-width: 70px; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; letter-spacing: 0.3px; color: #fff; padding: 0 12px; }
+  .h1 { background: linear-gradient(135deg, #0064FF, #0040A8); }
+  .h2 { background: linear-gradient(135deg, #1B1B1B, #000); }
+  .h3 { background: linear-gradient(135deg, #C8102E, #7A0A1C); }
+  .h4 { background: linear-gradient(135deg, #FFB81C, #C98A00); color: #1B1B1B; }
+  .h5 { background: linear-gradient(135deg, #5A2D8C, #321650); }
+  .h6 { background: linear-gradient(135deg, #008C45, #045128); }
+
+  /* Hero billboard */
+  .hero { position: relative; height: 332px; margin-bottom: 6px; }
+  .hero-art { position: absolute; inset: 0; background: radial-gradient(120% 90% at 30% 25%, #1B3A8A 0%, #122560 45%, #0A0E2D 100%); }
+  .hero-art::before { content: ''; position: absolute; left: 8%; top: 14%; width: 44%; height: 56%; background: linear-gradient(150deg, #2D6BD8 0%, #16357A 75%); border-radius: 12px; box-shadow: 10px 14px 36px rgba(0,0,0,0.5); }
+  .hero-art::after { content: ''; position: absolute; right: 12%; bottom: 32%; width: 26%; height: 26%; background: linear-gradient(160deg, #4D9DFF 0%, #1B4FA8 80%); border-radius: 50%; filter: blur(2px); opacity: 0.8; }
+  .hero-fade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,14,45,0) 36%, rgba(10,14,45,0.72) 70%, var(--canvas) 100%); }
+  .hero-content { position: absolute; left: 0; right: 0; bottom: 14px; padding: 0 20px; }
+  .hero-tag { font-size: 11px; font-weight: 800; letter-spacing: 1.6px; color: var(--pplus-sky); text-transform: uppercase; margin-bottom: 8px; }
+  .hero-title { font-size: 30px; font-weight: 900; letter-spacing: -0.7px; line-height: 1.02; color: #fff; }
+  .hero-meta { font-size: 12px; color: var(--text-secondary); margin-top: 8px; font-weight: 500; }
+  .hero-meta .dot { color: var(--text-tertiary); margin: 0 6px; }
+  .hero-btns { display: flex; gap: 10px; margin-top: 14px; }
+  .hero-play { background: var(--pplus-blue); color: #fff; font-weight: 700; font-size: 14px; padding: 12px 28px; border-radius: 6px; display: flex; align-items: center; gap: 7px; border: none; }
+  .hero-play svg { width: 14px; height: 14px; fill: #fff; }
+  .hero-info { background: rgba(255,255,255,0.14); color: #fff; font-weight: 600; font-size: 14px; padding: 12px 16px; border-radius: 6px; border: none; backdrop-filter: blur(6px); }
+
+  /* Content rows */
+  .row { padding: 4px 0 8px; }
+  .rail-head { display: flex; align-items: center; justify-content: space-between; padding: 0 18px 10px; }
+  .rail-title { font-size: 17px; font-weight: 700; color: #fff; letter-spacing: -0.2px; }
+  .rail-see { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+  .poster-row { display: flex; gap: 10px; padding: 0 18px 4px; overflow-x: auto; scrollbar-width: none; }
+  .poster-row::-webkit-scrollbar { display: none; }
+  .poster { width: 116px; flex-shrink: 0; }
+  .poster-art { width: 116px; height: 164px; border-radius: 8px; position: relative; overflow: hidden; }
+  .pa1 { background: linear-gradient(160deg, #1F4D9C 0%, #0E2455 100%); }
+  .pa2 { background: linear-gradient(160deg, #2A2A2A 0%, #0C0C0C 100%); }
+  .pa3 { background: linear-gradient(160deg, #8C2331 0%, #44101A 100%); }
+  .pa4 { background: linear-gradient(160deg, #2D6BD8 0%, #143A86 100%); }
+  .live-flag { position: absolute; top: 6px; left: 6px; display: flex; align-items: center; gap: 4px; font-size: 8px; font-weight: 800; letter-spacing: 0.5px; background: var(--live); color: #fff; padding: 3px 6px; border-radius: 4px; }
+  .live-flag .ld { width: 5px; height: 5px; border-radius: 50%; background: #fff; }
+  .badge-new { position: absolute; top: 6px; left: 6px; font-size: 8px; font-weight: 800; letter-spacing: 0.4px; background: var(--pplus-blue); color: #fff; padding: 3px 6px; border-radius: 4px; }
+  .poster-cap { font-size: 11px; font-weight: 500; color: var(--text-secondary); margin-top: 6px; line-height: 1.25; }
+
+  /* Tab bar */
+  .tab-bar { height: 64px; display: flex; align-items: flex-start; padding: 8px 6px 14px; justify-content: space-around; background: rgba(10,14,45,0.96); backdrop-filter: saturate(160%) blur(18px); border-top: 0.5px solid var(--divider); }
+  .tab { display: flex; flex-direction: column; align-items: center; color: var(--text-tertiary); font-size: 10px; font-weight: 600; gap: 3px; letter-spacing: 0.1px; }
+  .tab.active { color: var(--pplus-sky); }
+  .tab svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab.active svg { fill: currentColor; stroke: none; }
+
+  /* Token sections */
+  .section { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { border-radius: 12px; padding: 16px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Menlo, monospace; border: 1px solid var(--divider); color: #FFF; }
+  .swatch .name { font-size: 12px; font-weight: 600; font-family: var(--font); margin-bottom: 2px; }
+
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--divider); }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: var(--text-secondary); width: 220px; flex-shrink: 0; }
+  .type-sample { flex: 1; color: var(--text-primary); }
+  .t-32 { font-size: 32px; font-weight: 900; letter-spacing: -0.6px; color: var(--ink); }
+  .t-26 { font-size: 26px; font-weight: 800; letter-spacing: -0.4px; color: var(--ink); }
+  .t-22 { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+  .t-18 { font-size: 18px; font-weight: 700; }
+  .t-16 { font-size: 16px; font-weight: 600; }
+  .t-15m { font-size: 15px; font-weight: 500; }
+  .t-13 { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+  .t-12 { font-size: 12px; font-weight: 600; }
+  .t-11u { font-size: 11px; font-weight: 800; letter-spacing: 1.6px; text-transform: uppercase; color: var(--pplus-sky); }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: var(--font); font-weight: 700; cursor: pointer; border: none; letter-spacing: 0; }
+  .btn-primary { background: var(--pplus-blue); color: #fff; font-size: 15px; padding: 13px 28px; border-radius: 6px; }
+  .btn-primary:active { background: var(--pplus-blue-pressed); transform: scale(0.98); }
+  .btn-glass { background: rgba(255,255,255,0.14); color: #fff; font-size: 14px; font-weight: 600; padding: 12px 22px; border-radius: 6px; backdrop-filter: blur(6px); }
+  .btn-outline { background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,0.4); font-size: 14px; font-weight: 600; padding: 11px 20px; border-radius: 6px; }
+  .btn-text { background: transparent; color: var(--text-secondary); font-size: 14px; font-weight: 600; padding: 12px 0; border: none; cursor: pointer; }
+
+  /* Live badge / hub preview */
+  .comp-row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  .live-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--live); color: #fff; font-size: 11px; font-weight: 800; letter-spacing: 0.6px; padding: 5px 10px; border-radius: 4px; text-transform: uppercase; }
+  .live-badge .pulse { width: 7px; height: 7px; border-radius: 50%; background: #fff; }
+  .hub-prev { display: flex; gap: 8px; }
+
+  /* Progress */
+  .progress { width: 190px; }
+  .progress-track { height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 58%; background: var(--pplus-blue); border-radius: 2px; }
+  .progress-label { font-size: 11px; color: var(--text-secondary); margin-top: 6px; font-weight: 500; }
+
+  /* Radius scale */
+  .radius-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radius-box { width: 76px; height: 76px; background: var(--pplus-blue); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; }
+  .r-0 { border-radius: 0; }
+  .r-4 { border-radius: 4px; }
+  .r-6 { border-radius: 6px; }
+  .r-8 { border-radius: 8px; }
+  .r-12 { border-radius: 12px; }
+  .r-20 { border-radius: 20px; }
+  .r-pill { border-radius: 500px; }
+  .r-circle { border-radius: 50%; }
+
+  /* Mountain logomark */
+  .mtn { display: inline-block; width: 40px; height: 40px; }
+  .mtn svg { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="mtn">
+      <svg viewBox="0 0 64 64">
+        <path d="M32 6 L52 50 L40 50 L32 30 L24 50 L12 50 Z" fill="#0064FF"/>
+        <g stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round">
+          <line x1="32" y1="2" x2="32" y2="9"/>
+          <line x1="20" y1="5" x2="22" y2="11"/>
+          <line x1="44" y1="5" x2="42" y2="11"/>
+          <line x1="11" y1="13" x2="15" y2="17"/>
+          <line x1="53" y1="13" x2="49" y2="17"/>
+        </g>
+      </svg>
+    </span>
+    <div class="page-title">Paramount+ iOS — Design Tokens</div>
+    <div class="page-chip">Mountain Blue</div>
+  </div>
+  <p class="page-subtitle">Deep navy canvas (#0A0E2D) under a mountain-blue brand. The signature Paramount+ Blue (#0064FF) drives every primary CTA and the active tab tint; a brand-hubs row (CBS, MTV, Nickelodeon, Comedy Central, Showtime) sits directly under the top bar, framing the catalog as a network bundle. Live TV &amp; sports use red #FF2D46 with a pulsing dot.</p>
+
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>●●● ▢</span></div>
+
+          <div class="scroll-body">
+            <div class="top-bar">
+              <div class="pp-logo">
+                <svg viewBox="0 0 64 64">
+                  <path d="M32 6 L52 50 L40 50 L32 30 L24 50 L12 50 Z" fill="#0064FF"/>
+                  <g stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round">
+                    <line x1="32" y1="2" x2="32" y2="9"/>
+                    <line x1="20" y1="5" x2="22" y2="11"/>
+                    <line x1="44" y1="5" x2="42" y2="11"/>
+                  </g>
+                </svg>
+                <span class="wm">Paramount</span><span class="plus">+</span>
+              </div>
+              <div class="top-actions">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 12h6M12 9v6"/></svg>
+              </div>
+            </div>
+
+            <div class="hubs">
+              <div class="hub h1">CBS</div>
+              <div class="hub h2">Paramount</div>
+              <div class="hub h3">MTV</div>
+              <div class="hub h4">Nick</div>
+              <div class="hub h5">Comedy</div>
+              <div class="hub h6">SHO</div>
+            </div>
+
+            <div class="hero">
+              <div class="hero-art"></div>
+              <div class="hero-fade"></div>
+              <div class="hero-content">
+                <div class="hero-tag">Paramount+ Original</div>
+                <div class="hero-title">Tulsa King</div>
+                <div class="hero-meta">2024<span class="dot">·</span>Crime Drama<span class="dot">·</span>S2<span class="dot">·</span>TV-MA</div>
+                <div class="hero-btns">
+                  <button class="hero-play"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg>Play</button>
+                  <button class="hero-info">+ My List</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="rail-head"><div class="rail-title">Live TV &amp; Sports</div><div class="rail-see">See All</div></div>
+              <div class="poster-row">
+                <div class="poster"><div class="poster-art pa4"><div class="live-flag"><span class="ld"></span>LIVE</div></div><div class="poster-cap">UEFA Champions League</div></div>
+                <div class="poster"><div class="poster-art pa1"><div class="live-flag"><span class="ld"></span>LIVE</div></div><div class="poster-cap">CBS News 24/7</div></div>
+                <div class="poster"><div class="poster-art pa3"><div class="live-flag"><span class="ld"></span>LIVE</div></div><div class="poster-cap">NFL on CBS</div></div>
+                <div class="poster"><div class="poster-art pa2"></div><div class="poster-cap">SmackDown</div></div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="rail-head"><div class="rail-title">Trending</div><div class="rail-see">See All</div></div>
+              <div class="poster-row">
+                <div class="poster"><div class="poster-art pa1"><div class="badge-new">NEW</div></div><div class="poster-cap">1923</div></div>
+                <div class="poster"><div class="poster-art pa3"></div><div class="poster-cap">Yellowjackets</div></div>
+                <div class="poster"><div class="poster-art pa4"></div><div class="poster-cap">Star Trek</div></div>
+                <div class="poster"><div class="poster-art pa2"></div><div class="poster-cap">Frasier</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 10l9-8 9 8v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="13" rx="2"/><path d="M8 21h8"/></svg><span>Live TV</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+            <div class="tab"><svg viewBox="0 0 24 24"><path d="M5 3h14a2 2 0 0 1 2 2v16l-9-5-9 5V5a2 2 0 0 1 2-2z"/></svg><span>My List</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section">
+        <div class="section-title">Brand Color Palette</div>
+        <div class="swatches">
+          <div class="swatch" style="background:#0A0E2D;"><div class="name">Canvas</div>#0A0E2D</div>
+          <div class="swatch" style="background:#0E1438;"><div class="name">Canvas 2</div>#0E1438</div>
+          <div class="swatch" style="background:#161C44;"><div class="name">Surface 1</div>#161C44</div>
+          <div class="swatch" style="background:#1F2655;"><div class="name">Surface 2</div>#1F2655</div>
+          <div class="swatch" style="background:#0064FF;"><div class="name">Paramount+ Blue</div>#0064FF</div>
+          <div class="swatch" style="background:#0052CC;"><div class="name">Blue Pressed</div>#0052CC</div>
+          <div class="swatch" style="background:#4D9DFF;"><div class="name">Sky Accent</div>#4D9DFF</div>
+          <div class="swatch" style="background:#FFFFFF; color:#0A0E2D;"><div class="name">Text Primary</div>#FFFFFF</div>
+          <div class="swatch" style="background:#AEB4D6; color:#0A0E2D;"><div class="name">Text Secondary</div>#AEB4D6</div>
+          <div class="swatch" style="background:#FF2D46;"><div class="name">Live Red</div>#FF2D46</div>
+          <div class="swatch" style="background:#F5C518; color:#1B1B1B;"><div class="name">Rating Gold</div>#F5C518</div>
+          <div class="swatch" style="background:#1ED760; color:#0A0E2D;"><div class="name">Success</div>#1ED760</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Typography — Inter (Paramount Sans fallback)</div>
+        <div class="type-row"><div class="type-meta">Screen Title · 32pt · 900</div><div class="type-sample t-32">Home</div></div>
+        <div class="type-row"><div class="type-meta">Hero Title · 26pt · 800</div><div class="type-sample t-26">Tulsa King</div></div>
+        <div class="type-row"><div class="type-meta">Row Header · 22pt · 700</div><div class="type-sample t-22">Live TV &amp; Sports</div></div>
+        <div class="type-row"><div class="type-meta">Card Title · 18pt · 700</div><div class="type-sample t-18">1923</div></div>
+        <div class="type-row"><div class="type-meta">Body · 16pt · 600</div><div class="type-sample t-16">An exiled mob capo builds a new empire.</div></div>
+        <div class="type-row"><div class="type-meta">Caption · 15pt · 500</div><div class="type-sample t-15m">S2 · E5 · 52 min</div></div>
+        <div class="type-row"><div class="type-meta">Meta · 13pt · 400</div><div class="type-sample t-13">2024 · Crime Drama · TV-MA</div></div>
+        <div class="type-row"><div class="type-meta">Tab Label · 12pt · 600</div><div class="type-sample t-12">Live TV</div></div>
+        <div class="type-row"><div class="type-meta">Eyebrow · 11pt · 800 · +1.6</div><div class="type-sample t-11u">Paramount+ Original</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">▶ Play</button>
+          <button class="btn btn-glass">+ My List</button>
+          <button class="btn btn-outline">Watch Live</button>
+          <button class="btn-text">More Info</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Brand Hubs &amp; Live Badge</div>
+        <div class="comp-row">
+          <div class="hub-prev">
+            <div class="hub h1">CBS</div>
+            <div class="hub h3">MTV</div>
+            <div class="hub h6">SHO</div>
+          </div>
+          <span class="live-badge"><span class="pulse"></span>Live</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Keep Watching Progress</div>
+        <div class="progress">
+          <div class="progress-track"><div class="progress-fill"></div></div>
+          <div class="progress-label">S2 E5 · 22 min left</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Corner Radius Scale</div>
+        <div class="radius-row">
+          <div class="radius-box r-0">0</div>
+          <div class="radius-box r-4">4</div>
+          <div class="radius-box r-6">6</div>
+          <div class="radius-box r-8">8</div>
+          <div class="radius-box r-12">12</div>
+          <div class="radius-box r-20">20</div>
+          <div class="radius-box r-pill">Pill</div>
+          <div class="radius-box r-circle">Circle</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Dark Mode Notes</div>
+        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">Paramount+ is dark-only on a deep navy canvas <code>#0A0E2D</code> — not pure black — that subtly lightens to <code>#0E1438</code> under hero art, echoing the brand's blue mountain. Paramount+ Blue <code>#0064FF</code> is the single accent: it fills every primary CTA ("Play"), tints the active tab, and powers progress bars. The brand-hubs row (CBS, MTV, Nickelodeon, Comedy Central, Showtime) sits high on Home, signalling that this is a bundle of networks, each hub a network-brand-colored chip. Live TV and sports — a core Paramount+ pillar — are flagged with red <code>#FF2D46</code> and a pulsing dot. Poster and key art stay full-color; navy chrome recedes so the catalog leads.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
