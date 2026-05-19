@@ -36,6 +36,7 @@ export default function BuyCategoryButton({
   const [error, setError] = useState<string | null>(null)
   const [apps, setApps] = useState<AppFiles[] | null>(null)
   const [emailed, setEmailed] = useState(false)
+  const [zipHref, setZipHref] = useState<string | null>(null)
 
   const loadBundle = useCallback(async (url: string, viaPurchase: boolean) => {
     setBusy(true)
@@ -64,8 +65,10 @@ export default function BuyCategoryButton({
     if (typeof window === 'undefined') return
     const params = new URLSearchParams(window.location.search)
     if (params.get('purchased') === 'cat' && params.get('session_id')) {
+      const sid = params.get('session_id')!
+      setZipHref(`/api/gallery/spec-zip?session_id=${encodeURIComponent(sid)}`)
       void loadBundle(
-        `/api/gallery/spec-download?session_id=${encodeURIComponent(params.get('session_id')!)}`,
+        `/api/gallery/spec-download?session_id=${encodeURIComponent(sid)}`,
         true,
       )
       const url = new URL(window.location.href)
@@ -78,6 +81,7 @@ export default function BuyCategoryButton({
   const handleClick = useCallback(async () => {
     setError(null)
     if (!PAYWALL_ENABLED) {
+      setZipHref(`/api/gallery/spec-zip?category=${encodeURIComponent(category)}`)
       void loadBundle(`/api/gallery/spec-download?category=${encodeURIComponent(category)}`, false)
       return
     }
@@ -107,7 +111,7 @@ export default function BuyCategoryButton({
     }
   }, [category, loadBundle])
 
-  if (apps) {
+  if (apps && zipHref) {
     return (
       <div className="bc-files">
         <style dangerouslySetInnerHTML={{ __html: `
@@ -115,42 +119,30 @@ export default function BuyCategoryButton({
             border: 1px solid rgba(168,139,255,0.35);
             background: rgba(168,139,255,0.06);
             border-radius: 12px;
-            padding: 18px 20px;
+            padding: 20px 22px;
             margin-bottom: 28px;
           }
           .bc-files h4 { margin: 0 0 4px; font-size: 15px; color: #f3f4fb; font-weight: 560; }
           .bc-sub { margin: 0 0 16px; font-size: 13px; color: rgba(208,214,228,0.7); }
-          .bc-app { margin: 0 0 14px; }
-          .bc-app-name {
-            font-size: 12px; font-weight: 600; color: #cbd0ee;
-            letter-spacing: 0.02em; margin: 0 0 6px;
+          .bc-zip {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 13px 24px; border-radius: 10px;
+            background: linear-gradient(135deg, #7a6cff 0%, #a88bff 100%);
+            color: #0a0b14; font-weight: 600; font-size: 14px;
+            text-decoration: none; border: 0;
+            box-shadow: 0 8px 24px rgba(113,112,255,0.35);
           }
-          .bc-dl {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 7px 13px; border-radius: 8px; margin: 0 6px 6px 0;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.12);
-            color: #e8ebff; font-size: 12px; text-decoration: none;
-            font-family: monospace;
-          }
-          .bc-dl:hover { background: rgba(255,255,255,0.09); }
+          .bc-zip:hover { transform: translateY(-1px); }
         `}} />
         <h4>You own all {apps.length} {categoryLabel} specs ✓</h4>
         <p className="bc-sub">
           {emailed
-            ? 'Also sent to your email. All downloads below (links valid for 1 hour — reopen the email link any time for fresh ones):'
-            : 'All downloads below (valid for 1 hour):'}
+            ? 'Also sent to your email. One zip with every app’s DESIGN.md pack (re-open the email link any time):'
+            : 'One zip with every app’s DESIGN.md pack:'}
         </p>
-        {apps.map((a) => (
-          <div key={a.slug} className="bc-app">
-            <p className="bc-app-name">{a.name}</p>
-            {a.files.map((f) => (
-              <a key={f.name} className="bc-dl" href={f.url} download>
-                ↓ {f.name}
-              </a>
-            ))}
-          </div>
-        ))}
+        <a className="bc-zip" href={zipHref} download>
+          ↓ Download all {apps.length} {categoryLabel} specs (.zip)
+        </a>
       </div>
     )
   }
