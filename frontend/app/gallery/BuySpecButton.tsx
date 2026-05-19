@@ -41,7 +41,8 @@ export default function BuySpecButton({
     try {
       const res = await fetch(url)
       const json = await res.json().catch(() => ({}))
-      if (!res.ok || !Array.isArray(json?.files) || json.files.length === 0) {
+      const appFiles = Array.isArray(json?.apps) ? json.apps[0]?.files : null
+      if (!res.ok || !Array.isArray(appFiles) || appFiles.length === 0) {
         setError(
           viaPurchase
             ? 'Payment went through but the download link failed — check your email, or contact hello@spectr.to.'
@@ -49,7 +50,7 @@ export default function BuySpecButton({
         )
         return
       }
-      setFiles(json.files)
+      setFiles(appFiles)
       setEmailed(viaPurchase)
     } catch {
       setError('Network error — please try again.')

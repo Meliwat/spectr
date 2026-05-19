@@ -6,6 +6,7 @@ import { getEnv } from '@/lib/env'
 import { triggerWorker } from '@/lib/trigger-worker'
 import { sendSpecDelivery } from '@/lib/email'
 import { isAppSlug, TITLES } from '@/app/gallery/apps'
+import { isCategorySlug, CATEGORY_APPS, CATEGORY_LABELS } from '@/app/gallery/categories'
 
 export const runtime = 'nodejs'
 
@@ -53,6 +54,10 @@ export async function POST(req: NextRequest) {
 
   if (flow === 'spec_purchase') {
     return handleSpecPurchase(session)
+  }
+
+  if (flow === 'category_purchase') {
+    return handleCategoryPurchase(session)
   }
 
   // ── Legacy / authenticated path ──────────────────────────────────────────
@@ -238,13 +243,79 @@ async function handleSpecPurchase(session: Stripe.Checkout.Session): Promise<Nex
   const siteUrl = (getEnv('SITE_URL') || 'https://www.spectr.to').replace(/\/$/, '')
   const downloadUrl = `${siteUrl}/gallery/${slug}?purchased=1&session_id=${session.id}`
 
-  const ok = await sendSpecDelivery({ to: email, appName: TITLES[slug], downloadUrl })
+  const ok = await sendSpecDelivery({
+    to: email,
+    productName: `${TITLES[slug]} design spec`,
+    downloadUrl,
+  })
   if (!ok) {
     console.error('[billing/webhook] spec: email failed but acking', slug, email, session.id)
     return new NextResponse('ok (email failed, fallback available)', { status: 200 })
   }
 
   console.log('[billing/webhook] spec: delivered', slug, 'to', email)
+  return new NextResponse('ok', { status: 200 })
+}
+
+/**
+ * Category bundle purchase: every app's spec in one gallery category.
+ * Same delivery model as a single spec — email a link to the category
+ * success page, which serves all the bundle's signed URLs. Same failure
+ * policy (500 = transient/retry, email-fail = ack + page fallback).
+ */
+async function handleCategoryPurchase(session: Stripe.Checkout.Session): Promise<NextResponse> {
+  const category = (session.metadata?.category ?? '').trim()
+  const email = (session.customer_details?.email ?? session.customer_email ?? '')
+    .trim()
+    .toLowerCase()
+
+  if (!isCategorySlug(category)) {
+    console.error('[billing/webhook] category: bad category', category, session.id)
+    return new NextResponse('bad category', { status: 400 })
+  }
+  if (!email) {
+    console.error('[billing/webhook] category: missing email', session.id)
+    return new NextResponse('No email', { status: 400 })
+  }
+
+  const admin = makeSupabaseServer()
+
+  // Cheap guard: confirm at least one app in the category has specs before
+  // emailing a bundle link (the success page lists per-app from the bucket).
+  let anySpec = false
+  for (const slug of CATEGORY_APPS[category]) {
+    const { data: listing, error: listErr } = await admin
+      .storage.from(SPECS_BUCKET).list(slug)
+    if (listErr) {
+      console.error('[billing/webhook] category: list failed', slug, listErr.message)
+      return new NextResponse('storage_list_failed', { status: 500 })
+    }
+    if ((listing ?? []).some((o) => /^DESIGN.*\.md$/i.test(o.name))) {
+      anySpec = true
+      break
+    }
+  }
+  if (!anySpec) {
+    console.error('[billing/webhook] category: no specs in bucket for', category)
+    return new NextResponse('no_spec_files', { status: 500 })
+  }
+
+  const n = CATEGORY_APPS[category].length
+  const label = CATEGORY_LABELS[category]
+  const siteUrl = (getEnv('SITE_URL') || 'https://www.spectr.to').replace(/\/$/, '')
+  const downloadUrl = `${siteUrl}/gallery/${category}?purchased=cat&session_id=${session.id}`
+
+  const ok = await sendSpecDelivery({
+    to: email,
+    productName: `${label} spec bundle (${n} apps)`,
+    downloadUrl,
+  })
+  if (!ok) {
+    console.error('[billing/webhook] category: email failed but acking', category, email, session.id)
+    return new NextResponse('ok (email failed, fallback available)', { status: 200 })
+  }
+
+  console.log('[billing/webhook] category: delivered', category, 'to', email)
   return new NextResponse('ok', { status: 200 })
 }
 
