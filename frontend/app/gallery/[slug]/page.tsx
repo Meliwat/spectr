@@ -4728,7 +4728,7 @@ export default async function GalleryAppPage({ params }: { params: Params }) {
               Generate your own with the MCP ↗
             </Link>
             <BuySpecButton slug={slug} appName={name} className="ga-cta-ghost">
-              Buy the {name} spec ↓
+              Get full {name} spec ↓
             </BuySpecButton>
           </div>
 
