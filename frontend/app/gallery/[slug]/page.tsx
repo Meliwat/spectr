@@ -18,6 +18,7 @@ import {
 } from '../categories'
 import CategoryView from '../CategoryView'
 import BuySpecButton from '../BuySpecButton'
+import BuyCategoryButton from '../BuyCategoryButton'
 
 const SITE_URL = (process.env.SITE_URL || 'https://www.spectr.to').replace(/\/$/, '')
 
@@ -4485,6 +4486,9 @@ export default async function GalleryAppPage({ params }: { params: Params }) {
   const name = TITLES[slug]
   const copy = APP_COPY[slug]
   const doc = await fetchPhone(slug)
+  const appCategory = CATEGORIES.find((c) =>
+    (CATEGORY_APPS[c] as readonly string[]).includes(slug),
+  )
 
   const schema = {
     '@context': 'https://schema.org',
@@ -4730,6 +4734,16 @@ export default async function GalleryAppPage({ params }: { params: Params }) {
             <BuySpecButton slug={slug} appName={name} className="ga-cta-ghost">
               Get full {name} spec ↓
             </BuySpecButton>
+            {appCategory ? (
+              <BuyCategoryButton
+                category={appCategory}
+                categoryLabel={CATEGORY_LABELS[appCategory]}
+                count={CATEGORY_APPS[appCategory].length}
+                className="ga-cta-ghost"
+              >
+                Get all {CATEGORY_LABELS[appCategory]} app specs ↓
+              </BuyCategoryButton>
+            ) : null}
           </div>
 
           <h3>Screens documented</h3>

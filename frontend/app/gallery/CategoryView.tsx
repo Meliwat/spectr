@@ -3,6 +3,7 @@ import SpectrBackground from '../SpectrBackground'
 import { TITLES, fetchPhone, type AppSlug } from './apps'
 import { CATEGORY_APPS, CATEGORY_LABELS, type CategorySlug } from './categories'
 import PhoneCard, { PHONE_CARD_CSS } from './PhoneCard'
+import BuyCategoryButton from './BuyCategoryButton'
 
 type Props = { category: CategorySlug }
 
@@ -82,6 +83,18 @@ export default async function CategoryView({ category }: Props) {
           max-width: 560px;
           margin: 0 auto;
         }
+        .cgv-cta {
+          display: inline-flex; align-items: center; gap: 8px;
+          margin-top: 22px;
+          padding: 12px 22px; border-radius: 10px;
+          background: linear-gradient(135deg, #7a6cff 0%, #a88bff 100%);
+          color: #0a0b14; font-weight: 600; font-size: 14px;
+          border: 0; cursor: pointer; font-family: inherit;
+          box-shadow: 0 8px 24px rgba(113,112,255,0.35);
+          transition: transform 0.1s ease, box-shadow 0.15s ease;
+        }
+        .cgv-cta:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(113,112,255,0.42); }
+        .cgv-cta:disabled { opacity: 0.6; cursor: default; }
 
         .cgv-grid {
           display: grid;
@@ -159,6 +172,16 @@ export default async function CategoryView({ category }: Props) {
               {apps.length} design {apps.length === 1 ? 'blueprint' : 'blueprints'} in{' '}
               {label.toLowerCase()}. Tap a phone to open.
             </p>
+            <div>
+              <BuyCategoryButton
+                category={category}
+                categoryLabel={label}
+                count={apps.length}
+                className="cgv-cta"
+              >
+                Get all {label} app specs ({apps.length}) ↓
+              </BuyCategoryButton>
+            </div>
           </div>
 
           <div className="cgv-grid">

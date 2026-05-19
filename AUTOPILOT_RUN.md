@@ -24,6 +24,14 @@ Goal: per-app spec purchase flow live and verified.
 - Sync DONE: 800 uploaded, 0 failed, 200 app folders. Verified via storage API: 200 folders in `specs`, airbnb has all 4 DESIGN*.md.
 - Repo PRIVATIZED: Meliwat/awesome-ios-design-md → PRIVATE (gh, --accept-visibility-change-consequences). Verified isPrivate=true.
 - STILL QUEUED (need user / out of this turn's scope): (a) commit+deploy branch — base prompt forbids unrequested commits; (b) Vercel NEXT_PUBLIC_GALLERY_PAYWALL_ENABLED=true — project not linked, and pointless until the new code is deployed anyway.
+
+## Run 3 (commit + deploy)
+- Step 1 CONFIRMED: Vercel prod SUPABASE_URL host = nlkwoezxicayljemxhma.supabase.co — exact match to the synced project. No re-sync needed; name-match assumption was correct.
+- Prod Vercel project = `frontend` (www.spectr.to). No .github/workflows → deploy via Vercel git-integration on master (matches PR-merge commit history).
+- Linked Vercel project `frontend` (scope meliwats-projects). Pulled prod env to /tmp (NOT .env.local).
+- Set NEXT_PUBLIC_GALLERY_PAYWALL_ENABLED=true in Vercel Production (was unset). Done BEFORE deploy because NEXT_PUBLIC_ is build-time inlined.
+- Committed 2c442e4 (12 files, no secrets — .env.local/.vercel gitignored). Pushed branch, PR #32, merged to master (4b7311b) → triggered prod deploy frontend-bgoatmo43.
+- BLOCKED (payment auth): prod STRIPE_SECRET_KEY is sk_live_. A real "test purchase" = real charge. Will NOT enter cards / charge. Verifying everything up to the card step; queue the literal purchase for the user (or test via Preview + Stripe test keys).
 2. Privatize repo — gated behind #1 (do only after sync confirmed).
 3. Vercel prod env — project not linked; set NEXT_PUBLIC_GALLERY_PAYWALL_ENABLED=true in dashboard or `vercel link` then env add.
 4. Commit/deploy the branch.

@@ -71,31 +71,31 @@ export async function sendFounderSampleNotification(args: {
  */
 export async function sendSpecDelivery(args: {
   to: string
-  appName: string
+  productName: string
   downloadUrl: string
 }): Promise<boolean> {
   const apiKey = getEnv('RESEND_API_KEY')
   if (!apiKey) {
-    console.error('[email] RESEND_API_KEY not set — cannot deliver spec to', args.to)
+    console.error('[email] RESEND_API_KEY not set — cannot deliver to', args.to)
     return false
   }
 
   const fromAddress = getEnv('RESEND_FROM') || 'spectr <onboarding@resend.dev>'
-  const { appName, downloadUrl } = args
+  const { productName, downloadUrl } = args
 
   const text =
     `Thanks for your purchase.\n\n` +
-    `Your ${appName} design spec is ready. Download it here:\n${downloadUrl}\n\n` +
-    `It's a production-ready DESIGN.md pack (SwiftUI / Expo / Android / ` +
+    `Your ${productName} is ready. Download here:\n${downloadUrl}\n\n` +
+    `Production-ready DESIGN.md specs (SwiftUI / Expo / Android / ` +
     `framework-neutral): screen-by-screen documentation, full design system, ` +
     `and an implementation prompt for AI coding agents like Claude Code.\n\n` +
     `This link stays valid — open it any time to re-download.\n\n— Spectr`
 
   const html = `<div style="font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.6;color:#1a1a1a;">
   <p>Thanks for your purchase.</p>
-  <p>Your <strong>${appName}</strong> design spec is ready — a production-ready DESIGN.md pack (SwiftUI / Expo / Android / framework-neutral) with screen-by-screen documentation, the full design system, and an implementation prompt for AI coding agents.</p>
+  <p>Your <strong>${productName}</strong> is ready — production-ready DESIGN.md specs (SwiftUI / Expo / Android / framework-neutral) with screen-by-screen documentation, the full design system, and an implementation prompt for AI coding agents.</p>
   <p style="margin:28px 0;">
-    <a href="${downloadUrl}" style="background:#111;color:#fff;text-decoration:none;padding:13px 26px;border-radius:8px;font-weight:600;display:inline-block;">Download your ${appName} spec</a>
+    <a href="${downloadUrl}" style="background:#111;color:#fff;text-decoration:none;padding:13px 26px;border-radius:8px;font-weight:600;display:inline-block;">Download ${productName}</a>
   </p>
   <p style="font-size:13px;color:#666;">Or paste this into your browser:<br><a href="${downloadUrl}" style="color:#555;">${downloadUrl}</a></p>
   <p style="font-size:13px;color:#666;">This link stays valid — open it any time to re-download.</p>
@@ -112,7 +112,7 @@ export async function sendSpecDelivery(args: {
       body: JSON.stringify({
         from: fromAddress,
         to: args.to,
-        subject: `Your ${appName} design spec from Spectr`,
+        subject: `Your ${productName} from Spectr`,
         html,
         text,
       }),
