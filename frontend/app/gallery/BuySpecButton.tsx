@@ -145,7 +145,7 @@ export default function BuySpecButton({
   return (
     <>
       <button type="button" className={className} onClick={handleClick} disabled={busy}>
-        {busy ? 'Working…' : (children ?? `Buy the ${appName} spec`)}
+        {busy ? 'Working…' : (children ?? `Get full ${appName} spec`)}
       </button>
       {error ? (
         <p style={{ fontSize: 12, color: '#ffb8b8', margin: '8px 0 0' }}>{error}</p>
