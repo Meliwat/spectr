@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "sync-specs": "node --env-file=.env.local scripts/sync-specs.mjs"
   },
   "dependencies": {
     "@next/third-parties": "^14.2.3",

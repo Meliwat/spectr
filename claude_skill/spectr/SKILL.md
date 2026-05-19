@@ -1,6 +1,6 @@
 ---
 name: spectr
-description: Turn a screen recording (.mp4 / .mov / .m4v) into a production-ready DESIGN.md — 10 sections, exact hex codes, exact font weights, exact spacing, every screen folded in. Drop-in compatible with the awesome-ios-design-md gallery format. Use when the user has dropped a screen recording in chat and wants to clone or document the app.
+description: Turn a screen recording (.mp4 / .mov / .m4v) into a production-ready DESIGN.md — 10 sections, exact hex codes, exact font weights, exact spacing, every screen folded in. Produces the Spectr gallery spec format. Use when the user has dropped a screen recording in chat and wants to clone or document the app.
 ---
 
 # Spectr — screen recording → DESIGN.md
@@ -84,7 +84,7 @@ Ten numbered sections in the canonical "Awesome iOS DESIGN.md" format:
 9. **Responsive / Adaptive Rules** — Mobile Standard / Larger Phones / iPad table with principles
 10. **Quick Reference Cheat Sheet** — compact build-oriented lookup
 
-Total: typically 25–35 KB of structured markdown — drop-in compatible with the [awesome-ios-design-md](https://github.com/Meliwat/awesome-ios-design-md) gallery format.
+Total: typically 25–35 KB of structured markdown — the Spectr gallery spec format.
 
 ## Errors to handle gracefully
 
