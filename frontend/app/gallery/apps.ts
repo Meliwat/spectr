@@ -414,10 +414,6 @@ export function isAppSlug(slug: string): slug is AppSlug {
   return (APPS as readonly string[]).includes(slug)
 }
 
-export function specGithubUrl(slug: AppSlug): string {
-  return `https://github.com/Meliwat/awesome-ios-design-md/tree/main/design-md/${slug}`
-}
-
 const PREVIEWS_DIR = path.join(process.cwd(), 'previews-private')
 
 export async function fetchPhone(slug: AppSlug): Promise<string | null> {

@@ -8,7 +8,6 @@ import {
   TITLES,
   fetchPhone,
   isAppSlug,
-  specGithubUrl,
   type AppSlug,
 } from '../apps'
 import {
@@ -18,6 +17,7 @@ import {
   isCategorySlug,
 } from '../categories'
 import CategoryView from '../CategoryView'
+import BuySpecButton from '../BuySpecButton'
 
 const SITE_URL = (process.env.SITE_URL || 'https://www.spectr.to').replace(/\/$/, '')
 
@@ -4485,7 +4485,6 @@ export default async function GalleryAppPage({ params }: { params: Params }) {
   const name = TITLES[slug]
   const copy = APP_COPY[slug]
   const doc = await fetchPhone(slug)
-  const specUrl = specGithubUrl(slug)
 
   const schema = {
     '@context': 'https://schema.org',
@@ -4728,14 +4727,9 @@ export default async function GalleryAppPage({ params }: { params: Params }) {
             <Link href="/" className="ga-cta-primary">
               Generate your own with the MCP ↗
             </Link>
-            <a
-              href={specUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="ga-cta-ghost"
-            >
-              View full {name} spec on GitHub ↗
-            </a>
+            <BuySpecButton slug={slug} appName={name} className="ga-cta-ghost">
+              Buy the {name} spec ↓
+            </BuySpecButton>
           </div>
 
           <h3>Screens documented</h3>
@@ -4783,14 +4777,9 @@ export default async function GalleryAppPage({ params }: { params: Params }) {
           <Link href="/gallery" className="ga-link" prefetch={false}>
             ← Back to gallery
           </Link>
-          <a
-            href={specUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="ga-link"
-          >
-            View spec on GitHub ↗
-          </a>
+          <Link href="/" className="ga-link" prefetch={false}>
+            Generate your own ↗
+          </Link>
         </nav>
       </main>
     </>

@@ -4,6 +4,8 @@ import { getStripe } from '@/lib/stripe'
 import { makeSupabaseServer } from '@/lib/supabase-server'
 import { getEnv } from '@/lib/env'
 import { triggerWorker } from '@/lib/trigger-worker'
+import { sendSpecDelivery } from '@/lib/email'
+import { isAppSlug, TITLES } from '@/app/gallery/apps'
 
 export const runtime = 'nodejs'
 
@@ -47,6 +49,10 @@ export async function POST(req: NextRequest) {
   // 200 so Stripe doesn't retry.
   if (flow === 'gallery_prepay') {
     return new NextResponse('ok (gallery_prepay handled synchronously)', { status: 200 })
+  }
+
+  if (flow === 'spec_purchase') {
+    return handleSpecPurchase(session)
   }
 
   // ── Legacy / authenticated path ──────────────────────────────────────────
@@ -179,6 +185,71 @@ async function handleAnonProject(session: Stripe.Checkout.Session): Promise<Next
   }
 
   console.log('[billing/webhook] anon: fulfilled project', projectId, 'for', email)
+  return new NextResponse('ok', { status: 200 })
+}
+
+const SPECS_BUCKET = 'specs'
+
+/**
+ * Per-app spec purchase: read the slug from session metadata, pull every
+ * DESIGN*.md for that app out of the private `specs` bucket, and email them
+ * to the buyer as attachments.
+ *
+ * Failure policy: a transient storage error returns 500 so Stripe retries
+ * (delivery is at-least-once). An email-send failure is logged but still
+ * returns 200 — Stripe must not retry forever, and the gallery success page
+ * exposes the same files via signed URL as the spam-folder fallback.
+ */
+async function handleSpecPurchase(session: Stripe.Checkout.Session): Promise<NextResponse> {
+  const slug = (session.metadata?.slug ?? '').trim()
+  const email = (session.customer_details?.email ?? session.customer_email ?? '')
+    .trim()
+    .toLowerCase()
+
+  if (!isAppSlug(slug)) {
+    console.error('[billing/webhook] spec: bad slug', slug, session.id)
+    return new NextResponse('bad slug', { status: 400 })
+  }
+  if (!email) {
+    console.error('[billing/webhook] spec: missing email', session.id)
+    return new NextResponse('No email', { status: 400 })
+  }
+
+  const admin = makeSupabaseServer()
+
+  const { data: listing, error: listErr } = await admin
+    .storage.from(SPECS_BUCKET).list(slug)
+  if (listErr) {
+    console.error('[billing/webhook] spec: list failed', slug, listErr.message)
+    return new NextResponse('storage_list_failed', { status: 500 })
+  }
+
+  const specNames = (listing ?? [])
+    .map((o) => o.name)
+    .filter((n) => /^DESIGN.*\.md$/i.test(n))
+  if (specNames.length === 0) {
+    console.error('[billing/webhook] spec: no files in bucket for', slug)
+    return new NextResponse('no_spec_files', { status: 500 })
+  }
+
+  const files: { filename: string; content: Buffer }[] = []
+  for (const name of specNames) {
+    const { data: blob, error: dlErr } = await admin
+      .storage.from(SPECS_BUCKET).download(`${slug}/${name}`)
+    if (dlErr || !blob) {
+      console.error('[billing/webhook] spec: download failed', `${slug}/${name}`, dlErr?.message)
+      return new NextResponse('storage_download_failed', { status: 500 })
+    }
+    files.push({ filename: name, content: Buffer.from(await blob.arrayBuffer()) })
+  }
+
+  const ok = await sendSpecDelivery({ to: email, appName: TITLES[slug], files })
+  if (!ok) {
+    console.error('[billing/webhook] spec: email failed but acking', slug, email, session.id)
+    return new NextResponse('ok (email failed, fallback available)', { status: 200 })
+  }
+
+  console.log('[billing/webhook] spec: delivered', slug, 'to', email)
   return new NextResponse('ok', { status: 200 })
 }
 
