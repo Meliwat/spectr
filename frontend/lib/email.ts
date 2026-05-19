@@ -55,32 +55,52 @@ export async function sendFounderSampleNotification(args: {
 }
 
 /**
- * Delivers a purchased per-app spec pack to the buyer as Resend attachments.
+ * Delivers a purchased per-app spec pack to the buyer as a download LINK
+ * (not attachments). The link points at the gallery success page, which
+ * re-verifies the Stripe session and mints fresh signed URLs on every
+ * visit — so it never expires even though individual signed URLs are short
+ * lived.
  *
- * Returns true only if Resend accepted the send. The caller (billing webhook)
- * logs failures but does NOT retry — the gallery success page exposes a
- * signed-URL download for the same files as the spam-folder fallback, so a
- * missed email never means a lost purchase.
+ * Link-based + multipart (html AND text) deliberately: file attachments
+ * from a low-reputation domain and HTML-only bodies are strong spam
+ * signals. This keeps it transactional and inbox-friendly.
+ *
+ * Returns true only if Resend accepted the send. The caller logs failures
+ * but does NOT retry — the same success page is the in-product fallback,
+ * so a missed email never means a lost purchase.
  */
 export async function sendSpecDelivery(args: {
   to: string
   appName: string
-  files: { filename: string; content: Buffer }[]
+  downloadUrl: string
 }): Promise<boolean> {
   const apiKey = getEnv('RESEND_API_KEY')
   if (!apiKey) {
     console.error('[email] RESEND_API_KEY not set — cannot deliver spec to', args.to)
     return false
   }
-  if (args.files.length === 0) {
-    console.error('[email] sendSpecDelivery called with no files for', args.appName)
-    return false
-  }
 
   const fromAddress = getEnv('RESEND_FROM') || 'spectr <onboarding@resend.dev>'
-  const fileList = args.files
-    .map((f) => `<li style="font-family:monospace;">${f.filename}</li>`)
-    .join('')
+  const { appName, downloadUrl } = args
+
+  const text =
+    `Thanks for your purchase.\n\n` +
+    `Your ${appName} design spec is ready. Download it here:\n${downloadUrl}\n\n` +
+    `It's a production-ready DESIGN.md pack (SwiftUI / Expo / Android / ` +
+    `framework-neutral): screen-by-screen documentation, full design system, ` +
+    `and an implementation prompt for AI coding agents like Claude Code.\n\n` +
+    `This link stays valid — open it any time to re-download.\n\n— Spectr`
+
+  const html = `<div style="font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.6;color:#1a1a1a;">
+  <p>Thanks for your purchase.</p>
+  <p>Your <strong>${appName}</strong> design spec is ready — a production-ready DESIGN.md pack (SwiftUI / Expo / Android / framework-neutral) with screen-by-screen documentation, the full design system, and an implementation prompt for AI coding agents.</p>
+  <p style="margin:28px 0;">
+    <a href="${downloadUrl}" style="background:#111;color:#fff;text-decoration:none;padding:13px 26px;border-radius:8px;font-weight:600;display:inline-block;">Download your ${appName} spec</a>
+  </p>
+  <p style="font-size:13px;color:#666;">Or paste this into your browser:<br><a href="${downloadUrl}" style="color:#555;">${downloadUrl}</a></p>
+  <p style="font-size:13px;color:#666;">This link stays valid — open it any time to re-download.</p>
+  <p style="font-size:13px;color:#999;">— Spectr</p>
+</div>`
 
   try {
     const res = await fetch('https://api.resend.com/emails', {
@@ -92,27 +112,15 @@ export async function sendSpecDelivery(args: {
       body: JSON.stringify({
         from: fromAddress,
         to: args.to,
-        subject: `Your ${args.appName} design spec from Spectr`,
-        html: `
-          <p>Thanks for your purchase — your <strong>${args.appName}</strong> design blueprint is attached.</p>
-          <p>Included:</p>
-          <ul>${fileList}</ul>
-          <p>Each file is a production-ready DESIGN.md: screen-by-screen
-          documentation, full design system, and an implementation prompt for
-          AI coding agents like Claude Code. Drop it into your project and build.</p>
-          <p style="color:#666;font-size:13px;">Didn't get the attachments? Reopen the
-          gallery page you bought from — there's a direct download there too.</p>
-        `,
-        attachments: args.files.map((f) => ({
-          filename: f.filename,
-          content: f.content.toString('base64'),
-        })),
+        subject: `Your ${appName} design spec from Spectr`,
+        html,
+        text,
       }),
     })
 
     if (!res.ok) {
-      const text = await res.text()
-      console.error('[email] spec delivery failed:', res.status, text)
+      const body = await res.text()
+      console.error('[email] spec delivery failed:', res.status, body)
       return false
     }
     return true
