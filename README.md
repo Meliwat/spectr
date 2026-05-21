@@ -12,6 +12,7 @@ Drop it into Claude Code and build the clone.
 [![Node 18+](https://img.shields.io/badge/node-18+-339933.svg)](https://nodejs.org/)
 [![Built for Claude Code](https://img.shields.io/badge/built%20for-Claude%20Code-D97757.svg)](https://claude.com/claude-code)
 [![MCP](https://img.shields.io/badge/MCP-compatible-7C3AED.svg)](https://modelcontextprotocol.io/)
+[![SafeSkill 87/100](https://img.shields.io/badge/SafeSkill-87%2F100_Passes%20with%20Notes-yellow)](https://safeskill.dev/scan/meliwat-spectr)
 
 [**spectr.to**](https://www.spectr.to) · [**Gallery**](https://www.spectr.to/gallery) · [**Docs**](#how-it-works)
 
