@@ -258,3 +258,24 @@ export const CATEGORY_APPS: Record<CategorySlug, AppSlug[]> = {
 export function isCategorySlug(slug: string): slug is CategorySlug {
   return (CATEGORIES as readonly string[]).includes(slug)
 }
+
+// Reverse lookup: app slug → its category. Null for an unmapped slug.
+export function categoryForApp(slug: string): CategorySlug | null {
+  for (const cat of CATEGORIES) {
+    if ((CATEGORY_APPS[cat] as readonly string[]).includes(slug)) return cat
+  }
+  return null
+}
+
+// Public design-md repo where every app's free DESIGN.md + framework guides live.
+export const DESIGN_REPO = 'https://github.com/Meliwat/awesome-ios-design-md'
+
+// Link to one app's folder (all 4 framework files + its README index).
+export function appSpecRepoUrl(category: string, slug: string): string {
+  return `${DESIGN_REPO}/tree/main/design-md/${category}/${slug}`
+}
+
+// Link to a whole category's folder.
+export function categorySpecRepoUrl(category: string): string {
+  return `${DESIGN_REPO}/tree/main/design-md/${category}`
+}

@@ -15,10 +15,10 @@ import {
   CATEGORY_APPS,
   CATEGORY_LABELS,
   isCategorySlug,
+  appSpecRepoUrl,
+  categorySpecRepoUrl,
 } from '../categories'
 import CategoryView from '../CategoryView'
-import BuySpecButton from '../BuySpecButton'
-import BuyCategoryButton from '../BuyCategoryButton'
 
 const SITE_URL = (process.env.SITE_URL || 'https://www.spectr.to').replace(/\/$/, '')
 
@@ -4731,18 +4731,25 @@ export default async function GalleryAppPage({ params }: { params: Params }) {
             <Link href="/" className="ga-cta-primary">
               Generate your own with the MCP ↗
             </Link>
-            <BuySpecButton slug={slug} appName={name} className="ga-cta-ghost">
-              Get full {name} spec ↓
-            </BuySpecButton>
             {appCategory ? (
-              <BuyCategoryButton
-                category={appCategory}
-                categoryLabel={CATEGORY_LABELS[appCategory]}
-                count={CATEGORY_APPS[appCategory].length}
-                className="ga-cta-ghost"
-              >
-                Get all {CATEGORY_LABELS[appCategory]} app specs ↓
-              </BuyCategoryButton>
+              <>
+                <a
+                  href={appSpecRepoUrl(appCategory, slug)}
+                  className="ga-cta-ghost"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Get the {name} spec on GitHub ↗
+                </a>
+                <a
+                  href={categorySpecRepoUrl(appCategory)}
+                  className="ga-cta-ghost"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Browse all {CATEGORY_LABELS[appCategory]} specs ↗
+                </a>
+              </>
             ) : null}
           </div>
 

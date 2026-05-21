@@ -1,9 +1,8 @@
 import Link from 'next/link'
 import SpectrBackground from '../SpectrBackground'
 import { TITLES, fetchPhone, type AppSlug } from './apps'
-import { CATEGORY_APPS, CATEGORY_LABELS, type CategorySlug } from './categories'
+import { CATEGORY_APPS, CATEGORY_LABELS, categorySpecRepoUrl, type CategorySlug } from './categories'
 import PhoneCard, { PHONE_CARD_CSS } from './PhoneCard'
-import BuyCategoryButton from './BuyCategoryButton'
 
 type Props = { category: CategorySlug }
 
@@ -89,6 +88,7 @@ export default async function CategoryView({ category }: Props) {
           padding: 12px 22px; border-radius: 10px;
           background: linear-gradient(135deg, #7a6cff 0%, #a88bff 100%);
           color: #0a0b14; font-weight: 600; font-size: 14px;
+          text-decoration: none;
           border: 0; cursor: pointer; font-family: inherit;
           box-shadow: 0 8px 24px rgba(113,112,255,0.35);
           transition: transform 0.1s ease, box-shadow 0.15s ease;
@@ -173,14 +173,14 @@ export default async function CategoryView({ category }: Props) {
               {label.toLowerCase()}. Tap a phone to open.
             </p>
             <div>
-              <BuyCategoryButton
-                category={category}
-                categoryLabel={label}
-                count={apps.length}
+              <a
+                href={categorySpecRepoUrl(category)}
                 className="cgv-cta"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                Get all {label} app specs ({apps.length}) ↓
-              </BuyCategoryButton>
+                Get all {label} app specs ({apps.length}) on GitHub ↗
+              </a>
             </div>
           </div>
 
