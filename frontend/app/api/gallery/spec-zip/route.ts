@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStripe } from '@/lib/stripe'
-import { getEnv } from '@/lib/env'
 import { makeSupabaseServer } from '@/lib/supabase-server'
 import { isAppSlug } from '@/app/gallery/apps'
 import { isCategorySlug, CATEGORY_APPS } from '@/app/gallery/categories'
@@ -10,7 +9,8 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 const SPECS_BUCKET = 'specs'
-const PAYWALL_ENABLED = getEnv('NEXT_PUBLIC_GALLERY_PAYWALL_ENABLED') === 'true'
+// Gallery is free. Hardcoded so the ?slug/?category bypass paths are always honored.
+const PAYWALL_ENABLED = false
 
 /**
  * One .zip of every DESIGN*.md for a paid purchase — a single app or an

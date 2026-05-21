@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useState } from 'react'
 
-const PAYWALL_ENABLED =
-  (process.env.NEXT_PUBLIC_GALLERY_PAYWALL_ENABLED ?? '').replace(/\n/g, '').trim() === 'true'
+// Gallery is free. Hardcoded to keep it that way independent of env state.
+const PAYWALL_ENABLED = false
 
 type AppFiles = { slug: string; name: string; files: { name: string; url: string }[] }
 

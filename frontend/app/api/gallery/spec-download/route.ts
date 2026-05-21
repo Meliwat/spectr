@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStripe } from '@/lib/stripe'
-import { getEnv } from '@/lib/env'
 import { makeSupabaseServer } from '@/lib/supabase-server'
 import { isAppSlug, TITLES } from '@/app/gallery/apps'
 import { isCategorySlug, CATEGORY_APPS } from '@/app/gallery/categories'
@@ -11,8 +10,8 @@ export const dynamic = 'force-dynamic'
 const SPECS_BUCKET = 'specs'
 const SIGNED_URL_TTL = 3600 // 1h — buyer is on the success page right now
 
-const PAYWALL_ENABLED =
-  getEnv('NEXT_PUBLIC_GALLERY_PAYWALL_ENABLED') === 'true'
+// Gallery is free. Hardcoded so the ?slug/?category bypass paths are always honored.
+const PAYWALL_ENABLED = false
 
 type AppFiles = { slug: string; name: string; files: { name: string; url: string }[] }
 

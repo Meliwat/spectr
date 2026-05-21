@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import GenerateSpecModal from './GenerateSpecModal'
 
-const PAYWALL_ENABLED =
-  (process.env.NEXT_PUBLIC_GALLERY_PAYWALL_ENABLED ?? '').replace(/\n/g, '').trim() === 'true'
+// Gallery is free. Hardcoded to keep it that way independent of env state.
+const PAYWALL_ENABLED = false
 
 export const BYPASS_SENTINEL = '__bypass__'
 

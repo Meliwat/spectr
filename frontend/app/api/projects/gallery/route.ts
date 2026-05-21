@@ -53,8 +53,8 @@ export async function POST(req: NextRequest) {
         { status: 400 },
       )
     }
-    const paywallEnabled =
-      (process.env.NEXT_PUBLIC_GALLERY_PAYWALL_ENABLED ?? '').replace(/\n/g, '').trim() === 'true'
+    // Gallery is free — bypass path always honored.
+    const paywallEnabled = false
     if (paywallEnabled) {
       return NextResponse.json({ error: 'Paywall is enabled' }, { status: 402 })
     }
